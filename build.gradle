@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'antlr'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+group = 'org.mitre.shr'
+version = '0.1'
+sourceCompatibility = '1.8'
+
+mainClassName = 'org.mitre.shr.antlr.ParseTreeTool'
+run.args = ["${projectDir}/spec/shr_identification.txt"]
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr group: 'org.antlr', name: 'antlr4', version: '4.5'
+    compile group: "org.antlr", name: "antlr4-runtime", version: "4.5"
+    testCompile group: 'org.testng', name: 'testng', version: '6.8.8'
+}
+
+test {
+    useTestNG()
+}
+
+generateGrammarSource {
+    outputDirectory = file("src/generated/java/org/mitre/shr/antlr")
+    arguments += ["-visitor", "-long-messages", '-package', 'org.mitre.shr.antlr']
+}
+
+clean {
+    delete file("src/generated")
+}
+
+sourceSets.main.java.srcDirs += file("src/generated/java")
+
+idea {
+  module {
+    generatedSourceDirs += file('${projectDir}/src/generated/java')
+  }
+}

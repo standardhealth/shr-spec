@@ -1,0 +1,81 @@
+########################################################################################################################
+shr.identification
+########################################################################################################################
+
+========================================================================================================================
+DATA ELEMENTS
+========================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------
+GivenName       text
+------------------------------------------------------------------------------------------------------------------------
+title           "Given Name"
+description     "A set of names given to a person at birth, but not including the family name. In western cultures, this
+                property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is
+                placed after the family name. Note also that this property contains multiple elements, so it can handle
+                those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+created         2016-09-02
+
+------------------------------------------------------------------------------------------------------------------------
+FamilyName      text
+------------------------------------------------------------------------------------------------------------------------
+title           "Family Name"
+description     "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is
+                the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some
+                cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+created         2016-09-02
+
+------------------------------------------------------------------------------------------------------------------------
+HumanNamePrefix enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Prefix"
+description     "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs.,
+                Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+values          #MR     displayed as "Mr."
+                #MRS    displayed as "Mrs."
+                #DR     displayed as "Dr."
+created         2016-09-02
+
+------------------------------------------------------------------------------------------------------------------------
+HumanNameSuffix enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Suffix"
+description     "Part of the name that is acquired as a title due to academic, legal, employment or nobility status,
+                etc. and that appears at the end of the name."
+values          #JR displayed as "Jr.", #SR displayed as "Sr.", #MD, #PHD displayed as "PhD"
+created         2016-09-02
+
+------------------------------------------------------------------------------------------------------------------------
+HumanName       complex
+------------------------------------------------------------------------------------------------------------------------
+title           "Name"
+description     "Needs description"
+contains
+    0-1         HumanNamePrefix
+    1+          GivenName
+    1           FamilyName
+    0-*         HumanNameSuffix
+created         2016-09-02
+
+------------------------------------------------------------------------------------------------------------------------
+DateOfBirth     date
+------------------------------------------------------------------------------------------------------------------------
+title           "Date of Birth"
+description     "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs.,
+                Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+aka             LOINC #21112-8
+created         2016-09-02
+
+========================================================================================================================
+ENTRIES
+========================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------
+PatientName
+------------------------------------------------------------------------------------------------------------------------
+title           "Patient Name"
+description     "Needs description"
+contains        1-* HumanName
+constraints     multiples not allowed
+created         2016-09-02
+
