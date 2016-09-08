@@ -3,8 +3,63 @@ shr.identification
 ########################################################################################################################
 
 ========================================================================================================================
+ENTRIES
+========================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------
+PatientName
+------------------------------------------------------------------------------------------------------------------------
+title           "Patient Name"
+description     "TBD"
+contains        HumanName
+
+------------------------------------------------------------------------------------------------------------------------
+DateOfBirth
+------------------------------------------------------------------------------------------------------------------------
+title           "Date of Birth"
+description     "TBD"
+contains        DateOfBirth
+constraints     at most one
+
+------------------------------------------------------------------------------------------------------------------------
+PlaceOfBirth
+------------------------------------------------------------------------------------------------------------------------
+title           "Place of Birth"
+description     "TBD"
+contains        PlaceOfBirth
+constraints     at most one
+
+------------------------------------------------------------------------------------------------------------------------
+MultipleBirth
+------------------------------------------------------------------------------------------------------------------------
+title           "Multiple Birth"
+description     "TBD"
+contains        MultipleBirth
+constraints     at most one
+
+========================================================================================================================
 DATA ELEMENTS
 ========================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------
+HumanName       composition
+------------------------------------------------------------------------------------------------------------------------
+title           "Name"
+description     "TBD"
+contains
+    optional        HumanNamePrefix
+    at least one    GivenName
+    one             FamilyName
+    many            HumanNameSuffix
+    optional        HumanNameUse
+
+// ALTERNATE SYNTAX:
+// contains
+//     0-1         HumanNamePrefix
+//     1+          GivenName
+//     1           FamilyName
+//     0-*         HumanNameSuffix
+//     0-1         HumanNameUse
 
 ------------------------------------------------------------------------------------------------------------------------
 GivenName       text
@@ -14,7 +69,7 @@ description     "A set of names given to a person at birth, but not including th
                 property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is
                 placed after the family name. Note also that this property contains multiple elements, so it can handle
                 those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
-created         2016-09-02
+sources         "FHIM", "HL7"
 
 ------------------------------------------------------------------------------------------------------------------------
 FamilyName      text
@@ -23,7 +78,6 @@ title           "Family Name"
 description     "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is
                 the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some
                 cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
-created         2016-09-02
 
 ------------------------------------------------------------------------------------------------------------------------
 HumanNamePrefix enum
@@ -31,10 +85,12 @@ HumanNamePrefix enum
 title           "Prefix"
 description     "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs.,
                 Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
-values          #MR     displayed as "Mr."
-                #MRS    displayed as "Mrs."
-                #DR     displayed as "Dr."
-created         2016-09-02
+values          #mr     displayed as "Mr."
+                #mrs    displayed as "Mrs."
+                #ms     displayed as "Ms."
+                #dr     displayed as "Dr."
+                // TODO: add more prefixes or change to text
+sources         "FHIM", "HL7 FHIR"
 
 ------------------------------------------------------------------------------------------------------------------------
 HumanNameSuffix enum
@@ -42,40 +98,148 @@ HumanNameSuffix enum
 title           "Suffix"
 description     "Part of the name that is acquired as a title due to academic, legal, employment or nobility status,
                 etc. and that appears at the end of the name."
-values          #JR displayed as "Jr.", #SR displayed as "Sr.", #MD, #PHD displayed as "PhD"
-created         2016-09-02
+values          #jr     displayed as "Jr."
+                #sr     displayed as "Sr."
+                #md     displayed as "M.D.",
+                #phd    displayed as "Ph.D"
+                // TODO: add more suffixes or change to text
+sources         "HL7 FHIR: HumanName.suffix"
 
 ------------------------------------------------------------------------------------------------------------------------
-HumanName       complex
+HumanNameUse    enum
 ------------------------------------------------------------------------------------------------------------------------
-title           "Name"
-description     "Needs description"
+title           "Use"
+description     "TBD"
+values          #preferred          displayed as "Preferred"
+                #legal              displayed as "Legal (if different)"
+                #alias              displayed as "Alias or Pseudonym"
+                #birth-name         displayed as "Birth Name (if different)"
+                #variant-spelling   displayed as "Variant Spelling"
+                #temporary          displayed as "Temporary"
+sources         "HL7 FHIR: HumanName.use"
+
+------------------------------------------------------------------------------------------------------------------------
+PlaceOfBirth    profiles Address
+------------------------------------------------------------------------------------------------------------------------
+title           "Place of Birth"
+description     "TBD"
+choice
+    (a) contains City, State
+    (z) contains Country
+
+// ALTERNATE SYNTAX TO CONSIDER:
+// choice [
+//     contains City, State
+//     contains Country
+// ]
+
+------------------------------------------------------------------------------------------------------------------------
+Address         composition
+------------------------------------------------------------------------------------------------------------------------
+title           "Address"
+description     "An address expressed using postal conventions (as opposed to GPS or other location definition formats).
+                This data type may be used to convey addresses for use in delivering mail as well as for visiting
+                locations and which might not be valid for mail delivery. There are a variety of postal address formats
+                defined around the world. (Source: HL7 FHIR)"
 contains
-    0-1         HumanNamePrefix
-    1+          GivenName
-    1           FamilyName
-    0-*         HumanNameSuffix
-created         2016-09-02
+    many        AddressLine
+    optional    City
+    optional    District
+    optional    State
+    optional    PostalCode
+    optional    Country
+    optional    AddressType
+    optional    AddressUse
+    optional    AddressPeriod
+
+------------------------------------------------------------------------------------------------------------------------
+AddressLine     text
+------------------------------------------------------------------------------------------------------------------------
+title           "Line"
+description     "This component contains the house number, apartment number, street name, street direction, P.O. Box
+                number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.line"
+
+------------------------------------------------------------------------------------------------------------------------
+City            text
+------------------------------------------------------------------------------------------------------------------------
+title           "City"
+description     "The name of the city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.city"
+
+------------------------------------------------------------------------------------------------------------------------
+District        text
+------------------------------------------------------------------------------------------------------------------------
+title           "District (i.e. County)"
+description     "The name of the administrative area (county). (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.district"
+
+------------------------------------------------------------------------------------------------------------------------
+State           text
+------------------------------------------------------------------------------------------------------------------------
+title           "State"
+description     "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if
+                codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.state"
+
+------------------------------------------------------------------------------------------------------------------------
+PostalCode      text
+------------------------------------------------------------------------------------------------------------------------
+title           "Postal Code"
+description     "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.postalCode"
+
+------------------------------------------------------------------------------------------------------------------------
+Country         text
+------------------------------------------------------------------------------------------------------------------------
+title           "Country"
+description     "Country - a nation as commonly understood or generally accepted. (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.country"
+
+------------------------------------------------------------------------------------------------------------------------
+AddressType     enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Address Type"
+description     "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and
+                care-of addresses). Most addresses are both. (Source: HL7 FHIR)"
+values          #postal     displayed as "Postal"
+                #physical   displayed as "Physical"
+                #both       displayed as "Postal & Physical"
+                // TODO: Should we support "both" or make this multi-value?
+
+------------------------------------------------------------------------------------------------------------------------
+AddressUse      enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Address Use"
+description     "The purpose of this address. (Source: HL7 FHIR)"
+values          #home   displayed as "Home"
+                #work   displayed as "Work"
+                #temp   displayed as "Temporary"
+                #old    displayed as "Old / Incorrect"
+
+------------------------------------------------------------------------------------------------------------------------
+AddressPeriod   period
+------------------------------------------------------------------------------------------------------------------------
+title           "Address Period"
+description     "Time period when address was/is in use. (Source: HL7 FHIR)"
+sources         "HL7 FHIR: Address.period"
 
 ------------------------------------------------------------------------------------------------------------------------
 DateOfBirth     date
 ------------------------------------------------------------------------------------------------------------------------
 title           "Date of Birth"
-description     "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs.,
-                Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+description     "TBD"
 aka             LOINC #21112-8
-created         2016-09-02
-
-========================================================================================================================
-ENTRIES
-========================================================================================================================
 
 ------------------------------------------------------------------------------------------------------------------------
-PatientName
+MultipleBirth   enum
 ------------------------------------------------------------------------------------------------------------------------
-title           "Patient Name"
-description     "Needs description"
-contains        1-* HumanName
-constraints     multiples not allowed
-created         2016-09-02
-
+title           "Multiple Birth"
+description     "TBD"
+values          #no                     displayed as "No (single)"
+                #identical-twin         displayed as "Identical Twin"
+                #fraternal-twin         displayed as "Fraternal Twin"
+                #triplet                displayed as "Triplet"
+                #quadruplet             displayed as "Quadruplet"
+                #quintuplet             displayed as "Quintuplet"
+                #multiple-unspecified   displayed as "Multiple, Unspecified"

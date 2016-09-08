@@ -23,18 +23,23 @@ dataElementSectionHeader
     : EQUALS 'DATA ELEMENTS' EQUALS;
 
 dataElementDefinition
-    : complexDataElementDefinition | dateDataElementDefinition | enumDataElementDefinition | textDataElementDefinition;
+    : compositionDataElementDefinition
+    | dateDataElementDefinition
+    | enumDataElementDefinition
+    | periodDataElementDefinition
+    | profilesDataElementDefinition
+    | textDataElementDefinition;
 
-// COMPLEX Data Element
+// COMPOSITION Data Element
 
-complexDataElementDefinition
-    : complexDataElementHeader complexDataElementContents;
+compositionDataElementDefinition
+    : compositionDataElementHeader compositionDataElementContents;
 
-complexDataElementHeader
-    : DASHES ALPHNUMERICWORD 'complex' DASHES;
+compositionDataElementHeader
+    : DASHES ALPHNUMERICWORD 'composition' DASHES;
 
-complexDataElementContents
-    : (titleProperty | descriptionProperty | containsProperty | akaProperty | createdProperty)+;
+compositionDataElementContents
+    : (titleProperty | descriptionProperty | choiceProperty | containsProperty | akaProperty | sourcesProperty)+;
 
 // DATE Data Element
 
@@ -45,7 +50,7 @@ dateDataElementHeader
     : DASHES ALPHNUMERICWORD 'date' DASHES;
 
 dateDataElementContents
-    : (titleProperty | descriptionProperty | akaProperty | createdProperty)+;
+    : (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
 
 // ENUM Data Element
 
@@ -56,7 +61,29 @@ enumDataElementHeader
     : DASHES ALPHNUMERICWORD 'enum' DASHES;
 
 enumDataElementContents
-    : (titleProperty | descriptionProperty | valuesProperty | akaProperty | createdProperty)+;
+    : (titleProperty | descriptionProperty | valuesProperty | akaProperty | sourcesProperty)+;
+
+// PERIOD Data Element
+
+periodDataElementDefinition
+    : periodDataElementHeader periodDataElementContents;
+
+periodDataElementHeader
+    : DASHES ALPHNUMERICWORD 'period' DASHES;
+
+periodDataElementContents
+    : (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
+
+// PROFILES Data Element
+
+profilesDataElementDefinition
+    : profilesDataElementHeader profilesDataElementContents;
+
+profilesDataElementHeader
+    : DASHES ALPHNUMERICWORD 'profiles' ALPHNUMERICWORD DASHES;
+
+profilesDataElementContents
+    : (titleProperty | descriptionProperty | choiceProperty | containsProperty | valuesProperty | akaProperty | sourcesProperty)+;
 
 // TEXT Data Element
 
@@ -67,7 +94,9 @@ textDataElementHeader
     : DASHES ALPHNUMERICWORD 'text' DASHES;
 
 textDataElementContents
-    : (titleProperty | descriptionProperty | akaProperty | createdProperty)+;
+    : (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
+
+// ENTRY
 
 entrySection
     : entrySectionHeader entryDefinition*;
@@ -82,7 +111,7 @@ entryHeader
     : DASHES ALPHNUMERICWORD DASHES;
 
 entryContents
-    : (titleProperty | descriptionProperty | containsProperty | akaProperty | constraintsProperty | createdProperty)+;
+    : (titleProperty | descriptionProperty | containsProperty | akaProperty | constraintsProperty | sourcesProperty)+;
 
 akaProperty
     : 'aka' (ALPHNUMERICWORD CODE ','?)+;
@@ -96,17 +125,27 @@ descriptionProperty
 valuesProperty
     : 'values' (CODE ('displayed as' STRING)? ','?)+;
 
-containsProperty
-    : 'contains' (CARDINALITY ALPHNUMERICWORD)+;
+sourcesProperty
+    : 'sources' (STRING ','?)+;
 
-createdProperty
-    : 'created' DATE;
+containsProperty
+    : 'contains' (cardinality? ALPHNUMERICWORD ','?)+;
+
+choiceProperty
+    : 'choice' (CHOICE_MARKER choice)+ LAST_CHOICE_MARKER choice;
+
+choice
+    : choiceProperty | containsProperty;
 
 constraintsProperty
     : 'constraints' constraint+;
 
 constraint
-    : 'multiples not allowed';
+    : 'at most one';
+
+cardinality
+    : CARDINALITY
+    | CARDINALITY_PHRASE;
 
 /*
  * Lexer Rules
@@ -114,6 +153,13 @@ constraint
 
 CARDINALITY
     : [0-9]+ ('+' | '-*' | ('-' [1-9][0-9]*))?;
+
+CARDINALITY_PHRASE
+    : 'no'
+    | 'optional'
+    | 'many'
+    | 'one'
+    | 'at least one';
 
 POSITIVEINTEGER
     : [1-9]([0-9]*);
@@ -154,6 +200,12 @@ CODESYSTEM
 
 CODE
     : '#' [0-9a-zA-z\\-]+;
+
+LAST_CHOICE_MARKER
+    : '(z)';
+
+CHOICE_MARKER
+    : '('[a-z]')';
 
 WS
     : (' ' | '\r' | '\t') -> channel(HIDDEN);
