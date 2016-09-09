@@ -1,0 +1,84 @@
+########################################################################################################################
+shr.name
+########################################################################################################################
+
+========================================================================================================================
+DATA ELEMENTS
+========================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------
+HumanName       composition
+------------------------------------------------------------------------------------------------------------------------
+title           "Name"
+description     "TBD"
+contains
+    optional        HumanNamePrefix
+    at least one    GivenName
+    one             FamilyName
+    many            HumanNameSuffix
+    optional        HumanNameUse
+
+// ALTERNATE SYNTAX:
+// contains
+//     0-1         HumanNamePrefix
+//     1+          GivenName
+//     1           FamilyName
+//     0-*         HumanNameSuffix
+//     0-1         HumanNameUse
+
+------------------------------------------------------------------------------------------------------------------------
+GivenName       text
+------------------------------------------------------------------------------------------------------------------------
+title           "Given Name"
+description     "A set of names given to a person at birth, but not including the family name. In western cultures, this
+                property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is
+                placed after the family name. Note also that this property contains multiple elements, so it can handle
+                those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+sources         "FHIM", "HL7"
+
+------------------------------------------------------------------------------------------------------------------------
+FamilyName      text
+------------------------------------------------------------------------------------------------------------------------
+title           "Family Name"
+description     "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is
+                the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some
+                cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+
+------------------------------------------------------------------------------------------------------------------------
+HumanNamePrefix enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Prefix"
+description     "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs.,
+                Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+values          #mr     displayed as "Mr."
+                #mrs    displayed as "Mrs."
+                #ms     displayed as "Ms."
+                #dr     displayed as "Dr."
+                // TODO: add more prefixes or change to text
+sources         "FHIM", "HL7 FHIR"
+
+------------------------------------------------------------------------------------------------------------------------
+HumanNameSuffix enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Suffix"
+description     "Part of the name that is acquired as a title due to academic, legal, employment or nobility status,
+                etc. and that appears at the end of the name."
+values          #jr     displayed as "Jr."
+                #sr     displayed as "Sr."
+                #md     displayed as "M.D.",
+                #phd    displayed as "Ph.D"
+                // TODO: add more suffixes or change to text
+sources         "HL7 FHIR: HumanName.suffix"
+
+------------------------------------------------------------------------------------------------------------------------
+HumanNameUse    enum
+------------------------------------------------------------------------------------------------------------------------
+title           "Use"
+description     "TBD"
+values          #preferred          displayed as "Preferred"
+                #legal              displayed as "Legal (if different)"
+                #alias              displayed as "Alias or Pseudonym"
+                #birth-name         displayed as "Birth Name (if different)"
+                #variant-spelling   displayed as "Variant Spelling"
+                #temporary          displayed as "Temporary"
+sources         "HL7 FHIR: HumanName.use"
