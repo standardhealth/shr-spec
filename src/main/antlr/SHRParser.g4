@@ -53,7 +53,7 @@ dateDataElementContents:            (titleProperty | descriptionProperty | akaPr
 enumDataElementDefinition:          enumDataElementHeader enumDataElementContents;
 enumDataElementHeader:              DASHES ALPHNUMERICWORD ENUM_TYPE DASHES;
 enumDataElementContents
-    : (titleProperty | descriptionProperty | valuesProperty | akaProperty | sourcesProperty)+;
+    : (titleProperty | descriptionProperty | valuesProperty | valuesetProperty | akaProperty | sourcesProperty)+;
 
 // PERIOD Data Element
 
@@ -82,6 +82,7 @@ akaProperty:            AKA_PROP (CODESYSTEM CODE ','?)+;
 titleProperty:          TITLE_PROP STRING;
 descriptionProperty:    DESCRIPTION_PROP STRING;
 valuesProperty:         VALUE_PROP (CODE (DISPLAYED_AS STRING)? ','?)+;
+valuesetProperty:       VALUESET_PROP URL;
 sourcesProperty:        SOURCES_PROP (STRING ','?)+;
 containsProperty:       CONTAINS_PROP (containedReference ','?)+;
 containedReference:     cardinality? reference;

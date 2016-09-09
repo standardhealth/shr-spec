@@ -18,6 +18,7 @@ DESCRIPTION_PROP:   'description';
 SOURCES_PROP:       'sources';
 TITLE_PROP:         'title';
 VALUE_PROP:         'values';
+VALUESET_PROP:      'valueset';
 
 DISPLAYED_AS:       'displayed as';
 AT_MOST_ONE:        'at most one';
@@ -27,6 +28,7 @@ EQUALS:             '===' '='*;
 DASHES:             '---' '-'*;
 COMMA:              ',';
 
+URL:                [a-z]+ '://' [a-zA-Z][0-9a-zA-z\\-\\.\\/]*;
 CODESYSTEM:         'LOINC' | 'SNOMED';
 CODE:               '#' [0-9a-zA-z\\-]+;
 
