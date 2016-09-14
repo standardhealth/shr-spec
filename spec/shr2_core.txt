@@ -1,13 +1,11 @@
 Namespace:      shr.core
 
-//Primitive data types are aligned to FHIR and include boolean, integer, string, decimal, uri, base64Binary, instant, date, dateTime, time, code, oid, id, markdown, unsignedInt, positiveInt
-
-// Need a mechanism for version numbers as well
-Vocabulary:     LOINC = loinc.org
-Vocabulary:     UCUM = unitsofmeasure.org
-Vocabulary:     SCT = snomed.info/sct
-Vocabulary:     FHIR = hl7.org/fhir
-Vocabulary:     MTH = uts.nlm.nih.gov/metathesaurus
+// TODO: support version numbers
+Vocabulary:     LOINC = http://loinc.org
+Vocabulary:     UCUM = http://unitsofmeasure.org
+Vocabulary:     SCT = http://snomed.info/sct
+Vocabulary:     FHIR = http://hl7.org/fhir
+Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
 DataElement:    dateRecorded
 Concept:        MTH #C3669169
@@ -15,10 +13,10 @@ Description:    "The date when a piece of information was recorded"
 Answer:         date
 
 DataElement:    dataAbsentReason
-Concept:        TBD
+// Concept:     TBD
 Description:    "The reason that a value, nominally expected, is missing."
 Answer:         code
-ValueSet:       http://hl7.org/fhir/ValueSet/v3-NullFlavor   // Did not choose FHIR because the “NA” (not applicable) value is needed (e.g. pregnant for male)
+ValueSet:       http://hl7.org/fhir/ValueSet/v3-NullFlavor
 Binding:        Required
 
 DataElement:    identifier
@@ -33,26 +31,26 @@ Answer:         date
 
 DataElement:    createdBy
 Concept:        MTH #C1707531
-Description:    Indicates the person or authoritative body who brought the item into existence
-Answer:         personReference, organizationReference
+Description:    "Indicates the person or authoritative body who brought the item into existence"
+Answer:         personReference, organizationReference // TBD
 
 DataElement:    informationSource
 Concept:        MTH #C0449416
 Description:    "Where something is available or from where it originates"
-Answer:         computerProgramReference, deviceReference, personReference, externalHealthRecord
+Answer:         computerProgramReference, deviceReference, personReference, externalHealthRecord // TBD
 
-Composition:    EntryMetadata
-Concept:        TBD
+Composition:    entryMetadata
+// Concept:     TBD
 Description:    "Metadata attached to all entries"
-Contains:       1..1 EntryID
-                1..1 DateRecorded
-                0..1 ContentCreationDate
-                0..1 CreatedBy
-                1..1 EnteredInError
-                0..1 Language
-                0..1 SourceSystem
-                0..1 InformationAttribution
-                0..1 RelatedEncounter
-                1..1 UserPermissions
-                1..1 LastedReviewed
-                1..1 LastUpdated
+Has:            1..1    identifier
+                1..1    dateRecorded
+                0..1    contentCreationDate
+                0..1    createdBy
+                1..1    enteredInError // TBD
+                0..1    language // TBD
+                0..1    sourceSystem // TBD
+                0..1    informationAttribution // TBD
+                0..1    relatedEncounter // TBD
+                1..1    userPermissions // TBD
+                1..1    lastReviewed // TBD
+                1..1    lastUpdated // TBD
