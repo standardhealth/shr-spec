@@ -6,6 +6,8 @@ KW_VOCABULARY:      'Vocabulary';
 KW_DATA_ELEMENT:    'DataElement';
 KW_COMPOSITION:     'Composition';
 KW_ENTRY:           'Entry';
+KW_VALUESET_DEFINITION: 'ValueSetDefinition';
+KW_EXTENDS:         'Extends';
 KW_CONCEPT:         'Concept';
 KW_DESCRIPTION:     'Description';
 KW_ANSWER:          'Answer';

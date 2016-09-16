@@ -6,7 +6,7 @@ shr:                namespaceDef definitions;
 namespaceDef:       KW_NAMESPACE COLON namespace;
 namespace:          LOWER_WORD | DOT_SEPARATED_LW;
 definitions:        definition+;
-definition:         vocabularyDef | dataElementDef | compositionDef | entryDef;
+definition:         vocabularyDef | dataElementDef | compositionDef | entryDef | valuesetDef;
 
 vocabularyDef:      KW_VOCABULARY COLON ALL_CAPS EQUAL URL;
 
@@ -14,19 +14,24 @@ dataElementDef:     dataElementHeader dataElementProps?;
 dataElementHeader:  KW_DATA_ELEMENT COLON dataElementName;
 dataElementName:    LOWER_WORD;
 dataElementProps:   dataElementProp+;
-dataElementProp:    conceptProp | descriptionProp | answerProp | valuesetProp | bindingProp;
+dataElementProp:    extendsProp | conceptProp | descriptionProp | answerProp | valuesetProp | bindingProp;
 
 compositionDef:     compositionHeader compositionProps?;
 compositionHeader:  KW_COMPOSITION COLON dataElementName;
 compositionProps:   compositionProp+;
-compositionProp:    conceptProp | descriptionProp | hasProp;
+compositionProp:    extendsProp | conceptProp | descriptionProp | hasProp;
 
 entryDef:           entryHeader entryProps?;
 entryHeader:        KW_ENTRY COLON entryName;
 entryName:          UPPER_WORD | ALL_CAPS;
-entryProps:         entryProp+;
-entryProp:          conceptProp | descriptionProp | answerProp | hasProp;
+entryProps:         (dataElementProp | compositionProp)+;
 
+valuesetDef:        valuesetHeader valuesetValues?;
+valuesetHeader:     KW_VALUESET_DEFINITION COLON URL;
+valuesetValues:     valuesetValue+;
+valuesetValue:      CODE COLON STRING;
+
+extendsProp:        KW_EXTENDS COLON (dataElementName | entryName);
 conceptProp:        KW_CONCEPT COLON concepts;
 concepts:           concept (COMMA concept)*;
 concept:            ALL_CAPS CODE;
