@@ -2,93 +2,44 @@ parser grammar SHRParser;
 
 options { tokenVocab=SHRLexer; }
 
-/***********************************************************************************************************************
- * SHR SPECIFICATION DOCUMENT
- **********************************************************************************************************************/
+shr:                namespaceDef definitions;
+namespaceDef:       KW_NAMESPACE COLON namespace;
+namespace:          LOWER_WORD | DOT_SEPARATED_LW;
+definitions:        definition+;
+definition:         vocabularyDef | dataElementDef | entryDef | valuesetDef;
 
-shr:                        namespaceHeader section+;
-namespaceHeader:            HASHES namespace HASHES;
-namespace:                  ALPHNUMERICWORD | DOTSEPARATEDWORDS;
-section:                    entrySection | dataElementSection;
-entrySection:               entrySectionHeader entryDefinition*;
-entrySectionHeader:         EQUALS ENTRIES EQUALS;
-entryDefinition:            entryHeader entryContents;
-entryHeader:                DASHES ALPHNUMERICWORD DASHES;
-dataElementSection:         dataElementSectionHeader dataElementDefinition*;
-dataElementSectionHeader:   EQUALS DATA_ELEMENTS EQUALS;
-dataElementDefinition
-    : compositionDataElementDefinition
-    | dateDataElementDefinition
-    | enumDataElementDefinition
-    | periodDataElementDefinition
-    | profilesDataElementDefinition
-    | textDataElementDefinition;
+vocabularyDef:      KW_VOCABULARY COLON ALL_CAPS EQUAL URL;
 
-/***********************************************************************************************************************
- * SHR ENTRIES
- **********************************************************************************************************************/
+dataElementDef:     dataElementHeader dataElementProps?;
+dataElementHeader:  KW_DATA_ELEMENT COLON dataElementName;
+dataElementName:    LOWER_WORD;
+dataElementProps:   dataElementProp+;
+dataElementProp:    extendsProp | conceptProp | descriptionProp | answerProp | valuesetProp | bindingProp | hasProp;
 
-entryContents
-    : (titleProperty | descriptionProperty | containsProperty | akaProperty | constraintsProperty | sourcesProperty)+;
+entryDef:           entryHeader dataElementProps?;
+entryHeader:        KW_ENTRY COLON entryName;
+entryName:          UPPER_WORD | ALL_CAPS;
 
-/***********************************************************************************************************************
- * SHR DATA ELEMENTS
- **********************************************************************************************************************/
+valuesetDef:        valuesetHeader valuesetValues?;
+valuesetHeader:     KW_VALUESET_DEFINITION COLON URL;
+valuesetValues:     valuesetValue+;
+valuesetValue:      CODE COLON STRING;
 
-// COMPOSITION Data Element
+extendsProp:        KW_EXTENDS COLON (dataElementName | entryName);
+conceptProp:        KW_CONCEPT COLON concepts;
+concepts:           concept (COMMA concept)*;
+concept:            ALL_CAPS CODE;
+descriptionProp:    KW_DESCRIPTION COLON STRING;
+answerProp:         KW_ANSWER COLON answers;
+answers:            answer (COMMA answer)*;
+answer:             dataElementName | primitive;
+valuesetProp:       KW_VALUESET COLON URL;
+bindingProp:        KW_BINDING COLON KW_REQUIRED; // TODO: Define more bindings
+hasProp:            (KW_HAS COLON)? countedThings;
 
-compositionDataElementDefinition:   compositionDataElementHeader compositionDataElementContents;
-compositionDataElementHeader:       DASHES ALPHNUMERICWORD COMPOSITION_TYPE DASHES;
-compositionDataElementContents
-    : (titleProperty | descriptionProperty | choiceProperty | containsProperty | akaProperty | sourcesProperty)+;
+primitive:          KW_BOOLEAN | KW_INTEGER | KW_STRING | KW_DECIMAL | KW_URI | KW_BASE64_BINARY | KW_INSTANT | KW_DATE
+                    | KW_DATE_TIME | KW_TIME | KW_CODE | KW_OID | KW_ID | KW_MARKDOWN | KW_UNSIGNED_INT
+                    | KW_POSITIVE_INT;
 
-// DATE Data Element
-
-dateDataElementDefinition:          dateDataElementHeader dateDataElementContents;
-dateDataElementHeader:              DASHES ALPHNUMERICWORD DATE_TYPE DASHES;
-dateDataElementContents:            (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
-
-// ENUM Data Element
-
-enumDataElementDefinition:          enumDataElementHeader enumDataElementContents;
-enumDataElementHeader:              DASHES ALPHNUMERICWORD ENUM_TYPE DASHES;
-enumDataElementContents
-    : (titleProperty | descriptionProperty | valuesProperty | valuesetProperty | akaProperty | sourcesProperty)+;
-
-// PERIOD Data Element
-
-periodDataElementDefinition:        periodDataElementHeader periodDataElementContents;
-periodDataElementHeader:            DASHES ALPHNUMERICWORD PERIOD_TYPE DASHES;
-periodDataElementContents:          (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
-
-// PROFILES Data Element
-
-profilesDataElementDefinition:      profilesDataElementHeader profilesDataElementContents;
-profilesDataElementHeader:          DASHES ALPHNUMERICWORD PROFILES_TYPE reference DASHES;
-profilesDataElementContents
-    : (titleProperty | descriptionProperty | choiceProperty | containsProperty | valuesProperty | akaProperty | sourcesProperty)+;
-
-// TEXT Data Element
-
-textDataElementDefinition:          textDataElementHeader textDataElementContents;
-textDataElementHeader:              DASHES ALPHNUMERICWORD TEXT_TYPE DASHES;
-textDataElementContents:            (titleProperty | descriptionProperty | akaProperty | sourcesProperty)+;
-
-/***********************************************************************************************************************
- * DATA ELEMENT AND ENTRY PROPERTIES
- **********************************************************************************************************************/
-
-akaProperty:            AKA_PROP (CODESYSTEM CODE ','?)+;
-titleProperty:          TITLE_PROP STRING;
-descriptionProperty:    DESCRIPTION_PROP STRING;
-valuesProperty:         VALUE_PROP (CODE (DISPLAYED_AS STRING)? ','?)+;
-valuesetProperty:       VALUESET_PROP URL;
-sourcesProperty:        SOURCES_PROP (STRING ','?)+;
-containsProperty:       CONTAINS_PROP (containedReference ','?)+;
-containedReference:     cardinality? reference;
-cardinality:            CARDINALITY | CARDINALITY_PHRASE;
-reference:              ALPHNUMERICWORD | DOTSEPARATEDWORDS;
-choiceProperty:         CHOICE_PROP (OPTION_MARKER option)+ LAST_OPTION_MARKER option;
-option:                 choiceProperty | containsProperty;
-constraintsProperty:    CONSTRAINS_PROP constraint+;
-constraint:             AT_MOST_ONE;
+countedThings:      countedThing+;
+countedThing:       WHOLE_NUMBER RANGE (WHOLE_NUMBER|STAR) dataElementName;
