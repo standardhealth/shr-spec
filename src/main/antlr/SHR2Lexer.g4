@@ -4,7 +4,6 @@ lexer grammar SHR2Lexer;
 KW_NAMESPACE:       'Namespace';
 KW_VOCABULARY:      'Vocabulary';
 KW_DATA_ELEMENT:    'DataElement';
-KW_COMPOSITION:     'Composition';
 KW_ENTRY:           'Entry';
 KW_VALUESET_DEFINITION: 'ValueSetDefinition';
 KW_EXTENDS:         'Extends';
