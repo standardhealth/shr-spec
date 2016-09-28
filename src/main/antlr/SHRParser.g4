@@ -32,14 +32,16 @@ concept:            ALL_CAPS CODE;
 descriptionProp:    KW_DESCRIPTION COLON STRING;
 answerProp:         KW_ANSWER COLON answers;
 answers:            answer (COMMA answer)*;
-answer:             dataElementName | primitive;
+answer:             dataElementRef | entryRef | primitive;
 valuesetProp:       KW_VALUESET COLON URL;
 bindingProp:        KW_BINDING COLON KW_REQUIRED; // TODO: Define more bindings
 hasProp:            (KW_HAS COLON)? countedThings;
 
+dataElementRef:     LOWER_WORD | DOT_SEPARATED_LW;
+entryRef:           UPPER_WORD | DOT_SEPARATED_UW;
 primitive:          KW_BOOLEAN | KW_INTEGER | KW_STRING | KW_DECIMAL | KW_URI | KW_BASE64_BINARY | KW_INSTANT | KW_DATE
                     | KW_DATE_TIME | KW_TIME | KW_CODE | KW_OID | KW_ID | KW_MARKDOWN | KW_UNSIGNED_INT
                     | KW_POSITIVE_INT;
 
 countedThings:      countedThing+;
-countedThing:       WHOLE_NUMBER RANGE (WHOLE_NUMBER|STAR) dataElementName;
+countedThing:       WHOLE_NUMBER RANGE (WHOLE_NUMBER | STAR) (dataElementRef | entryRef);
