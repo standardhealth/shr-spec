@@ -7,51 +7,230 @@ Vocabulary:     SCT = http://snomed.info/sct
 Vocabulary:     FHIR = http://hl7.org/fhir
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
-DataElement:    dateRecorded
-Concept:        MTH #C3669169
-Description:    "The date when a piece of information was recorded"
-Answer:         date
 
-DataElement:    dataAbsentReason
-// Concept:     TBD
-Description:    "The reason that a value, nominally expected, is missing."
-Answer:         code
-ValueSet:       http://hl7.org/fhir/ValueSet/v3-NullFlavor
-Binding:        Required
+//--------------  Entry Metadata ----------------------
+// No Entries are defined in shr.core, only data elements and groups
 
 DataElement:    identifier
 Concept:        MTH #C0600091
-Description:    "A unique identifier for an entry in a health record"
-Answer:         id
+Description:    "A unique, persistent, permanent identifier for a health record or an entry in a health record"
+Value:          id
 
 DataElement:    contentCreationDate
 Concept:        MTH #C2347859
 Description:    "The date on which content was created, or content creation began"
-Answer:         date
+Value:          date
 
-DataElement:    createdBy
+DataElement:    contentAttribution
+Concept:        MTH #C0449416
+Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
+Value:          ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization) // TBD
+
+DataElement:    whenRecorded
+Concept:        MTH #C3669169
+Description:    "The date or point in time when a piece of information was recorded"
+Value:          date or dateTime
+
+DataElement:    recordedBy
 Concept:        MTH #C1707531
 Description:    "Indicates the person or authoritative body who brought the item into existence"
-Answer:         personReference, organizationReference // TBD
+Value:          ref(Person) or ref(Organization) // TBD
 
-DataElement:    informationSource
-Concept:        MTH #C0449416
-Description:    "Where something is available or from where it originates"
-Answer:         computerProgramReference, deviceReference, personReference, externalHealthRecord // TBD
 
-DataElement:    entryMetadata
-// Concept:     TBD
-Description:    "Metadata attached to all entries"
+// TO DO: Data sharing permissions are TBD.
+//  Unlike most other data elements, it is intimately linked to business rules that interpret and act on the data, to enable or disable sharing of data with particular parties.
+//DataElement:	dataSharingPermission
+//Concept:		MTH #C0086100
+//Description:	"A data-sharing permission to be applied to the information"
+//Value:		code from http://standardhealthrecord.org/core/sharingPermission
+
+DataElement:	language
+Concept:		MTH #C0023008
+Description: 	"An identifier for a human language"
+Value:			code from http://hl7.org/fhir/ValueSet/languages
+
+DataElement: 	textSummary
+Concept:		MTH #C1706244
+Description:	"A summary of this entry in the form of text"
+Value:			string
+
+DataElement:    dataAbsentReason
+Concept:     	TBD
+Description:    "The reason that the item is missing."
+Value:          code from http://hl7.org/fhir/data-absent-reason or code from http://standardhealthrecord.org/core/additionalDataAbsentReason
+
+DataElement: 	lastUpdated
+Concept:		TBD
+Description:	"The time the entry was last updated (changed)"
+Value:			dateTime
+
+DataElement:	entryAction
+Concept:		TBD
+Description:	"A description of the action taken on this entry"
+Value:			code from http://standardhealthrecord.org/core/entryAction
+
+DataElement:	comment
+Concept:		MTH #C0947611
+Description:	"A critical or explanatory note written to discuss, support, or dispute information in this entry"
+Value:			string
+
+Group:    		entryMetadata
+Concept:     	MTH #C1708992
+Description:    "Describes the identification, timing, attribution, and other circumstances involved in an SHR entry"
 1..1    identifier
-0..1    validOrEffectiveDates // TBD
-1..1    dateRecorded
 0..1    contentCreationDate
-0..1    createdBy
-1..1    enteredInError // TBD
-0..1    language // TBD
-0..1    sourceSystem // TBD
-0..1    informationAttribution // TBD
-0..1    relatedEncounter // TBD
-1..1    userPermissions // TBD
-1..1    lastReviewed // TBD
-1..1    lastUpdated // TBD
+0..*    contentAttribution
+1..1    whenRecorded
+0..1    recordedBy
+//0..*    dataSharingPermission
+0..1    language
+1..1	textSummary
+0..1    dataAbsentReason
+1..1    lastUpdated
+0..*	eventLog
+
+Group:			eventLog
+Concept:		MTH #C1708728
+Description:	"A record of changes to the entry, similar to a commit log." 
+// Note: if we use an external content management approach, such as Github, the event log may not be required.
+0..1    contentCreationDate
+0..*    contentAttribution
+1..1    whenRecorded
+0..1    recordedBy
+1..1	entryAction
+1..1	comment
+
+// -------------------  Quantities ------------------
+
+// TODO: money, duration, etc.
+
+DataElement: 	priority
+Concept:		MTH #C0549179
+Description:	"A numbered priority 1=highest priority, 2=second highest priority, etc"
+Value:			integer
+
+
+// --------------- Times, Dates, and Ranges ----------------
+
+Group: 			period
+Concept:		TBD
+Description:	"A period of time defined by a start and end time, date, or year"
+1..1			startTime
+1..1			endTime
+
+DataElement: 	startTime
+Concept: 		MTH #C1301880
+Description: 	"The time at which something is to start or did start."
+Value:			dateTime or date or year
+
+DataElement:	endTime
+Concept:		MTH #C1522314
+Description:	"The time at which something is to end or did end."
+Value:			dateTime or date or year
+
+DataElement:	duration
+Concept:		MTH #C0449238
+Description:	"The length of time that something continues"
+Value:			time
+
+DataElement:	effectiveDateRange
+Concept:		MTH #C2985763
+Description:	"The date and time span for when an entry is active or valid."
+Value:			period
+
+//---------------  Locations and Addresses -----------------
+
+Group: 			geopoliticalLocation
+Concept:		MTH #C0017446
+Description:	"The countries of the world and major geopolitical subregions, such as US states"
+0..1    city
+0..1    state
+1..1    country
+
+Group:    address
+Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
+0..2    addressLine
+0..1    city
+0..1    district
+0..1    state
+0..1    postalCode
+0..1    country
+
+//Group:    unitedStatesAddress
+//Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
+//1..2    addressLine
+//1..1    city
+//0..1    unitedStatesCounty
+//1..1    unitedStatesState
+//1..1    zipCode
+
+
+DataElement:    addressLine
+Description:    "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    city
+Description:    "The name of the city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    district
+Description:    "The name of the administrative area (county). (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    state
+Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
+Value:          unitedStatesState or string
+
+DataElement:	unitedStatesState
+Concept:		MTH #C3148680
+Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
+Value:			code from http://pe.usps.com/text/pub28/28apb.htm
+
+DataElement:    postalCode
+Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    country
+Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
+Value:          code from http://www.nationsonline.org/oneworld/country_code_list.htm
+
+//----------------  Human Names ------------
+
+Group:   humanName
+//Concept: 		MTH #C1547383
+Description:	"A name for a human being."
+1..1	fullName
+0..1    humanNamePrefix
+1..1    givenName
+1..1    familyName
+0..*    humanNameSuffix
+0..1    humanNameUse
+
+DataElement:    fullName
+Description:    "A full human name as it is spoken or written"
+Value:          string
+
+DataElement:    givenName
+Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+Value:          string
+
+DataElement:    familyName
+Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+Value:          string
+
+DataElement:    humanNamePrefix
+Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+Value:          code from http://standardhealthrecord.org/identification/vs/HumanNamePrefix
+
+DataElement:    humanNameSuffix
+Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
+Value:          0..* (code from http://standardhealthrecord.org/identification/vs/HumanNameSuffix or string)
+
+DataElement:    humanNameUse
+Value:          code from http://standardhealthrecord.org/identification/vs/HumanNameUse
+
+
+//-------------------- Organization ------------------------------
+
+
+DataElement:	organizationName
