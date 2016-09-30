@@ -8,97 +8,7 @@ Vocabulary:     FHIR = http://hl7.org/fhir
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
 
-//--------------  Entry Metadata ----------------------
-// No Entries are defined in shr.core, only data elements and groups
 
-DataElement:    identifier
-Concept:        MTH #C0600091
-Description:    "A unique, persistent, permanent identifier for a health record or an entry in a health record"
-Value:          id
-
-DataElement:    contentCreationDate
-Concept:        MTH #C2347859
-Description:    "The date on which content was created, or content creation began"
-Value:          date
-
-DataElement:    contentAttribution
-Concept:        MTH #C0449416
-Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
-Value:          ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization) // TBD
-
-DataElement:    whenRecorded
-Concept:        MTH #C3669169
-Description:    "The date or point in time when a piece of information was recorded"
-Value:          date or dateTime
-
-DataElement:    recordedBy
-Concept:        MTH #C1707531
-Description:    "Indicates the person or authoritative body who brought the item into existence"
-Value:          ref(Person) or ref(Organization) // TBD
-
-
-// TO DO: Data sharing permissions are TBD.
-//  Unlike most other data elements, it is intimately linked to business rules that interpret and act on the data, to enable or disable sharing of data with particular parties.
-//DataElement:	dataSharingPermission
-//Concept:		MTH #C0086100
-//Description:	"A data-sharing permission to be applied to the information"
-//Value:		code from http://standardhealthrecord.org/core/sharingPermission
-
-DataElement:	language
-Concept:		MTH #C0023008
-Description: 	"An identifier for a human language"
-Value:			code from http://hl7.org/fhir/ValueSet/languages
-
-DataElement: 	textSummary
-Concept:		MTH #C1706244
-Description:	"A summary of this entry in the form of text"
-Value:			string
-
-DataElement:    dataAbsentReason
-Concept:     	TBD
-Description:    "The reason that the item is missing."
-Value:          code from http://hl7.org/fhir/data-absent-reason or code from http://standardhealthrecord.org/core/additionalDataAbsentReason
-
-DataElement: 	lastUpdated
-Concept:		TBD
-Description:	"The time the entry was last updated (changed)"
-Value:			dateTime
-
-DataElement:	entryAction
-Concept:		TBD
-Description:	"A description of the action taken on this entry"
-Value:			code from http://standardhealthrecord.org/core/entryAction
-
-DataElement:	comment
-Concept:		MTH #C0947611
-Description:	"A critical or explanatory note written to discuss, support, or dispute information in this entry"
-Value:			string
-
-Group:    		entryMetadata
-Concept:     	MTH #C1708992
-Description:    "Describes the identification, timing, attribution, and other circumstances involved in an SHR entry"
-1..1    identifier
-0..1    contentCreationDate
-0..*    contentAttribution
-1..1    whenRecorded
-0..1    recordedBy
-//0..*    dataSharingPermission
-0..1    language
-1..1	textSummary
-0..1    dataAbsentReason
-1..1    lastUpdated
-0..*	eventLog
-
-Group:			eventLog
-Concept:		MTH #C1708728
-Description:	"A record of changes to the entry, similar to a commit log." 
-// Note: if we use an external content management approach, such as Github, the event log may not be required.
-0..1    contentCreationDate
-0..*    contentAttribution
-1..1    whenRecorded
-0..1    recordedBy
-1..1	entryAction
-1..1	comment
 
 // -------------------  Quantities ------------------
 
@@ -106,14 +16,14 @@ Description:	"A record of changes to the entry, similar to a commit log."
 
 DataElement: 	priority
 Concept:		MTH #C0549179
-Description:	"A numbered priority 1=highest priority, 2=second highest priority, etc"
-Value:			integer
+Description:	"A numbered priority where 1=highest priority, 2=second highest priority, etc"
+Value:			positiveInt
 
 
 // --------------- Times, Dates, and Ranges ----------------
 
 Group: 			period
-Concept:		TBD
+Concept:		MTH #C1948053
 Description:	"A period of time defined by a start and end time, date, or year"
 1..1			startTime
 1..1			endTime
@@ -151,33 +61,39 @@ Group:    address
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
 0..2    addressLine
 0..1    city
-0..1    district
+0..1    county
 0..1    state
 0..1    postalCode
 0..1    country
 
-//Group:    unitedStatesAddress
-//Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
-//1..2    addressLine
-//1..1    city
-//0..1    unitedStatesCounty
-//1..1    unitedStatesState
+/*
+Group:    unitedStatesAddress
+Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
+1..2    addressLine
+1..1    city
+0..1    unitedStatesCounty
+1..1    unitedStatesState
 //1..1    zipCode
+*/
 
 
 DataElement:    addressLine
+Concept:		MTH #
 Description:    "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
 Value:          string
 
 DataElement:    city
+Concept:		MTH #C1555315
 Description:    "The name of the city, town, village or other community or delivery center. (Source: HL7 FHIR)"
 Value:          string
 
-DataElement:    district
-Description:    "The name of the administrative area (county). (Source: HL7 FHIR)"
+DataElement:    county
+Concept:		MTH #C0079170
+Description:    "The name of the administrative area at a level below that of a state. In the US, a county or the equivalent. (Source: HL7 FHIR)"
 Value:          string
 
 DataElement:    state
+Concept:		MTH #
 Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
 Value:          unitedStatesState or string
 
@@ -187,10 +103,12 @@ Description:	"A state or territory in the USA expressed by 2-letter US Postal co
 Value:			code from http://pe.usps.com/text/pub28/28apb.htm
 
 DataElement:    postalCode
+Concept:		MTH #
 Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
 Value:          string
 
 DataElement:    country
+Concept:		MTH #
 Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
 Value:          code from http://www.nationsonline.org/oneworld/country_code_list.htm
 
@@ -204,7 +122,8 @@ Description:	"A name for a human being."
 1..1    givenName
 1..1    familyName
 0..*    humanNameSuffix
-0..1    humanNameUse
+0..*    humanNameUse
+0..1	effectiveDateRange   // TODO: consider removing
 
 DataElement:    fullName
 Description:    "A full human name as it is spoken or written"
@@ -220,17 +139,14 @@ Value:          string
 
 DataElement:    humanNamePrefix
 Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
-Value:          code from http://standardhealthrecord.org/identification/vs/HumanNamePrefix
+Value:          code from http://standardhealthrecord.org/core/vs/HumanNamePrefix
 
 DataElement:    humanNameSuffix
 Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
-Value:          0..* (code from http://standardhealthrecord.org/identification/vs/HumanNameSuffix or string)
+Value:          0..* (code from http://standardhealthrecord.org/core/vs/HumanNameSuffix or string)
 
 DataElement:    humanNameUse
-Value:          code from http://standardhealthrecord.org/identification/vs/HumanNameUse
+Value:          code from http://standardhealthrecord.org/core/vs/HumanNameUse
 
 
-//-------------------- Organization ------------------------------
 
-
-DataElement:	organizationName

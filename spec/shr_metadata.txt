@@ -1,0 +1,104 @@
+Namespace:      shr.metadata
+
+
+/*--------------  Entry Metadata ----------------------
+
+  Metadata is information concerning the entry itself -- it does not delve into the content of the entry
+  It covers when and by whom the entry was created, updated, the recorder, and the source of information
+  Actors can comment on the entry using the log feature
+  In the future it will have:
+		l) information about the access, sensitivity, and permissions (consent to share) associated with the entry
+		2) information about the quality and certainty of the information in the entryAction
+  No Entries are defined in shr.metadata, only data elements and groups		
+*/  
+
+DataElement:    identifier
+Concept:        MTH #C0600091
+Description:    "A unique, persistent, permanent identifier for an entry in a health record"
+Value:          id
+
+DataElement:    contentCreationDate
+Concept:        MTH #C2347859
+Description:    "The date on which content was created, or content creation began"
+Value:          date
+
+DataElement:    contentAttribution
+Concept:        MTH #C0449416
+Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
+Value:          ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization) // TBD
+
+DataElement:    whenRecorded
+Concept:        MTH #C3669169
+Description:    "The point in time when a piece of information was recorded"
+Value:          dateTime
+
+DataElement:    recordedBy
+Concept:        MTH #C1707531
+Description:    "Indicates the person or authoritative body who brought the item into existence"
+Value:          ref(Person) or ref(Organization) // TBD
+
+
+/* TO DO: Data sharing permissions are TBD.
+  Unlike most other data elements, privacy flags are intimately linked to business rules that interpret and act on the data, to enable or disable sharing of data with particular parties.
+DataElement:	dataSharingPermission
+Concept:		MTH #C0086100
+Description:	"A data-sharing permission to be applied to the information"
+Value:		code from http://standardhealthrecord.org/core/sharingPermission
+*/
+
+DataElement:	language
+Concept:		MTH #C0023008
+Description: 	"An identifier for a human language"
+Value:			code from http://hl7.org/fhir/ValueSet/languages
+
+DataElement: 	textSummary
+Concept:		MTH #C1706244
+Description:	"A summary of this entry in the form of text"
+Value:			string
+
+DataElement:    dataAbsentReason
+Concept:     	TBD
+Description:    "The reason that the item is missing."
+Value:          code from http://hl7.org/fhir/data-absent-reason or code from http://standardhealthrecord.org/core/noInstances
+
+DataElement: 	lastUpdated
+Concept:		TBD
+Description:	"The time the entry was last updated (changed)"
+Value:			dateTime
+
+DataElement:	entryAction
+Concept:		TBD
+Description:	"A description of the action taken on this entry"
+Value:			code from http://standardhealthrecord.org/core/entryAction
+
+DataElement:	comment
+Concept:		MTH #C0947611
+Description:	"A critical or explanatory note written to discuss, support, or dispute information in this entry"
+Value:			string
+
+Group:    		entryMetadata
+Concept:     	MTH #C1708992
+Description:    "Describes the identification, timing, attribution, and other circumstances involved in an SHR entry"
+1..1    identifier  // identifier for the entry
+1..1	personOfRecordID   // every entry carries the personOfRecordID
+0..1    contentCreationDate
+0..*    contentAttribution
+1..1    whenRecorded
+0..1    recordedBy
+//0..*    dataSharingPermission
+0..1    language
+1..1	textSummary
+0..1    dataAbsentReason
+1..1    lastUpdated
+0..*	eventLog
+
+Group:			eventLog
+Concept:		MTH #C1708728
+Description:	"A record of changes to the entry, similar to a commit log." 
+// Note: if we use an external content management approach, such as Github, the event log may not be required.
+0..1    contentCreationDate
+0..*    contentAttribution
+1..1    whenRecorded
+0..1    recordedBy
+1..1	entryAction
+1..1	comment

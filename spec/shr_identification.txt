@@ -1,7 +1,9 @@
 Namespace:      shr.identification
 
 Section:	Identification
+// Sections contain Entries (only)
 1..1	SHRHeader
+1..*	Name
 1..1	DateOfBirth
 1..1	PlaceOfBirth
 1..1	MultipleBirth
@@ -14,9 +16,9 @@ Section:	Identification
 0..1	SocialSecurityNumber
 0..1	DriversLicense
 0..1	Passport
-0..*	OrganizationIdentifier
+0..*	OrganizationalIdentifier
 1..*	PlaceOfResidence
-1..*	Telecom
+0..*	Telecom
 //1..*	Photograph
 //0..*	Biometrics
 
@@ -26,32 +28,42 @@ Section:	Identification
 // Contains information about the SHR as a whole
 
 Entry: 			SHRHeader
-Cardinality:	1..1
 Concept: 		MTH #C2348941
-Description:	"The header (required) for each Standard Health Record"
-// note that the unique identifier of the SHR is in the metadata for this entry
+Description:	"The required header information for each Standard Health Record"
+// note that the identifier in the metadata of the SHRHeader is the persistent ID of the SHRHeader entry, not the ID of the SHR as a whole record
 // TODO: add a group that assesses the completeness and quality of the overall health record
+1..1	personOfRecordID
+1..1	standardHealthRecordID
 0..1 	fictionalPerson
 0..1	anonymized
 0..1	unknownPerson
-0..*	sourceRecord
+0..*	contributingRecord
 
-Group:	sourceRecord
-Concept: 		~MTH #C0025102
+Group:	contributingRecord
+Concept: 		TBD
 Description:	"A health record used in whole or in part to populate the current health record"
 1..1	healthRecordID
 1..1	providingOrganization
 1..1	lastAccessTime
 
+DataElement: 	personOfRecordID
+Concept:		TBD
+Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
+Value:			identifier
+
+DataElement: 	standardHealthRecordID
+Concept:		TBD
+Description:	"The persistent, unique ID of this standard health record"
+Value:			identifier
 
 DataElement: 	fictionalPerson
-Concept:		~MTH #C0887933
+Concept:		TBD
 Description:	"Flag indicating if this record represents a fictional (not real) person"
 Value:			boolean
 Default:		false
 
 DataElement:	anonymized
-Concept:		~MTH #C4042923
+Concept:		TBD
 Description:	"Flag indicating if this record has been anonymized"
 Value:			boolean
 Default:		false
@@ -79,6 +91,11 @@ Value:			dateTime
 
 //---------------- Identifiers of the Patient of Record ----------------------
 
+Entry:			Name
+Concept:		MTH #C1299487
+Description:	"A name for the person of record."
+Value:			humanName
+
 Entry:          DateOfBirth
 Concept:        MTH #C2919018
 Description:    "A date of birth or approximate year or period (year or date range), if estimated. There may be multiple entries of this type, but a person has only one date of birth"
@@ -89,7 +106,7 @@ Concept:        MTH #C0032040
 Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
 Value:          geopoliticalLocation	
 
-Group:          MultipleBirth
+Entry:          MultipleBirth
 Concept:		MTH #C0026753
 Description:	"Birth of more than one child at the same time to the same parents."
 1..1	multipleBirthBoolean
@@ -138,7 +155,7 @@ Value:			humanName
 Entry:			SocialSecurityNumber
 Concept:		MTH #C1301821
 Description:	"A US social security number (SSN)"
-Value:			string // constrain this!
+Value:			string // TODO: constrain this!
 
 Entry:			DriversLicense
 Concept:		TBD
@@ -174,8 +191,7 @@ DataElement: 	countryOfIssue
 Concept:		TBD
 Description:	"A country acting as an assuing authority for a document"
 Value:			country
-
-Entry: 			OrganizationIdentifier
+Entry: 			OrganizationalIdentifier
 Concept:		TBD
 Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
 1..1	issuingOrganization
