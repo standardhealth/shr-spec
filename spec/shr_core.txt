@@ -14,7 +14,7 @@ Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
 // TODO: money, duration, etc.
 
-DataElement: 	priority
+DataElement: 	Priority
 Concept:		MTH #C0549179
 Description:	"A numbered priority where 1=highest priority, 2=second highest priority, etc"
 Value:			positiveInt
@@ -22,131 +22,155 @@ Value:			positiveInt
 
 // --------------- Times, Dates, and Ranges ----------------
 
-Group: 			period
+Group: 			Period
 Concept:		MTH #C1948053
 Description:	"A period of time defined by a start and end time, date, or year"
-1..1			startTime
-1..1			endTime
+1..1			StartTime
+0..1			EndTime  // lack of end time indicates the period was continuing at the time the entry was created
 
-DataElement: 	startTime
+DataElement: 	StartTime
 Concept: 		MTH #C1301880
 Description: 	"The time at which something is to start or did start."
 Value:			dateTime or date or year
 
-DataElement:	endTime
+DataElement:	EndTime
 Concept:		MTH #C1522314
 Description:	"The time at which something is to end or did end."
 Value:			dateTime or date or year
 
-DataElement:	duration
+DataElement:	Duration
 Concept:		MTH #C0449238
 Description:	"The length of time that something continues"
 Value:			time
 
-DataElement:	effectiveDateRange
+DataElement:	EffectiveDateRange
 Concept:		MTH #C2985763
 Description:	"The date and time span for when an entry is active or valid."
-Value:			period
+Value:			Period
 
 //---------------  Locations and Addresses -----------------
 
-Group: 			geopoliticalLocation
+Group: 			GeopoliticalLocation
 Concept:		MTH #C0017446
 Description:	"The countries of the world and major geopolitical subregions, such as US states"
-0..1    city
-0..1    state
-1..1    country
+0..1    City
+0..1    State
+1..1    Country
 
-Group:    address
+Group:    Address
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
-0..2    addressLine
-0..1    city
-0..1    county
-0..1    state
-0..1    postalCode
-0..1    country
+0..2    AddressLine
+0..1    City
+0..1    County
+0..1    State
+0..1    PostalCode
+0..1    Country
 
 /*
-Group:    unitedStatesAddress
+Group:    UnitedStatesAddress
 Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
-1..2    addressLine
-1..1    city
-0..1    unitedStatesCounty
-1..1    unitedStatesState
+1..2    AddressLine
+1..1    City
+0..1    UnitedStatesCounty
+1..1    UnitedStatesState
 //1..1    zipCode
 */
 
 
-DataElement:    addressLine
+DataElement:    AddressLine
 Concept:		MTH #
-Description:    "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
 Value:          string
 
-DataElement:    city
+DataElement:    City
 Concept:		MTH #C1555315
-Description:    "The name of the city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)"
 Value:          string
 
-DataElement:    county
+DataElement:    County
 Concept:		MTH #C0079170
-Description:    "The name of the administrative area at a level below that of a state. In the US, a county or the equivalent. (Source: HL7 FHIR)"
+Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)"
 Value:          string
 
-DataElement:    state
+DataElement:    State
 Concept:		MTH #
 Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
-Value:          unitedStatesState or string
+Value:          UnitedStatesState or string
 
-DataElement:	unitedStatesState
+DataElement:	UnitedStatesState //refines state
 Concept:		MTH #C3148680
 Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
 Value:			code from http://pe.usps.com/text/pub28/28apb.htm
 
-DataElement:    postalCode
+DataElement:    PostalCode
 Concept:		MTH #
 Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
 Value:          string
 
-DataElement:    country
+DataElement:    Country
 Concept:		MTH #
 Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
 Value:          code from http://www.nationsonline.org/oneworld/country_code_list.htm
 
 //----------------  Human Names ------------
 
-Group:   humanName
-//Concept: 		MTH #C1547383
+Group:   		HumanName
+Concept: 		MTH #C1547383
 Description:	"A name for a human being."
-1..1	fullName
-0..1    humanNamePrefix
-1..1    givenName
-1..1    familyName
-0..*    humanNameSuffix
-0..*    humanNameUse
-0..1	effectiveDateRange   // TODO: consider removing
+1..1	FullName
+0..1    HumanNamePrefix
+1..1    GivenName
+1..1    FamilyName
+0..*    HumanNameSuffix
+0..*    HumanNameUse
+0..1	EffectiveDateRange   // TODO: consider removing
 
-DataElement:    fullName
+DataElement:    FullName
 Description:    "A full human name as it is spoken or written"
 Value:          string
 
-DataElement:    givenName
+DataElement:    GivenName
 Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
 Value:          string
 
-DataElement:    familyName
+DataElement:    FamilyName
 Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
 Value:          string
 
-DataElement:    humanNamePrefix
+DataElement:    HumanNamePrefix
 Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
 Value:          code from http://standardhealthrecord.org/core/vs/HumanNamePrefix
 
-DataElement:    humanNameSuffix
+DataElement:    HumanNameSuffix
 Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
 Value:          0..* (code from http://standardhealthrecord.org/core/vs/HumanNameSuffix or string)
 
-DataElement:    humanNameUse
+DataElement:    HumanNameUse
 Value:          code from http://standardhealthrecord.org/core/vs/HumanNameUse
 
+
+//-----------------------  Excuses -----------------------------
+// In the SHR, any required Entry can be substituted with an Excuse Entry.
+// An Excuse entry has metadata, like any other type of Entry, indicating who entered the excuse, and when.
+// Excuses can also be given for any required DataElement or Group (valid values given on a case-by-case basis)
+
+
+Entry:			Excuse
+Concept:		TBD
+Description:	"The reason for why a required entry is not given, does not exist, or is not current (outside of effectiveDateRange)."
+1..1	EntryType 
+1..1	Code from http://standardhealthrecord.org/core/vs/missingEntryExcuse
+0..1	Explanation
+
+
+DataElement:	EntryType
+Concept:		TBD
+Description:	"The fully qualified name of a type of entry in the SHR"
+Value:			string
+
+DataElement:	Explanation	
+Concept: 		TBD
+Description:	"A further explanation of an excuse. For example, if there is no primary phone number, the explanation could be that a handicap makes it impossible for the person of record to use the telephone."
+Value:			string
 
 
