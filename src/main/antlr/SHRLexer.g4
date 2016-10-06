@@ -3,8 +3,8 @@ lexer grammar SHRLexer;
 // KEYWORDS for SHR
 KW_NAMESPACE:       'Namespace';
 KW_VOCABULARY:      'Vocabulary';
-KW_DATA_ELEMENT:    'DataElement';
 KW_SECTION:         'Section';
+KW_DATA_ELEMENT:    'DataElement';
 KW_ENTRY:           'Entry';
 KW_GROUP:           'Group';
 KW_VALUESET_DEFINITION: 'ValueSetDefinition';
@@ -13,7 +13,6 @@ KW_CONCEPT:         'Concept';
 KW_DESCRIPTION:     'Description';
 KW_VALUE:           'Value';
 KW_DEFAULT:         'Default';
-KW_HAS:             'Has';
 KW_REF:             'ref';
 KW_FROM:            'from';
 KW_OR:              'or';
