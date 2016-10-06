@@ -4,16 +4,20 @@ lexer grammar SHRLexer;
 KW_NAMESPACE:       'Namespace';
 KW_VOCABULARY:      'Vocabulary';
 KW_DATA_ELEMENT:    'DataElement';
+KW_SECTION:         'Section';
 KW_ENTRY:           'Entry';
+KW_GROUP:           'Group';
 KW_VALUESET_DEFINITION: 'ValueSetDefinition';
 KW_EXTENDS:         'Extends';
 KW_CONCEPT:         'Concept';
 KW_DESCRIPTION:     'Description';
-KW_ANSWER:          'Answer';
-KW_VALUESET:        'ValueSet';
-KW_BINDING:         'Binding';
+KW_VALUE:           'Value';
+KW_DEFAULT:         'Default';
 KW_HAS:             'Has';
-KW_REQUIRED:        'Required';
+KW_REF:             'ref';
+KW_FROM:            'from';
+KW_OR:              'or';
+KW_TBD:             'TBD';
 
 // KEYWORDS for FHIR Primitives
 KW_BOOLEAN:         'boolean';
@@ -33,11 +37,16 @@ KW_MARKDOWN:        'markdown';
 KW_UNSIGNED_INT:    'unsignedInt';
 KW_POSITIVE_INT:    'positiveInt';
 
+// KEYWORDS for DEFAULT VALUES
+KW_BOOLEAN_VALUE:   'true' | 'false';
+
 // SYMBOLS
 COLON:              ':';
 EQUAL:              '=';
 COMMA:              ',';
 STAR:               '*';
+OPEN_PAREN:         '(';
+CLOSE_PAREN:        ')';
 RANGE:              '..';
 
 // PATTERNS

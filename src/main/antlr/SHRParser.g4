@@ -6,19 +6,32 @@ shr:                namespaceDef definitions;
 namespaceDef:       KW_NAMESPACE COLON namespace;
 namespace:          LOWER_WORD | DOT_SEPARATED_LW;
 definitions:        definition+;
-definition:         vocabularyDef | dataElementDef | entryDef | valuesetDef;
+definition:         vocabularyDef | sectionDef | dataElementDef | entryDef | groupDef | valuesetDef;
 
 vocabularyDef:      KW_VOCABULARY COLON ALL_CAPS EQUAL URL;
+
+sectionDef:           sectionHeader sectionProps?;
+sectionHeader:        KW_SECTION COLON sectionName;
+sectionName:          UPPER_WORD | ALL_CAPS;
+sectionProps:         hasProp+;
 
 dataElementDef:     dataElementHeader dataElementProps?;
 dataElementHeader:  KW_DATA_ELEMENT COLON dataElementName;
 dataElementName:    LOWER_WORD;
 dataElementProps:   dataElementProp+;
-dataElementProp:    extendsProp | conceptProp | descriptionProp | answerProp | valuesetProp | bindingProp | hasProp;
+dataElementProp:    extendsProp | conceptProp | descriptionProp | valueProp | defaultProp;
 
-entryDef:           entryHeader dataElementProps?;
+entryDef:           entryHeader entryProps?;
 entryHeader:        KW_ENTRY COLON entryName;
 entryName:          UPPER_WORD | ALL_CAPS;
+entryProps:         entryProp+;
+entryProp:          extendsProp | conceptProp | descriptionProp | valueProp | hasProp | defaultProp;
+
+groupDef:           groupHeader groupProps?;
+groupHeader:        KW_GROUP COLON groupName;
+groupName:          LOWER_WORD | UPPER_WORD | ALL_CAPS;
+groupProps:         groupProp+;
+groupProp:          extendsProp | conceptProp | descriptionProp | hasProp;
 
 valuesetDef:        valuesetHeader valuesetValues?;
 valuesetHeader:     KW_VALUESET_DEFINITION COLON URL;
@@ -28,20 +41,24 @@ valuesetValue:      CODE COLON STRING;
 extendsProp:        KW_EXTENDS COLON (dataElementName | entryName);
 conceptProp:        KW_CONCEPT COLON concepts;
 concepts:           concept (COMMA concept)*;
-concept:            ALL_CAPS CODE;
+concept:            KW_TBD | (ALL_CAPS CODE);
 descriptionProp:    KW_DESCRIPTION COLON STRING;
-answerProp:         KW_ANSWER COLON answers;
-answers:            answer (COMMA answer)*;
-answer:             dataElementRef | entryRef | primitive;
-valuesetProp:       KW_VALUESET COLON URL;
-bindingProp:        KW_BINDING COLON KW_REQUIRED; // TODO: Define more bindings
+valueProp:          KW_VALUE COLON values;
+values:             count? value | count? OPEN_PAREN values CLOSE_PAREN| values KW_OR values;
+value:              dataElementId | entryId | entryRef | codeFromValueset | primitive;
+valueset:           URL;
+defaultProp:        KW_DEFAULT COLON defaultValue;
+defaultValue:       KW_BOOLEAN_VALUE | STRING | CODE;
 hasProp:            (KW_HAS COLON)? countedThings;
 
-dataElementRef:     LOWER_WORD | DOT_SEPARATED_LW;
-entryRef:           UPPER_WORD | DOT_SEPARATED_UW;
+dataElementId:      LOWER_WORD | DOT_SEPARATED_LW;
+entryId:            UPPER_WORD | DOT_SEPARATED_UW;
+entryRef:           KW_REF OPEN_PAREN entryId CLOSE_PAREN;
+codeFromValueset:   KW_CODE KW_FROM valueset;
 primitive:          KW_BOOLEAN | KW_INTEGER | KW_STRING | KW_DECIMAL | KW_URI | KW_BASE64_BINARY | KW_INSTANT | KW_DATE
                     | KW_DATE_TIME | KW_TIME | KW_CODE | KW_OID | KW_ID | KW_MARKDOWN | KW_UNSIGNED_INT
                     | KW_POSITIVE_INT;
 
+count:              WHOLE_NUMBER RANGE (WHOLE_NUMBER | STAR);
 countedThings:      countedThing+;
-countedThing:       WHOLE_NUMBER RANGE (WHOLE_NUMBER | STAR) (dataElementRef | entryRef);
+countedThing:       count (dataElementId | entryId);
