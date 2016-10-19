@@ -56,7 +56,7 @@ ALL_CAPS:           [A-Z][A-Z0-9]*;
 UPPER_WORD:         [A-Z][0-9a-zA-Z\\-]*;
 LOWER_WORD:         [a-z][0-9a-zA-Z\\-]*;
 DOT_SEPARATED_LW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)+;
-DOT_SEPARATED_UW:   [a-z][0-9a-zA-Z\\-]* ('.' [A-Z][0-9a-zA-z\\-]*)+;
+DOT_SEPARATED_UW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)* ('.' [A-Z][0-9a-zA-z\\-]*);
 STRING:             '"' (~[\\"])* '"';
 
 // THINGS WE GENERALLY IGNORE
