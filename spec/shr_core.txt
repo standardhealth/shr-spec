@@ -7,51 +7,173 @@ Vocabulary:     SCT = http://snomed.info/sct
 Vocabulary:     FHIR = http://hl7.org/fhir
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
-DataElement:    dateRecorded
-Concept:        MTH #C3669169
-Description:    "The date when a piece of information was recorded"
-Answer:         date
 
-DataElement:    dataAbsentReason
-// Concept:     TBD
-Description:    "The reason that a value, nominally expected, is missing."
-Answer:         code
-ValueSet:       http://hl7.org/fhir/ValueSet/v3-NullFlavor
-Binding:        Required
 
-DataElement:    identifier
-Concept:        MTH #C0600091
-Description:    "A unique identifier for an entry in a health record"
-Answer:         id
 
-DataElement:    contentCreationDate
-Concept:        MTH #C2347859
-Description:    "The date on which content was created, or content creation began"
-Answer:         date
+// -------------------  Quantities ------------------
 
-DataElement:    createdBy
-Concept:        MTH #C1707531
-Description:    "Indicates the person or authoritative body who brought the item into existence"
-Answer:         personReference, organizationReference // TBD
+// TODO: money, duration, etc.
 
-DataElement:    informationSource
-Concept:        MTH #C0449416
-Description:    "Where something is available or from where it originates"
-Answer:         computerProgramReference, deviceReference, personReference, externalHealthRecord // TBD
+DataElement: 	Priority
+Concept:		MTH #C0549179
+Description:	"A numbered priority where 1=highest priority, 2=second highest priority, etc"
+Value:			positiveInt
 
-DataElement:    entryMetadata
-// Concept:     TBD
-Description:    "Metadata attached to all entries"
-1..1    identifier
-0..1    validOrEffectiveDates // TBD
-1..1    dateRecorded
-0..1    contentCreationDate
-0..1    createdBy
-1..1    enteredInError // TBD
-0..1    language // TBD
-0..1    sourceSystem // TBD
-0..1    informationAttribution // TBD
-0..1    relatedEncounter // TBD
-1..1    userPermissions // TBD
-1..1    lastReviewed // TBD
-1..1    lastUpdated // TBD
+
+// --------------- Times, Dates, and Ranges ----------------
+
+Group: 			Period
+Concept:		MTH #C1948053
+Description:	"A period of time defined by a start and end time, date, or year"
+1..1			StartTime
+0..1			EndTime  // lack of end time indicates the period was continuing at the time the entry was created
+
+DataElement: 	StartTime
+Concept: 		MTH #C1301880
+Description: 	"The time at which something is to start or did start."
+Value:			dateTime or date
+
+DataElement:	EndTime
+Concept:		MTH #C1522314
+Description:	"The time at which something is to end or did end."
+Value:			dateTime or date
+
+DataElement:	Duration
+Concept:		MTH #C0449238
+Description:	"The length of time that something continues"
+Value:			time
+
+DataElement:	EffectiveDateRange
+Concept:		MTH #C2985763
+Description:	"The date and time span for when an entry is active or valid."
+Value:			Period
+
+//---------------  Locations and Addresses -----------------
+
+Group: 			GeopoliticalLocation
+Concept:		MTH #C0017446
+Description:	"The countries of the world and major geopolitical subregions, such as US states"
+0..1    City
+0..1    State
+1..1    Country
+
+Group:    Address
+Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
+0..2    AddressLine
+0..1    City
+0..1    County
+0..1    State
+0..1    PostalCode
+0..1    Country
+
+/*
+Group:    UnitedStatesAddress
+Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
+1..2    AddressLine
+1..1    City
+0..1    UnitedStatesCounty
+1..1    UnitedStatesState
+//1..1    zipCode
+*/
+
+
+DataElement:    AddressLine
+Concept:		TBD
+Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    City
+Concept:		MTH #C1555315
+Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    County
+Concept:		MTH #C0079170
+Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    State
+Concept:		TBD
+Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
+Value:          UnitedStatesState or string
+
+DataElement:	UnitedStatesState //refines state
+Concept:		MTH #C3148680
+Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
+Value:			code from http://pe.usps.com/text/pub28/28apb.htm
+
+DataElement:    PostalCode
+Concept:		TBD
+Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
+Value:          string
+
+DataElement:    Country
+Concept:		TBD
+Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
+Value:          code from http://www.nationsonline.org/oneworld/country_code_list.htm
+
+//----------------  Human Names ------------
+
+Group:   		HumanName
+Concept: 		MTH #C1547383
+Description:	"A name for a human being."
+1..1	FullName
+0..1    HumanNamePrefix
+1..1    GivenName
+1..1    FamilyName
+0..*    HumanNameSuffix
+0..*    HumanNameUse
+0..1	EffectiveDateRange   // TODO: consider removing
+
+DataElement:    FullName
+Description:    "A full human name as it is spoken or written"
+Value:          string
+
+DataElement:    GivenName
+Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+Value:          string
+
+DataElement:    FamilyName
+Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+Value:          string
+
+DataElement:    HumanNamePrefix
+Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+Value:          code from http://standardhealthrecord.org/core/vs/HumanNamePrefix
+
+DataElement:    HumanNameSuffix
+Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
+Value:          0..* (code from http://standardhealthrecord.org/core/vs/HumanNameSuffix or string)
+
+DataElement:    HumanNameUse
+Value:          code from http://standardhealthrecord.org/core/vs/HumanNameUse
+
+
+//-----------------------  Excuses -----------------------------
+// In the SHR, any required Entry can be substituted with an Excuse Entry.
+// An Excuse entry has metadata, like any other type of Entry, indicating who entered the excuse, and when.
+// Excuses can also be given for any required DataElement or Group (valid values given on a case-by-case basis)
+
+
+Entry:			Excuse
+Concept:		TBD
+Description:	"The reason for why a required entry is not given, does not exist, or is not current (outside of effectiveDateRange)."
+1..1	EntryType 
+1..1	MissingEntryExcuse
+0..1	Explanation
+
+
+DataElement:	EntryType
+Concept:		TBD
+Description:	"The fully qualified name of a type of entry in the SHR"
+Value:			string
+
+DataElement:    MissingEntryExcuse
+Concept:        TBD
+Description:    "The coded reason for why a required entry is not given, does not exist, or is not current (outside of effectiveDateRange)."
+Value:          code from http://standardhealthrecord.org/core/vs/missingEntryExcuse
+
+DataElement:	Explanation	
+Concept: 		TBD
+Description:	"A further explanation of an excuse. For example, if there is no primary phone number, the explanation could be that a handicap makes it impossible for the person of record to use the telephone."
+Value:			string

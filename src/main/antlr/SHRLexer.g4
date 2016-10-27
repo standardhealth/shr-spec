@@ -3,17 +3,20 @@ lexer grammar SHRLexer;
 // KEYWORDS for SHR
 KW_NAMESPACE:       'Namespace';
 KW_VOCABULARY:      'Vocabulary';
+KW_SECTION:         'Section';
 KW_DATA_ELEMENT:    'DataElement';
 KW_ENTRY:           'Entry';
+KW_GROUP:           'Group';
 KW_VALUESET_DEFINITION: 'ValueSetDefinition';
 KW_EXTENDS:         'Extends';
 KW_CONCEPT:         'Concept';
 KW_DESCRIPTION:     'Description';
-KW_ANSWER:          'Answer';
-KW_VALUESET:        'ValueSet';
-KW_BINDING:         'Binding';
-KW_HAS:             'Has';
-KW_REQUIRED:        'Required';
+KW_VALUE:           'Value';
+KW_DEFAULT:         'Default';
+KW_REF:             'ref';
+KW_FROM:            'from';
+KW_OR:              'or';
+KW_TBD:             'TBD';
 
 // KEYWORDS for FHIR Primitives
 KW_BOOLEAN:         'boolean';
@@ -33,11 +36,16 @@ KW_MARKDOWN:        'markdown';
 KW_UNSIGNED_INT:    'unsignedInt';
 KW_POSITIVE_INT:    'positiveInt';
 
+// KEYWORDS for DEFAULT VALUES
+KW_BOOLEAN_VALUE:   'true' | 'false';
+
 // SYMBOLS
 COLON:              ':';
 EQUAL:              '=';
 COMMA:              ',';
 STAR:               '*';
+OPEN_PAREN:         '(';
+CLOSE_PAREN:        ')';
 RANGE:              '..';
 
 // PATTERNS
@@ -46,8 +54,9 @@ CODE:               '#' [0-9a-zA-z\\-]+;
 WHOLE_NUMBER:       [0-9]+;
 ALL_CAPS:           [A-Z][A-Z0-9]*;
 UPPER_WORD:         [A-Z][0-9a-zA-Z\\-]*;
-LOWER_WORD:         [a-z][0-9a-zA-z\\-]*;
-DOT_SEPARATED_LW:   [a-z][0-9a-zA-z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)+;
+LOWER_WORD:         [a-z][0-9a-zA-Z\\-]*;
+DOT_SEPARATED_LW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)+;
+DOT_SEPARATED_UW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)* ('.' [A-Z][0-9a-zA-z\\-]*);
 STRING:             '"' (~[\\"])* '"';
 
 // THINGS WE GENERALLY IGNORE

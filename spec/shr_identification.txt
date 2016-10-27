@@ -1,144 +1,265 @@
 Namespace:      shr.identification
 
-// ENTRIES
+Section:	Identification
+// Any required entry can be substituted by an Excuse entry
+1..*	PersonOfRecordName
+1..1	DateOfBirth
+1..1 	PlaceOfBirth
+1..1 	MultipleBirth
+1..1	AdministrativeGender
+1..1    Race
+1..1	Ethnicity
+1..1	MaritalStatus
+1..1	MothersMaidenName
+1..1	FathersName
+0..1	SocialSecurityNumber
+1..1	DriversLicense
+1..*	Passport
+1..*	OrganizationalIdentifier
+1..1	PrimaryAddress
+1..*	SecondaryAddress
+1..*	HistoricalAddress
+1..1	PrimaryTelephone
+0..*	SecondaryTelephone
+1..1	PrimaryEmail
+0..*	SecondaryEmail
+1..*	OtherTelecom
 
-Entry:          PatientName
-Concept:        SCT #371484003
-Description:    "A name for the patient of record"
-Answer:         humanName // TBD
+//1..*	Photograph
+//0..*	Biometrics
 
-Entry:          DateOfBirth
-Concept:        SCT #184099003
-Description:    "A date of birth or approximate year or range, if estimated"
-Answer:         date, yearRange // TBD
 
-Entry:          PlaceOfBirth
-Concept:        SCT #169812000
-Description:    "The location of a birth event"
-Answer:         foreignCountry, usCity, nullValue // TBD
 
-Entry:          MultipleBirth
-Answer:         code
-ValueSet:       http://standardhealthrecord.org/identification/vs/MultipleBirth
+DataElement:	PersonOfRecordName
+Concept:		MTH #C1299487
+Description:	"A name for the person of record."
+Value:			HumanName
 
-Entry:          AdministrativeGender
+DataElement:    DateOfBirth
+Concept:        MTH #C2919018
+Description:    "A date of birth or approximate year or period (year or date range), if estimated. There may be multiple entries of this type, but a person has only one date of birth"
+Value:  		date or Period
+
+DataElement:    PlaceOfBirth
+Concept:        MTH #C0032040
+Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+Value:          GeopoliticalLocation
+
+Group:		    MultipleBirth
+Concept:		MTH #C0026753
+Description:	"Birth of more than one child at the same time to the same parents."
+1..1	MultipleBirthBoolean
+0..1	MultipleBirthOrder     
+
+DataElement:	MultipleBirthBoolean
+Concept:		MTH #C0026753
+Description:	"Indication if a birth event was a multiple birth."
+Value:			boolean
+
+DataElement:	MultipleBirthOrder
+Concept:		LOINC #73771-8
+Description:	"Order of birth in multiple birth event"
+Value:			positiveInt
+
+DataElement:    AdministrativeGender
+Concept:		MTH #C1550327
 Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
-Answer:         code
-ValueSet:       http://standardhealthrecord.org/identification/vs/AdministrativeGender
+Value:          code from http://hl7.org/fhir/ValueSet/administrative-gender
 
-Entry:          USStandardRace
+DataElement:    Race
+Concept:		MTH #C0034510
 Description:    "A code classifying the person into a named category of humans sharing common history, traits, geographical origin or nationality. (Source: HL7 FHIR)"
-Answer:         code
-ValueSet:       http://hl7.org/fhir/ValueSet/v3-Race
+Value:          code from http://hl7.org/fhir/us/daf/ValueSet/daf-race
 
-Entry:          USStandardEthnicity
+DataElement:    Ethnicity
+Concept:		MTH #C0015031
 Description:    "A code classifying the person into a named category of humans sharing a common real or presumed heritage. (Source: HL7 FHIR)"
-Answer:         code
-ValueSet:       http://hl7.org/fhir/ValueSet/v3-Ethnicity
+Value:          code from http://hl7.org/fhir/v3/Ethnicity
 
-Entry:          Provider
-Extends:        person
-1..1    nationalProviderIdentifier
-0..*    medicalSpecialty
+DataElement:	MaritalStatus
+Concept:		MTH #C0024819
+Description:	"The most recent marital status of a person."
+Value:			code from http://hl7.org/fhir/ValueSet/marital-status
 
-Entry:          Relative
-Extends:        person
-Concept:        MTH #C0080103
-Description:    "A person related to the patient of record by blood or marriage."
-0..1    dateOfBirth
-0..1    placeOfBirth
-0..*    familialRelationship // TBD
-0..1    deceasedIndicator // TBD
-0..1    ageAtDeath // TBD
-0..*    familyHistoryCondition // TBD
-0..*    familyHistoryConditionExclusion // TBD
+DataElement:	MothersMaidenName
+Concept:		MTH #C0806887
+Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the patient of record. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+Value:			HumanName
 
-// DATA ELEMENTS
+DataElement:	FathersName
+Concept:		TBD
+Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the patient of record; most likely the name of the father at the time of birth of the person of record."
+Value:			HumanName
 
-DataElement:    organization
-Concept:        MTH #C1561598
-Description:    "A social or legal structure formed by human beings"
-0..*    organizationName // TBD
-0..*    telecom // TBD
-0..*    location // TBD
+DataElement:	SocialSecurityNumber
+Concept:		MTH #C1301821
+Description:	"A US social security number (SSN)"
+Value:			string // TODO: constrain this?
 
-DataElement:    organizationAffiliation
-Concept:        MTH #C0932026, MTH #C0680038
-Description:    "Membership, association, or connection to an organization"
-Answer:         organization
+Group:			DriversLicense
+Concept:		TBD
+Description:	"Identifying information from a drivers license"
+1..1	DriversLicenseNumber
+1..1	StateOfIssue
+0..1	EffectiveDateRange
 
-DataElement:    person
-Concept:        MTH #C0027361
-Description:    "A human being, living or dead, who may or may not be specifically identified.  Can include a neighbor, lawyer, relative, social worker, or caregiver, for example"
-0..*    humanName
-0..*    roleInCare // TBD
-0..*    organizationAffiliation
-0..*    telecom // TBD
-0..*    address
-0..*    externalHealthRecord //TBD
+DataElement:	DriversLicenseNumber
+Concept:		TBD
+Description:	"Driver's license number"
+Value:			string
 
-// Name-related data elements
+DataElement:	StateOfIssue
+Concept:		MTH #C1547728
+Description:	"Issuing authority for a drivers license"
+Value:			UnitedStatesState
 
-DataElement:    humanName
-0..1    humanNamePrefix
-1..*    givenName
-1..1    familyName
-0..*    humanNameSuffix
-0..1    humanNameUse
+Group:			Passport
+Concept:		MTH #C3242633
+Description:	"Indicator of citizenship and identity"
+// Include issue and/or expiration date in metadata.effectiveDateRange
+1..1	PassportNumber
+1..1	CountryOfIssue
+0..1	EffectiveDateRange
 
-DataElement:    givenName
-Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
-Answer:         string
+DataElement: 	PassportNumber
+Concept:		MTH #C1549737
+Description:	"Passport number"
+Value:			string
 
-DataElement:    familyName
-Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
-Answer:         string
+DataElement: 	CountryOfIssue
+Concept:		TBD
+Description:	"A country acting as an assuing authority for a document"
+Value:			Country
 
-DataElement:    humanNamePrefix
-Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
-Answer:         code
-ValueSet:       http://standardhealthrecord.org/identification/vs/HumanNamePrefix
+Group: 			OrganizationalIdentifier
+Concept:		TBD
+Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
+1..1	IssuingOrganization
+1..1	Identifier
+0..1	EffectiveDateRange			
 
-DataElement:    humanNameSuffix
-Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
-Answer:         code
-ValueSet:       http://standardhealthrecord.org/identification/vs/HumanNameSuffix
+DataElement:	IssuingOrganization
+Concept:		TBD
+Description:	"An organization acting as an issuing authority or trust source"
+Value:			ref(Organization)
 
-DataElement:    humanNameUse
-Answer:         code
-ValueSet:       http://standardhealthrecord.org/identification/vs/HumanNameUse
+Group:			PrimaryAddress
+Concept:		MTH #C0682130
+Description:	"The current address at which a person dwells most frequently or maintains as his or her official premises."
+1..1            Address
+0..1            AddressDescription
 
-// Address-related data elements
+Group:			SecondaryAddress
+Concept:		MTH #C0682130
+Description:	"A current address at which a person dwells on a secondary basis, for example, during vacation periods, when residing with other parent or relative, during the school year, etc."
+1..1            Address
+0..1            AddressDescription
 
-DataElement:    address
-Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
-0..*    addressLine
-0..1    city
-0..1    district
-0..1    state
-0..1    postalCode
-0..1    country
+Group:			HistoricalAddress
+Concept:		MTH #C0682130
+Description:	"A former address, either primary or secondary"
+1..1	Address
+1..1	AddressDescription
+0..1	EffectiveDateRange
 
-DataElement:    addressLine
-Description:    "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
-Answer:         string
+DataElement:	AddressDescription
+Concept:		TBD
+Description:	"The type of residence"
+Value:			code from http://standardhealthrecord.org/identification/vs/ResidenceLocationDescription
 
-DataElement:    city
-Description:    "The name of the city, town, village or other community or delivery center. (Source: HL7 FHIR)"
-Answer:         string
+DataElement:	PrimaryTelephone
+Concept:		MTH #C2986441
+Description:	"The telephone preferred by person of record."
+Value:			TelephoneInformation 
 
-DataElement:    district
-Description:    "The name of the administrative area (county). (Source: HL7 FHIR)"
-Answer:         string
+DataElement:	SecondaryTelephone
+Concept:		MTH #C2986441
+Description:	"A telephone number that is an alternative to primary telephone number."
+Value:			TelephoneInformation
 
-DataElement:    state
-Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
-Answer:         string
+Group:			TelephoneInformation
+Concept:		TBD
+Description:	"Information a telephone that can be used to contact a person or organization."
+1..1	TelephoneNumber
+0..1	TelephoneOrganizationName 
+0..*	TelecomUse
+0..1	TextCapable
+0..1	LeaveMessage
 
-DataElement:    postalCode
-Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
-Answer:         string
+DataElement: 	TelephoneNumber
+Concept:		MTH #C1515258
+Description:	"A telephone number, including a country code and extension, if required"
+Value:			string
 
-DataElement:    country
-Description:    "Country - a nation as commonly understood or generally accepted. (Source: HL7 FHIR)"
-Answer:         string
+DataElement:  	TelephoneOrganizationName
+Concept:		TBD
+Description:	"Name of organization if the phone number belongs to an organization, such as a company or group home"
+Value:			string
+
+DataElement:	TextCapable
+Concept:		TBD
+Description:	"Whether a telephone accepts text messages"
+Value:			boolean
+
+DataElement:	LeaveMessage
+Concept:		TBD
+Description:	"Indicator whether it is ok to leave a voice message. This can be important when messages can be accessed by multiple people, such as on a home phone."
+Value:			boolean
+
+DataElement:	PrimaryEmailInformation
+Concept:		MTH #C1705961
+Description:	"The preferred email address"
+Value:			EmailContactInformation
+
+DataElement:	SecondaryEmailInformation
+Concept:		MTH #C1705961
+Description:	"An alternative email address"
+Value:			EmailContactInformation
+
+Group:			EmailInformation
+Concept:		TBD
+Description:	"Information about an email address"
+1..1	EmailAddress
+0..*	TelecomUse
+0..1	Encrypted
+0..1	DIRECT
+
+DataElement:	EmailAddress
+Concept:		MTH #C1705961
+Description:	"An email address xx@yy.zz"
+Value:			string
+
+DataElement:	Encrypted
+Concept:		TBD
+Description:	"A flag indicating if a digital item is encrypted"
+Value:			boolean
+Default:		false
+
+DataElement:	DIRECT
+Concept:		TBD
+Description:	"A flag indicating if this is a DIRECT email address"
+Value:			boolean
+Default:		false
+
+Group:			OtherTelecom
+Concept:		MTH #C2986441
+Description:	"A means of contacting an individual, other than by email and telephone"
+1..1	TelecomMethod
+1..1	TelecomID
+0..*	TelecomUse
+
+DataElement:	TelecomMethod
+Concept:		TBD
+Description:	"The type or channel of the communication, such as Skype or WhatsApp"
+Value:			string
+
+DataElement:	TelecomID
+Concept:		TBD
+Description:	"The user name or other identifier on a telecommunication network, such as a SkypeID"
+Value:			string
+
+DataElement:	TelecomUse
+Concept:		TBD
+Description:	"The purposes for which a particular telecommunication channel should be used."
+Value:			code from http://standardhealthrecord.org/identification/vs/TelecomUse
+

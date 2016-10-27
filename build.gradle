@@ -25,9 +25,23 @@ test {
     useTestNG()
 }
 
+// Add a new source set so we can generate javascript from it (note: anltrjs mirrors main antlr sourceset)
+sourceSets {
+    antlrJS {
+        antlr {
+            srcDirs = ["src/main/antlr"]
+        }
+    }
+}
+
 generateGrammarSource {
     outputDirectory = file("src/generated/java/org/mitre/shr/antlr")
     arguments += ["-visitor", "-long-messages", '-package', 'org.mitre.shr.antlr']
+}
+
+generateAntlrJSGrammarSource {
+    outputDirectory = file(getSHRJSParsersDir())
+    arguments += ["-visitor", "-long-messages", '-Dlanguage=JavaScript']
 }
 
 clean {
@@ -38,6 +52,15 @@ sourceSets.main.java.srcDirs += file("src/generated/java")
 
 idea {
   module {
-    generatedSourceDirs += file('${projectDir}/src/generated/java')
+    generatedSourceDirs += file("${projectDir}/src/generated/java")
   }
+}
+
+def String getSHRJSParsersDir()
+{
+   if (hasProperty('shr.js.parsers.dir'))
+   {
+      return this.properties['shr.js.parsers.dir']
+   }
+   return "${projectDir}/build/javascript/parsers"
 }
