@@ -1,19 +1,17 @@
 lexer grammar SHRLexer;
 
 // KEYWORDS for SHR
-KW_NAMESPACE:       'Namespace';
-KW_VOCABULARY:      'Vocabulary';
-KW_SECTION:         'Section';
-KW_DATA_ELEMENT:    'DataElement';
-KW_ENTRY:           'Entry';
-KW_GROUP:           'Group';
-KW_VALUESET_DEFINITION: 'ValueSetDefinition';
-KW_EXTENDS:         'Extends';
-KW_CONCEPT:         'Concept';
-KW_DESCRIPTION:     'Description';
-KW_VALUE:           'Value';
-KW_DEFAULT:         'Default';
+KW_DATA_DEFINITIONS:'DataDefinitions:';
+KW_USES:            'Uses:';
+KW_VOCABULARY:      'Vocabulary:';
+KW_ELEMENT:         'Element:';
+KW_ENTRY:           'Entry:';
+KW_VALUESET_DEFINITIONS: 'ValueSetDefinitions:';
+KW_VALUESET:        'ValueSet:';
+KW_CONCEPT:         'Concept:';
+KW_DESCRIPTION:     'Description:';
 KW_REF:             'ref';
+KW_DESCENDING_FROM: 'descending from';
 KW_FROM:            'from';
 KW_OR:              'or';
 KW_TBD:             'TBD';
@@ -36,11 +34,7 @@ KW_MARKDOWN:        'markdown';
 KW_UNSIGNED_INT:    'unsignedInt';
 KW_POSITIVE_INT:    'positiveInt';
 
-// KEYWORDS for DEFAULT VALUES
-KW_BOOLEAN_VALUE:   'true' | 'false';
-
 // SYMBOLS
-COLON:              ':';
 EQUAL:              '=';
 COMMA:              ',';
 STAR:               '*';
@@ -58,6 +52,7 @@ LOWER_WORD:         [a-z][0-9a-zA-Z\\-]*;
 DOT_SEPARATED_LW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)+;
 DOT_SEPARATED_UW:   [a-z][0-9a-zA-Z\\-]* ('.' [a-z][0-9a-zA-z\\-]*)* ('.' [A-Z][0-9a-zA-z\\-]*);
 STRING:             '"' (~[\\"])* '"';
+EXTRA_INFO:         '[' (~[\\\]])* ']';
 
 // THINGS WE GENERALLY IGNORE
 WS:                 (' ' | '\r' | '\t') -> channel(HIDDEN);

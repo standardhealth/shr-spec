@@ -1,0 +1,81 @@
+DataDefinitions:      shr.allergy
+
+//   Risk Posed by a Substance, including allergies and intolerances
+
+Entry:			SubstanceRisk
+Concept:		TBD
+Description:	"A postive or negative clinical statement pertaining to an individual's allergies and intolerances to substances or classes of substances."
+1..1			(PositiveSubstanceRisk or NegativeSubstanceRisk)
+
+	Element:		PositiveSubstanceRisk
+	Concept:		TBD
+	Description:	"A record of a clinical assessment of an allergy or intolerance; a propensity, or a potential risk to an individual, to have an adverse reaction on future exposure to the specified substance, or class of substance."		
+	1..1			(PositiveSubstanceRiskAssertion or PostiveSubstanceRiskSubstance)
+	0..*			UsualManifestation 
+	0..1			Criticality
+	0..1			Onset    // from core
+
+		Element:		PositiveSubstanceRiskAssertion
+		Concept:		TBD
+		Description:	"A coded assertion of an allergy or intolerance that includes the substance in the code."
+		1..1			code descending from SCT #420134006 [Propensity to adverse reactions]
+
+		Element:		PostiveSubstanceRiskSubstance
+		Concept:		TBD
+		Description:	"A substance that poses a risk of adverse reaction."
+		1..1 			Substance
+	
+		Element:		UsualManifestation
+		Concept:		TBD
+		Description:	"The expected or usual symptoms that result from the exposure, such as sneezing, rash, etc."
+		1..1			Symptom // from core
+
+		Element:		Criticality
+		Concept:		MTH #C3858539 [Criticality]
+		Description:	"A clinical judgment as to the worst case result of a future exposure (including substance administration). When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
+		1..1			code from http://hl7.org/fhir/allergy-intolerance-criticality
+
+
+
+	Element:		NegativeSubstanceRisk
+	Concept:		TBD
+	Description:	"A statement of no known association of a substance and risk of adverse reaction"
+	1..1			(NegativeSubstanceRiskAssertion or NegativeSubstanceRiskSubstance)
+
+		Element:		NegativeSubstanceRiskAssertion
+		Concept:		TBD
+		Description:	"A coded assertion of no known adverse reaction risk that includes the substance or substance class in the code."
+		1..1			code descending from SCT #716186003 [No known allergy]
+
+		Element:		NegativeSubstanceRiskSubstance
+		Concept:		TBD
+		Description:	"A substance that poses no known risk for an adverse reaction."
+		1..1 			Substance
+
+//------------------  Adverse Substance Reaction Event -------------------
+// TODO? Generalize to adverse event?
+
+Entry:			SubstanceReaction
+Concept:		MTH #C0559966 [Adverse reaction to substance]
+Description:	"An instance of an adverse reaction attributed to ingestion of or contact with a substance"
+1..1			SubstanceAttribution  // Specific substance or pharmaceutical product considered to be responsible for event
+1..*			Symptom // aka FHIR.AllergyIntolerance.Reaction.manifestation
+0..1			AssociatedSubstanceRisk
+0..1			AttributionCertainty
+0..1			Description   // from core
+0..1			Onset  // from core
+
+	Element:		SubstanceAttribution
+	Concept:		MTH #C0596130 [Attribution]
+	Description:	"The substance to which this adverse event is attributed to"	
+	1..1			Substance
+
+	Element:		AssociatedSubstanceRisk
+	Concept:		TBD
+	Description:	"The entry describing the ongoing substance risk that this adverse substance reaction event is a result of."
+	1..1			ref(SubstanceRisk)
+
+	Element:		AttributionCertainty
+	Concept:		MTH #C1510821 [Adverse Event Attribution to Product or Procedure]
+	Description:	"A specific identifiable level (defined qualitatively or quantitatively) of probability of adverse event being caused or associated with the product or procedure administration to a patient."
+	1..1			code from http://hl7.org/fhir/reaction-event-certainty

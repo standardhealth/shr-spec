@@ -1,4 +1,4 @@
-Namespace:      shr.core
+DataDefinitions:	shr.core
 
 // TODO: support version numbers
 Vocabulary:     LOINC = http://loinc.org
@@ -8,172 +8,235 @@ Vocabulary:     FHIR = http://hl7.org/fhir
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
 
-
-
 // -------------------  Quantities ------------------
 
 // TODO: money, duration, etc.
 
-DataElement: 	Priority
+Element: 		Priority
 Concept:		MTH #C0549179
 Description:	"A numbered priority where 1=highest priority, 2=second highest priority, etc"
-Value:			positiveInt
+1..1			positiveInt
 
 
 // --------------- Times, Dates, and Ranges ----------------
 
-Group: 			Period
+Element: 		Period
 Concept:		MTH #C1948053
 Description:	"A period of time defined by a start and end time, date, or year"
 1..1			StartTime
 0..1			EndTime  // lack of end time indicates the period was continuing at the time the entry was created
 
-DataElement: 	StartTime
+Element: 		StartTime
 Concept: 		MTH #C1301880
 Description: 	"The time at which something is to start or did start."
-Value:			dateTime or date
+1..1			(dateTime or date)
 
-DataElement:	EndTime
+Element:		EndTime
 Concept:		MTH #C1522314
 Description:	"The time at which something is to end or did end."
-Value:			dateTime or date
+1..1			(dateTime or date)
 
-DataElement:	Duration
+Element:		Duration
 Concept:		MTH #C0449238
 Description:	"The length of time that something continues"
-Value:			time
+1..1			time
 
-DataElement:	EffectiveDateRange
+Element:		EffectiveDateRange
 Concept:		MTH #C2985763
 Description:	"The date and time span for when an entry is active or valid."
-Value:			Period
+1..1			Period
 
 //---------------  Locations and Addresses -----------------
 
-Group: 			GeopoliticalLocation
+Element: 		GeopoliticalLocation
 Concept:		MTH #C0017446
 Description:	"The countries of the world and major geopolitical subregions, such as US states"
 0..1    City
 0..1    State
 1..1    Country
 
-Group:    Address
+Element:    	Address
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
 0..2    AddressLine
 0..1    City
 0..1    County
 0..1    State
 0..1    PostalCode
-0..1    Country
+1..1    Country
 
 /*
-Group:    UnitedStatesAddress
+Element:    	UnitedStatesAddress
 Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
 1..2    AddressLine
 1..1    City
 0..1    UnitedStatesCounty
 1..1    UnitedStatesState
-//1..1    zipCode
+1..1    ZipCode
 */
 
+	Element:    	AddressLine
+	Concept:		TBD
+	Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+	1..1          	string
 
-DataElement:    AddressLine
-Concept:		TBD
-Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
-Value:          string
+	Element:    	City
+	Concept:		MTH #C1555315
+	Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+	1..1          	string
 
-DataElement:    City
-Concept:		MTH #C1555315
-Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)"
-Value:          string
+	Element:    	County
+	Concept:		MTH #C0079170
+	Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)"
+	1..1          	string
 
-DataElement:    County
-Concept:		MTH #C0079170
-Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)"
-Value:          string
+	Element:    	State
+	Concept:		MTH #C1552743
+	Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
+	1..1          	(UnitedStatesState or string)
 
-DataElement:    State
-Concept:		TBD
-Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
-Value:          UnitedStatesState or string
+	Element:		UnitedStatesState //refines state
+	Concept:		MTH #C3148680
+	Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
+	1..1			code from http://pe.usps.com/text/pub28/28apb.htm
 
-DataElement:	UnitedStatesState //refines state
-Concept:		MTH #C3148680
-Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
-Value:			code from http://pe.usps.com/text/pub28/28apb.htm
+	Element:    	PostalCode
+	Concept:		MTH #C1514254
+	Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
+	1..1          	string
 
-DataElement:    PostalCode
-Concept:		TBD
-Description:    "A postal code designating a region defined by the postal service. (Source: HL7 FHIR)"
-Value:          string
-
-DataElement:    Country
-Concept:		TBD
-Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
-Value:          code from http://www.nationsonline.org/oneworld/country_code_list.htm
+	Element:    	Country
+	Concept:		MTH #C0454664
+	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
+	1..1          	code from http://www.nationsonline.org/oneworld/country_code_list.htm
 
 //----------------  Human Names ------------
 
-Group:   		HumanName
+Element:   		HumanName
 Concept: 		MTH #C1547383
 Description:	"A name for a human being."
-1..1	FullName
-0..1    HumanNamePrefix
-1..1    GivenName
-1..1    FamilyName
-0..*    HumanNameSuffix
-0..*    HumanNameUse
-0..1	EffectiveDateRange   // TODO: consider removing
+0..1			FullName
+0..1    		HumanNamePrefix
+1..1    		GivenName
+1..1    		FamilyName
+0..*    		HumanNameSuffix
+0..*    		HumanNameUse
+0..1			EffectiveDateRange
 
-DataElement:    FullName
-Description:    "A full human name as it is spoken or written"
-Value:          string
+	Element:    	FullName
+	Description:    "A full human name as it is spoken or written"
+	1..1          	string
 
-DataElement:    GivenName
-Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
-Value:          string
+	Element:    	GivenName
+	Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+	1..1          	string
 
-DataElement:    FamilyName
-Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
-Value:          string
+	Element:    	FamilyName
+	Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+	1..1          	string
 
-DataElement:    HumanNamePrefix
-Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
-Value:          code from http://standardhealthrecord.org/core/vs/HumanNamePrefix
+	Element:    	HumanNamePrefix
+	Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+	1..1          	code from http://standardhealthrecord.org/core/vs/HumanNamePrefix
 
-DataElement:    HumanNameSuffix
-Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
-Value:          0..* (code from http://standardhealthrecord.org/core/vs/HumanNameSuffix or string)
+	Element:    	HumanNameSuffix
+	Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
+	1..1          	(code from http://standardhealthrecord.org/core/vs/HumanNameSuffix or string)
 
-DataElement:    HumanNameUse
-Value:          code from http://standardhealthrecord.org/core/vs/HumanNameUse
+	Element:    	HumanNameUse
+	1..1          	code from http://standardhealthrecord.org/core/vs/HumanNameUse
+
+//------------  Substance -------------
+
+Element:			Substance
+Concept:			MTH #C0439861
+Description:		"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc."
+1..1				code descending from SCT #105590001 [Substance]
+
+//------------  Symptom -------------
+
+Element:		Symptom
+Concept:		MTH #C1457887
+Description:	"An indication that a person has a condition or disease or manifestation of that condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
+1..1			code descending from SCT #418799008 [Finding reported by subject or history provider]
+
+//--------------  Onset -------------
+
+Element:		Onset
+Concept:		MTH #C0277793
+Description:	"The beginning or first appearance of a mental or physical disorder."
+1..1			(OnsetDate or OnsetAge or OnsetDateTime)
+
+	Element:		OnsetDate
+	Concept:		MTH #C0574845
+	Description:	"Date when manifestations first showed"
+	1..1			date
+
+	Element:		OnsetAge
+	Description:	"The age when manifestations initially showed"
+	1..1			positiveInt
+
+	Element:		OnsetDateTime
+	Concept:		MTH #C0574845
+	Description:	"Date and time when manifestations first showed"
+	1..1			dateTime
 
 
-//-----------------------  Excuses -----------------------------
-// In the SHR, any required Entry can be substituted with an Excuse Entry.
-// An Excuse entry has metadata, like any other type of Entry, indicating who entered the excuse, and when.
-// Excuses can also be given for any required DataElement or Group (valid values given on a case-by-case basis)
+/*----------------------- MissingEntryExplanation -----------------------------
+
+A MissingEntryExplanation can be entered if to explain why another entry is missing. 
+Since the other entry does not exist, the missing entry is described by its type and additional criteria that may involve the value of certain attributes of the entry.
+
+The MissingEntryExplanation has metadata, like any other type of entry, indicating who entered the information, and when.
+*/
 
 
-Entry:			Excuse
+Entry:			MissingEntryExplanation
 Concept:		TBD
-Description:	"The reason for why a required entry is not given, does not exist, or is not current (outside of effectiveDateRange)."
-1..1	EntryType 
-1..1	MissingEntryExcuse
-0..1	Explanation
+Description:	"The reason for why an Entry of the given EntryType and matching the Expression does not exist."
+1..1			EntryType
+0..*			SpecificCriteria
+1..1			MissingEntryReason
+0..1			Explanation
+
+	Element:		EntryType
+	Description:	"Fully-qualified name of the type of entry that is missing"
+	1..1			uri
+
+	Element:		SpecificCriteria
+	Concept:		TBD
+	Description:	"Any additional criteria defining the entry that doesn't exist, such as an attribute value" /// ????
+	1..1			uri // ???
+
+	Element:		MissingEntryReason
+	Concept:		TBD
+	Description:	"A coded reason for the non-existence of an entry."
+	1..1			code from http://standardhealthrecord.org/core/EntryAbsentReason
 
 
-DataElement:	EntryType
-Concept:		TBD
-Description:	"The fully qualified name of a type of entry in the SHR"
-Value:			string
+//------------- Reusable elements: Description, Summary, Comment, Explanation --------------
 
-DataElement:    MissingEntryExcuse
-Concept:        TBD
-Description:    "The coded reason for why a required entry is not given, does not exist, or is not current (outside of effectiveDateRange)."
-Value:          code from http://standardhealthrecord.org/core/vs/missingEntryExcuse
+Element:		Explanation
+Concept: 		MTH #C0681841 [Explanation]
+Description:	"A set of statements describing a group of facts that clarifies the cause, context and/or consequence of those facts."
+1..1			string
 
-DataElement:	Explanation	
-Concept: 		TBD
-Description:	"A further explanation of an excuse. For example, if there is no primary phone number, the explanation could be that a handicap makes it impossible for the person of record to use the telephone."
-Value:			string
+Element:		Description
+Concept:		MTH #C0678257
+Description:	"An account, representation, statement, or explanation of something."
+1..1			string
+
+Element: 		Summary
+Concept:		MTH #C1706244 [Summary]
+Description:	"A shortened version of an item of information, containing only the main points."
+1..1			string
+
+Element:		Comment
+Concept:		MTH #C0947611
+Description:	"A critical or explanatory note written to discuss, support, explain changes to, or dispute information."
+1..1			string
+
+Element:		Details
+Concept:		MTH #C1522508
+Description:	"Particulars considered individually and in relation to a whole."
+1..1			string
+

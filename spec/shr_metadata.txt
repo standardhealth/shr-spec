@@ -1,14 +1,8 @@
-Namespace:      shr.metadata
+DataDefinitions:      shr.metadata
 
 //-------------- Metadata Concerning the SHR as a Whole ------------------
 
-
-Section:  	Header
-1..1	ShrInformation  // no excuses!
-1..*	ContributingRecord
-
-
-Group:			ShrInformation
+Element:		ShrInformation
 Concept:		TBD
 Description:	"Basic information about the SHR and the Person of Record"
 1..1	StandardHealthRecordID
@@ -16,47 +10,47 @@ Description:	"Basic information about the SHR and the Person of Record"
 1..1	Anonymized
 1..1	FictionalPerson
 
-DataElement:	StandardHealthRecordID
+Element:		StandardHealthRecordID
 Concept:		TBD
 Description:	"The persistent, unique ID of this standard health record"
-Value:			id
+1..1			id
 
-DataElement: 	PersonOfRecordID
+Element: 		PersonOfRecordID
 Concept:		TBD
 Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
-Value:			id
+1..1			id
 
-DataElement:	Anonymized
+Element:		Anonymized
 Concept:		TBD
 Description:	"Flag indicating if this record has been anonymized"
-Value:			boolean
+1..1			boolean
 
-DataElement:	FictionalPerson
+Element:		FictionalPerson
 Concept:		TBD
 Description:	"Flag indicating if this record represents a fictional (not real) person"
-Value:			boolean
+1..1			boolean
 
-Group:			ContributingRecord
+Element:		ContributingRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record"
 1..1	HealthRecordID
 1..1	ProvidingOrganization
 1..1	WhenAccessed
 
-DataElement:	HealthRecordID
+Element:		HealthRecordID
 Concept:		MTH #C0600091
 Description:	"Identifier for a health record. Interpreted in the context of the providing organization."
-Value:			id
+1..1			id
 
-DataElement:	ProvidingOrganization
+Element:		ProvidingOrganization
 Concept:		TBD
 Description:	"The organization providing information or resource"
-Value:			ref(Organization)  //TBD
+1..1			ref(Organization)  //TBD
 
-DataElement:	WhenAccessed
+Element:		WhenAccessed
 Concept:		TBD
 Description:	"Point in time when data was last accessed"
-Value:			dateTime
+1..1			dateTime
 
 
 
@@ -77,91 +71,77 @@ Value:			dateTime
 
 
 
-Group:    		EntryMetadata
+Element:    	EntryMetadata
 Concept:     	MTH #C1708992
 Description:    "Describes the identification, timing, attribution, and other circumstances involved in an SHR entry"
-1..1    EntryID  // identifier for the entry
-1..1	PersonOfRecordID   // every entry carries the personOfRecordID
-0..1    ContentCreationDate
-0..*    ContentAttribution
-1..1    WhenRecorded
-0..1    RecordedBy
-//0..*    DataSharingPermission
-0..1    Language
-1..1	TextSummary
-1..1    LastUpdated
-0..*	EventLog
+1..1    		EntryID  // identifier for the entry
+1..1			PersonOfRecordID   // every entry carries the personOfRecordID
+0..1    		ContentCreationDate
+0..*    		ContentAttribution
+1..1    		WhenRecorded
+0..1    		RecordedBy
+0..1			Language
+0..1			Summary  // from core
+1..1    		LastUpdated
+0..*			EventLog
 
 
-DataElement:    EntryID
-Concept:        MTH #C0600091
-Description:    "A unique, persistent, permanent identifier for an entry in a health record"
-Value:          id
+	Element:    	EntryID
+	Concept:        MTH #C0600091
+	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
+	1..1          	id
 
-DataElement:    ContentCreationDate
-Concept:        MTH #C2347859
-Description:    "The date on which content was created, or content creation began"
-Value:          date
+	Element:    	ContentCreationDate
+	Concept:        MTH #C2347859
+	Description:    "The date on which content was created, or content creation began"
+	1..1          	date
 
-DataElement:    ContentAttribution
-Concept:        MTH #C0449416
-Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
-Value:          ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization) // TBD
+	Element:    	ContentAttribution
+	Concept:        MTH #C0449416
+	Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
+	1..1          	(ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization)) // TBD
 
-DataElement:    WhenRecorded
-Concept:        MTH #C3669169
-Description:    "The point in time when a piece of information was recorded"
-Value:          dateTime
+	Element:   	 	WhenRecorded
+	Concept:        MTH #C3669169
+	Description:    "The point in time when a piece of information was recorded"
+	1..1          	dateTime
 
-DataElement:    RecordedBy
-Concept:        MTH #C1707531
-Description:    "Indicates the person or authoritative body who brought the item into existence"
-Value:          ref(Person) or ref(Organization) // TBD
+	Element:    	RecordedBy
+	Concept:        MTH #C1707531
+	Description:    "Indicates the person or authoritative body who brought the item into existence"
+	1..1          	(ref(Person) or ref(Organization)) // TBD
 
 
 /* TO DO: Data sharing permissions are TBD.
   Unlike most other data elements, privacy flags are intimately linked to business rules that interpret and act on the data, to enable or disable sharing of data with particular parties.
-DataElement:	DataSharingPermission
+Element:		DataSharingPermission
 Concept:		MTH #C0086100
 Description:	"A data-sharing permission to be applied to the information"
-Value:			code from http://standardhealthrecord.org/core/sharingPermission
+1..1			code from http://standardhealthrecord.org/core/sharingPermission
 */
 
-DataElement:	Language
-Concept:		MTH #C0023008
-Description: 	"An identifier for a human language"
-Value:			code from http://hl7.org/fhir/ValueSet/languages
+	Element:		Language
+	Concept:		MTH #C0023008
+	Description: 	"An identifier for a human language"
+	1..1			code from http://hl7.org/fhir/ValueSet/languages
 
-DataElement: 	TextSummary
-Concept:		MTH #C1706244
-Description:	"A summary of this entry in the form of text"
-Value:			string
+	Element: 		LastUpdated
+	Concept:		TBD
+	Description:	"The time the entry was last updated (changed)"
+	1..1			dateTime
 
-DataElement: 	LastUpdated
-Concept:		TBD
-Description:	"The time the entry was last updated (changed)"
-Value:			dateTime
+	Element:		EventLog
+	Concept:		MTH #C1708728
+	Description:	"A record of changes to the entry, similar to a commit log." 
+	// Note: if we use an external content management approach, such as Github, the event log may not be required.
+	0..1    		ContentCreationDate
+	0..*    		ContentAttribution
+	1..1    		WhenRecorded
+	0..1    		RecordedBy
+	1..1			EntryAction
+	1..1			Comment  // from core
 
-Group:			EventLog
-Concept:		MTH #C1708728
-Description:	"A record of changes to the entry, similar to a commit log." 
-// Note: if we use an external content management approach, such as Github, the event log may not be required.
-0..1    ContentCreationDate
-0..*    ContentAttribution
-1..1    WhenRecorded
-0..1    RecordedBy
-1..1	EntryAction
-1..1	Comment
-
-DataElement:	EntryAction
-Concept:		TBD
-Description:	"A description of the action taken on this entry"
-Value:			code from http://standardhealthrecord.org/core/entryAction
-
-DataElement:	Comment
-Concept:		MTH #C0947611
-Description:	"A critical or explanatory note written to discuss, support, explain changes to, or dispute information in this entry"
-Value:			string
-
-
-
+		Element:		EntryAction
+		Concept:		TBD
+		Description:	"A description of the action taken on this entry"
+		1..1			code from http://standardhealthrecord.org/core/entryAction

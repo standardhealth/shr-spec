@@ -1,0 +1,220 @@
+DataDefinitions:	shr.demographics
+Uses:				shr.core
+
+Entry:			PersonOfRecordName
+Concept:		MTH #C1299487
+Description:	"A name for the person of record."
+1..1			HumanName
+
+Entry:    		DateOfBirth
+Concept:        MTH #C2919018
+Description:    "A date of birth or approximate year or period (year or date range), if estimated."
+1..1  			(date or Period)
+
+Entry:    		PlaceOfBirth
+Concept:        MTH #C0032040
+Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+1..1          	GeopoliticalLocation
+
+Entry:			MultipleBirth
+Concept:		MTH #C0026753
+Description:	"Birth of more than one child at the same time to the same parents."
+1..1			MultipleBirthBoolean
+0..1			MultipleBirthOrder  
+
+Element:		MultipleBirthBoolean
+Concept:		MTH #C0026753
+Description:	"Indication if a birth event was a multiple birth."
+1..1			boolean
+
+Element:		MultipleBirthOrder
+Concept:		LOINC #73771-8
+Description:	"Order of birth in multiple birth event"
+1..1			positiveInt
+
+Entry:	    	AdministrativeGender
+Concept:		MTH #C1550327
+Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
+1..1          	code from http://hl7.org/fhir/ValueSet/administrative-gender
+
+Entry:    		Race
+Concept:		MTH #C0034510
+Description:    "A code classifying the person into a named category of humans sharing common history, traits, geographical origin or nationality. (Source: HL7 FHIR)"
+1..*         	code from http://hl7.org/fhir/us/daf/ValueSet/daf-race
+
+Entry:    		Ethnicity
+Concept:		MTH #C0015031
+Description:    "A code classifying the person into a named category of humans sharing a common real or presumed heritage. (Source: HL7 FHIR)"
+1..1          	code from http://hl7.org/fhir/v3/Ethnicity
+
+Entry:   		MaritalStatus
+Concept:		MTH #C0024819
+Description:	"The most recent marital status of a person."
+1..1			code from http://hl7.org/fhir/ValueSet/marital-status
+
+Entry:   		MothersMaidenName
+Concept:		MTH #C0806887
+Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the patient of record. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+1..1			HumanName
+
+Entry:   		FathersName
+Concept:		TBD
+Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the patient of record; most likely the name of the father at the time of birth of the person of record."
+1..1			HumanName
+
+Entry:   		SocialSecurityNumber
+Concept:		MTH #C1301821
+Description:	"A US social security number (SSN)"
+1..1			string
+
+Entry:   		DriversLicense
+Concept:		TBD
+Description:	"Identifying information from a drivers license"
+1..1			DriversLicenseNumber
+1..1			StateOfIssue
+0..1			EffectiveDateRange
+
+Element:		DriversLicenseNumber
+Concept:		TBD
+Description:	"Driver's license number"
+1..1			string
+
+Element:		StateOfIssue
+Concept:		MTH #C1547728
+Description:	"Issuing authority for a drivers license"
+1..1			UnitedStatesState
+
+Entry:   		Passport
+Concept:		MTH #C3242633
+Description:	"Indicator of citizenship and identity"
+// Include issue and/or expiration date in metadata.effectiveDateRange
+1..1			PassportNumber
+1..1			CountryOfIssue
+0..1			EffectiveDateRange
+
+Element: 		PassportNumber
+Concept:		MTH #C1549737
+Description:	"Passport number"
+1..1			string
+
+Element: 		CountryOfIssue
+Concept:		TBD
+Description:	"A country acting as an assuing authority for a document"
+1..1			Country
+
+Entry:	 		OrganizationalIdentifier
+Concept:		TBD
+Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
+1..1			IssuingOrganization
+1..1			Identifier
+0..1			EffectiveDateRange		
+
+Element:		IssuingOrganization
+Concept:		TBD
+Description:	"An organization acting as an issuing authority or trust source"
+1..1			ref(Organization)
+
+// ------------------------- Residence Address ----------------------
+
+Entry:   		AddressOfResidence
+Concept:		MTH #C0682130
+Description:	"A location where a person lives or has lived"
+1..1			Address
+1..1    		ResidenceAddressUse
+1..1			ResidenceAddressDescription
+0..1			EffectiveDateRange
+
+Element:		ResidenceAddressUse
+Concept:		TBD
+Description:	"Describes how the residence is used, in particular, as a primary, secondary, or former address"
+1..1			code from http://standardhealthrecord.org/identification/vs/ResidenceAddressUse
+
+Element:		ResidenceAddressDescription
+Concept:		TBD
+Description:	"The type of residence, for example a private house, a skilled nursing facility, or homeless shelter"
+1..1			code from http://standardhealthrecord.org/identification/vs/ResidenceAddressDescription
+
+//---------------------  TelephoneContact ---------------------------------
+
+Entry:   		TelephoneContact
+Concept:		MTH #C298644
+Description:	"Information about a telephone that can be used to contact a person or organization."
+1..1			TelephoneNumber
+0..1			TelephoneOrganizationName 
+0..*			TelephonePriority
+0..1			TextCapable
+0..1			LeaveMessage
+
+Element: 		TelephoneNumber
+Concept:		MTH #C1515258
+Description:	"A telephone number, including a country code and extension, if required"
+1..1			string
+
+Element:  		TelephoneOrganizationName
+Concept:		TBD
+Description:	"Name of organization owning the phone number, if it belongs to an a company, group home, or other organization."
+1..1			OrganizationName
+
+Element:		TelephonePriority
+Concept:		TBD
+Description:	"Describes how the residence is used, in particular, as a primary, secondary, or tertiary contact"
+1..1			code from http://standardhealthrecord.org/core/vs/ThreePriority
+
+Element:		TextCapable
+Concept:		TBD
+Description:	"Whether a telephone accepts text messages"
+1..1			boolean
+
+Element:		LeaveMessage
+Concept:		TBD
+Description:	"Indicator whether it is ok to leave a voice message. This can be important when messages can be accessed by multiple people, such as on a home phone."
+1..1			boolean
+
+//----------------------  EmailContact ----------------------------------------
+
+Entry:   		EmailContact
+Concept:		MTH #C1705961
+Description:	"An email address used to contact an individual"
+1..1			EmailAddress
+1..1			EmailPriority
+0..1			Direct
+
+Element:		EmailAddress
+Concept:		MTH #C1705961
+Description:	"An email address xx@yy.zz"
+1..1			string
+
+Element:		EmailPriority
+Concept:		TBD
+Description:	"Indicates the preferred order of use of email addresses"
+1..1			code from http://standardhealthrecord.org/core/vs/ThreePriority
+
+Element:		Direct
+Concept:		TBD
+Description:	"A flag indicating if this is a DIRECT email address"
+1..1			boolean
+
+//----------------- Other Telecom Contact --------------------
+
+Entry:   		OtherTelecomContact
+Concept:		MTH #C2986441
+Description:	"A means of contacting an individual electronically, other than by telephone or email"
+1..1			TelecomMethod
+1..1			TelecomNumberOrID
+0..*			TelecomUse
+
+Element:		TelecomMethod
+Concept:		TBD
+Description:	"The type or channel of the communication, such as Skype or WhatsApp"
+1..1			string
+
+Element:		TelecomNumberOrID
+Concept:		TBD
+Description:	"A telephone number, email address, user name or other identifier on a telecommunication network, such as a SkypeID"
+1..1			string
+
+Element:		TelecomUse
+Concept:		TBD
+Description:	"A purpose for which a particular telecommunication channel should be used."
+1..1			code from http://standardhealthrecord.org/identification/vs/TelecomUse
+
