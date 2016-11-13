@@ -1,0 +1,59 @@
+DataDefinitions:	shr.immunization
+Uses:				shr.medication
+
+Vocabulary:     MVX = urn:oid:2.16.840.1.114222.4.11.826  // oid-based identifier for vaccine manufacturer in phin-vads
+Vocabulary:     CVX = http://hl7.org/fhir/ValueSet/vaccine-code 
+
+Group:			Vaccine
+Concept:		MTH#C1543322
+Subconcept:		code from CVX
+Description:	"A specific type or manufactured instance of a vaccine, a prophylactic or therapeutic preparation given to produce immune response to pathogenic organisms or substances."
+0..1			VaccineManufacturer
+0..1			LotNumber	
+
+	Element:		VaccineManufacturer
+	Concept:		MTH#C1114744
+	Description:	"The organization that produces the vaccine"
+	Value:			code from MVX
+	
+	Element:		LotNumber
+	Concept:		MTH#C1115660
+	Description:	"A distinctive alpha-numeric identification code assigned by the manufacturer or distributor to a specific quantity of manufactured material or product within a batch."
+	Value:			string
+	
+Group:			ImmunizatonAdministered [Entry]
+Concept:		MTH#C0020971
+Description:	"A record of a vaccination that is or has been administered to the subject."
+1..1 			Vaccine   // has type, lot, manufacturer
+0..1			BodySite   // from core
+0..1			AdminstrationRoute    // from medication
+0..1			AmountOfMedication  // from medication
+0..1			DoseSequenceNumber
+
+
+Group:			ImmunizatonNotAdministered [Entry] 
+Concept:		TBD
+Description:	"Immunization that was not given to the subject."
+1..1 			Vaccine
+0..1			DoseSequenceNumber   // which dose was missed
+1..1			ImmunizationNotAdministeredReason //#refused, no supply, patient didn't show up, etc.
+
+	Element:		ImmunizationNotAdministeredReason
+	Concept:		TBD
+	Description:	"Reason the scheduled or intended immunization was not given"
+	Value:			code from http://hl7.org/fhir/ValueSet/no-immunization-reason 
+
+Group:			ImmunizationRecommended  [Entry] 
+1..1			Vaccine
+0..1			DoseNumber
+1..1			TargetDateRange
+
+	Element:		TargetDateRange
+	Concept:		TBD
+	Description:	"Dates between which when a future event should occur"
+	Value:			Period
+	
+Element:		ImmunizationRecommendedAgainst  [Entry] 
+1..1			Vaccine
+0..1			Route or Protocol
+1..1			ReasonMedicationNotGiven  // This might not be exactly the right value set
