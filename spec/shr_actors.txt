@@ -1,9 +1,9 @@
 DataDefinitions:	shr.actors
-Uses:				shr.core, shr.demographics   // circular!
+Uses:				shr.core, shr.demographics
 
-Vocabulary: 		http://standardhealthrecord.org/actors/vs
-Vocabulary:			CORE = http://standardhealthrecord.org/core/vs/
-Vocabulary:     	FHIR = http://hl7.org/fhir/ValueSet
+Path: 		http://standardhealthrecord.org/actors/vs
+Path:			CORE = http://standardhealthrecord.org/core/vs/
+Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 /*
 	People and organizations that are:
@@ -18,7 +18,7 @@ Vocabulary:     	FHIR = http://hl7.org/fhir/ValueSet
 // ------------- People ---------------------
 // Just the people ... not their role in care...
 
-Group:        	CareProfessional [Entry]
+Entry:        	CareProfessional [Entry]
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 1..*    		HumanName
@@ -47,12 +47,12 @@ Description:	"A person who practices a healing art."
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
 	Description:	"A branch of medicine practiced by the provider"
-	Value:			code from MedicalSpecialty
+	Value:			Coding from MedicalSpecialty
 
-Group:        	FamilyMember  [Entry]
+Entry:        	FamilyMember  [Entry]
 Concept:        MTH#C0080103
 Description:    "A person related to the subject of record by blood, adoption, or marriage."
-Value:			code from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
+Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
 1..*    		HumanName
 0..*    		Contact
 1..1 	  		DeceasedIndicator
@@ -60,9 +60,9 @@ Value:			code from FHIR/relatedperson-relationshiptype  // mother, father, sibli
 	Element:		DeceasedIndicator
 	Concept:		MTH#C0011065
 	Description:	"Boolean indicator where true indicates the person is deceased."
-	Value:			code from CORE/ThreeValueLogic
+	Value:			Coding from CORE/ThreeValueLogic
 
-Group: 			UnrelatedThirdParty [Entry]
+Entry: 			UnrelatedThirdParty [Entry]
 Concept:		MTH#C3242657
 Description:	"A person, other than a professional care provider or family member, who is relevant to the health or social situation of the subject."
 1..*    		HumanName
@@ -71,7 +71,7 @@ Description:	"A person, other than a professional care provider or family member
 
 // ------------- Organizations ------------------
 
-Group:    		Organization  [Entry]
+Entry:    		Organization  [Entry]
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings"
 1..*    		OrganizationName
@@ -88,18 +88,18 @@ Description:    "A social or legal structure formed by human beings"
 	Element:		OrganizationType
 	Concept:		TBD
 	Description:	"A classification of the organization in terms of its major role in healthcare"
-	Value:			code from FHIR/organization-type   // should be extensible
+	Value:			Coding from FHIR/organization-type   // should be extensible
 
 	Element:		OrganizationIdentifyingCode
 	Concept:		TBD
 	Description:	"A code identifying a specific organization, for example, an MVX code for a vaccine manufacturer"
-	Value:			code
+	Value:			Coding
 
 
 //  -------------------- Involvement in Healthcare -------------------------
 //  One individual can play different or multiple roles at different times
 
-Group:			HealthcareInvolvement  [Entry]  // The subject's PCP, neurologist, dietician, massage therapist, etc.
+Entry:			HealthcareInvolvement  [Entry]  // The subject's PCP, neurologist, dietician, massage therapist, etc.
 Concept:		MTH#C1314939
 Description:	"A statement regarding who played specific healthcare role at a certain time or timeframe."
 1..1			InvolvementType
@@ -110,7 +110,7 @@ Description:	"A statement regarding who played specific healthcare role at a cer
 	Element:		InvolvementType
 	Concept:		TBD
 	Description:	"A type of service provided to the subject"
-	Value:			code from InvolvementType  // e.g. PCP, neurologist, dietician, massage therapist, independent living facility, warfarin lab, helping at home, clergy, social worker, lawyer, church, etc.
+	Value:			Coding from InvolvementType  // e.g. PCP, neurologist, dietician, massage therapist, independent living facility, warfarin lab, helping at home, clergy, social worker, lawyer, church, etc.
 
 	Element:		HealthcareActor   // Should we include computer systems? Devices?
 	Concept:		TBD

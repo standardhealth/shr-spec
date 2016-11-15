@@ -2,19 +2,19 @@ DataDefinitions:	shr.allergy
 Uses:				shr.core, shr.base
 
 Vocabulary:     SCT = http://snomed.info/sct
-Vocabulary:     FHIR = http://hl7.org/fhir/ValueSet
+Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 
 Element:		SubstanceOfRisk
 Concept:		SCT#105590001
 Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc., in particular, substances presenting risks for intolerances and allergies."
-Value: 			code descending from SCT#105590001  // a list of common allergens and irritants might be substituted
+Value: 			Coding descending from SCT#105590001  // a list of common allergens and irritants might be substituted
 
 // Not currently used
 Element:		NonDrugSubstance
 Concept:		TBD
 Description:	"An encoding of a material, mixture, class or category of substance, including drugs, foods, environmental agents, etc."
-Value:			code descending from SCT#105590001 [Substance] excluding codes descending from SCT#410942007 [Drug or medicament]
+Value:			Coding descending from SCT#105590001 [Substance] excluding Codings descending from SCT#410942007 [Drug or medicament]
 
 
 //--- A Person-Specific Risk to the Subject Posed by a Substance, either an allergy or an intolerance
@@ -22,7 +22,7 @@ Value:			code descending from SCT#105590001 [Substance] excluding codes descendi
 Element:		SubstanceRisk [Entry]
 Concept:		SCT#420134006 [Propensity to adverse reactions]
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances."
-0..1			DiseaseFinding < code descending from SCT#420134006 [Propensity to adverse reactions]
+0..1			DiseaseFinding < Coding descending from SCT#420134006 [Propensity to adverse reactions]
 1..1 			SubstanceOfRisk  // include only if specific code does not mention a specific substance; do not use RxNorm
 0..1			SubstanceCategory
 0..1			AllergyOrIntolerance
@@ -34,12 +34,12 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 		Element:		SubstanceCategory
 		Concept:		TBD
 		Description:	"Categorization of the risk substance. Difficult-to-classify substances can be leave this empty or choose the most typical category."
-		Value:			code from FHIR/allergy-intolerance-category
+		Value:			Coding from FHIR/allergy-intolerance-category
 
 		Element:		AllergyOrIntolerance
 		Concept:		TBD
 		Description:	"Identification of the underlying physiological mechanism for a Reaction Risk."
-		Value:			code from FHIR/allergy-intolerance-type
+		Value:			Coding from FHIR/allergy-intolerance-type
 
 		Element:		ExpectedManifestation
 		Concept:		TBD
@@ -49,7 +49,7 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 		Element:		Criticality
 		Concept:		MTH#C3858539 [Criticality]
 		Description:	"A clinical judgment as to the worst case result of a future exposure (including substance administration). When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-		Value:			code from FHIR/allergy-intolerance-criticality
+		Value:			Coding from FHIR/allergy-intolerance-criticality
 
 		Element:		MostRecentOccurrence
 		Concept:		TBD
@@ -60,7 +60,7 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 Element:		NoKnownSubstanceRisk [Entry]
 Concept:		SCT#716186003
 Description:	"A clinical statement asserting no known risk to a substance or classes of substances."
-1..1			(SubstanceOfRisk or ClinicalFindingAbsent < code descending from SCT#716186003 [No known allergy])
+1..1			(SubstanceOfRisk or ClinicalFindingAbsent < Coding descending from SCT#716186003 [No known allergy])
 0..1			PriorExposure   // if true, the conclusion is strengthened
 
 		Element:		PriorExposure
