@@ -4,21 +4,21 @@ Uses:				shr.core, shr.demographics
 //----------------  Base Entry  -----------------------
 // The base for all entries in the SHR
 
-Group:			Entry
+Element:			Entry
 Description:	"The base for all entries in the SHR. Cpntains elements that describe the identification, timing, attribution, and other circumstances involved in an SHR entry"
 1..1    		EntryID  
 1..1			SubjectID
-1..*			Concept
-0..1			DateOfActivity
-0..1    		DateOfDocumentation
-1..1    		DateOfEntry
-0..1    		InformationSource   
-0..1			InformationDocumenter  // e.g. scribe or coder
-0..1			InformationEnterer   // who actually input or created the entry  
-0..1			Language    // language used in this entry (assumed to be EN unless otherwise stated)
-0..1			Summary  	// text summary of this entry (from core)
-1..1			Version     // Version of this entry (from core)
-0..1			LastUpdated // TODO: If version are not stored, then we will need a log of all changes
+1..1			DataElement
+0..*			DateOfActivity
+0..1    		DateDocumented
+1..1    		DateEntered
+0..*			DateUpdated
+0..*    		InformationOriginator   
+0..*			InformationDocumenter
+0..1			InformationEnterer  
+0..1			Language 
+0..1			Summary 
+1..1			Version 
 
 	Element:    	EntryID
 	Concept:        MTH#C0600091
@@ -30,27 +30,37 @@ Description:	"The base for all entries in the SHR. Cpntains elements that descri
 	Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
 	Value:			id
 	
-	Element:		Concept
-	Concept:		TBD  // the concept of a concept
-	Description:	"The (sub)concept identifying the question, observation, measurement, or action. Multiple codings are allowed. Can include translations, synonyms and hypernyms. For example, if the concept is sitting blood pressure, the hypernyms blood pressure and vital sign can be part of the coding."
-	Value:			Coding
+	Element:		DataElement
+	Concept:		TBD
+	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk"
+	Value:			url
 	
+	Element:		SpecificCode
+	Concept:		TBD
+	Description:	"A code from a controlled vocabulary that defines or further defines the data element in question"
+	Value:			code
+
 	Element:		DateOfActivity
 	Concept:		TBD
-	Description:	"The date or date range when the documented activity (observation, assessment) took place"
+	Description:	"The date or date range when the documented activity (e.g., observation, assessment, recommendation) took place"
 	Value:			(dateTime or date or Period)
 	
-	Element:    	DateOfDocumentation
+	Element:    	DateDocumented
 	Concept:        MTH#C2347859
 	Description:    "The date on which content was created, or content creation began"
 	Value:          (dateTime or date or Period)
 
-	Element:   	 	DateOfEntry
+	Element:   	 	DateEntered
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the information was recorded in the system of record."
 	Value:          dateTime
 	
-	Group:    		InformationSource
+	Element: 		DateUpdated
+	Concept:		TBD
+	Description:	"A date that the entry was changed"
+	Value:			dateTime
+	
+	Element:    	InformationOriginator
 	Concept:        MTH#C0449416
 	Description:    "From whom or what the information originates, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
 	1..1	        CareProfessional or FamilyMember or UnrelatedThirdParty // or ComputerProgram or Device or Organization
@@ -65,27 +75,16 @@ Description:	"The base for all entries in the SHR. Cpntains elements that descri
 	Description:	"The person, device, or computer program that actually entered the information into the system of record."
 	Value:			HealthcareActor // or ComputerProgram or Device 
 	
-	Element:    	RecordedBy
-	Concept:        MTH#C1707531
-	Description:    "Indicates the person or organization who brought the item into existence"
-	Value:          HealthcareActor	
-	
 	Element:		Language
 	Concept:		MTH#C0023008
 	Description: 	"An identifier for a human language"
 	Value:			code from http://hl7.org/fhir/ValueSet/languages
 
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The time the entry was last updated (changed)"
-	Value:			dateTime
-
-
 
 		
 //-------------- Header Entry Concerning the SHR as a Whole ------------------
 
-Group:			ShrHeader [Entry]
+Element:		ShrHeader [Entry]
 Concept:		TBD
 Description:	"Basic information about the SHR and the subject"
 1..1			StandardHealthRecordID
@@ -109,7 +108,7 @@ Description:	"Basic information about the SHR and the subject"
 	Value:			boolean
 
 
-Group:			ContributingRecord [Entry]
+Element:		ContributingRecord [Entry]
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record"
 1..1			HealthRecordID
@@ -126,6 +125,9 @@ Description:	"A health record used to help populate the current health record"
 	Description:	"Point in time when data was accessed"
 	Value:			dateTime
 
+	
+	
+	
 //------------------ Action or Inaction ----------------------
 
 //Action [ClinicalEntry]
@@ -133,25 +135,6 @@ Description:	"A health record used to help populate the current health record"
 //ActionType:  Proposal, ProposalNotMade, RecommendAgainst, Order, OrderNotMade, OrderCancelled, ActionExecuted, ActionNotExecuted (postponed, aborted, etc. )
 //Proposal is different than a recommendation, there might be several proposals and one recommendation among those.
 
-
-
-
-
-
-/*-----------------  Observation ----------------
-Group:			Observation // mixin class, experimental
-Concept:		TBD
-// not needed, part of Concept		0..*	Category //http://hl7.org/fhir/observation-category
-0..1			Method  // e.g. device, questionnaire, patient-generated data, direct observation, diagnostic test, etc.
-0..1			Interpretation
-	
-
-	Element:		Method
-	Concept:		TBD
-	Description:	"A code identifying the technique or procedure used to obtain the observed value(s)"
-	Value:			code
----------------------------*/
-	
 	
 
 
