@@ -6,11 +6,10 @@ shr:                dataDefsDoc | valuesetDefsDoc /* | contentProfiles*/;
 
 // DATA DEFINITIONS (Vocabularies, Entries, Elements)
 
-dataDefsDoc:        dataDefsHeader usesStatements* dataDefs;
+dataDefsDoc:        dataDefsHeader usesStatement? dataDefs;
 dataDefsHeader:     KW_DATA_DEFINITIONS namespace;
 
-usesStatements:     usesStatement+;
-usesStatement:      KW_USES namespace;
+usesStatement:      KW_USES namespace (COMMA namespace)*;
 
 dataDefs:           dataDef+;
 dataDef:            vocabularyDef | elementDef | entryDef;
@@ -43,7 +42,7 @@ descriptionProp:    KW_DESCRIPTION STRING;
 
 // VALUESET DEFINITIONS
 
-valuesetDefsDoc:    valuesetDefsHeader valuesetDefs;
+valuesetDefsDoc:    valuesetDefsHeader usesStatement? valuesetDefs;
 valuesetDefsHeader:  KW_VALUESET_DEFINITIONS namespace;
 
 valuesetDefs:       valuesetDef+;
