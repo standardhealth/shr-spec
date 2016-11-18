@@ -1,0 +1,62 @@
+DataDefinitions:      shr.social
+Uses:				shr.core
+
+//Sexual Orientation
+Entry:			SexualOrientation
+Concept:		LOINC #76690-7
+Description:	"An individual's physical and/or emotional attraction to another individual of the same gender, opposite gender, or both genders. Sexual orientation is independent of gender identity and biological sex"
+//1..1			code from http://loinc.org/ValueSet/LL3323-4
+1..1			code from http://standardhealthrecord.org/social/SexualOrientation
+
+
+// HIV-Positive risk factor from sample bosWell intake form could be represented as an official diagnosis in the SHR, but what about the ability to capture
+// when a subject says they are HIV-Positive even if their (potentially incomplete) SHR doesn't say they are?
+Entry:			HIVPositive
+Concept:		MTH #C3842525
+Description:	"Subject reports being HIV Positive."
+1..1			boolean
+
+
+// IDU
+Entry:			IntravenousDrugUse
+Concept:		MTH #C0242566
+Description:	"Subject injects recreational drugs"
+1..1			boolean
+
+
+// Substance Abuse
+Entry:			SubstanceAbuse
+Concept:		MTH #C0740858
+Description:	"Maladaptive pattern of drug or alcohol use that may lead to social, occupational, psychological, or physical problems"
+1..1			boolean
+
+
+// Sex Work
+Entry:			SexWorker
+Concept:		MTH #C0033595
+Description:	"selling or trading of sexual activities for money or other considerations"
+1..1			boolean
+
+
+//Homeless
+//could be no AddressOfResidence entry that is currently effective (based on EffectiveDateRange element) when a Homelessness is in effect
+//Alternatively, AddressOfResidence has ResidenceAddressDescription which can be #shelter, #encamp, or #street (or #none from EntryAbsentReason)
+//AddressOfResidence would assumedly then have Address and ResidenceAddressUse with values of #na (from EntryAbsentReason in shr_core_vs.txt)
+// or should we just support one or the other?
+Entry:			Homelessness
+Concept:		MTH #C0237154
+Description:	"Indication of status as homeless (living arrangements lacking a permanent residence)."
+1..1			HousingStatus
+0..1			EffectiveDateRange
+
+Element:		HousingStatus
+Concept:		MTH #C3475493
+Description:	"Describes patients living arrangement"
+1..1			code from http://standardhealthrecord.org/social/HousingStatus
+
+
+// Health Insurance - not elsewhere right now...
+Entry:			HaveHealthInsurance
+Concept:		MTH #C0021682
+Description:	"insurance providing coverage of medical, surgical, or hospital care"
+1..1			boolean
