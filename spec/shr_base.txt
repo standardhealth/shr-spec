@@ -6,9 +6,10 @@ Uses:				shr.core, shr.demographics
 
 Element:			Entry
 Description:	"The base for all entries in the SHR. Contains elements that describe the identification, timing, attribution, and other circumstances involved in an SHR entry"
-1..1    		EntryID  
-1..1			SubjectID
-1..1			StandardHealthRecordID
+1..1    		EntryID 
+1..1			StandardHealthRecordID 
+1..1			SubjectOfSHR
+0..1			SubjectOfEntry 
 1..1			DataElement
 0..*			DateOfActivity
 0..1    		DateDocumented
@@ -17,7 +18,7 @@ Description:	"The base for all entries in the SHR. Contains elements that descri
 0..*    		InformationOriginator   
 0..*			InformationDocumenter
 0..1			InformationEnterer  
-0..1			Language 
+0..1			LanguageOfEntry 
 0..1			Summary 
 1..1			Version 
 
@@ -26,10 +27,15 @@ Description:	"The base for all entries in the SHR. Contains elements that descri
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
 	Value:          id
 	
-	Element: 		SubjectID
-	Concept:		TBD
+	Element: 		SubjectOfSHR
+	Concept:		MTH#C0030705
 	Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
 	Value:			id
+	
+	Element:		SubjectOfEntry
+	Concept:		TBD
+	Description:	"The person or thing that this entry refers to. Note that not all entries refer to the Subject of SHR. For example, the entry could refer to a care giver, or relative (living or dead)"
+	Value:			HealthcareActor  //??
 	
 	Element:		DataElement
 	Concept:		TBD
@@ -71,9 +77,9 @@ Description:	"The base for all entries in the SHR. Contains elements that descri
 	Description:	"The person, device, or computer program that actually entered the information into the system of record."
 	Value:			HealthcareActor // or ComputerProgram or Device 
 	
-	Element:		Language
+	Element:		LanguageOfEntry
 	Concept:		MTH#C0023008
-	Description: 	"An identifier for a human language"
+	Description: 	"Language used in this entry"
 	Value:			Coding from http://hl7.org/fhir/ValueSet/languages
 
 

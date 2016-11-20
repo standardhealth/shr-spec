@@ -6,7 +6,7 @@ Path:			  FHIR = http://hl7.org/fhir/ValueSet
 Element:		SubjectName [Entry]
 Concept:		MTH#C1299487, LNC#54125-0
 Description:	"A name for the person of record who is the subject of this Standard Health Record, aka the patient."
-1..1 			HumanName
+Value: 			HumanName
 0..* 			HumanNameUse
 0..1 			EffectiveDateRange
 
@@ -40,20 +40,15 @@ Concept:		MTH#C1550327
 Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
 Value:          Coding from FHIR/administrative-gender
 
-Element:		RacialMakeup [Entry]
-Concept:		TBD
-Description:	"The race or races attributed an individual"
-1..*			Race
+Element:		Heritage [Entry]   // aka race
+Concept:		MTH#C0034510
+Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
+Value:			1..* Coding from http://hl7.org/fhir/us/daf/ValueSet/daf-race
 
-	Element:    	Race
-	Concept:		MTH#C0034510
-	Description:    "A classification of a person into a named category of humans sharing common history, traits, geographical origin or nationality."
-	Value:			Coding from http://hl7.org/fhir/us/daf/ValueSet/daf-race
-
-Element:    	Ethnicity [Entry]
+Element:    	HispanicOrign [Entry]   // aka Ethnicity  NOTE: Not really necessar, computable from Heritage
 Concept:		MTH#C0015031
-Description:    "A code classifying the person into a named category of humans sharing a common real or presumed heritage."
-Value:          Coding from http://hl7.org/fhir/v3/Ethnicity
+Description:    "Indicator of Hispanic or Latino origin."
+Value:          boolean // Coding from http://hl7.org/fhir/v3/Ethnicity
 
 Element:   		MaritalStatus [Entry]
 Concept:		MTH#C0024819
@@ -75,58 +70,48 @@ Concept:		MTH#C1301821
 Description:	"A US social security number (SSN)"
 Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
 
-Element:   		DriversLicense [Entry]
+Element:   		DriversLicenseNumber [Entry]
 Concept:		TBD
 Description:	"Identifying information from a drivers license"
-1..1			DriversLicenseNumber
+Value:			string
 1..1			StateOfIssue
 0..1			EffectiveDateRange
-
-	Element:		DriversLicenseNumber
-	Concept:		TBD
-	Description:	"Driver's license number"
-	Value:			string
 
 	Element:		StateOfIssue
 	Concept:		MTH#C1547728
 	Description:	"Issuing authority for a drivers license"
 	Value:			UnitedStatesState
 
-Element:	   	Passport [Entry]
-Concept:		MTH#C3242633
+Element:	   	PassportNumber [Entry]
+Concept:		MTH#C1549737
 Description:	"Indicator of citizenship and identity"
-1..1			PassportNumber
+Value:			string
 1..1			CountryOfIssue
 0..1			EffectiveDateRange
-
-	Element: 		PassportNumber
-	Concept:		MTH#C1549737
-	Description:	"Passport number"
-	Value:			string
 
 	Element: 		CountryOfIssue
 	Concept:		TBD
 	Description:	"A country acting as an assuing authority for a document"
 	Value:			Country
 
-Element:	 	InsuranceIdentifier  [Entry]
-Concept:		TBD
-Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
-1..1			IssuingOrganization
-1..1			Identifier
+Element:		HealthInsurance   [Entry]
+Concept:		MTH#C0021682 [HealthInsurance]
+Description:	"Health insurance coverage available (even if not used for payment for a given encounter)"
+Value: 			Coding from InsuranceProviderType
+1..1			InsuranceMemberId
 0..1			EffectiveDateRange
 
-	Element:		IssuingOrganization
+	Element:	 	InsuranceMemberId
 	Concept:		TBD
-	Description:	"An organization acting as an issuing authority or trust source"
-	Value:			Organization
+	Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
+	1..1			Identifier
 
 // ------------------------- Residence Address ----------------------
 
 Element:   		AddressOfResidence  [Entry]
 Concept:		MTH#C0682130
 Description:	"A location where a person lives or has lived"
-1..1			Address
+Value:			Address
 1..1    		ResidenceAddressUse
 1..1			ResidenceAddressDescription
 0..1			EffectiveDateRange
@@ -143,19 +128,14 @@ Description:	"A location where a person lives or has lived"
 
 //---------------------  TelephoneContact ---------------------------------
 
-Element:   		TelephoneContact  [Entry]
-Concept:		MTH#C298644
-Description:	"Information about a telephone that can be used to contact a person or organization."
-1..1			TelephoneNumber
+Element:   		TelephoneNumber  [Entry]
+Concept:		MTH#C1515258
+Description:	"A telephone number that can be used to contact a person or organization, including a country code and extension, if required."
+Value:			string
 0..1			TelephoneOrganizationName
 0..*			Priority
 0..1			TextCapable
 0..1			LeaveMessage
-
-	Element: 		TelephoneNumber
-	Concept:		MTH#C1515258
-	Description:	"A telephone number, including a country code and extension, if required"
-	Value:			string
 
 	Element:  		TelephoneOrganizationName
 	Concept:		TBD
@@ -174,17 +154,12 @@ Description:	"Information about a telephone that can be used to contact a person
 
 //----------------------  EmailContact ----------------------------------------
 
-Element:   		EmailContact  [Entry]
+Element:   		EmailAddress  [Entry]
 Concept:		MTH#C1705961
-Description:	"An email address used to contact an individual"
-1..1			EmailAddress
+Description:	"An email address used to contact an individual, typically (always?) in the form xx@yy.zz""
+Value:			string
 1..1			Priority
 0..1			Direct
-
-	Element:		EmailAddress
-	Concept:		MTH#C1705961
-	Description:	"An email address xx@yy.zz"
-	Value:			string
 
 	Element:		Direct
 	Concept:		TBD
@@ -196,7 +171,7 @@ Description:	"An email address used to contact an individual"
 Element:   		OtherTelecomContact  [Entry]
 Concept:		MTH#C2986441
 Description:	"A means of contacting an individual electronically, other than by telephone or email"
-1..1			TelecomMethod
+Value:			TelecomMethod
 1..1			TelecomNumberOrID
 0..*			TelecomUse
 
