@@ -17,7 +17,7 @@ Vocabulary:     UCUM = http://unitsofmeasure.org
 Element:		MissingValueReason
 Concept:		TBD
 Description:	"The reason a required element, complex type, or primitive value is missing"
-Value: 			Coding from MissingValueReason 
+Value: 			Coding from MissingValueReasonVS
 
 
 //---------------- Coding ----------------------------------------
@@ -39,7 +39,7 @@ Value:			code
 	Element:		CodeDescriptor
 	Concept:		TBD
 	Description:	"A description of the purpose or origin of the code that assists in the interpretation of the code."
-	Value:			Coding from CodeDescriptor
+	Value:			Coding from CodeDescriptorVS
 
 Element:		SpecificCode
 Concept:		TBD
@@ -52,15 +52,15 @@ Element:		Quantity
 Concept:		TBD
 Description:	"A measured or measurable amount"
 Value:			decimal
-0..1			Comparator
-0..1			UcumUnitCode
+0..1			QuantityInterpretation
+0..1			UnitOfMeasure
 
-		Element:		Comparator
+		Element:		QuantityInterpretation
 		Concept:		TBD
-		Description:	"Whether the quantity should be interpreted as an interval, < | <= | >= | >"
-		Value:			Coding from FHIR/quantity-comparator
+		Description:	"Whether the quantity is an maximum, minimum, mean, median, etc."
+		Value:			Coding from QuantityInterpretationVS
 		
-		Element:		UcumUnitCode
+		Element:		UnitOfMeasure
 		Concept:		TBD
 		Description:	"UCUM code for the unit of measure of the quantity"
 		Value:			Coding from UCUM
@@ -126,10 +126,11 @@ Concept:		MTH#C2985763
 Description:	"The date and time span for when an entry is active or valid."
 Value:			Period
 
+
 Element:		PastPresentFuture
 Concept:		TBD
 Description:	"Refers to a time or time period, either in the past, present, or future"
-Value: 			Coding from http://standardhealthrecord.org/core/vs/PastPresentFuture
+Value: 			Coding from PastPresentFutureVS
 
 //---------------  Locations and Addresses -----------------
 
@@ -218,18 +219,18 @@ Value:			string
 		Element:    	HumanNamePrefix
 		Concept:		MTH#C3476361
 		Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
-		Value:          Coding from HumanNamePrefix
+		Value:          string  // punting on value set - there is little value in standardizing this element
 
 		Element:    	HumanNameSuffix
 		Concept:		LNC#45395-1, SCT#715196001, 
 		Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
-		Value:          Coding from HumanNameSuffix or string   // extensible
+		Value:          string
 
 
 
 //------------  Symptom -------------
 
-Element:   		Symptom [Entry]
+EntryElement:   SymptomReported  // complaint?
 Concept:		MTH#C1457887
 Description:	"A complaint or observed (subjective) indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
 Value:			Coding descending from SCT#418799008 [Finding reported by subject or history provider]
@@ -244,6 +245,9 @@ Value:			Coding descending from SCT#418799008 [Finding reported by subject or hi
 	
 	/*Adverse events are usually graded according to the National Cancer Institute Common Terminology Criteria for Adverse Events (CTCAE)
 	1: Mild, Grade 2: Moderate, Grade 3: Severe, Grade 4: Life-threatening or disabling, Grade 5: Death */
+
+	
+//-------------   Clinical Finding -------------------------------
 
 Element:		DiseaseFinding
 Concept:		MTH#C0012634, SCT#64572001
@@ -261,32 +265,32 @@ Value:			Coding descending from SCT#373572006
 Element:		BodySite
 Concept:		MTH#C1268086
 Description:	"Location on or in the body"
-Value:			Coding from NCI/C74456 [LOC]   // perhaps a Coding descending from SCT#123037004?
+Value:			Coding from MTH#T023 [Body Part, Organ, or Organ Component] or Coding from MTH#T029 [Body Location or Region] or Coding from MTH#T030 [Body Space or Junction] 
 0..1 			Laterality
 0..1			Directionality
 0..1 			PortionTotality	
 0..1 			Description   // text description of body site
 
 	Element:		Laterality
-	Concept:		NCI#C99073
+	Concept:		MTH#C0925205 [Anatomical laterality]
 	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
-	Value:			Coding from NCI/C99073[LAT]   // note the slash rather than # code symbol
+	Value:			Coding from NCI#C99073[CDISC SDTM Laterality Terminology]      // the code denotes a value set 
 
 	Element:		Directionality
 	Concept:		NCI#C99074
 	Description:	"Anatomical location or specimen further detailing directionality"
-	Value:			Coding from NCI/C99074[DIR]
+	Value:			Coding from NCI#C99074[CDISC SDTM Directionality Terminology]
 	
 	Element:		PortionTotality
 	Concept:		NCI#C99075
 	Description:	"Qualifier for anatomical location or specimen further detailing the portion or totality, which means arrangement of, or apportioning of an entity"
-	Value:			Coding from NCI/C99075 [PORTOT]
+	Value:			Coding from NCI#C99075 [CDISC SDTM Portion/Totality Terminology]
 		
 
 Element:		BodyPosition
 Concept:		MTH#C1262869
 Description:	"The position or physical attitude of the body."
-Value:			Coding
+Value:			Coding from BodyPositionVS
 	
 
 //--------------  Onset -------------

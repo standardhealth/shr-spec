@@ -2,19 +2,25 @@ ValueSetDefinitions:	shr.core
 
 Path: 	http://standardhealthrecord.org/core/vs/
 
-ValueSet: 					MissingInformationReason
+ValueSet: 					MissingInformationReasonVS
 #missing_unanswered			"The source was asked but declined to respond to the question, or the question was left unanswered."			
-#missing_na					"The question or data element is not applicable; no answer is required."
+#missing_na					"The question or data element is not applicable, or the test was not ordered, or based on other answers, no answer to this question is required."
 #missing_redacted			"The information has been redacted."
 #missing_no_clue			"The reason the information is not present is not known."
+// The following values apply to lab tests
+#missing_cancelled			"The request or order to collect this information was cancelled."
+#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
+#missing_specimen			"Missing due to a problem with the specimen that was collected, including insufficient sample type or size, contamination, clotting, improper tube type, improper storage, etc."
+#missing_malfunction		"Missing due to instrument malfunction."
 
-ValueSet:					GenericAnswers
+
+ValueSet:					GenericAnswersVS
 #dont_know_answer			"The source responded that he or she did not know the information needed or requested."
 #exists_answer				"The source asserts that the thing in question exists, but additional information is unknown. For example, Jim knows he has a dentist, but not recall her name."
 #none_of_answer				"Nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
 
 
-ValueSet: 			CodeDescriptor
+ValueSet: 			CodeDescriptorVS
 #standard 			"A preferred, standardized code"
 #source				"The original coding (if different than the standard code)"
 #synonym			"A synonym for the source or standard code"
@@ -22,58 +28,56 @@ ValueSet: 			CodeDescriptor
 #post				"A code representing a only portion of the meaning of the source code, e.g., obtained by breaking up a precoordinated code, for example, the code for 'left laterality' when the source code represents 'left arm'"
 #pre				"A single code combining the meaning of multiple attributes or elements in the source, for example, a code representing 'left arm' when the source encodes 'left' and 'arm' separately"
 
-
-ValueSet: 		HumanNamePrefix
-#mr     		"Mr."
-#mrs   			"Mrs."
-#ms     		"Ms."
-#dr     		"Dr."
-
-// Limit suffix to values that have to do with identity. Exclude those dealing with honorary titles. Not relevant.
-// However, allow text values
-ValueSet: 		HumanNameSuffix
-#jr     		"Jr."
-#sr     		"Sr."
-#md     		"M.D."
-#phd   			"Ph.D"
-
-ValueSet: 		ThreeValueLogic
+ValueSet: 		ThreeValueLogicVS
 #true			"True"
 #false			"False"
 #unknown		"Unknown"
 
-ValueSet: 		FiveFrequencyScale
+ValueSet: 		FiveFrequencyScaleVS
 #never			"Never or nearly never"
 #rarely			"Rarely"
 #sometimes		"Occasionally or sometimes"
 #usually		"Frequently or often"
 #always			"Virtually always or every time"
 
-
-ValueSet: 		ThreePriority
+ValueSet: 		ThreePriorityVS
 #primary		"The first or primary item or alterative in a preference list."
 #secondary		"The second or backup preference."
 #third_or_lower	"An alternative to primary and secondard choices in a preference list."
 
-ValueSet:		PastPresentFuture
+ValueSet:		PastPresentFutureVS
 #past			"A time or time period in the past"
 #present		"At the current time"
 #future			"A time or time period in the future"
 
-ValueSet:		MinMaxMean
-#min			"Minimum"
-#max			"Maximum"
-#ave			"Mean"
+ValueSet:		QuantityInterpretationVS
+Description:	"How to interpret a reported quantity, i.e, whether the quantity is an maximum, minimum, mean, median, etc."
+MTH#C1524031	"Desired or observed minimum, or lower bound"
+MTH#C0806909	"Desired or observed maximum, or upper bound"
+MTH#C0444504	"Mean value"
+MTH#C0876920	"Median value"
+MTH#C0750480 	"Count"
+MTH#C1514721	"Range, the difference between lowest and highest numerical values"
+MTH#xxxxxxxx	"Rank, priority, or order, with 1 being the first (highest) rank"
+MTH#xxxxxxxx	"Standard deviation"
 
-ValueSet: 		SittingStandingSupine
+ValueSet: 		BodyPositionVS
 Concept:		LNC#8361-8
 Description:	"The body position with respect to gravity"
-SCT#33586001	"sitting"
-SCT#10904000	"standing (orthostatic)"
-SCT#40199007	"supine"
+MTH#C0277814	"sitting position"
+MTH#C0277811	"semi-sitting (Fowler's)"
+MTH#C0231472	"standing position (anatomical)"
+MTH#C0038846	"supine position (lying face up)"
+MTH#C0033422	"prone position(lying face down)"
+MTH#C0150435 	"semi-prone position (sims' position)"
+MTH#C0559228	"right lateral recumbent"
+MTH#C0559227	"left lateral recumbent (lying on left side)"
+MTH#C0242683	"head-down tilt (Trendelenburg)"
+MTH#C0150665	"Lithotomy position (lying on back with legs raised)"
+MTH#C0277810	"Knee-chest position"
 
 
-ValueSet:		PerformanceGradingScale
+ValueSet:		PerformanceGradingScaleVS
 Concept:		TBD
 Description:	"A simple performance grading scale. Also useful for grading quality."
 #excellent		"Excellent"
@@ -82,9 +86,7 @@ Description:	"A simple performance grading scale. Also useful for grading qualit
 #fair			"Fair"
 #poor			"Poor"
 
-
-
-
+// ValueSet:	SymptomChangeVS (much better, better, about the same, worse, much worse, etc)
 
 /*-------------
 NCI Code: C99073 LAT, Codelist extensible: Yes

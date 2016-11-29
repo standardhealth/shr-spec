@@ -5,115 +5,114 @@ Vocabulary:     LNC = http://loinc.org
 Vocabulary:		UCUM = http://unitsofmeasure.org 
 Vocabulary:		MTH = http://uts.nlm.nih.gov/metathesaurus
 
-/*-------------- Basic Data Elements related to measurements -------------
 
-Element:		MeasurementMethod
-Concept:		MTH#C1299991
-Description:	"The technique used to carry out a measurement"
-Value:			Coding
+//-------------------  Specific Vital Sign TestResults -----------------------------
 	
-Element:		MeasurementQualifier
-Concept:		MTH#C1443279
-Description:	"A description of the conditions or context of a measurement, for example, post-exercise. Body position and body site are handled separately. A qualifier cannot modify the measurement type; for example, a sitting blood pressure is still a blood pressure."
-Value:			Coding
-
-Element:		MeasurementBodySite
-Concept:		TBD
-Description:	"The place on or in the body where a measurement is taken"
-Value:			BodySite
-
-Element:		MinMaxOrMean
-Concept:		TBD
-Description:	"Whether a quantity represents a minimum, maximum, or mean (average) value, and over what time period"
-Value: 			Coding from MinMaxMean
-
-Element:		SustainedMeasurementDuration
-Concept:		MTH#C1442476
-Description:	"The length of time a measurement was continued if observed over an extended period of time (as opposed to a point-in-time reading); for example, monitoring over 24 hours to obtain a daily max, min, mean respiratory rate "
-Value:			Duration
-
-
-/*-------------------  Specific Vital Signs -----------------------------
-	
-Element:		RespiratoryRate  [Entry]
+EntryElement:	RespiratoryRate
+BasedOn:		TestResult
 Concept:		LNC#9279-1, MTH#C0231832, LNC#8716-3 [Vital Sign]
 Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."  
-Value:			SimpleQuantity with units UCUM#C66967 [/min]
-0..*			MeasurementQualifier with Coding from RespiratoryRateQualifier 
-0..1			MeasurementMethod with Coding from RespiratoryRateMethod 
-0..1			SustainedMeasurementDuration
-0..1			MinMaxOrMean // with default interpretation #mean
+Value:			Quantity with units UCUM#C66967 [/min]
+1..1			TestCode is LNC#9279-1   // could it be a more specific LOINC code??
+0..*			Qualifier with Coding from RespiratoryRateQualifierVS
+0..1			Method with Coding from RespiratoryRateMethodVS
 
-Element:		HeartRate  [Entry]
+EntryElement:	HeartRate
+BasedOn:		TestResult
 Concept:		LNC#8867-4, MTH#C0018810, LNC#8716-3 [Vital Sign]
 Description:	"The number of times the HEART VENTRICLES contract per unit of time, usually per minute."
-Value:			SimpleQuantity with units UCUM#C66967 [/min]
-0..1			MeasurementBodyPosition with Coding from SittingStandingSupine
-0..*			MeasurementQualifier with Coding from HeartRateQualifier 
-0..1			MeasurementMethod with Coding from HeartRateMethod
-0..1			SustainedMeasurementDuration
-0..1			MinMaxOrMean // with default interpretation #mean
+Value:			Quantity with units UCUM#C66967 [/min]
+1..1			TestCode is LNC#8867-4
+0..*			Qualifier with Coding from HeartRateQualifierVS
+0..1			Method with Coding from HeartRateMethodVS
 
-Element:		OxygenSaturation [Entry]
+EntryElement:	OxygenSaturation
+BasedOn:		TestResult
 Concept:		LNC#59408-5, LNC#8716-3 [Vital Sign]
 Description:	"Oxygen saturation in Arterial blood by Pulse oximetry"
-Value:			SimpleQuantity with units UCUM#C25613 [%]
-0..1			MeasurementBodySite with Coding from OxygenSaturationBodySite
+Value:			Quantity with units UCUM#C25613 [%]
+1..1			TestCode is LNC#59408-5
+0..1			BodySite with Coding from OxygenSaturationBodySiteVS
 
-Element:		BodyTemperature [Entry]
+EntryElement:	BodyTemperature
+BasedOn:		TestResult
 Concept:		LNC#8310-5, MTH#C0005903, LNC#8716-3 [Vital Sign]
 Description:	"The measure of the level of heat in a human or animal."
 Value:			decimal with units UCUM#C42559 [C]
-0..1			MeasurementMethod with Coding from BodyTemperatureMethod
-0..1			MeasurementQualifier with Coding from BodyTemperatureQualifier
-0..1			MeasurementBodySite
+1..1			TestCode is LNC#8310-5
+0..1			Method with Coding from BodyTemperatureMethodVS
+0..1			Qualifier with Coding from BodyTemperatureQualifierVS
+0..1			BodySite
 
-Element:		BodyHeight [Entry]
+EntryElement:	BodyHeight
+BasedOn:			TestResult
 Concept:		LNC#8302-2, MTH#C0005890, LNC#8716-3 [Vital Sign]
 Description:	"The distance from the sole to the crown of the head"
 Value:			decimal with units UCUM#C49668 [cm]
-0..1 			MeasurementQualifier with Coding from BodyHeightQualifier
+1..1			TestCode is LNC#8302-2
+0..1 			Qualifier with Coding from BodyHeightQualifierVS
 
-Element:		BodyLength [Entry]
+EntryElement:	BodyLength
+BasedOn:		TestResult
 Concept:		LNC#8306-3, MTH#C2237485, LNC#8302-2 [Body Height], LNC#8716-3 [Vital Sign]
 Description:	"The distance from the sole to the crown of the head, lying down (typically 0-2 years)."
 Value:			decimal with units UCUM#C49668 [cm]
+1..1			TestCode is LNC#8306-3
 
-Element:		BodyWeight [Entry]
+EntryElement:	BodyWeight
+BasedOn:		TestResult
 Concept:		LNC#29463-7, MTH#C0005910
 Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
 Value:			decimal with units UCUM#C28252 [kg] 
-0..1 			MeasurementQualifier with Coding from BodyWeightQualifier
+1..1			TestCode is LNC#29463-7
+0..1 			Qualifier with Coding from BodyWeightQualifierVS
 
-Element:		HeadCircumference
+EntryElement:	HeadCircumference
+BasedOn:		TestResult
 Concept:		LNC#8287-5
 Description:	"Circumference of the head (typically 0-2 years)"
 Value:			quantity with units UCUM#C49668 [cm]
+1..1			TestCode is LNC#8287-5
 	
-Element:		BodyMassIndex
+EntryElement:	BodyMassIndex
+BasedOn:		TestResult
 Concept:		LNC#39156-5, MTH#C1305855
 Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
 Value:			quantity
+1..1			TestCode is LNC#39156-5
+0..1			BodyWeight
+0..1			BodyHeight
 
-Element:		BloodPressure [Entry]
+EntryElement:	BloodPressure    // Essentially a panel
 Concept:		LNC#55284-4, MTH#C0005823, LNC#8716-3 [Vital Sign]
 Description:	"The force of circulating blood on the walls of the arteries."
+1..1			TestCode is LNC#55284-4
 1..1			SystolicPressure
 1..1			DiastolicPressure
-0..1			MeasurementBodyPosition from SittingStandingSupine  // Others?
-0..1			MeasurementBodySite from BloodPressureBodySite
-0..1			MeasurementMethod with Coding from BloodPressureMethod
-0..*			MeasurementQualifier with Coding from BloodPressureQualifier
-0..1			SustainedMeasurementDuration
-0..1			MinMaxOrMean // with default interpretation #mean
 
 	Element:		SystolicPressure
+	BasedOn:		TestResult
 	Concept:		LNC#8480-6, MTH#C0871470
 	Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest"
 	Value:			quantity with units UCUM#49670 [mmHg]
+	1..1			TestCode is LNC#8480-6
+	0..1			BodySite with Coding from BloodPressureBodySiteVS
+	0..1			Method with Coding from BloodPressureMethodVS
+	0..*			Qualifier with Coding from BloodPressureQualifierVS
+	0..1			HeadTilt
 	
 	Element:		DiastolicPressure
+	BasedOn:		TestResult
 	Concept:		LNC#8462-4, MTH#C0428883
 	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest"
 	Value:			quantity with units UCUM#49670 [mmHg]	
+	1..1			TestCode is LNC#8462-4
+	0..1			BodySite with Coding from BloodPressureBodySiteVS
+	0..1			Method with Coding from BloodPressureMethodVS
+	0..*			Qualifier with Coding from BloodPressureQualifierVS
+	0..1			HeadTilt
 	
+	Element: 		HeadTilt // This is only used during a tilt table test.
+	Concept: 		LNC#8360-0
+	Description:	"The angle at which the head is tilted relative to a level position while physiologic TestResults are taken"
+	Value: 			quantity with units UCUM#C68667 [deg]

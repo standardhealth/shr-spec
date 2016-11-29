@@ -3,9 +3,9 @@ Uses:				shr.core, shr.actors
 
 Path:			  FHIR = http://hl7.org/fhir/ValueSet
 
-Element:		SubjectName [Entry]
+EntryElement:	PersonOfRecordName
 Concept:		MTH#C1299487, LNC#54125-0
-Description:	"A name for the person of record who is the subject of this Standard Health Record, aka the patient."
+Description:	"A name used by the person of record who is the subject of this Standard Health Record, aka the patient."
 Value: 			HumanName
 0..* 			HumanNameUse
 0..1 			EffectiveDateRange
@@ -15,62 +15,62 @@ Value: 			HumanName
 	Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
 	Value:          Coding from FHIR/name-use
 
-Element:   		DateOfBirth [Entry]
+EntryElement:   DateOfBirth
 Concept:        MTH#C2919018, LNC#21112-8
 Description:    "A date of birth or approximate year or period (year or date range), if estimated."
 Value: 			date or Period
 
-Element:    	PlaceOfBirth [Entry]
+EntryElement:   PlaceOfBirth
 Concept:        MTH#C0032040
 Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
 Value:          GeopoliticalLocation
 
-Element:		PartOfMultipleBirth  [Entry]
+EntryElement:	PartOfMultipleBirth
 Concept:		MTH#C0026753
 Description:	"Indication if the person was part of a multiple birth event"
 Value:			boolean
 
-Element:		MultipleBirthOrder  [Entry]
+EntryElement:	MultipleBirthOrder
 Concept:		LNC#73771-8
 Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)"
 Value:			positiveInt
 
-Element:	    AdministrativeGender  [Entry]
+EntryElement:	AdministrativeGender
 Concept:		MTH#C1550327
 Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
 Value:          Coding from FHIR/administrative-gender
 
-Element:		Heritage [Entry]   // aka race
+EntryElement:	Heritage   // aka race
 Concept:		MTH#C0034510
 Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
 Value:			1..* Coding from http://hl7.org/fhir/us/daf/ValueSet/daf-race
 
-Element:    	HispanicOrign [Entry]   // aka Ethnicity  NOTE: Not really necessar, computable from Heritage
+EntryElement:   HispanicOrign   // aka Ethnicity  NOTE: Not really necessary, since it is computable from Heritage
 Concept:		MTH#C0015031
 Description:    "Indicator of Hispanic or Latino origin."
 Value:          boolean // Coding from http://hl7.org/fhir/v3/Ethnicity
 
-Element:   		MaritalStatus [Entry]
+EntryElement:   MaritalStatus
 Concept:		MTH#C0024819
 Description:	"The most recent marital status of a person."
 Value:			Coding from FHIR/marital-status
 
-Element:   		MothersMaidenName [Entry]
+EntryElement:   MothersMaidenName
 Concept:		MTH#C0806887
 Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
 Value:			HumanName
 
-Element:   		FathersName [Entry]
+EntryElement:   FathersName
 Concept:		TBD
 Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
 Value:			HumanName
 
-Element:  		SocialSecurityNumber [Entry]
+EntryElement: 	SocialSecurityNumber
 Concept:		MTH#C1301821
 Description:	"A US social security number (SSN)"
 Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
 
-Element:   		DriversLicenseNumber [Entry]
+EntryElement:	DriversLicenseNumber
 Concept:		TBD
 Description:	"Identifying information from a drivers license"
 Value:			string
@@ -82,7 +82,7 @@ Value:			string
 	Description:	"Issuing authority for a drivers license"
 	Value:			UnitedStatesState
 
-Element:	   	PassportNumber [Entry]
+EntryElement:	PassportNumber
 Concept:		MTH#C1549737
 Description:	"Indicator of citizenship and identity"
 Value:			string
@@ -94,10 +94,10 @@ Value:			string
 	Description:	"A country acting as an assuing authority for a document"
 	Value:			Country
 
-Element:		HealthInsurance   [Entry]
+EntryElement:	HealthInsurance
 Concept:		MTH#C0021682 [HealthInsurance]
 Description:	"Health insurance coverage available (even if not used for payment for a given encounter)"
-Value: 			Coding from InsuranceProviderType
+Value: 			Coding from InsuranceProviderTypeVS
 1..1			InsuranceMemberId
 0..1			EffectiveDateRange
 
@@ -108,85 +108,48 @@ Value: 			Coding from InsuranceProviderType
 
 // ------------------------- Residence Address ----------------------
 
-Element:   		AddressOfResidence  [Entry]
+EntryElement:   AddressOfResidence
 Concept:		MTH#C0682130
 Description:	"A location where a person lives or has lived"
 Value:			Address
-1..1    		ResidenceAddressUse
-1..1			ResidenceAddressDescription
+1..1			AddressOfResidenceType
+0..*    		AddressOfResidenceQualifier
 0..1			EffectiveDateRange
 
-	Element:		ResidenceAddressUse
+
+	Element:		AddressOfResidenceQualifier
 	Concept:		TBD
 	Description:	"Describes how the residence is used, in particular, as a primary, secondary, or former address"
-	Value:			Coding from ResidenceAddressUse
+	Value:			Coding from ResidenceAddressQualifierVS
 
-	Element:		ResidenceAddressDescription
+	Element:		AddressOfResidenceType
 	Concept:		TBD
 	Description:	"The type of residence, for example a private house, a skilled nursing facility, or homeless shelter"
-	Value:			Coding from ResidenceAddressDescription
+	Value:			Coding from ResidenceAddressDescriptionVS
 
-//---------------------  TelephoneContact ---------------------------------
 
-Element:   		TelephoneNumber  [Entry]
-Concept:		MTH#C1515258
-Description:	"A telephone number that can be used to contact a person or organization, including a country code and extension, if required."
-Value:			string
-0..1			TelephoneOrganizationName
-0..*			Priority
-0..1			TextCapable
-0..1			LeaveMessage
+//----------------- Telecom Contact Information --------------------
 
-	Element:  		TelephoneOrganizationName
-	Concept:		TBD
-	Description:	"Name of organization owning the phone number, if it belongs to an a company, group home, or other organization."
-	Value:			OrganizationName
-
-	Element:		TextCapable
-	Concept:		TBD
-	Description:	"Whether a telephone accepts text messages"
-	Value:			boolean
-
-	Element:		LeaveMessage
-	Concept:		TBD
-	Description:	"Indicator whether it is ok to leave a voice message. This can be important when messages can be accessed by multiple people, such as on a home phone."
-	Value:			boolean
-
-//----------------------  EmailContact ----------------------------------------
-
-Element:   		EmailAddress  [Entry]
-Concept:		MTH#C1705961
-Description:	"An email address used to contact an individual, typically (always?) in the form xx@yy.zz""
-Value:			string
-1..1			Priority
-0..1			Direct
-
-	Element:		Direct
-	Concept:		TBD
-	Description:	"A flag indicating if this is a DIRECT email address"
-	Value:			boolean
-
-//----------------- Other Telecom Contact --------------------
-
-Element:   		OtherTelecomContact  [Entry]
+EntryElement:   Telecom
 Concept:		MTH#C2986441
-Description:	"A means of contacting an individual electronically, other than by telephone or email"
-Value:			TelecomMethod
-1..1			TelecomNumberOrID
-0..*			TelecomUse
+Description:	"A means of contacting an individual electronically"
+Value:			TelecomNumberOrAddress
+1..1			TelecomType
+0..*			TelecomQualifier
+0..1			EffectiveDateRange
 
-	Element:		TelecomMethod
+	Element:		TelecomNumberOrAddress
 	Concept:		TBD
-	Description:	"The type or channel of the communication, such as Skype or WhatsApp"
+	Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID"
 	Value:			string
 
-	Element:		TelecomNumberOrID
+	Element:		TelecomType
 	Concept:		TBD
-	Description:	"A telephone number, email address, user name or other identifier on a telecommunication network, such as a SkypeID"
-	Value:			string
+	Description:	"The type or channel of the communication, such as email or telephone. If an messaging app, such as Skype, name the application using string"
+	Value:			(Coding from TelecomTypeVS or string)
 
-	Element:		TelecomUse
+	Element:  		TelecomQualifier
 	Concept:		TBD
-	Description:	"A purpose for which a particular telecommunication channel should be used."
-	Value:			Coding from TelecomUse
+	Description:	"Provides more information about the type and uses of the telephone number"
+	Value:			Coding from TelecomQualifierVS
 

@@ -1,86 +1,81 @@
 DataDefinitions:      shr.lifehistory
 
-Element:		GestationalExposures [Entry]
-Concept:		TBD
-Description:	""
-Value:			1..* Coding from GestationalExposures
+EntryElement:	PrenatalExposure
+Concept:		MTH#C0871747
+Description:	"Fetal contact with a dangerous substance or other risk, via the mother."
+Value:			Coding from TeratogenVS
 
-Element:		BirthSex  [Entry]
+EntryElement:	BirthSex
 Concept:		MTH#C4086849
 Description:	"Sex at birth, as indicated through morphology"
-Value:			Coding from BirthSex
+Value:			Coding from BirthSexVS
 
-Element:		CongenitalAbnormalities  [Entry]
+EntryElement:	CongenitalAbnormalities
 Concept:		MTH#C0000768
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities"
 Value:			1..* Coding descending from SCT#66091009 [Congenital Disease] // ICD10 Q00-Q99
 
-Element:		GenderIdentity  [Entry]
+EntryElement:	GenderIdentity
 Concept:		MTH#C0017249
 Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
-Value:			Coding from GenderIdentity  // Do not use Snomed, those asswipes refer to atypical gender identities as "disorders"
+Value:			Coding from GenderIdentityVS  // Do not use Snomed, they refer to atypical gender identities as "disorders"
 
-Element:		SexualOrientation  [Entry]
+EntryElement:	SexualOrientation
 Concept:		MTH#C0205949
 Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
 Value:			Coding descending from SCT#365956009
 
-Element:		EducationalAttainment  [Entry]
+EntryElement:	EducationalAttainment
 Concept:		MTH#C0013658, LNC#63504-5
 Description:	"Educational attainment or level of education of individuals."
-Value:			Coding from EducationalAttainment
+Value:			Coding from EducationalAttainmentVS
 
-Element:		AnnualHouseholdIncome  [Entry]
-Concept:		MTH#C0557163
-Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported"
-Value:			Quantity with units MTH#C1555442 [US Dollar]
+EntryElement:	LanguageUsed
+Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
+Value:			Language
+0..1 			SpokenLanguageProficiency
+0..1 			WrittenProficiency
+0..*			LanguageQualifier
 
-Element:		HouseholdSize  [Entry]
-Concept:		MTH#C0000768
-Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
-Value:			positiveInt
+		Element:		SpokenLanguageProficiency
+		Concept:		MTH#C0678997
+		Description:	"Accuracy and fluency in spoken communication in a language."
+		Value:			Coding from SimplePerformanceGradingScaleVS
 
-Element:		LanguageUsed  [Entry]
-Concept:		TBD
-Description:	"A language used for communication by a human, either the subject of record, parent, or other involved person."
-Value:			Coding from http://hl7.org/fhir/ValueSet/languages
-0..1			Priority
-0..1 			LanguageProficiency
-0..1 			MedicalInterpreterNeeded
+		Element:		WrittenProficiency
+		Concept:		MTH#C0586739
+		Description:	"Accuracy and fluency of reading and writing in a language."
+		Value:			Coding from SimplePerformanceGradingScaleVS
 
-	Element:		LanguageProficiency
-	Concept:		MTH#C0678997
-	Description:	"Accuracy and fluency of communication in a language, usually in a bilingual context."
-	Value:			Coding from SimplePerformanceGradingScale
+		Element:		LanguageQualifier
+		Description:	"Additional information about a person's use of language"
+		Value:			Coding from LanguageQualifierVS
 
-	Element:		MedicalInterpreterNeeded
-	Concept:		MTH#C1442531
-	Description:	"Whether a medical interpreter is needed to facilitate communication"
-	Value:			boolean
 
-Element:		PregnancyStatus
-Concept:		TBD
-Description:	"If the subject is currently pregnant"
-Value:			boolean
-
-Element:		PreviousPregnancies [Entry]
-Concept:		TBD
-Description:	"Information about past pregnancies"
-Value:			NumberOfPregnancies
+EntryElement:	PregnancyHistory
+Concept:		MTH#C0032967
+Description:	"Information about current and past pregnancies"
+1..1			CurrentPregnancyStatus
+1..1			NumberOfPreviousPregnancies
 0..1			NumberOfLivingChildren
 
+	Element:		CurrentPregnancyStatus
+	Concept:		MTH#C0552579
+	Description:	"Whether or not the subject is currently pregnant"
+	Value:			boolean
+
 	Element:		NumberOfPreviousPregnancies
-	Concept:		TBD
+	Concept:		MTH#C0422807
 	Description:	"Number of previous pregnancies"
 	Value:			integer
 
 	Element:		NumberOfLivingChildren
-	Concept:		TBD
+	Concept:		MTH#C2229975
 	Description:	"Number of living children"
 	Value:			integer
 
 /*
-Element:		PreviousPregnancyDetails [Entry]
+EntryElement:	PreviousPregnancyDetails
 Concept:		TBD
 Description:	"The details of a previous pregnancy"
 1..1			PregnancyOrdinal
@@ -94,9 +89,15 @@ TypeOfDelivery
 AnesthesiaType
 PlaceOfDelivery
 DurationOfBreastFeeding
-Complications   Coding from PregnancyComplication
+Complications   Coding from PregnancyComplicationVS
 Comorbidities
 */
 
-
-
+/*
+Religious Practice	Religion
+	Status
+	Place of worship
+	Special restrictions
+	Chaplin/Religious Counsellor
+	Blood Transfusion Allowed
+	*/

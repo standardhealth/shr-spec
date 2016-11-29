@@ -1,8 +1,7 @@
-DataDefinitions:	shr.actors
+DataDefinitions:	shr.actor
 Uses:				shr.core, shr.demographics
 
 Path: 		http://standardhealthrecord.org/actors/vs
-Path:			CORE = http://standardhealthrecord.org/core/vs/
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 /*
@@ -14,25 +13,18 @@ Path:     	FHIR = http://hl7.org/fhir/ValueSet
 	Involvments record that a person is acting in a certain capacity (role) during a period of time
 */
 
-
 // ------------- People ---------------------
-// Just the people ... not their role in care...
+// Just the people, not their role in care...
 
-Entry:        	CareProfessional [Entry]
+EntryElement:	CareProfessional
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-Value:			1..*  HumanName
-0..*    		ContactPoint
+Value:			HumanName
+0..*    		Telecom
 0..*			Affiliation
 0..1    		NationalProviderIdentifier
 0..*    		MedicalSpecialty
 0..1			AdministrativeGender
-
-
-	Element:		ContactPoint   // Any type of contact information
-	Concept:		MTH#C0337611
-	Description:	"A way to contact an individual or organization"
-	Value:			(Address or TelephoneContact or EmailContact or OtherTelecomContact)
 
 	Element:    	Affiliation
 	Concept:        MTH#C0932026
@@ -47,37 +39,38 @@ Value:			1..*  HumanName
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
 	Description:	"A branch of medicine practiced by the provider"
-	Value:			Coding from MedicalSpecialty
+	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
+	// possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
-Entry:        	FamilyMember  [Entry]
+EntryElement:	FamilyMember
 Concept:        MTH#C0080103
 Description:    "A person related to the subject of record by blood, adoption, or marriage."
 Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
 1..*    		HumanName
-0..*    		Contact
+0..*    		Telecom
 1..1 	  		DeceasedIndicator
 
 	Element:		DeceasedIndicator
 	Concept:		MTH#C0011065
 	Description:	"Boolean indicator where true indicates the person is deceased."
-	Value:			Coding from CORE/ThreeValueLogic
+	Value:			Coding from ThreeValueLogicVS
 
-Entry: 			UnrelatedThirdParty [Entry]
+EntryElement:	UnrelatedThirdParty
 Concept:		MTH#C3242657
 Description:	"A person, other than a professional care provider or family member, who is relevant to the health or social situation of the subject."
-Value:			1..* HumanName  // again, allow multiple names for a person
-0..*    		Contact
+Value:			HumanName
+0..*    		Telecom
 
 
 // ------------- Organizations ------------------
 
-Entry:    		Organization  [Entry]
+EntryElement:	Organization
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings"
 Value:			1..* OrganizationName
 1..1			OrganizationType
 0..1			OrganizationIdentifyingCode
-0..*			Contact
+0..*			Telecom
 0..1    		NationalProviderIdentifier
 
 	Element:		OrganizationName
@@ -88,7 +81,7 @@ Value:			1..* OrganizationName
 	Element:		OrganizationType
 	Concept:		TBD
 	Description:	"A classification of the organization in terms of its major role in healthcare"
-	Value:			Coding from FHIR/organization-type   // should be extensible
+	Value:			Coding from FHIR/organization-type   // should be extensible. Also see http://hl7.org/fhir/ValueSet/c80-facilitycodes
 
 	Element:		OrganizationIdentifyingCode
 	Concept:		TBD
@@ -99,18 +92,18 @@ Value:			1..* OrganizationName
 //  -------------------- Involvement in Healthcare -------------------------
 //  One individual can play different or multiple roles at different times
 
-Entry:			HealthcareInvolvement  [Entry]  // The subject's PCP, neurologist, dietician, massage therapist, etc.
+EntryElement:	HealthcareInvolvement  // The subject's PCP, neurologist, dietician, massage therapist, etc.
 Concept:		MTH#C1314939
-Description:	"A statement regarding who played specific healthcare role at a certain time or timeframe."
-Value:			InvolvementType
+Description:	"A statement regarding who played a role directly or indirectly in the health of the person of record, at a certain time or over a timeframe."
+Value:			HealthcareRole
 1..1 			HealthcareActor   // missing value reason#none implies no one in the given role during the stated timeframe, e.g., subject has no PCP
 0..1			InvolvementTimeFrame
 0..1			PriorityInRole
 
-	Element:		InvolvementType
+	Element:		HealthcareRole
 	Concept:		TBD
 	Description:	"A type of service provided to the subject"
-	Value:			Coding from InvolvementType  // e.g. PCP, neurologist, dietician, massage therapist, independent living facility, warfarin lab, helping at home, clergy, social worker, lawyer, church, etc.
+	Value:			Coding from HealthcareRoleVS or Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
 
 	Element:		HealthcareActor   // Should we include computer systems? Devices?
 	Concept:		TBD
@@ -119,10 +112,22 @@ Value:			InvolvementType
 
 	Element:		InvolvementTimeFrame
 	Concept:		TBD
-	Description:	"The range of dates or an indication the involvement is in the past, present, or planned in the future (rare)"
+	Description:	"The range of dates or an indication the involvement is in the past, present, or planned in the future."
 	Value:			(EffectiveDateRange or PastPresentFuture)
 
-	Element:		PriorityInRole
+	Element:		PriorityInRole   // TODO: typically captured as a qualifier
 	Concept:		TBD
 	Description: 	"If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example of a prioritized list is Emergency Contacts"
 	Value:			Priority
+
+
+Element:		Performer
+Concept:		MTH#C1550369
+Description:	"An actor who performs a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with a specific task, such admitting a patient, performing a procedure, or taking a measurement"
+Value:			HealthcareActor
+0..1 			ParticipationType
+
+	Element:		ParticipationType
+	Concept:		MTH#C1553854
+	Description:	"The detail of how the performer engaged in the task, for example, as the attending physician, surgical assistant, etc."
+	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ParticipationType
