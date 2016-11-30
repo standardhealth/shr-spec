@@ -126,7 +126,7 @@ Description:	"A health record used to help populate the current health record"
 Element: 		Test
 Concept:		TBD
 Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition or assess the health of an individual. Includes patient-generated data, such as pedometer readings."
-1..1 			TestCode
+Value: 			TestCode
 0..1 			BodySite  // site of measurement or sample, if appropriate
 0..1 			SpecimenType
 0..1			TestMethod
@@ -155,15 +155,14 @@ Description:	"A laboratory, radiologic, or other clinical test or measurement us
 		Value:			Coding 
 
 
-Element:		TestRequest
-BasedOn:		Test
+EntryElement:	TestRequest
 Concept:		MTH#C1273874
 Description:	"A record of a request for a diagnostic investigation service to be performed."
 // Note that a number of key attributes are captured in the metadata of the entry:
 // 1. FHIR Requestor captured in Entry.InformationOriginator
 // 2. FHIR Subject is captured in Entry.SubjectOfEntry (almost always the Person of Record)
 // 3. FHIR Context captured in Entry.EncounterOfEntry
-//  Additional fields (above and beyond Test):
+1..*			Test
 1..1			RequestStatus  // orders with 'draft' or 'entered in error' status do not appear in the SHR
 1..1			EffectivePeriod
 0..1			TestTiming
@@ -215,11 +214,11 @@ Description:	"A record of a request for a diagnostic investigation service to be
 		Value:			string
 
 		
-Element:		TestResult
-BasedOn:		Test
+EntryElement:	TestResult
 Concept:		MTH#C0456984
 Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
 Value:			(Quantity or Coding)
+1..1			Test
 1..*			Performer   //from actor
 1..1			(TestTime or TestPeriod)
 0..1 			Interpretation
@@ -250,7 +249,7 @@ Value:			(Quantity or Coding)
 	
 //------------------ Action or Inaction ----------------------
 
-//Action [ClinicalEntry]
+//Action "ClinicalEntry"
 //Topic: Immunization, Test, MedicationChange, BehaviorChange, Referral, Procedure
 //ActionType:  Proposal, ProposalNotMade, RecommendAgainst, Order, OrderNotMade, OrderCancelled, ActionExecuted, ActionNotExecuted (postponed, aborted, etc. )
 //Proposal is different than a recommendation, there might be several proposals and one recommendation among those.

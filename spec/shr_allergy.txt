@@ -7,21 +7,19 @@ Path:     		FHIR = http://hl7.org/fhir/ValueSet
 Element:		AllergenIrritant
 Concept:		SCT#105590001
 Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc., in particular, substances presenting health risks including (but not exclusively) intolerances and allergies."
-Value: 			Coding descending from SCT#105590001  // a list of common allergens and irritants might be substituted
+Value: 			Coding from AllergenIrritantVS  // a list of common allergens and irritants might be substituted
 
 // Not currently used
 Element:		NonDrugSubstance
 Concept:		TBD
 Description:	"An encoding of a material, mixture, class or category of substance, including drugs, foods, environmental agents, etc."
-Value:			Coding descending from SCT#105590001 [Substance] excluding Codings descending from SCT#410942007 [Drug or medicament]
-
+Value:			Coding from NonDrugSubstanceVS
 
 //--- A Person-Specific Risk to the Subject Posed by a Substance, either an allergy or an intolerance
 
 EntryElement:	SubstanceRisk
-Concept:		SCT#420134006 [Propensity to adverse reactions]
+Concept:		SCT#420134006 "Propensity to adverse reactions"
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances."
-//0..1			DiseaseFinding with Coding descending from SCT#420134006 [Propensity to adverse reactions]
 1..1 			AllergenIrritant
 0..1			SubstanceCategory
 0..1			AllergyOrIntolerance
@@ -46,7 +44,7 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 		Value:			Symptom // from core
 
 		Element:		Criticality
-		Concept:		MTH#C3858539 [Criticality]
+		Concept:		MTH#C3858539 "Criticality"
 		Description:	"A clinical judgment as to the worst case result of a future exposure (including substance administration). When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
 		Value:			Coding from FHIR/allergy-intolerance-criticality
 
@@ -58,8 +56,8 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 
 EntryElement:	NoKnownSubstanceRisk
 Concept:		SCT#716186003
-Description:	"A clinical statement asserting no known risk to a substance or classes of substances."
-1..1			(AllergenIrritant or ClinicalFindingAbsent with Coding descending from SCT#716186003 [No known allergy])
+Description:	"A substance or classes of substances to which the subject is not known to be allergic or intolerance."
+1..1			AllergenIrritant
 0..1			PriorExposure   // if true, the conclusion is strengthened
 
 		Element:		PriorExposure
@@ -67,3 +65,9 @@ Description:	"A clinical statement asserting no known risk to a substance or cla
 		Description:	"True if the patient previously has been exposed to the substance"
 		Value:			boolean
 
+// The following might not be necessary -- it is isosemantic with NoKnownSubstanceRisk
+Element:		NoKnownSubstanceRiskCodedStatement
+BasedOn:		ClinicalFindingAbsent
+Concept:		SCT#373572006
+Description:	"A clinical statement asserting no known risk to a substance or classes of substances."
+Value:			Coding from NoKnownSubstanceRiskVS
