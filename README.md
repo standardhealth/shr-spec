@@ -28,20 +28,20 @@ To clean up the build artifacts:
 
     ./gradlew clean
 
-# Executing the SHR Parse Tree Application
+# Parsing SHR Text Files
 
-The parse tree application is a simple utility that reads an SHR definition file and creates a grahical parse tree representing that file.  It's not very useful to end users, but is a useful tool for debugging the SHR grammars and definition files.
+The `ParseTool` application is a simple tool that parses an SHR file or a folder of SHR files.  The `ParseTool` will print out all syntactical errors where files don't conform to the ANLTR SHR specification.  This is useful during the development of SHR text files to ensure they are syntactically valid.  It does _not_, however, ensure correctness of references between elements, valid valuesets or codes, etc.
 
 To execute the sample code using `gradlew`, you should execute the `run` command:
 
     ./gradlew run
 
-This will execute the parse tree application on the SHR definition configured in the `gradle.build` file.
+This will execute the `ParseTool` application on the SHR definitions found in `./spec/` (as configured in the `build.gradle` file).
 
-To execute the parse tree on an arbitrary SHR definition file, you must first use gradle to generate a script:
+To execute the parse tree on an arbitrary SHR folder or definition file, you must first use gradle to generate a script:
 
     ./gradlew installDist
 
-Then execute the generated script, passing in a path to an SHR definition file:
+Then execute the generated script, passing in a path to an SHR folder or definition file:
 
-    ./build/install/shr_spec/bin/shr_spec ./spec/shr_name.txt
+    ./build/install/shr_spec/bin/shr_spec ./spec/shr_core.txt

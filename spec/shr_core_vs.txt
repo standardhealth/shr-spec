@@ -1,41 +1,133 @@
-ValueSetDefinitions:	shr.core
+ValueSetDefinitions:	shr.core  
+
+Path: 	http://standardhealthrecord.org/core/vs/
+
+ValueSet: 					MissingInformationReasonVS
+#missing_unanswered			"The source was asked but declined to respond to the question, or the question was left unanswered."			
+#missing_na					"The question or data element is not applicable, or the test was not ordered, or based on other answers, no answer to this question is required."
+#missing_redacted			"The information has been redacted."
+#missing_no_clue			"The reason the information is not present is not known."
+// The following values apply to lab tests
+#missing_cancelled			"The request or order to collect this information was cancelled."
+#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
+#missing_specimen			"Missing due to a problem with the specimen that was collected, including insufficient sample type or size, contamination, clotting, improper tube type, improper storage, etc."
+#missing_malfunction		"Missing due to instrument malfunction."
 
 
-ValueSet: 		http://standardhealthrecord.org/identification/vs/HumanNameUse
-#preferred      "Preferred"
-#legal          "Legal"
-#alias          "Alias or Pseudonym."
-#premarriage    "The name used prior to first marriage."
-#variant        "Spelling Variant"
-#temporary      "Temporary; a name used to identify a person prior to a positive identification, or for an as-yet-unnamed newborn"
+ValueSet:					GenericAnswersVS
+#dont_know_answer			"The source responded that he or she did not know the information needed or requested."
+#exists_answer				"The source asserts that the thing in question exists, but additional information is unknown. For example, Jim knows he has a dentist, but not recall her name."
+#none_of_answer				"Nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
 
-ValueSet: 		http://standardhealthrecord.org/identification/vs/HumanNamePrefix
-#mr     		"Mr."
-#mrs   			"Mrs."
-#ms     		"Ms."
-#dr     		"Dr."
 
-// Limit suffix to values that have to do with identity. Exclude those dealing with honorary titles. Not relevant.
-// However, allow text values
-ValueSet: 		http://standardhealthrecord.org/identification/vs/HumanNameSuffix
-#jr     		"Jr."
-#sr     		"Sr."
-#md     		"M.D."
-#phd   			"Ph.D"
+ValueSet: 			CodeDescriptorVS
+#standard 			"A preferred, standardized code"
+#source				"The original coding (if different than the standard code)"
+#synonym			"A synonym for the source or standard code"
+#hypernym			"A less specific term or category for the source or standard code, e.g., 'measurement' or 'vital sign' for 'body weight'"
+#post				"A code representing a only portion of the meaning of the source code, e.g., obtained by breaking up a precoordinated code, for example, the code for 'left laterality' when the source code represents 'left arm'"
+#pre				"A single code combining the meaning of multiple attributes or elements in the source, for example, a code representing 'left arm' when the source encodes 'left' and 'arm' separately"
 
-ValueSet: http://standardhealthrecord.org/core/vs/ThreeValueLogic
-#true	
-#false
-#unknown
+ValueSet: 		ThreeValueLogicVS
+#true			"True"
+#false			"False"
+#unknown		"Unknown"
 
-ValueSet: http://standardhealthrecord.org/core/vs/ThreePriority
+ValueSet: 		FiveFrequencyScaleVS
+#never			"Never or nearly never"
+#rarely			"Rarely"
+#sometimes		"Occasionally or sometimes"
+#usually		"Frequently or often"
+#always			"Virtually always or every time"
+
+ValueSet: 		ThreePriorityVS
 #primary		"The first or primary item or alterative in a preference list."
 #secondary		"The second or backup preference."
-#other			"An alternative to primary and secondard choices in a preference list."
+#third_or_lower	"An alternative to primary and secondard choices in a preference list."
 
-ValueSet: http://standardhealthrecord.org/core/EntryAbsentReason
-#none			"Nothing of this type is known to exists"
-#na				"Not applicable; this does not apply in the current context"
-#unknown		"An attempt has been made to collect the required information, but the source did not know the values needed."
-#refused		"An attempt has been made to collect the required information, but the source refused to give the information needed to populate the required entry."
-#redacted		"The information has been redacted"
+ValueSet:		PastPresentFutureVS
+#past			"A time or time period in the past"
+#present		"At the current time"
+#future			"A time or time period in the future"
+
+ValueSet:		QuantityInterpretationVS
+Description:	"How to interpret a reported quantity, i.e, whether the quantity is an maximum, minimum, mean, median, etc."
+MTH#C1524031	"Desired or observed minimum, or lower bound"
+MTH#C0806909	"Desired or observed maximum, or upper bound"
+MTH#C0444504	"Mean value"
+MTH#C0876920	"Median value"
+MTH#C0750480 	"Count"
+MTH#C1514721	"Range, the difference between lowest and highest numerical values"
+MTH#xxxxxxxx	"Rank, priority, or order, with 1 being the first (highest) rank"
+MTH#xxxxxxxx	"Standard deviation"
+
+ValueSet: 		BodyPositionVS
+Concept:		LNC#8361-8
+Description:	"The body position with respect to gravity"
+MTH#C0277814	"sitting position"
+MTH#C0277811	"semi-sitting (Fowler's)"
+MTH#C0231472	"standing position (anatomical)"
+MTH#C0038846	"supine position (lying face up)"
+MTH#C0033422	"prone position(lying face down)"
+MTH#C0150435 	"semi-prone position (sims' position)"
+MTH#C0559228	"right lateral recumbent"
+MTH#C0559227	"left lateral recumbent (lying on left side)"
+MTH#C0242683	"head-down tilt (Trendelenburg)"
+MTH#C0150665	"Lithotomy position (lying on back with legs raised)"
+MTH#C0277810	"Knee-chest position"
+
+ValueSet:       BodySiteVS
+Concept:        MTH#C1268086
+Description:    "Location on or in the body"
+Includes codes from MTH#T023 "Body Part, Organ, or Organ Component"
+Includes codes from MTH#T029 "Body Location or Region"
+Includes codes from MTH#T030 "Body Space or Junction"
+
+ValueSet:       LateralityVS
+Concept:        MTH#C0925205 "Anatomical laterality"
+Description:    "Anatomical location or specimen further detailing the side(s) of interest."
+Includes codes from NCI#C99073 "CDISC SDTM Laterality Terminology" // the code denotes a value set
+
+ValueSet:       DirectionalityVS
+Concept:        NCI#C99074
+Description:    "Anatomical location or specimen further detailing directionality"
+Includes codes from NCI#C99074 "CDISC SDTM Directionality Terminology"
+
+ValueSet:       PortionTotalityVS
+Concept:        NCI#C99075
+Description:    "Qualifier for anatomical location or specimen further detailing the portion or totality, which means arrangement of, or apportioning of an entity"
+Includes codes from NCI#C99075 "CDISC SDTM Portion/Totality Terminology"
+
+ValueSet:		PerformanceGradingScaleVS
+Concept:		TBD
+Description:	"A simple performance grading scale. Also useful for grading quality."
+#excellent		"Excellent"
+#very_good		"Very good"
+#good			"Good"
+#fair			"Fair"
+#poor			"Poor"
+
+ValueSet:		SymptomVS
+Includes codes descending from SCT#418799008 "Finding reported by subject or history provider"
+
+ValueSet:		DiseaseFindingVS
+Includes codes descending from SCT#64572001
+
+ValueSet:		ClinicalFindingAbsentVS
+Includes codes descending from SCT#373572006
+
+
+
+
+// ValueSet:	SymptomChangeVS (much better, better, about the same, worse, much worse, etc)
+
+/*-------------
+NCI Code: C99073 LAT, Codelist extensible: Yes
+C13332 BILATERAL Affecting both sides of the body, or a pair of organs. Bilateral
+C25307 CONTRALATERAL Having to do with the opposite side of the body, in relation to a pre-existing reference point.
+C25308 IPSILATERAL Having to do with the same side of the body, in relation to a pre-existing reference point.
+C25230 LATERAL Situated at or extending to the side. Lateral
+C25229 LEFT Being or located on or directed toward the side of the body to the west when facing north.
+C25228 RIGHT Being or located on or directed toward the side of the body to the east when facing north.
+C68598 UNILATERAL Affecting one side of the body or one of a pair of organs. Unilateral
+----------------*/
