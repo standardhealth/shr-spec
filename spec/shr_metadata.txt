@@ -1,4 +1,5 @@
-DataDefinitions:      shr.metadata
+DataDefinitions:	shr.metadata
+Uses:				shr.core, shr.actors
 
 //-------------- Metadata Concerning the SHR as a Whole ------------------
 
@@ -59,15 +60,15 @@ Description:	"Point in time when data was last accessed"
   Metadata is information concerning the entry itself -- it does not delve into the content of the entry
   It covers when and by whom the entry was created, updated, the recorder, and the source of information
   Actors can comment on the entry using the log feature
-  
+
   Each entry is comprised of:
 		1) Entry metadata: when and by whom the entry was created, updated,etc.
 		2) Entry data: specific data related to the entry
-  
+
   In the future, the metadata might extend to:
 		l) information about the access, sensitivity, and permissions (consent to share) associated with the entry
 		2) information about the quality and certainty of the information in the entryAction
-*/  
+*/
 
 
 
@@ -99,7 +100,7 @@ Description:    "Describes the identification, timing, attribution, and other ci
 	Element:    	ContentAttribution
 	Concept:        MTH #C0449416
 	Description:    "From whom or what the information originates, as distinct from the actor creating the entry"
-	1..1          	(ref(ComputerProgram) or ref(Device) or ref(Person) or ref(Organization)) // TBD
+	1..1			(ref(MedicalProfessional) or ref(FamilyMember) or ref(UnrelatedThirdParty) or ref(Organization)) //TBD
 
 	Element:   	 	WhenRecorded
 	Concept:        MTH #C3669169
@@ -109,8 +110,7 @@ Description:    "Describes the identification, timing, attribution, and other ci
 	Element:    	RecordedBy
 	Concept:        MTH #C1707531
 	Description:    "Indicates the person or authoritative body who brought the item into existence"
-	1..1          	(ref(Person) or ref(Organization)) // TBD
-
+	1..1          	(ref(MedicalProfessional) or ref(Organization)) // TBD
 
 /* TO DO: Data sharing permissions are TBD.
   Unlike most other data elements, privacy flags are intimately linked to business rules that interpret and act on the data, to enable or disable sharing of data with particular parties.
@@ -132,7 +132,7 @@ Description:	"A data-sharing permission to be applied to the information"
 
 	Element:		EventLog
 	Concept:		MTH #C1708728
-	Description:	"A record of changes to the entry, similar to a commit log." 
+	Description:	"A record of changes to the entry, similar to a commit log."
 	// Note: if we use an external content management approach, such as Github, the event log may not be required.
 	0..1    		ContentCreationDate
 	0..*    		ContentAttribution
