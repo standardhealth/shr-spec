@@ -35,7 +35,7 @@ values:             (value supportingValue*) | (value? supportingValue+);
 value:              KW_VALUE (uncountedValue | countedValue);
 uncountedValue:     (valueType (KW_OR valueType)*) | (OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN);
 countedValue:       count valueType | count OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN;
-valueType:          simpleOrFQName | ref | primitive | codeFromVS | quantityWithUnits | KW_TBD;
+valueType:          simpleOrFQName | ref | primitive | codeFromVS | elementWithConstraint | quantityWithUnits | KW_TBD;
 
 supportingValue:        countedSupportingValue (KW_OR countedSupportingValue)*;
 countedSupportingValue: count (supportingValueType | OPEN_PAREN supportingValueType (KW_OR supportingValueType)* CLOSE_PAREN);
