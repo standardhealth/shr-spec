@@ -7,54 +7,54 @@ Uses:				shr.core, shr.demographics, shr.actor
 Element:		Entry
 Concept:		TBD
 Description:	"Metadata elements added to entries in the SHR, describing the identification, timing, attribution, and other circumstances involved in an SHR entry"
-1..1    		EntryID 
-1..1			StandardHealthRecordID 
+1..1    		EntryID
+1..1			StandardHealthRecordID
 1..1			PersonOfRecordID
 1..1			FocalSubject   // usually the person of record, but could be a fetus, a family member, etc.
 0..1			EncounterOfEntry
 1..1    		DateEntered  // Creation of the entry
 0..*			DateUpdated
 0..*    		InformationOriginator   // person or entity that provided the information in the entry
-0..*			InformationResponsiblePerson  
-0..1			LanguageOfEntry 
-0..1			Summary 
-1..1			Version 
+0..*			InformationResponsiblePerson
+0..1			Language
+0..1			Summary
+1..1			Version
 
 	Element:    	EntryID
 	Concept:        MTH#C0600091
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
 	Value:          id
-	
+
 	Element: 		PersonOfRecordID
 	Concept:		MTH#C0030705
 	Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
 	Value:			id
-	
+
 	Element:		FocalSubject
 	Concept:		TBD
 	Description:	"The person or thing that this entry refers to. Note that not all entries refer to the Subject of SHR (the Person of Record). For example, the entry could refer to a fetus, care giver, or relative (living or dead)"
 	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty  //?? How to refer to the Person of record? Organ donor? Fetus (if recorded as a separate person)?
-	
+
 	Element:		DataElement
 	Concept:		TBD
 	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk"
 	Value:			uri
-	
+
 	Element:		EncounterOfEntry
 	Concept:		TBD
 	Description:	"The encounter or episode of care that led to creation of this entry"
-	Value:			Encounter   // TODO
+	Value:			TBD "Encounter"
 
 	Element:   	 	DateEntered
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the information was recorded in the system of record."
 	Value:          dateTime
-	
+
 	Element: 		DateUpdated
 	Concept:		TBD
 	Description:	"A date that the entry was changed"
 	Value:			dateTime
-	
+
 	Element:    	InformationOriginator
 	Concept:        MTH#C0449416
 	Description:    "From whom or what the information originates, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
@@ -63,21 +63,21 @@ Description:	"Metadata elements added to entries in the SHR, describing the iden
 	Element:		InformationResponsiblePerson
 	Concept:		TBD
 	Description:	"The person who is responsible for (and may certify) the content of the entry."
-	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty // or PersonOfRecord 
-	
+	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty // or PersonOfRecord
+
 	Element:		Language
 	Concept:		MTH#C0023008
 	Description: 	"A human language, spoken or written"
 	Value:			Coding from http://hl7.org/fhir/ValueSet/languages
 
-		
+
 //-------------- Header Entry Concerning the SHR as a Whole ------------------
 
 EntryElement:	ShrHeader
 Concept:		TBD
 Description:	"Basic information about the SHR and the subject"
 1..1			StandardHealthRecordID
-1..1			SubjectID
+1..1			PersonOfRecordID
 1..1			Anonymized
 1..1			FictionalPerson
 
@@ -101,7 +101,7 @@ Element:		ContributingRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record"
 1..1			HealthRecordID
-1..1			ContentAttribution
+1..1			TBD "ContentAttribution"
 1..1			AccessTime
 
 	Element:		HealthRecordID
@@ -115,12 +115,12 @@ Description:	"A health record used to help populate the current health record"
 	Value:			dateTime
 
 
-//-------------  Base for simple (non-lab) observations ---------------------	
+//-------------  Base for simple (non-lab) observations ---------------------
 
 //DegreeOfCertainty
 //DateOfObservation
 
-	
+
 //-------------- Base structure for Test Requests and Results(diagnostic measurements, tests, vital signs, radiology, etc.) -------------
 
 Element: 		Test
@@ -131,7 +131,7 @@ Value: 			TestCode
 0..1 			SpecimenType
 0..1			TestMethod
 0..1 			BodyPosition
-0..1 			Device 
+0..1 			TBD "Device"
 0..*			Qualifier
 
 		Element:		TestCode
@@ -148,11 +148,11 @@ Value: 			TestCode
 		Concept:		MTH#C1299991
 		Description:	"The technique used to carry out a procedure, if not implicit in the test code"
 		Value:			Coding
-		
+
 		Element:		Qualifier
 		Concept:		MTH#C1443279
 		Description:	"A description of the conditions or context of a test, for example, under sedation, fasting or post-exercise. Note that body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
-		Value:			Coding 
+		Value:			Coding
 
 
 EntryElement:	TestRequest
@@ -181,39 +181,39 @@ Description:	"A record of a request for a diagnostic investigation service to be
 		Element:		TestTiming
 		Concept:		TBD
 		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			(dateTime or Period or Timing)
-		
+		Value:			(dateTime or Period or TBD "Timing")
+
 		Element:		PriorityOfRequest
 		Concept:		TBD
 		Description:	"Urgency level for which results must be reported to the requestor or responsible individual"
 		Value:			Coding from RequestPriorityVS
-		
+
 		Element:		RequestedPerformerType
 		Concept:		TBD
 		Description:	"What type of actor should carry out the testing"
 		Value:			TBD
-		
+
 		Element:		RequestedPerformer
 		Concept:		TBD
 		Description:	"Who should carry out the tests. For example, the patient or caregiver"
-		Value:			HealthcareActor // How can we refer to the Person of Record here? The organ or egg donor? 
-		
+		Value:			HealthcareActor // How can we refer to the Person of Record here? The organ or egg donor?
+
 		Element:		ReasonForRequest
 		Concept:		TBD
 		Description:	"The justification for this order, which may be because the subject is at risk for a disease, as part of a diagnostic process, due to a symptom or problem, a part of a care plan, or periodic monitoring"
 		Value:			TBD
-		
+
 		Element:		PerformerInstructions
 		Concept:		TBD
 		Description:	"Information for the performer of the test, if needed."
 		Value:			string
-		
+
 		Element:		PatientInstructions
 		Concept:		TBD
 		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
 		Value:			string
 
-		
+
 EntryElement:	TestResult
 Concept:		MTH#C0456984
 Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
@@ -221,7 +221,7 @@ Value:			(Quantity or Coding)
 1..1			Test
 1..*			Performer   //from actor
 1..1			(TestTime or TestPeriod)
-0..1 			Interpretation
+0..1 			TestInterpretation
 0..1			ChangeFlag
 0..1			TestRequest  // optional reference back to the request
 
@@ -229,24 +229,24 @@ Value:			(Quantity or Coding)
 	Concept:		TBD
 	Description:	"The time at which a measurement was taken or specimen collected."
 	Value:			dateTime
-	
+
 	Element:		TestPeriod
 	Concept:		TBD
 	Description:	"The start and end times for a measurement, if observed over a period of time, or the start and end of the specimen collection, if collected over a significant period of time (e.g. 24 hour Urine Sodium)."
 	Value:			Period
-	
+
 	Element:		TestInterpretation
 	Concept:		TBD
 	Description:	"A clinical interpretation of a measurement"
 	Value:			Coding from TestInterpretationVS
-	
+
 	Element:		ChangeFlag
 	Concept:		TBD
 	Description:	"Indicator of change from the last or previous measurement."
 	Value:			Coding from ChangeFlagVS
-	
-	
-	
+
+
+
 //------------------ Action or Inaction ----------------------
 
 //Action "ClinicalEntry"

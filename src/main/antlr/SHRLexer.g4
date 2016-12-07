@@ -41,9 +41,9 @@ KW_UNSIGNED_INT:    'unsignedInt';
 KW_POSITIVE_INT:    'positiveInt';
 
 // KEYWORDS for types w/ qualifiers
-KW_CODE_FROM:           'code from';
-KW_CODING_FROM:         'Coding from';
-KW_QUANTITY_WITH_UNITS: 'Quantity with units';
+KW_CODE_FROM:   'code from';
+KW_CODING_FROM: 'Coding from';
+KW_UNITS:       'units';
 
 // SYMBOLS
 DOT:                '.';
