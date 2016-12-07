@@ -35,14 +35,14 @@ values:             (value supportingValue*) | (value? supportingValue+);
 value:              KW_VALUE (uncountedValue | countedValue);
 uncountedValue:     (valueType (KW_OR valueType)*) | (OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN);
 countedValue:       count valueType | count OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN;
-valueType:          simpleOrFQName | ref | primitive | codeFromVS | elementWithConstraint | quantityWithUnits | KW_TBD;
+valueType:          simpleOrFQName | ref | primitive | codeFromVS | elementWithConstraint | tbd;
 
 supportingValue:        countedSupportingValue (KW_OR countedSupportingValue)*;
 countedSupportingValue: count (supportingValueType | OPEN_PAREN supportingValueType (KW_OR supportingValueType)* CLOSE_PAREN);
-supportingValueType:    simpleOrFQName | ref | elementWithConstraint;
+supportingValueType:    simpleOrFQName | ref | elementWithConstraint | tbd;
 
 basedOnProp:        KW_BASED_ON simpleOrFQName;
-conceptProp:        KW_CONCEPT (KW_TBD | concepts);
+conceptProp:        KW_CONCEPT (tbd | concepts);
 concepts:           fullyQualifiedCode (COMMA fullyQualifiedCode)*;
 descriptionProp:    KW_DESCRIPTION STRING;
 
@@ -77,13 +77,14 @@ code:               CODE STRING?;
 fullyQualifiedCode: ALL_CAPS code;
 codeFromVS:         (KW_CODE_FROM | KW_CODING_FROM) valueset;
 elementWithConstraint:      simpleOrFQName (DOT simpleName)* elementConstraint;
-elementConstraint:          elementCodeVSConstraint | elementCodeValueConstraint | elementTypeConstraint;
+elementConstraint:          elementCodeVSConstraint | elementCodeValueConstraint | elementTypeConstraint | elementWithUnitsConstraint;
 elementCodeVSConstraint:    KW_WITH codeFromVS;
 elementCodeValueConstraint: KW_IS fullyQualifiedCode;
 elementTypeConstraint:      KW_IS simpleOrFQName;
-quantityWithUnits:  KW_QUANTITY_WITH_UNITS fullyQualifiedCode;
+elementWithUnitsConstraint: KW_WITH KW_UNITS fullyQualifiedCode;
 valueset:           URL | PATH_URL | URN_OID | simpleName;
 primitive:          KW_BOOLEAN | KW_INTEGER | KW_STRING | KW_DECIMAL | KW_URI | KW_BASE64_BINARY | KW_INSTANT | KW_DATE
                     | KW_DATE_TIME | KW_TIME | KW_CODE | KW_OID | KW_ID | KW_MARKDOWN | KW_UNSIGNED_INT
                     | KW_POSITIVE_INT;
 count:              WHOLE_NUMBER RANGE (WHOLE_NUMBER | STAR);
+tbd:                KW_TBD STRING?;
