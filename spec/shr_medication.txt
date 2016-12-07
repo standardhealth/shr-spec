@@ -12,36 +12,36 @@ Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
 1..1 			SpecificCode with Coding from RXN
 0..1			DoseForm
-0..1			MedicationStrength 
+0..1			MedicationStrength
 0..1			BrandName
 
 		Element:		DoseForm
 		Concept:		MTH#C0013058
 		Description:	"The form in which active and/or inert ingredient(s) are physically presented"
-		Value:			Coding from FHIR/medication-form-codes 
-		
+		Value:			Coding from FHIR/medication-form-codes
+
 		Element:		MedicationStrength
 		Concept:		MTH#C3176062
 		Description:	"Specifies how many (or how much) of the active ingredient there is in this Medication, to be interpreted as a ratio. For example, 250 mg per tablet. This is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
 		1..1			ActiveIngredientAmount
 		1..1			AmountOfMedication
-		
+
 			Element:		ActiveIngredientAmount
 			Concept:		TBD
 			Description:	"The amount of an active ingredient in a medication"
 			Value:			Quantity
-			
+
 			Element:		AmountOfMedication
 			Concept:		TBD
 			Description:	"A standardized measure or discrete amount of medication serving as a reference for dosing or strength, for example, 1 tablet."
 			Value:			Quantity
-	
+
 		Element:		BrandName
 		Concept:		TBD
 		Description:	"The brand name of a product"
 		Value: 			string
-		
-		
+
+
 EntryElement:	MedicationTaken
 Concept:		TBD
 Description:	"Report of a medication prescribed and/or consumed. Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
@@ -50,7 +50,7 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 0..1			Adherence
 1..1			OccurrencePeriod
 1..1 			ReasonForUse
-	
+
 	Element:		Dosage
 	Concept:		MTH#C0178602
 	Description:	"The dosage of the medication as prescribed"
@@ -63,11 +63,11 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 	0..1			AdministrationMethod
 	0..1			AdministrationBodySite
 	0..*			MaximumDosePerPeriod  // no more than x in any 24-hour period
-	
+
 		Element:		DoseAmountRange
 		Concept:		TBD
 		Description:	"The amount of medication taken at each dose, as a range"
-		Value:			Range 
+		Value:			TBD // Range
 
 		Element:		DoseAmountQuantity
 		Concept:		TBD
@@ -77,48 +77,48 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 		Element:		TimingOfDoses
 		Concept:		TBD
 		Description:	"When doses of medication should be administered"
-		Value:			Timing
-		
+		Value:			TBD // Timing
+
 		Element:		DoseAsNeededIndicator
 		Concept:		MTH#C1883728
 		Description:	"Indicates that a drug or therapy should be used as often as the patient decides it is necessary."
 		Value:			boolean
-		
+
 		Element:		DoseInstructionsText
 		Concept:		TBD
 		Description:	"The directions (signetur) on the drug prescription or dispensing record."
 		Value:			string
-		
+
 		Element:		AdditionalDoseInstruction
 		Concept:		MTH#C1644714
 		Description:	"Supplemental instructions - e.g. 'with meals'"
-		Value:			Coding from FHIR/additional-instructions-codes 
-		
+		Value:			Coding from FHIR/additional-instructions-codes
+
 		Element:		AdministrationRoute
 		Concept:		MTH#C0013153
 		Description:	"How a medication entered or should enter the body"
-		Value:			Coding from FHIR/route-codes 
-		
+		Value:			Coding from FHIR/route-codes
+
 		Element:		AdministrationMethod
 		Concept:		MTH#C1547585
 		Description:	"Technique for administering medication"
-		Value:			Coding from FHIR/administration-method-codes 
-		
+		Value:			Coding from FHIR/administration-method-codes
+
 		Element:		AdministrationBodySite
 		Concept:		MTH#C0229986
 		Description:	"The anatomic site at which medical intervention is applied."
-		Value:			BodySite 
-		
+		Value:			BodySite
+
 		Element:		MaximumDosePerPeriod
 		Concept:		TBD
 		Description:	"The maximum amount of a medication to be taken in a given period of time."
 		1..1			AmountOfMedication
 		1..1			Duration
-			
+
 	Element:		Adherence
 	Concept:		MTH#C2364172
 	Description:	"A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
-	0..*			(MedicationTreatment or SupplementTreatment) // If no medication is given, then the adherence statement is general; it refers to no particular medication(s)
+	//0..*			(MedicationTreatment or SupplementTreatment) // If no medication is given, then the adherence statement is general; it refers to no particular medication(s)
 	1..1			AdherenceLevel
 	0..*			NonAdherenceReason
 	1..1			Details   // from core
@@ -127,18 +127,18 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 		Concept:		MTH#C1510802
 		Description:	"The frequency that the stated treatment plan, prescription, or protocol is followed."
 		Value:			Coding from FiveFrequencyScaleVS
-		
+
 		Element:		NonAdherenceReason
 		Concept:		TBD
 		Description:	"Reason for not following the stated treatment plan, prescription, or protocol."
 		Value:			Coding from MedicationNonAdherenceReasonVS
-		
+
 	Element:		ReasonForUse
 	Concept:		TBD
 	Description:	"The rationale for why the patient receives a medication or prescription"
 	Value:			Explanation   // TODO: add a reference to problem or condition
-		
-	
+
+
 EntryElement:	MedicationNotAdministered
 Concept:		TBD
 Description:	"A record of a medication not prescribed or administered. Recorded only when deviating from the normal expectation, care plan, or standard of care."
@@ -150,7 +150,7 @@ Description:	"A record of a medication not prescribed or administered. Recorded 
 	Concept:		TBD
 	Description:	"The rationale for NOT using particular medication treatment"
 	Value:			Coding from ReasonNotGivenVS
-	
+
 EntryElement:	MedicationChange
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."
@@ -158,20 +158,20 @@ Description:	"Description of a modification or change of a medication or dosage.
 1..1			TypeOfChange
 0..*			MedicationBeforeChange   //might be more than one
 0..*			MedicationAfterChange   // null if medication was discontinued
-1..1			ReasonForMedicationChange
-			
+//1..1			ReasonForMedicationChange
+
 		Element:		TypeOfChange
 		Concept:		TBD
 		Description:	"Whether the change is a dose change, switch to a new medication, or discontinuation"
 		Value:			Coding from MedicationChangeTypeVS
-		
+
 		Element:		MedicationBeforeChange
 		Concept:		TBD
 		Description:	"The medication taken, prior to the change"
 		Value:			MedicationTaken
-		
+
 		Element:		MedicationAfterChange
 		Concept:		TBD
 		Description:	"A medication taken, after the change"
 		Value:			MedicationTaken
-	
+

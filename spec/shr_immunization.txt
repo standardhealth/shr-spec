@@ -2,72 +2,72 @@ DataDefinitions:	shr.immunization
 Uses:				shr.core, shr.medication
 
 Vocabulary:    		MVX = urn:oid:2.16.840.1.114222.4.11.826  // oid-based identifier for vaccine manufacturer in phin-vads
-Vocabulary:    		CVX = http://hl7.org/fhir/ValueSet/vaccine-code 
+Vocabulary:    		CVX = http://hl7.org/fhir/ValueSet/vaccine-code
 
 Element:		Vaccine
 Concept:		MTH#C1543322
 Description:	"A specific type or manufactured instance of a vaccine, a prophylactic or therapeutic preparation given to produce immune response to pathogenic organisms or substances."
 Value:			Coding from CVX
 0..1			VaccineManufacturer
-0..1			LotNumber	
+0..1			LotNumber
 
 	Element:		VaccineManufacturer
 	Concept:		MTH#C1114744
 	Description:	"The organization that produces the vaccine"
 	Value:			Coding from MVX
-	
+
 	Element:		LotNumber
 	Concept:		MTH#C1115660
 	Description:	"A distinctive alpha-numeric identification code assigned by the manufacturer or distributor to a specific quantity of manufactured material or product within a batch."
 	Value:			string
-	
+
 EntryElement:	ImmunizationAdministered
 Concept:		MTH#C0020971
 Description:	"A record of a vaccination that is or has been administered to the subject."
 1..1 			Vaccine   // has type, lot, manufacturer
 0..1			BodySite   // from core
-0..1			AdminstrationRoute    // from medication
+//0..1			AdminstrationRoute    // from medication
 0..1			AmountOfMedication  // from medication
-0..1			DoseSequenceNumber
+//0..1			DoseSequenceNumber
 
 
-EntryElement:	ImmunizatonNotAdministered 
+EntryElement:	ImmunizatonNotAdministered
 Concept:		TBD
 Description:	"Immunization that was not given to the subject."
 1..1 			Vaccine
-0..1			DoseSequenceNumber   // which dose was missed
+//0..1			DoseSequenceNumber   // which dose was missed
 1..1			ImmunizationNotAdministeredReason //e.g., refused, no supply, patient didn't show up, etc.
 
 	Element:		ImmunizationNotAdministeredReason
 	Concept:		TBD
 	Description:	"Reason the scheduled or intended immunization was not given"
-	Value:			Coding from http://hl7.org/fhir/ValueSet/no-immunization-reason 
+	Value:			Coding from http://hl7.org/fhir/ValueSet/no-immunization-reason
 
-EntryElement:	ImmunizationRecommended 
+EntryElement:	ImmunizationRecommended
 1..1			Vaccine
-0..1			DoseNumber
+//0..1			DoseNumber
 1..1			TargetDateRange
 
 	Element:		TargetDateRange
 	Concept:		TBD
 	Description:	"Dates between which when a future event should occur"
 	Value:			Period
-	
-EntryElement:	ImmunizationRecommendedAgainst 
+
+EntryElement:	ImmunizationRecommendedAgainst
 1..1			Vaccine
-0..1			(Route or Protocol)
+0..1			AdministrationRoute /*or Protocol*/
 1..1			ReasonMedicationNotGiven  // From shr_medication_vs
 
 
 
 /*
 add list of high risk conditions which alter the schedule. Military might get anthrax or other special vaccines
-How about other prophylactics, e.g. For malaria?						
-						
+How about other prophylactics, e.g. For malaria?
+
 Tetanus (Td)						every 10 years
 With Pertussius (Tdap)						1 dose unless pregnant then booster each pregnancy
 Vericella (Chicken Pox) shot or illness						2 doses
-Pneumovax (pneumonia)						
+Pneumovax (pneumonia)
 Influenza (flu shot)						annual; IIV or LIAV route
 Hepatitis A						2 doses
 Hepatitis B						3 doses
@@ -80,15 +80,15 @@ DTaP						5 doses
 HiB						3-4 doses
 PCV13						4 doses as child; one age 65
 IPV						4doses
-Pneumococcal polysaccharide (PPSV23)						
+Pneumococcal polysaccharide (PPSV23)
 MPSV4						1 or more doses
 Meningococcus B						2 or 3 doses
-						
-Contraindications						
-pregnancy, immunocompromized or HIV CD4 cound <200--varicella, zoster, and MMR						
-others with special recommendations: MSM, renal failure/ESRD on dialysis; heart dz; chronic lung dz; Etoh'ism; asplenia; chronic liver fzl DM; healthcare worker						
-						
-						
-Susan: Immunizations--both history per SHR v0.2 and confirmation that ones due during pregnancy are given. TDaP; flu for everyone.  If indicated Hep A, Hep B, meningococcal, pneumococcal. Rhogam at 28 weeks if indicted and other times in pregnancy if indicated.  If patient is not immune needs Varicella and MMR postpartum-----and way to flag that in the SHR with notification triggered by birth.						
-						
+
+Contraindications
+pregnancy, immunocompromized or HIV CD4 cound <200--varicella, zoster, and MMR
+others with special recommendations: MSM, renal failure/ESRD on dialysis; heart dz; chronic lung dz; Etoh'ism; asplenia; chronic liver fzl DM; healthcare worker
+
+
+Susan: Immunizations--both history per SHR v0.2 and confirmation that ones due during pregnancy are given. TDaP; flu for everyone.  If indicated Hep A, Hep B, meningococcal, pneumococcal. Rhogam at 28 weeks if indicted and other times in pregnancy if indicated.  If patient is not immune needs Varicella and MMR postpartum-----and way to flag that in the SHR with notification triggered by birth.
+
 */
