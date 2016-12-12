@@ -1,52 +1,198 @@
 DataDefinitions:	shr.behavior
-Uses:				shr.core, shr.base
+Uses:				shr.core, shr.base, shr.medication
 
-EntryElement:	SmokingStatus
+EntryElement:	TobaccoAbuse
+BasedOn:		SubstanceAbuse
 Concept:		TBD
-Description:	"Whether, and the degree to which, the subject has been or is a current smoker"
-Value:			Coding from http://hl7.org/fhir/us/core/ValueSet/daf-observation-ccdasmokingstatus
+Description:	"Records the subject's use of tobacco"
+Value:			SmokingStatus
+1..1			AbusedSubstance is SCT#39953003 "tobacco"
 
-EntryElement:	PregnancyIntention
+	Element:		SmokingStatus
+	Concept:		TBD
+	Description:	"The subject's smoking status, using the US meaningful use value set"
+	Value:			Coding from http://hl7.org/fhir/us/core/ValueSet/daf-observation-ccdasmokingstatus
+
+EntryElement:	AlcoholAbuse
+BasedOn:		SubstanceAbuse
 Concept:		TBD
-Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
-Value:			Coding from ThreeValueLogicVS
+Description:	"Records the subject's abuse of alcohol"
+Value:			boolean // TODO: value set with shades of grey
+1..1			AbusedSubstance is SCT#XXXXXXX "alcohol"
+0..1			AlcoholAbuseScreeningTool
+0..1			AlcoholBingingFrequency
 
-EntryElement:	SexualIntercourseEver
+	Element:		AlcoholAbuseScreeningTool
+	Concept:		TBD
+	Description:	"The name of the formal screening tool used to assess alcohol abuse or addiction"
+	Value:			Coding from AlcoholAbuseScreeningToolVS
+	
+	Element:		AlcoholBingeingFrequency
+	Concept:		TBD
+	Description:	"How often have you had 6 or more units if female, or 8 or more if male, on a single occasion in the last year?"
+	Value:			Coding from QualitativeOccurrenceFrequencyVS
+
+EntryElement:	SubstanceAbuse
 Concept:		TBD
-Description:	"Whether the subject has ever had sexual intercourse"
-Value:			boolean
+Description:	"A substance, including legal, illegal, and prescription drugs, that is or has been abused by the focal subject."
+1..1			AbusedSubstance
+0..*			OccurrencePeriod   // may be more than one period of abuse (TODO: should that be recorded as one SubstanceAbuse entry or multiple?)
+0..*			AdministrationRoute   // from shr.medication
+0..*			AdministrationMethod
+0..*			AdministrationBodySite
+0..1			FrequencyOfUse
+0..1			ReadinessToQuit
+			
+			
+	Element:		Abused Substance
+	Concept:		TBD
+	Description:	"The substance or class of substances that is abused"
+	Value:			Coding from AbusedSubstanceVS
+			
+	Element:		FrequencyOfUse
+	Concept:		TBD
+	Description:	"How often the abused substance is taken"
+	Value:			Frequency
+	
+	Element:		ReadinessToQuit
+	Concept:		TBD
+	Description:	"Whether the subject is motivated and ready to stop abusing the substance"
+	Value:			Coding from LikelihoodVS
+	
+EntryElement:	SubstanceAbuseTreatment
+Concept: 		TBD
+Description:	"The treatment program used to address a substance abuse problem"
+1..1			SubstanceAbuseTreatmentType
+0..1			OccurrencePeriod
+0..1			Facility
 
-EntryElement:	SexualIntercourseWithinPastYear
-Concept:		TBD
-Description:	"Whether the subject has had sexual intercourse within the last year"
-Value:			boolean
+	Element:		SubstanceAbuseTreatmentType
+	Concept:		TBD
+	Description:	"The type of program or treatment used to address a substance abuse problem"
+	Value:			Coding from SubstanceAbuseTreatmentTypeVS
 
-EntryElement:	ContraceptiveMethodsUsed
-Concept:		TBD
-Description:	"The method or methods of contraception used"
-Value:			1..* Coding from ContraceptiveMethodVS  // note: '#none_of_answer' is included in generic answer value set and can satisfy the lower cardinality
-0..1			ReasonForNotUsingContraceptive
+EntryElement:		ReligiousPractice
+Concept:			TBD
+Description:		"The religion practiced by the focal subject"
+Value:				Coding from http://hl7.org/fhir/v3/ReligiousAffiliation
+0..1		ReligiousPracticeStatus
+0..1		PlaceOfWorship
+0..*		ReligiousRestriction
+0..1		ReligiousRepresentative
+0..1		EffectivePeriod
 
-		Element:		ReasonForNotUsingContraceptive
+		Element:		ReligiousPracticeStatus
 		Concept:		TBD
-		Description:	"If not using a method of contraception, why"
-		Value:			Coding from ContraceptiveNotUsedReasonVS
+		Description:	"The extent to which the religious practice is actively followed"
+		Value:			Coding from ReligiousPracticeStatusVS
+		
+		Element:		PlaceOfWorship
+		Concept:		TBD
+		Description:	"The location of religious practice"
+		Value:			Facility
+		
+		Element:		ReligiousRestriction
+		Concept:		TBD
+		Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)"
+		Value:			Coding from ReligiousRestrictionVS
+		
+EntryElement:		DietAndNutrition
+0..*				SpecialDietFollowed
+1..1				HasSufficientFood
+0..*				DietNutritionConcern
+0..*				FoodAllergy   	// defined in shr.allergy
 
+	Element:		SpecialDietFollowed
+	Concept:		TBD
+	Description:	"A type of nutritional plan followed by the subject"
+	Value:			Coding from SpecialDietFollowedVS
+	
+	Element:		HasSufficientFood
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from FiveFrequencyScaleVS
+	
+	Element:		DietNutritionConcern
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from DietNutritionConcernVS
+	
 
-		// Does not belong here --- but where???
-EntryElement:	ContraceptiveMethodRecommendation
+EntryElement:		ViolentBehaviorRisk
+Concept:			TBD
+Description:		"Risk or danger posed by the focal subject to others and/or his or herself due to violent behavior"
+1..1				ViolentRiskToOthers
+1..1				ViolentRiskToSelf
+
+	Element:		ViolentRiskToOthers
+	Concept:		TBD
+	Description:	"Risk or danger posed by the focal subject to others"
+	Value:			Coding from QualitativeValueScaleVS
+	0..1			Explanation
+
+	Element:		ViolentRiskToSelf
+	Concept:		TBD
+	Description:	"Risk or danger posed by the focal subject to his or herself"
+	Value:			Coding from QualitativeValueScaleVS
+	0..1			Explanation
+	
+EntryElement:		Mood
 Concept:		TBD
-Description:	"The contraceptive method(s) recommended or prescribed by a provider, after counseling and assessment. More than one method can be selected, if applicable. "
-Value:			1..* Coding from ContraceptiveMethodVS
-0..1			ReasonForNotRecommendingContraceptive  // only if not recommending a contraceptive
-1..1			Dispensed
+Description:	""
+Value:			Coding from VS
+	
 
-		Element:		ReasonForNotRecommendingContraceptive
-		Concept:		TBD
-		Description:	"If not using a method of contraception, why"
-		Value:			Coding from ContraceptiveNotUsedReasonVS
+EntryElement:		SleepQuality   // self-reported; can also be lab-tested			
+Concept:			TBD
+Description:		"Self-reported sleep quality"
+Value:				Coding from PerformanceGradingScaleVS
+0..1				TroubleFallingAsleep
+0..1				TroubleStayingAsleep
+0..1				WakeFeelingRested
+0..1				HoursSleepPerNight
+0..*				PoorSleepQualityReason
 
-		Element:		Dispensed
-		Concept:		TBD
-		Description:	"Whether an item, such as a medication or device, was given to a subject."
-		Value:			boolean
+	Element:		TroubleFallingAsleep
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from FiveFrequencyScaleVS
+	
+	Element:		TroubleStayingAsleep
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from FiveFrequencyScaleVS
+	
+	Element:		WakeFeelingRested
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from FiveFrequencyScaleVS
+	
+	Element:		HoursSleepPerNight
+	Concept:		TBD
+	Description:	""
+	Value:			positiveInt
+	
+	Element:		PoorSleepQualityReason
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from PoorSleepQualityReasonVS
+	
+EntryElement:		PhysicalActivityLevel	
+Concept:			TBD
+Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288"
+Value:				Coding from QualitativeValueScaleVS
+0..1				ExerciseHoursPerWeek
+0..*				PhysicalActivityLimitation
+
+	Element:		ExerciseHoursPerWeek
+	Concept:		TBD
+	Description:	"Hours of moderate or vigorous activity per week"
+	Value:			unsignedInt
+
+	Element:		PhysicaActivityLimitation
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from PhysicalActivityLimitationVS
+
+	
+	
