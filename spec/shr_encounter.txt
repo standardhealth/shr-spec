@@ -1,6 +1,15 @@
 DataDefinitions:	shr.encounter
-Uses:				shr.core, shr.base
+Uses:				shr.core, shr.base, shr.demographics, shr.actor
 
+Element:		TreatmentCooperation
+Concept:		TBD
+Description:	"The reason for the subject participating in treatment"
+Value:			Coding from TreatmentCooperationVS
+
+Element:		EpisodeOfCareCompletion
+Concept:		TBD
+Description:	"Denotes how and why an episode of care ended."
+Value:			Coding from EpisodeOfCareCompletionVS
 
 Element:		Facility
 Concept:		MTH#C1547538
@@ -23,12 +32,12 @@ Value:			FacilityName
 	0..1			Address
 	0..1 			Geoposition
 	0..1 			GeopoliticalLocation
-	
+
 	Element:		MobileFacility
 	Concept:		MTH#C0231435
 	Description:	"A facility that moves from place to place, such as Meals-On-Wheels"
 	Value:			boolean
-	
+
 	Element:		ManagingOrganization
 	Concept:		MTH#C0677351
 	Description:	"The organization that manages the operation of an activity, facility, or service provision"
@@ -40,33 +49,68 @@ Value:			FacilityName
 	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
 
 
-EntryElement:	AmbulatoryEncounter
+EntryElement:	Encounter
 Concept:		TBD
 Description:	"An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
-0..1			Facility
-0..1			PaymentSource
-0..1 			MedicalInterpreterNeeded
-// TODO: Participant
 0..1			OccurrencePeriod  // start-end
+0..1			ReferralDate
+0..1			ReferralSourceType
+0..*			EncounterType
+0..*			TBD "Provider"
+1..*			ProviderOrganization
+0..1			Facility  // location
+0..1			TreatmentParticipationQualifier
+0..1			TBD "HealthConcern"
+0..*			TBD "PertinentFindings"
+0..*			TBD "Diagnosis"
+0..1			TBD "FullClinicalNote"
+1..1			TBD "ClinicalSummary"
+1..*			TBD "TreatmentServicesRendered"
+0..1			TBD "CompletionStatus"
+0..1			PaymentSource
 
-	Element:		MedicalInterpreterNeeded
-	Concept:		MTH#C1442531
-	Description:	"Whether a medical interpreter is needed to facilitate communication"
-	Value:			boolean
-	1..1			Language
+	Element:		ReferralDate
+	Concept:		TBD
+	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, FAXed or electronic request for services made by the client or on the client’s behalf."
+	Value:			date
+
+	Element:		ReferralSourceType
+	Concept:		TBD
+	Description:	"The type of person or entity that instigated the encounter."
+	Value:			Coding from ReferralSourceTypeVS
 	
+	Element:		EncounterType
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from EncounterTypeVS
 	
+	Element:		TreatmentParticipationQualifier
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from TreatmentParticipationQualifierVS
+	
+	Element:		ProviderOrganization
+	Concept:		TBD
+	Description:	""
+	Value:			Organization
+	
+	Element:		TreatmentServiceRendered
+	Concept:		TBD
+	Description:	""
+	Value:			Coding from TreatmentServiceVS
+	1..1			TBD "UnitsOfService"
+
 	
 
-	EntryElement:	PaymentSource
+	Element:		PaymentSource
 	Concept:		MTH#C0680269
 	Description:	"The source of payment for the current encounter"
-	Value:			PaymentSourceVS //TBD
-	
-	
-	
-/*	
-Hospitalization		
+	Value:			TBD "PaymentSourceVS"
+
+
+
+/*
+Hospitalization
 	DateTime	Period
 	Location	Reference
 	Organization	Reference
@@ -79,8 +123,8 @@ Hospitalization
 	Discharge Services	Multi Enum
 	Discharge or Transfer Destination	?
 	Discharge Summary	Document
-		
-Emergency Encounter		
+
+Emergency Encounter
 	DateTime	Period
 	Location	Reference
 	Organization	Reference

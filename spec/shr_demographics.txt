@@ -1,5 +1,5 @@
 DataDefinitions:	shr.demographics
-Uses:				shr.core, shr.actors
+Uses:				shr.core, shr.actors, shr.base
 
 Path:			  FHIR = http://hl7.org/fhir/ValueSet
 
@@ -80,7 +80,7 @@ Value:			string
 	Element:		StateOfIssue
 	Concept:		MTH#C1547728
 	Description:	"Issuing authority for a drivers license"
-	Value:			UnitedStatesState
+	Value:			State // UnitedStatesState
 
 EntryElement:	PassportNumber
 Concept:		MTH#C1549737
@@ -104,7 +104,7 @@ Value: 			Coding from InsuranceProviderTypeVS
 	Element:	 	InsuranceMemberId
 	Concept:		TBD
 	Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
-	1..1			Identifier
+	Value:			id
 
 // ------------------------- Residence Address ----------------------
 
@@ -153,3 +153,32 @@ Value:			TelecomNumberOrAddress
 	Description:	"Provides more information about the type and uses of the telephone number"
 	Value:			Coding from TelecomQualifierVS
 
+//-----------------   Language
+
+EntryElement:	LanguageUsed
+Concept:		TBD
+Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
+Value:			Language
+0..1 			SpokenLanguageProficiency
+0..1 			WrittenProficiency
+0..*			LanguageQualifier
+
+		Element:		SpokenLanguageProficiency
+		Concept:		MTH#C0678997
+		Description:	"Accuracy and fluency in spoken communication in a language."
+		Value:			Coding from SimplePerformanceGradingScaleVS
+
+		Element:		WrittenProficiency
+		Concept:		MTH#C0586739
+		Description:	"Accuracy and fluency of reading and writing in a language."
+		Value:			Coding from SimplePerformanceGradingScaleVS
+
+		Element:		LanguageQualifier
+		Description:	"Additional information about a person's use of language"
+		Value:			Coding from LanguageQualifierVS
+
+EntryElement: 		MedicalInterpreterNeeded
+Concept:			MTH#C1442531
+Description:		"Whether the subject requires an interpreter to communicate with an English-speaking provider"
+Value:				boolean
+1..1				Language
