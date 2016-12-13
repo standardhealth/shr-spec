@@ -1,39 +1,46 @@
 DataDefinitions:	shr.allergy
-Uses:				shr.core, shr.base
+Uses:				shr.core, shr.base, shr.adverse
 
 Path:     		FHIR = http://hl7.org/fhir/ValueSet
 Vocabulary:     SCT = http://snomed.info/sct
+Vocabulary:		AICAT = http://hl7.org/fhir/ValueSet/allergy-intolerance-category
 
 Element:		AllergenIrritant
 Concept:		SCT#105590001
-Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc., in particular, substances presenting health risks including (but not exclusively) intolerances and allergies."
+Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc. that may be implicated as sources of intolerances and allergies."
 Value: 			Coding from AllergenIrritantVS  // a list of common allergens and irritants might be substituted
+0..1			SubstanceCategory
 
-// Not currently used
+		Element:		SubstanceCategory
+		Concept:		TBD
+		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. Difficult-to-classify substances can be leave this empty or choose the most typical category."
+		Value:			Coding from FHIR/allergy-intolerance-category
+
+		
+Element:		FoodSubstance
+Concept:		TBD
+Description:	"A substance consumed as a source of nourishment by humans"
+Value:			Coding from FoodSubstanceVS
+
 Element:		NonDrugSubstance
 Concept:		TBD
 Description:	"An encoding of a material, mixture, class or category of substance, including drugs, foods, environmental agents, etc."
 Value:			Coding from NonDrugSubstanceVS
 
-//--- A Person-Specific Risk to the Subject Posed by a Substance, either an allergy or an intolerance
 
-EntryElement:	SubstanceRisk
+//--- A Potential Future Risk to the Subject Posed by a Substance
+
+EntryElement:	AllergyIntolerance
 Concept:		SCT#420134006 "Propensity to adverse reactions"
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances."
 1..1 			AllergenIrritant
-0..1			SubstanceCategory
-0..1			AllergyOrIntolerance
+0..1			AllergyIntoleranceType
 0..*			ExpectedManifestation
 0..1			Criticality
 0..1			Onset    // from core
-0..1			MostRecentOccurrence
+0..*			AdverseReaction
 
-		Element:		SubstanceCategory
-		Concept:		TBD
-		Description:	"Categorization of the risk substance. Difficult-to-classify substances can be leave this empty or choose the most typical category."
-		Value:			Coding from FHIR/allergy-intolerance-category
-
-		Element:		AllergyOrIntolerance
+		Element:		AllergyIntoleranceType
 		Concept:		TBD
 		Description:	"Identification of the underlying physiological mechanism for a Reaction Risk."
 		Value:			Coding from FHIR/allergy-intolerance-type
@@ -51,30 +58,31 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 		Element:		MostRecentOccurrence
 		Concept:		TBD
 		Description:	"The time of the last or latest of a series of events"
-		Value:			dateTime
+		Value:			dateTime or OccurrencePeriod
 
-/*		
+	
 EntryElement:	FoodAllergy
-BasedOn:		SubstanceRisk
+BasedOn:		AllergyIntolerance
 Description:	"An immune or biochemical adverse reaction to a food substance"
-1..1 			AllergenIrritant is Coding from FoodSubstanceVS
-0..1			SubstanceCategory is #food
-*/
+1..1 			AllergenIrritant with Coding from FoodSubstanceVS
+0..1			SubstanceCategory is AICAT#food
 
-EntryElement:	NoKnownSubstanceRisk
+
+EntryElement:	NoKnownAllergyIntolerance
 Concept:		SCT#716186003
 Description:	"A substance or classes of substances to which the subject is not known to be allergic or intolerance."
 1..1			AllergenIrritant
-0..1			PriorExposure   // if true, the conclusion is strengthened
+0..1			PriorExposures
 
-		Element:		PriorExposure
+		Element:		PriorExposures
 		Concept:		TBD
-		Description:	"True if the patient previously has been exposed to the substance"
-		Value:			boolean
+		Description:	"How frequently the patient has been previously exposed to the substance. Past exposures without adverse reaction lower the risk of future reactions."
+		Value:			Coding from FiveFrequencyScaleVS
 
-// The following might not be necessary -- it is isosemantic with NoKnownSubstanceRisk
-Element:		NoKnownSubstanceRiskCodedStatement
+		
+// The following is isosemantic with NoKnownAllergyIntolerance
+Element:		NoKnownAllergyIntoleranceCodedStatement
 BasedOn:		ClinicalFindingAbsent
 Concept:		SCT#373572006
 Description:	"A clinical statement asserting no known risk to a substance or classes of substances."
-Value:			Coding from NoKnownSubstanceRiskVS
+Value:			Coding from NoKnownAllergyIntoleranceVS
