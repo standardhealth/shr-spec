@@ -30,16 +30,16 @@ entryHeader:        KW_ENTRY_ELEMENT simpleName;
 elementProps:       elementProp+;
 elementProp:        basedOnProp | conceptProp | descriptionProp;
 
-values:             (value supportingValue*) | (value? supportingValue+);
+values:             (value field*) | (value? field+);
 
 value:              KW_VALUE (uncountedValue | countedValue);
 uncountedValue:     (valueType (KW_OR valueType)*) | (OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN);
 countedValue:       count valueType | count OPEN_PAREN valueType (KW_OR valueType)* CLOSE_PAREN;
 valueType:          simpleOrFQName | ref | primitive | codeFromVS | elementWithConstraint | tbd;
 
-supportingValue:        countedSupportingValue (KW_OR countedSupportingValue)*;
-countedSupportingValue: count (supportingValueType | OPEN_PAREN supportingValueType (KW_OR supportingValueType)* CLOSE_PAREN);
-supportingValueType:    simpleOrFQName | ref | elementWithConstraint | tbd;
+field:              countedField (KW_OR countedField)*;
+countedField:       count (fieldType | OPEN_PAREN fieldType (KW_OR fieldType)* CLOSE_PAREN);
+fieldType:          simpleOrFQName | ref | elementWithConstraint | tbd;
 
 basedOnProp:        KW_BASED_ON simpleOrFQName;
 conceptProp:        KW_CONCEPT (tbd | concepts);
