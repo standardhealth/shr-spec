@@ -15,7 +15,7 @@ Path:     	FHIR = http://hl7.org/fhir/ValueSet
 // ------------- People ---------------------
 // Just the people, not their role in care...
 
-EntryElement:	CareProfessional
+Element:	CareProfessional
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 Value:			HumanName
@@ -41,7 +41,7 @@ Value:			HumanName
 	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
 	// possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
-EntryElement:	FamilyMember
+Element:	FamilyMember
 Concept:        MTH#C0080103
 Description:    "A person related to the subject of record by blood, adoption, or marriage."
 Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
@@ -54,7 +54,7 @@ Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sib
 	Description:	"Boolean indicator where true indicates the person is deceased."
 	Value:			Coding from ThreeValueLogicVS
 
-EntryElement:	UnrelatedThirdParty
+Element:	UnrelatedThirdParty
 Concept:		MTH#C3242657
 Description:	"A person, other than a professional care provider or family member, who is relevant to the health or social situation of the subject."
 Value:			HumanName
@@ -63,7 +63,7 @@ Value:			HumanName
 
 // ------------- Organizations ------------------
 
-EntryElement:	Organization
+Element:	Organization
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings"
 Value:			1..* OrganizationName
@@ -96,7 +96,7 @@ Concept:		MTH#C1314939
 Description:	"A statement regarding who played a role directly or indirectly in the health of the person of record, at a certain time or over a timeframe."
 Value:			HealthcareRole
 1..1 			HealthcareActor   // missing value reason#none implies no one in the given role during the stated timeframe, e.g., subject has no PCP
-0..1			InvolvementTimeFrame
+0..1			TemporalContext
 0..1			PriorityInRole
 
 	Element:		HealthcareRole
@@ -109,7 +109,7 @@ Value:			HealthcareRole
 	Description:	"A person or organization involved in the care of the subject"
 	Value:			(CareProfessional or Organization or FamilyMember or UnrelatedThirdParty)
 
-	Element:		InvolvementTimeFrame
+	Element:		TemporalContext
 	Concept:		TBD
 	Description:	"The range of dates or an indication the involvement is in the past, present, or planned in the future."
 	Value:			(OccurrencePeriod or PastPresentFuture)
