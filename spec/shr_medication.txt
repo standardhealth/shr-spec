@@ -4,7 +4,6 @@ Uses:				shr.core, shr.base
 Path: 			http://standardhealthrecord.org/medication/vs       // base URL - needed or not?
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 Path:			CORE = http://standardhealthrecord.org/core/vs
-
 Vocabulary:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 
 Element:		Medication
@@ -46,7 +45,7 @@ EntryElement:	MedicationTaken
 Concept:		TBD
 Description:	"Report of a medication prescribed and/or consumed. Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 1..1			Medication
-0..1			Dosage  		// do not include if dosage was not known
+0..1			Dosage		// do not include if dosage was not known
 0..1			Adherence
 1..1			OccurrencePeriod
 1..1 			ReasonForUse
@@ -54,25 +53,20 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 	Element:		Dosage
 	Concept:		MTH#C0178602
 	Description:	"The dosage of the medication as prescribed"
-	1..1			(DoseAmountRange or DoseAmountQuantity)
+	1..1			AmountPerDose 
 	1..1			TimingOfDoses
 	1..1			DoseAsNeededIndicator
 	0..1			DoseInstructionsText
 	0..*			AdditionalDoseInstruction
-	0..1			AdministrationRoute
+	0..1			RouteIntoBody
 	0..1			AdministrationMethod
 	0..1			AdministrationBodySite
-	0..*			MaximumDosePerPeriod  // no more than x in any 24-hour period
+	0..*			MaximumDosePerPeriod // no more than x in any 24-hour period
 
-		Element:		DoseAmountRange
+		Element:		AmountPerDose
 		Concept:		TBD
-		Description:	"The amount of medication taken at each dose, as a range"
-		Value:			TBD "Range"
-
-		Element:		DoseAmountQuantity
-		Concept:		TBD
-		Description:	"The amount of medication taken at each dose, as a quantity"
-		Value:			Quantity
+		Description:	"The amount of medication taken at each dose, as a quantity or range"
+		Value:			Quantity or TBD "Range"
 
 		Element:		TimingOfDoses
 		Concept:		TBD
@@ -94,9 +88,9 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 		Description:	"Supplemental instructions - e.g. 'with meals'"
 		Value:			Coding from FHIR/additional-instructions-codes
 
-		Element:		AdministrationRoute
+		Element:		RouteIntoBody
 		Concept:		MTH#C0013153
-		Description:	"How a medication entered or should enter the body"
+		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
 		Value:			Coding from FHIR/route-codes
 
 		Element:		AdministrationMethod
@@ -126,7 +120,7 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 		Element:		AdherenceLevel
 		Concept:		MTH#C1510802
 		Description:	"The frequency that the stated treatment plan, prescription, or protocol is followed."
-		Value:			Coding from FiveFrequencyScaleVS
+		Value:			Coding from QualitativeFrequencyVS
 
 		Element:		NonAdherenceReason
 		Concept:		TBD

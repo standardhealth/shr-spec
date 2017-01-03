@@ -1,122 +1,164 @@
 DataDefinitions:	shr.behavior
 Uses:				shr.core, shr.base, shr.medication, shr.encounter, shr.allergy
 
-EntryElement:	TobaccoAbuse
-BasedOn:		SubstanceAbuse
-Concept:		TBD
+Vocabulary:     LNC = http://loinc.org
+Vocabulary:     SCT = http://snomed.info/sct
+
+
+EntryElement:	SubstanceUse
+Based on:		ExposureToSubstance, BehavioralHistory   // Special gift to Chris and his team :)
+Concept:		MTH#C024251
+Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
+1..1			Substance with Coding from SubstanceOfAbuseVS
+1..1			SpecificCode is MTH#C024251 "Substance Use"
+1..*			ObservationCategory includes MTH#C024251 "Substance Use"
+
+// It is not clear how to handle smoking status except as a simple observation. It should really be aligned with SubstanceUse.
+EntryElement:	SmokingStatus
+Based on:		Observation
+Concept:		LNC#11367-0
 Description:	"Records the subject's use of tobacco"
-Value:			SmokingStatus
-1..1			AbusedSubstance.Coding is SCT#39953003 "tobacco"
+Value:			Coding from http://hl7.org/fhir0/us/core/ValueSet/daf-observation-ccdasmokingstatus
+1..1			SpecificCode is LNC#11367-0
 
-	Element:		SmokingStatus
-	Concept:		TBD
-	Description:	"The subject's smoking status, using the US meaningful use value set"
-	Value:			Coding from http://hl7.org/fhir/us/core/ValueSet/daf-observation-ccdasmokingstatus
 
-EntryElement:	AlcoholAbuse
-BasedOn:		SubstanceAbuse
-Concept:		TBD
-Description:	"Records the subject's abuse of alcohol"
-Value:			boolean // TODO: value set with shades of grey
-1..1			AbusedSubstance.Coding is SCT#XXXXXXX "alcohol"
-0..1			AlcoholAbuseScreeningTool
+// How can we indicate that a subject used to be an alcoholic, but is now "on the wagon"?
+EntryElement:	AlcoholUse
+Based on:		SubstanceUse
+Concept:		MTH#C0001948
+Description:	"The history of the subject's use of alcohol"
+Value:			Coding from TBD "AlcoholAbuseVS"  // e.g. former heavy drinker, non-drinker, light drinker, moderate drinker, heavy drinker, binge drinker
+1..1			Substance is SCT#398624005 "alcohol"
+0..1			AssessmentTool with Coding from AlcoholAbuseScreeningToolVS
 0..1			AlcoholBingeingFrequency
 
-	Element:		AlcoholAbuseScreeningTool
-	Concept:		TBD
-	Description:	"The name of the formal screening tool used to assess alcohol abuse or addiction"
-	Value:			Coding from AlcoholAbuseScreeningToolVS
-
 	Element:		AlcoholBingeingFrequency
-	Concept:		TBD
+	Concept:		MTH#C0556346
 	Description:	"How often have you had 6 or more units if female, or 8 or more if male, on a single occasion in the last year?"
-	Value:			Coding from QualitativeOccurrenceFrequencyVS
+	Value:			Coding from SemiquantitativeFrequencyVS
+	1..1			SpecificCode is MTH#C0556346
 
-EntryElement:	SubstanceAbuse
-Concept:		TBD
-Description:	"A substance, including legal, illegal, and prescription drugs, that is or has been abused by the focal subject."
-1..1			AbusedSubstance
-0..*			OccurrencePeriod   // may be more than one period of abuse (TODO: should that be recorded as one SubstanceAbuse entry or multiple?)
-0..*			AdministrationRoute   // from shr.medication
-0..*			AdministrationMethod
-0..*			AdministrationBodySite
-0..1			FrequencyOfUse
-0..1			ReadinessToQuit
-
-
-	Element:		AbusedSubstance
-	Concept:		TBD
-	Description:	"The substance or class of substances that is abused"
-	Value:			Coding from AbusedSubstanceVS
-
-	Element:		FrequencyOfUse
-	Concept:		TBD
-	Description:	"How often the abused substance is taken"
-	Value:			Frequency
-
-	Element:		ReadinessToQuit
-	Concept:		TBD
-	Description:	"Whether the subject is motivated and ready to stop abusing the substance"
-	Value:			Coding from LikelihoodVS
-
-EntryElement:	SubstanceAbuseTreatment
-Concept: 		TBD
-Description:	"The treatment program used to address a substance abuse problem"
-1..1			SubstanceAbuseTreatmentType
-0..1			OccurrencePeriod
-0..1			Facility
-
-	Element:		SubstanceAbuseTreatmentType
-	Concept:		TBD
-	Description:	"The type of program or treatment used to address a substance abuse problem"
-	Value:			Coding from SubstanceAbuseTreatmentTypeVS
-
-EntryElement:		ReligiousPractice
-Concept:			TBD
-Description:		"The religion practiced by the focal subject"
-Value:				Coding from http://hl7.org/fhir/v3/ReligiousAffiliation
-0..1		ReligiousPracticeStatus
-0..1		PlaceOfWorship
-0..*		ReligiousRestriction
-0..1		TBD "ReligiousRepresentative"
-0..1		EffectivePeriod
+EntryElement:	ReligiousPractice
+Concept:		MTH#C0035039
+Based on:		Observation
+Description:	"The religion practiced by the focal subject"
+Value:			Coding from http://hl7.org/fhir/v3/ReligiousAffiliation
+1..1			SpecificCode is LNC#81364-2
+0..1			ReligiousPracticeStatus
+0..*			ReligiousRestriction
+0..1			ReligiousCongregation
+0..1			TBD "ReligiousRepresentative"
 
 		Element:		ReligiousPracticeStatus
 		Concept:		TBD
 		Description:	"The extent to which the religious practice is actively followed"
 		Value:			Coding from ReligiousPracticeStatusVS
 
-		Element:		PlaceOfWorship
-		Concept:		TBD
-		Description:	"The location of religious practice"
-		Value:			Facility
-
 		Element:		ReligiousRestriction
 		Concept:		TBD
 		Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)"
 		Value:			Coding from ReligiousRestrictionVS
 
+		Element:		ReligiousCongregation
+		Concept:		TBD
+		Description:	"A group of place of religious practice"
+		Value:			string
+
 EntryElement:		DietAndNutrition
+Concept:			MTH#C0012155
+Based on:			Observation
+Description:		"The usual food and drink consumed by an individual"
+Value:				Coding from TBD "DietAndNutritionVS"  // summary values for overall nutrition healthiness
+1..1				SpecificCode is MTH#C0012155
 0..*				SpecialDietFollowed
 1..1				HasSufficientFood
 0..*				DietNutritionConcern
-//0..*				FoodAllergy   	defined in shr.allergy
+0..*				FoodAllergy  // optional pointers to food allergies, defined in shr.allergy
 
-	Element:		SpecialDietFollowed
-	Concept:		TBD
-	Description:	"A type of nutritional plan followed by the subject"
-	Value:			Coding from SpecialDietFollowedVS
+		Element:		SpecialDietFollowed
+		Concept:		TBD
+		Description:	"A type of nutritional plan followed by the subject"
+		Value:			Coding from SpecialDietFollowedVS
 
-	Element:		HasSufficientFood
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from FiveFrequencyScaleVS
+		Element:		HasSufficientFood
+		Concept:		TBD
+		Description:	""
+		Value:			Coding from QualitativeFrequencyVS
 
-	Element:		DietNutritionConcern
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from DietNutritionConcernVS
+		Element:		DietNutritionConcern
+		Concept:		TBD
+		Description:	""
+		Value:			Coding from DietNutritionConcernVS
 
+
+EntryElement:		SleepQuality   // self-reported; can also be determined via a sleep study
+Concept:			MTH#C0424563
+Based on:			Observation
+Description:		"Self-reported sleep quality"
+Value:				Coding from PerformanceGradingScaleVS
+1..1				SpecificCode is LNC#28323-4
+0..1				TroubleFallingAsleep
+0..1				TroubleStayingAsleep
+0..1				WakeFeelingRested
+0..1				HoursSleepPerNight
+0..*				SleepQualityReason
+
+		Element:		TroubleFallingAsleep
+		Concept:		TBD
+		Description:	"How often the subject has trouble falling asleep"
+		Value:			Coding from QualitativeFrequencyVS
+
+		Element:		TroubleStayingAsleep
+		Concept:		TBD
+		Description:	"How often the subject has trouble staying asleep"
+		Value:			Coding from QualitativeFrequencyVS
+
+		Element:		WakeFeelingRested
+		Concept:		TBD
+		Description:	"How often the subject feels rested when they wake up"
+		Value:			Coding from QualitativeFrequencyVS
+
+		Element:		HoursSleepPerNight
+		Concept:		LNC#65968-0
+		Description:	"Typical hours spent sleeping per night"
+		Value:			positiveInt
+
+		Element:		SleepQualityReason
+		Concept:		TBD
+		Description:	"Reason for poor sleep quality"
+		Value:			Coding from SleepQualityReasonVS
+
+EntryElement:		PhysicalActivityLevel
+Based on:			Observation
+Concept:			MTH#C0026606
+Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288"
+Value:				Coding from QualitativeValueScaleVS
+1..1				SpecificCode is LNC#28323-4
+0..1				ExerciseHoursPerWeek
+0..*				PhysicalActivityLimitation
+
+		Element:		ExerciseHoursPerWeek
+		Concept:		TBD
+		Description:	"Hours of moderate or vigorous activity per week"
+		Value:			unsignedInt   // TODO: change to ratio with units hours per one week
+
+		Element:		PhysicalActivityLimitation
+		Concept:		TBD
+		Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions"
+		Value:			Coding from PhysicalActivityLimitationVS
+
+EntryElement:	SubstanceAbuseTreatment
+Concept: 		TBD
+Based on:		TBD "Program"
+Description:	"The treatment program used to address a substance abuse problem"
+1..1			SubstanceAbuseTreatmentType
+0..1			OccurrencePeriod
+0..1			Facility
+
+		Element:		SubstanceAbuseTreatmentType
+		Concept:		TBD
+		Description:	"The type of program or treatment used to address a substance abuse problem"
+		Value:			Coding from SubstanceAbuseTreatmentTypeVS
 
 EntryElement:		ViolentBehaviorRisk
 Concept:			TBD
@@ -124,75 +166,21 @@ Description:		"Risk or danger posed by the focal subject to others and/or his or
 1..1				ViolentRiskToOthers
 1..1				ViolentRiskToSelf
 
-	Element:		ViolentRiskToOthers
-	Concept:		TBD
-	Description:	"Risk or danger posed by the focal subject to others"
-	Value:			Coding from QualitativeValueScaleVS
-	0..1			Explanation
+		Element:		ViolentRiskToOthers
+		Concept:		TBD
+		Description:	"Risk or danger posed by the focal subject to others"
+		Value:			Coding from QualitativeValueScaleVS
+		0..1			Explanation
 
-	Element:		ViolentRiskToSelf
-	Concept:		TBD
-	Description:	"Risk or danger posed by the focal subject to his or herself"
-	Value:			Coding from QualitativeValueScaleVS
-	0..1			Explanation
+		Element:		ViolentRiskToSelf
+		Concept:		TBD
+		Description:	"Risk or danger posed by the focal subject to his or herself"
+		Value:			Coding from QualitativeValueScaleVS
+		0..1			Explanation
 
-EntryElement:		Mood
+/*
+EntryElement:	Mood
 Concept:		TBD
 Description:	""
-Value:			Coding from VS
-
-
-EntryElement:		SleepQuality   // self-reported; can also be lab-tested
-Concept:			TBD
-Description:		"Self-reported sleep quality"
-Value:				Coding from PerformanceGradingScaleVS
-0..1				TroubleFallingAsleep
-0..1				TroubleStayingAsleep
-0..1				WakeFeelingRested
-0..1				HoursSleepPerNight
-0..*				PoorSleepQualityReason
-
-	Element:		TroubleFallingAsleep
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from FiveFrequencyScaleVS
-
-	Element:		TroubleStayingAsleep
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from FiveFrequencyScaleVS
-
-	Element:		WakeFeelingRested
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from FiveFrequencyScaleVS
-
-	Element:		HoursSleepPerNight
-	Concept:		TBD
-	Description:	""
-	Value:			positiveInt
-
-	Element:		PoorSleepQualityReason
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from PoorSleepQualityReasonVS
-
-EntryElement:		PhysicalActivityLevel
-Concept:			TBD
-Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288"
-Value:				Coding from QualitativeValueScaleVS
-0..1				ExerciseHoursPerWeek
-0..*				PhysicalActivityLimitation
-
-	Element:		ExerciseHoursPerWeek
-	Concept:		TBD
-	Description:	"Hours of moderate or vigorous activity per week"
-	Value:			unsignedInt
-
-	Element:		PhysicalActivityLimitation
-	Concept:		TBD
-	Description:	""
-	Value:			Coding from PhysicalActivityLimitationVS
-
-
-
+Value:			Coding
+*/

@@ -3,27 +3,117 @@ Uses:				shr.core, shr.demographics
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
-/*
-	People and organizations that are:
-	- involved in care
-	- related to the subject (may be alive of dead)
-	- anyone who may be contacted(such as a case manager)
 
-	Involvments record that a person is acting in a certain capacity (role) during a period of time
-*/
+// ------------- Person ---------------------
 
-// ------------- People ---------------------
-// Just the people, not their role in care...
+Element:		Person
+Concept:		TBD
+Description:	"A person, particularly those relevant to the health or social situation of the subject (including the person of record)."
+Value:			0..* HumanName
+0..1			Anonymized
+0..1			FictionalPerson
+0..1			DateOfBirth
+0..1			AdministrativeGender
+0..1			FamilialRelationship
+0..1		 	Race
+0..1		 	Ethnicity
+0..*			AddressUsed
+0..*			Telecom
+0..*			LanguageUsed
+0..1			DeceasedIndicator
 
-Element:	CareProfessional
+	Element:		Anonymized
+	Concept:		TBD
+	Description:	"Flag indicating if personally identifiable information has been withheld"
+	Value:			boolean
+
+	Element:		FictionalPerson
+	Concept:		TBD
+	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person"
+	Value:			boolean
+
+	Element:   		DateOfBirth
+	Concept:        MTH#C2919018, LNC#21112-8
+	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
+	Value: 			date or Period
+
+	Element:		AdministrativeGender
+	Concept:		MTH#C1550327
+	Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
+	Value:          Coding from FHIR/administrative-gender
+
+	Element:		FamilialRelationship
+	Concept:		TBD
+	Description:	"The relationship of this person to the person of record, if the person is in the same (extended) family"
+	Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
+	
+	Element:		Race
+	Concept:		MTH#C0034510
+	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
+	Value:			Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html 
+	0..*			RaceDetail
+	
+		Element:		RaceDetail
+		Concept:		TBD
+		Description:	"Additional description of race or heritage."
+		Value:			Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-detailed-race.html or Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html 
+	
+	Element:		Ethnicity
+	Concept:		MTH#C0015031
+	Description:    "Indicator of Hispanic or Latino origin."
+	Value:          Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html
+	0..*			EthnicityDetail
+	
+		Element:		EthnicityDetail
+		Concept:		TBD
+		Description:	"Additional description of ethnicity"
+		Value:			Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html or Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-detailed-ethnicity.html
+	
+
+//-----------------   Language
+
+	Element:		LanguageUsed
+	Concept:		TBD
+	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
+	Value:			Language
+	0..1 			SpokenLanguageProficiency
+	0..1 			WrittenProficiency
+	0..*			LanguageQualifier
+
+			Element:		SpokenLanguageProficiency
+			Concept:		MTH#C0678997
+			Description:	"Accuracy and fluency in spoken communication in a language."
+			Value:			Coding from SimplePerformanceGradingScaleVS
+
+			Element:		WrittenProficiency
+			Concept:		MTH#C0586739
+			Description:	"Accuracy and fluency of reading and writing in a language."
+			Value:			Coding from SimplePerformanceGradingScaleVS
+
+			Element:		LanguageQualifier
+			Description:	"Additional information about a person's use of language"
+			Value:			Coding from LanguageQualifierVS
+
+	Element:		DeceasedIndicator
+	Concept:		MTH#C0011065
+	Description:	"Boolean indicator where true indicates the person is deceased."
+	Value:			Coding from ThreeValueLogicVS
+	
+//--------------  Practitioner -------------------
+	
+Element:		Practitioner
+Based on:		Person
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 Value:			HumanName
-0..*    		Telecom
+0..1			DateOfBirth
+0..1			AdministrativeGender
+0..*			AddressUsed
+0..*			Telecom
+0..*			LanguageUsed
 0..*			Affiliation
 0..1    		NationalProviderIdentifier
 0..*    		MedicalSpecialty
-0..1			AdministrativeGender
 
 	Element:    	Affiliation
 	Concept:        MTH#C0932026
@@ -33,7 +123,7 @@ Value:			HumanName
 	Element: 		NationalProviderIdentifier
 	Concept:		MTH#C1549728
 	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry"
-	Value:			string
+	Value:			TBD "Identifier"
 
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
@@ -41,40 +131,27 @@ Value:			HumanName
 	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
 	// possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
-Element:	FamilyMember
-Concept:        MTH#C0080103
-Description:    "A person related to the subject of record by blood, adoption, or marriage."
-Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
-1..*    		HumanName
-0..*    		Telecom
-1..1 	  		DeceasedIndicator
-
-	Element:		DeceasedIndicator
-	Concept:		MTH#C0011065
-	Description:	"Boolean indicator where true indicates the person is deceased."
-	Value:			Coding from ThreeValueLogicVS
-
-Element:	UnrelatedThirdParty
-Concept:		MTH#C3242657
-Description:	"A person, other than a professional care provider or family member, who is relevant to the health or social situation of the subject."
-Value:			HumanName
-0..*    		Telecom
-
 
 // ------------- Organizations ------------------
 
-Element:	Organization
+Element:		Organization
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings"
-Value:			1..* OrganizationName
+Value:			OrganizationName
+0..*			OrganizationAlias
 1..1			OrganizationType
-0..1			OrganizationIdentifyingCode
+0..*			OrganizationIdentifyingCode
+0..*			AddressUsed
 0..*			Telecom
-0..1    		NationalProviderIdentifier
 
 	Element:		OrganizationName
 	Concept:		TBD
-	Description:	"The name of the organization. Sometimes the name is not unique, so we allow for multiple names for the same organization."
+	Description:	"The name of the organization."
+	Value:			string
+	
+	Element:		OrganizationAlias
+	Concept:		TBD
+	Description:	"A list of alternate names that the organization is known as, or was known as in the past."
 	Value:			string
 
 	Element:		OrganizationType
@@ -84,47 +161,32 @@ Value:			1..* OrganizationName
 
 	Element:		OrganizationIdentifyingCode
 	Concept:		TBD
-	Description:	"A code identifying a specific organization, for example, an MVX code for a vaccine manufacturer"
-	Value:			Coding
+	Description:	"A code identifying a specific organization. The NPI should be provided, if available. Other business identifiers, such employer tax ID, or MVX code for vaccine manufacturers, should also be provided."
+	Value:			TBD "Identifier"
 
 
 //  -------------------- Involvement in Healthcare -------------------------
 //  One individual can play different or multiple roles at different times
 
-EntryElement:	HealthcareInvolvement  // The subject's PCP, neurologist, dietician, massage therapist, etc.
+EntryElement:	Provider			  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
 Concept:		MTH#C1314939
-Description:	"A statement regarding who played a role directly or indirectly in the health of the person of record, at a certain time or over a timeframe."
-Value:			HealthcareRole
-1..1 			HealthcareActor   // missing value reason#none implies no one in the given role during the stated timeframe, e.g., subject has no PCP
-0..1			TemporalContext
-0..1			PriorityInRole
+Description:	"A person or organization providing a service to the person of record at a particular time or over a given time interval."
+Value: 			Person or Organization   // #none_answer implies no one in the given role during the stated timeframe, e.g., subject has no PCP; #exists_answer implies someone was in the given role during the time period but the identity of that actor is unknown
+1..*			HealthcareRole
 
 	Element:		HealthcareRole
 	Concept:		TBD
 	Description:	"A type of service provided to the subject"
 	Value:			Coding from HealthcareRoleVS or Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
-
-	Element:		HealthcareActor   // Should we include computer systems? Devices?
-	Concept:		TBD
-	Description:	"A person or organization involved in the care of the subject"
-	Value:			(CareProfessional or Organization or FamilyMember or UnrelatedThirdParty)
-
-	Element:		TemporalContext
-	Concept:		TBD
-	Description:	"The range of dates or an indication the involvement is in the past, present, or planned in the future."
-	Value:			(OccurrencePeriod or PastPresentFuture)
-
-	Element:		PriorityInRole   // TODO: typically captured as a qualifier
-	Concept:		TBD
-	Description: 	"If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example of a prioritized list is Emergency Contacts"
-	Value:			Priority
-
+	0..1			TemporalContext
+	0..1			Priority  //  If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example is a prioritized list of emergency contacts
 
 Element:		Performer
 Concept:		MTH#C1550369
 Description:	"An actor who performs a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with a specific task, such admitting a patient, performing a procedure, or taking a measurement"
-Value:			HealthcareActor
+Value:			Person or Organization
 0..1 			ParticipationType
+0..1			dateTime or Period
 
 	Element:		ParticipationType
 	Concept:		MTH#C1553854

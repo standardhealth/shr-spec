@@ -28,16 +28,17 @@ Description:	"An encoding of a material, mixture, class or category of substance
 Value:			Coding from NonDrugSubstanceVS
 
 
-//--- A Potential Future Risk to the Subject Posed by a Substance
+//--- A Potential Future Risk to the Subject Posed by exposure to a Substance
 
 EntryElement:	AllergyIntolerance
 Concept:		SCT#420134006 "Propensity to adverse reactions"
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances."
 1..1 			AllergenIrritant
 0..1			AllergyIntoleranceType
-0..*			ExpectedManifestation
+0..*			ExpectedManifestation 
 0..1			Criticality
-0..1			Onset    // from core
+0..1			Onset
+0..1			MostRecentOccurrence
 0..*			AdverseReaction
 
 		Element:		AllergyIntoleranceType
@@ -62,27 +63,26 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 
 	
 EntryElement:	FoodAllergy
-BasedOn:		AllergyIntolerance
+Based on:		AllergyIntolerance
 Description:	"An immune or biochemical adverse reaction to a food substance"
 1..1 			AllergenIrritant with Coding from FoodSubstanceVS
 0..1			SubstanceCategory is AICAT#food
-
 
 EntryElement:	NoKnownAllergyIntolerance
 Concept:		SCT#716186003
 Description:	"A substance or classes of substances to which the subject is not known to be allergic or intolerance."
 1..1			AllergenIrritant
-0..1			PriorExposures
+0..1			PriorExposure
 
-		Element:		PriorExposures
+		Element:		PriorExposure
 		Concept:		TBD
 		Description:	"How frequently the patient has been previously exposed to the substance. Past exposures without adverse reaction lower the risk of future reactions."
-		Value:			Coding from FiveFrequencyScaleVS
+		Value:			Coding from QualitativeFrequencyVS
 
 		
 // The following is isosemantic with NoKnownAllergyIntolerance
 Element:		NoKnownAllergyIntoleranceCodedStatement
-BasedOn:		ClinicalFindingAbsent
+Based on:		ClinicalFindingAbsent
 Concept:		SCT#373572006
 Description:	"A clinical statement asserting no known risk to a substance or classes of substances."
 Value:			Coding from NoKnownAllergyIntoleranceVS

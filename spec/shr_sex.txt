@@ -1,41 +1,61 @@
 DataDefinitions:	shr.sex
 Uses:				shr.core, shr.base
 
-EntryElement:	BirthSex
-Concept:		MTH#C4086849
-Description:	"Sex at birth, as indicated through morphology"
-Value:			Coding from BirthSexVS
-
 EntryElement:	PregnancyIntention
 Concept:		TBD
+Based on:		Observation
 Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
 Value:			Coding from ThreeValueLogicVS
 
-EntryElement:	SexualIntercourseEver
+
+EntryElement:	SexualIdentity
 Concept:		TBD
-Description:	"Whether the subject has ever had sexual intercourse"
-Value:			boolean
+Based on:		Observation
+Description:	"Information on gender identity and sexual orientation"
+0..1			GenderIdentity
+0..1			SexualOrientation
 
-EntryElement:	SexualIntercourseWithinPastYear
-Concept:		TBD
-Description:	"Whether the subject has had sexual intercourse within the last year"
-Value:			boolean
+	Element:		GenderIdentity
+	Concept:		MTH#C0017249
+	Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
+	Value:			Coding from GenderIdentityVS  // Do not use Snomed; it stupidly refers to atypical gender identities as "disorders"
 
-EntryElement:	GenderIdentity
-Concept:		MTH#C0017249
-Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
-Value:			Coding from GenderIdentityVS  // Do not use Snomed, they refer to atypical gender identities as "disorders"
+	Element:		SexualOrientation
+	Concept:		MTH#C0205949
+	Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
+	Value:			Coding from SexualOrientationVS
 
-EntryElement:	SexualOrientation
-Concept:		MTH#C0205949
-Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
-Value:			Coding from SexualOrientationVS
+EntryElement:	SexualHistory
+Concept:		MTH#C1314687
+Based on:		Observation
+Description:	"Experience with sexual intercourse"
+1..1			SpecificCode is MTH#C1314687
+1..*			SexualActivity
+0..1			NumberOfSexualPartnersPastYear
+0..*			DifficultyWithIntercourse 
+
+	Element:		SexualActivity
+	Concept:		MTH#C0241028
+	Description:	"Characterization of the sexual activity of the subject"
+	Value:			Coding from SexualActivityVS
+	
+	Element:		NumberOfSexualPartnersPastYear
+	Concept:		MTH#C0556468
+	Description:	"Number of sexual partners in past year"
+	Value:			unsignedInt
+	
+	Element:		DifficultyWithIntercourse
+	Concept:		TBD
+	Description:	"Problem with sexual intercourse"
+	Value:			Coding from DifficultWithIntercourseVS
 
 
 EntryElement:	ContraceptiveMethodsUsed
+Based on:		Observation
 Concept:		TBD
 Description:	"The method or methods of contraception used"
 Value:			1..* Coding from ContraceptiveMethodVS  // note: '#none_of_answer' is included in generic answer value set and can satisfy the lower cardinality
+0..1			Reason with Coding from TBD "ContraceptiveMethodReasonVS"
 0..1			ReasonForNotUsingContraceptive
 
 		Element:		ReasonForNotUsingContraceptive
@@ -44,7 +64,6 @@ Value:			1..* Coding from ContraceptiveMethodVS  // note: '#none_of_answer' is i
 		Value:			Coding from ContraceptiveNotUsedReasonVS
 
 
-		// Does not belong here --- but where???
 EntryElement:	ContraceptiveMethodRecommendation
 Concept:		TBD
 Description:	"The contraceptive method(s) recommended or prescribed by a provider, after counseling and assessment. More than one method can be selected, if applicable. "

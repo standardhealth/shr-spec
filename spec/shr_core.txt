@@ -43,9 +43,9 @@ Value:			code
 
 Element:		SpecificCode
 Concept:		TBD
-Description:	"A Coding from a controlled vocabulary that defines or further defines the data element in question"
+Description:	"A term from a controlled vocabulary that defines the data element as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept of a medication statement is medication used by the patient, but the specific code is the particular medication used. For tests, it identifies the specific test being performed, and for observations, the question being asked."
 Value:			Coding
-	
+
 // -------------------  Quantities -----------------
 
 Element:		Quantity
@@ -65,7 +65,6 @@ Value:			decimal
 		Description:	"UCUM code for the unit of measure of the quantity"
 		Value:			Coding from UCUM
 
-
 Element: 		Priority
 Concept:		MTH#C0549179
 Description:	"An ordinal numbered priority where 1=highest priority, 2=second highest priority, etc"
@@ -75,11 +74,6 @@ Element:		Count
 Concept:		MTH#C0750480
 Description:	"The number of non-null items in a referenced set of items or values"
 Value:			positiveInt
-
-Element:		Age
-Concept:		MTH#C0001779
-Description:	"How long something has existed; elapsed time since birth."
-Value:			Duration
 
 Element:		Ratio
 Concept:		MTH#C0456603
@@ -102,29 +96,100 @@ Concept:		MTH#C0439165
 Description:	"A percentage value, 0 to 100"
 Value:			positiveInt
 
+Element:		QuantitativeLikelihood
+Concept:		MTH#C0033204
+Description:	"A measure of the expectation of the occurrence of a particular event."
+Value:			decimal  // between 1.0 and 1.0
 
-// --------------- Times, Dates, and Ranges ----------------
+Element:		Likelihood
+Concept:		TBD
+Description:	"A quantitative or qualitative (subjective) likelihood"
+Value:			QuantitativeLikelihood or Coding from QualitativeLikelihoodVS
+
+// --------------- Period, Duration, Frequency ----------------
+
+Element:		DateTime
+Concept:		TBD
+Description:	"A point in time, specified qualitatively or quantitatively"
+Value:			dateTime or Coding from QualitativeDateTimeVS
 
 Element:		Period
 Concept:		MTH#C1948053
 Description:	"A period of time defined by a start and end time, date, or year"
-1..1			StartTime
-0..1			EndTime  // lack of end time indicates the period was continuing at the time the entry was created
+1..1			StartDateTime
+0..1			EndDateTime  // lack of end time indicates the period was continuing at the time the entry was created
 
-	Element: 		StartTime    // synonym "EffectiveDate"
+	Element: 		StartDateTime    // synonym "EffectiveDate"
 	Concept: 		MTH#C1301880
 	Description: 	"The time at which something is to take effect, start, or did start."
-	Value:			(dateTime or date)
+	Value:			dateTime
 
-	Element:		EndTime
+	Element:		EndDateTime
 	Concept:		MTH#C1522314
 	Description:	"The time at which something is to end or did end."
-	Value:			(dateTime or date)
+	Value:			dateTime
 
-Element:		Duration
+Element:		QuantitativeDuration
+Based on:		Quantity
 Concept:		MTH#C0449238
 Description:	"The length of time that something continues"
-Value:			time
+Value:			Quantity
+1..1			Quantity.UnitOfMeasure is Coding from TimeUnitOfMeasureVS
+
+Element:		Duration
+Concept:		TBD
+Description:	"The duration of an event, qualitatively or quantitatively"
+Value:			QuantitativeDuration or Coding from SemiquantitativeDurationVS
+
+Element:		QuantitiveFrequency
+Concept:		MTH#C0376249
+Description:	"How many occurrences of an event per unit of time"
+1..1			Count
+1..1			Duration
+
+Element:		Frequency
+Concept:		TBD
+Description:	"The frequency of an event, qualitatively or quantitatively"
+Value:			QuantitativeFrequency or Coding from SemiquantitativeFrequencyVS or Coding from QualitativeFrequencyVS
+
+
+// ---------------- Interpretations of Time
+
+Element:		TemporalContext
+Concept:		TBD
+Description:	"The range of dates or other indication of time associated with a past, present, or future event."
+Value:			dateTime or Period or QualitativeDateTime or Age or AgeRange or GestationalAge or GestationalPeriod
+
+Element:		Age
+Concept:		MTH#C0001779
+Description:	"How long something has existed."
+Value:			Duration
+
+Element:		AgeRange
+Concept:		TBD
+Description:	"A range of ages"
+1..1			LowerAge
+0..1			UpperAge
+
+	Element:		LowerAge
+	Concept:		TBD
+	Description:	"The lower end of an age range"
+	Value:			Age
+	
+	Element:		UpperAge
+	Concept:		TBD
+	Description:	"The upper end of an age range"
+	Value:			Age
+
+Element:		GestationalPeriod
+Concept:		TBD
+Description:	"A time relative to a pregnancy or childbirth event"
+Value:			TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
+
+Element:		GestationalAge
+Concept:		MTH#C0017504
+Description:	"The age of the conceptus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
+Value:			Age
 
 Element:		EffectiveDate
 Concept:		MTH#C1301880
@@ -140,17 +205,6 @@ Element:		OccurrencePeriod
 Concept:		TBD
 Description:	"The date and time span in which something happens."
 Value:			Period
-
-Element:		PastPresentFuture
-Concept:		TBD
-Description:	"Refers to a time or time period, either in the past, present, or future"
-Value: 			Coding from PastPresentFutureVS
-
-Element:		Frequency
-Concept:		MTH#C0376249
-Description:	"How many occurrences of an event per unit of time"
-1..1			Count
-1..1			Duration
 
 //---------------  Locations and Addresses -----------------
 
@@ -220,33 +274,47 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 	Element:    	Country
 	Concept:		MTH#C0454664
 	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
-	Value:         	Coding from CC
+	Value:         	Coding from CC  // Coding is not a string!
+	
+Element:		Location
+Concept:		MTH#C0450429
+Description:	"A position, site, or point in space where something can be found."
+Value:			Address or Geoposition or GeopoliticalLocation	
 
-/*------------  An idea for profiling -----------
+Element:		Setting
+Concept:		TBD
+Description:	"Description of the place or type of surroundings where something is positioned or where an event takes place."
+Value:			Coding from SettingVS
 
-Element:    	UnitedStatesAddress "Address"
+
+//------------  US Address Profile -----------
+
+Element:    	UnitedStatesAddress 
 Concept:		TBD   // more specific concept than Address
-Description:    "A US physical address expressed using postal conventions (as opposed to GPS or other formats). (Source: HL7 FHIR)"
-State:			UnitedStatesState
-Country:		CC#US   // fixed
+Based on:		Address
+Description:    "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)"
+1..1			State is UnitedStatesState
+1..1			Country is CC#US   // fixed
 
-	Element:		UnitedStatesState "State"
+	Element:		UnitedStatesState
+	Based on:		State
 	Concept:		MTH#C3148680
 	Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
-	Value:			Coding from http://pe.usps.com/text/pub28/28apb.htm
- */
+	Value:			code from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
 	
 //-------------------  Human Name ------------------
-// Defines a human name element (no context on the use of the name)
+// Defines a human name element
 
 Element:   		HumanName
 Concept: 		MTH#C1547383
-Description:	"A full name for a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)"
+Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)"
 Value:			string
 0..1    		HumanNamePrefix
 0..1    		GivenName
 0..1    		FamilyName
 0..*    		HumanNameSuffix
+0..* 			HumanNameUse
+0..1 			EffectivePeriod
 
 		Element:    	GivenName
 		Concept:		LNC#45392-8, SCT#408677003
@@ -267,11 +335,16 @@ Value:			string
 		Concept:		LNC#45395-1, SCT#715196001
 		Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
 		Value:          string
+		
+		Element:    	HumanNameUse
+		Concept:		TBD
+		Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
+		Value:          Coding from FHIR/name-use
 
 
 //------------  Symptom -------------
 
-EntryElement:   SymptomReported  // complaint?
+Element:   		Symptom  // complaint?
 Concept:		MTH#C1457887
 Description:	"A complaint or observed (subjective) indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
 Value:			Coding from SymptomVS
@@ -378,3 +451,8 @@ Element:		Version
 Concept:		MTH#C0333052
 Description:	"A string identifying the particular of form of something (such as a code system or software product) that is different in some way from another form of the same thing."
 Value:			string
+
+Element:		Reason
+Concept:		MTH#C0566251
+Description:	"The justification for an action, conclusion, opinion, etc."
+Value:			string or Coding

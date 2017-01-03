@@ -1,34 +1,113 @@
 DataDefinitions:	shr.lab
 Uses:				shr.core, shr.base
 
+Vocabulary: 	OBSCAT = http://hl7.org/fhir/observation-category
+
+//-------------- Base for Test Requests and Results(diagnostic measurements, tests, vital signs, radiology, etc.) -------------
+		
+EntryElement:	TestRequest
+Concept:		MTH#C1273874
+Description:	"A record of a request for a diagnostic investigation service to be performed. The requested test can be any laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
+Value: 			SpecificCode
+0..1 			SpecimenType
+0..1			TestMethod
+0..1 			BodySite
+0..1 			BodyPosition
+0..*			Qualifier
+0..1 			TBD "Device"
+1..1			RequestStatus // orders with 'draft' or 'entered in error' status do not appear in the SHR
+0..1			TestTiming
+0..1 			PriorityOfRequest
+0..*			(RequestedPerformerType or RequestedPerformer)
+0..1			ReasonForRequest
+0..1			PerformerInstructions
+0..1			PatientInstructions
+
+		Element:		SpecificCode
+		Concept:		TBD
+		Description:	"The code for a laboratory, radiologic, or other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
+		Value:			Coding
+
+		Element:		SpecimenType
+		Concept:		TBD
+		Description:	"Kind of material that forms the specimen"
+		Value:			Coding from http://hl7.org/fhir/ValueSet/v2-0487
+
+		Element:		TestMethod
+		Concept:		MTH#C1299991
+		Description:	"The technique used to carry out a procedure, if not implicit in the test code"
+		Value:			Coding
+
+		Element:		Qualifier
+		Concept:		MTH#C1443279
+		Description:	"A description of the conditions or context of a test, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."	
+		Value:			Coding
+		
+		Element:		RequestStatus
+		Concept:		TBD
+		Description:	"The extent to which the ordering process has progressed, for this order."
+		Value:			Coding from TestStatusVS
+
+		Element:		TestTiming
+		Concept:		TBD
+		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			(dateTime or Period or TBD "Timing")
+
+		Element:		PriorityOfRequest
+		Concept:		TBD
+		Description:	"Urgency level for which results must be reported to the requestor or responsible individual"
+		Value:			Coding from RequestPriorityVS
+
+		Element:		RequestedPerformerType
+		Concept:		TBD
+		Description:	"What type of actor should carry out the testing"
+		Value:			TBD
+
+		Element:		RequestedPerformer
+		Concept:		TBD
+		Description:	"Who should carry out the tests. For example, the patient or caregiver"
+		Value:			Person or Organization // How can we refer to the Person of Record here? The organ or egg donor?
+
+		Element:		ReasonForRequest
+		Concept:		TBD
+		Description:	"The justification for this order, which may be because the subject is at risk for a disease, as part of a diagnostic process, due to a symptom or problem, a part of a care plan, or periodic monitoring"
+		Value:			Coding from TBD "ReasonForRequestVS"
+
+		Element:		PerformerInstructions
+		Concept:		TBD
+		Description:	"Information for the performer of the test, if needed."
+		Value:			string
+
+		Element:		PatientInstructions
+		Concept:		TBD
+		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
+		Value:			string
+		
+		
 // Common laboratory tests 
 
 
-EntryElement:	HIVRapidScreeningTestRequest
-BasedOn:		TestRequest
-1..1			TestCode with Coding from HIVRapidScreeningTestCodeVS
+EntryElement:	HIVScreeningTestRequest
+Description:	"A request for a rapid HIV screening test"
+Based on:		TestRequest
+1..1			SpecificCode with Coding from HIVScreeningTestCodeVS
 
-
-EntryElement:	HIVRapidScreeningTestResult
-BasedOn:		TestResult
-Concept:		TBD
-Description:	""
-Value:			Coding from HIVRapidScreeningTestResultVS
-1..1			Test.TestCode with Coding from HIVRapidScreeningTestCodeVS
-//0..1 			TestRequest is HIVScreeningTestRequest
-
+EntryElement:	HIVScreeningTestResult
+Based on:		TestResult
+Description:	"The result of an HIV Screening Test"
+Value:			Coding from HIVScreeningTestResultVS
+1..1			SpecificCode with Coding from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
-BasedOn:		TestRequest
-1..1			TestCode with Coding from HIVSupplementalTestCodeVS
+Based on:		TestRequest
+1..1			SpecificCode with Coding from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVSupplementalTestResult
-BasedOn:		TestResult
+Based on:		TestResult
 Concept:		TBD
-Description:	""
+Description:	"The result of a supplement HIV test, following up an initial screening"
 Value:			Coding from HIVSupplementalTestResultVS
-1..1			TestCode with Coding from HIVSupplementalTestCodeVS
-0..1 			TestRequest is HIVSupplementalTestRequest
+1..1			SpecificCode with Coding from HIVSupplementalTestCodeVS
 
 
 // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"

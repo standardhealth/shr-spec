@@ -1,99 +1,151 @@
 DataDefinitions:	shr.demographics
-Uses:				shr.core, shr.actors, shr.base
+Uses:				shr.core, shr.actor, shr.base
 
 Path:			  FHIR = http://hl7.org/fhir/ValueSet
 
-EntryElement:	PersonOfRecordName
+//-------------- The ultimate stakeholder of the SHR ------------------
+
+EntryElement:	PersonOfRecord
+Based on:		Person
 Concept:		MTH#C1299487, LNC#54125-0
-Description:	"A name used by the person of record who is the subject of this Standard Health Record, aka the patient."
-Value: 			HumanName
-0..* 			HumanNameUse
-0..1 			EffectivePeriod
+Description:	"Extended demographic information about the subject of this SHR"
+Value:			0..* HumanName
+1..1			DateOfBirth
+1..1			PlaceOfBirth
+1..1			MultipleBirth
+1..1			BirthSex
+1..1			AdministrativeGender
+1..1		 	Race
+1..1		 	Ethnicity
+1..1		 	MaritalStatus
+0..0			FamilialRelationship   // note 0..0
+1..1			MothersMaidenName
+1..1			FathersName
+1..1			SocialSecurityNumber
+1..*			DriversLicenseNumber
+0..*			PassportNumber
+1..*			AddressUsed
+1..*			Telecom
+1..*			LanguageUsed
+1..1			MedicalInterpreterNeeded
+0..1			DeceasedIndicator
 
-	Element:    	HumanNameUse
+	Element:   		PlaceOfBirth
+	Concept:        MTH#C0032040
+	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+	Value:          GeopoliticalLocation
+
+	Element:		MultipleBirth
+	Concept:		MTH#C0026753
+	Description:	"Indication if the person was part of a multiple birth event"
+	Value:			boolean
+	0..1			MultipleBirthOrder
+
+		Element:		MultipleBirthOrder
+		Concept:		LNC#73771-8
+		Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)"
+		Value:			positiveInt
+	
+	Element:		BirthSex
+	Concept:		MTH#C4086849
+	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
+	Value:			Coding from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
+
+	Element:   		MaritalStatus
+	Concept:		MTH#C0024819
+	Description:	"The most recent marital status of a person."
+	Value:			Coding from FHIR/marital-status
+	
+	Element:   		MothersMaidenName
+	Concept:		MTH#C0806887
+	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+	Value:			HumanName
+
+	Element:		FathersName
 	Concept:		TBD
-	Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
-	Value:          Coding from FHIR/name-use
+	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
+	Value:			HumanName
 
-EntryElement:   DateOfBirth
-Concept:        MTH#C2919018, LNC#21112-8
-Description:    "A date of birth or approximate year or period (year or date range), if estimated."
-Value: 			date or Period
+	Element: 		SocialSecurityNumber
+	Concept:		MTH#C1301821
+	Description:	"A US social security number (SSN)"
+	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
 
-EntryElement:   PlaceOfBirth
-Concept:        MTH#C0032040
-Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
-Value:          GeopoliticalLocation
-
-EntryElement:	PartOfMultipleBirth
-Concept:		MTH#C0026753
-Description:	"Indication if the person was part of a multiple birth event"
-Value:			boolean
-
-EntryElement:	MultipleBirthOrder
-Concept:		LNC#73771-8
-Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)"
-Value:			positiveInt
-
-EntryElement:	AdministrativeGender
-Concept:		MTH#C1550327
-Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
-Value:          Coding from FHIR/administrative-gender
-
-EntryElement:	Heritage   // aka race
-Concept:		MTH#C0034510
-Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
-Value:			1..* Coding from http://hl7.org/fhir/us/daf/ValueSet/daf-race
-
-EntryElement:   HispanicOrign   // aka Ethnicity  NOTE: Not really necessary, since it is computable from Heritage
-Concept:		MTH#C0015031
-Description:    "Indicator of Hispanic or Latino origin."
-Value:          boolean // Coding from http://hl7.org/fhir/v3/Ethnicity
-
-EntryElement:   MaritalStatus
-Concept:		MTH#C0024819
-Description:	"The most recent marital status of a person."
-Value:			Coding from FHIR/marital-status
-
-EntryElement:   MothersMaidenName
-Concept:		MTH#C0806887
-Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
-Value:			HumanName
-
-EntryElement:   FathersName
-Concept:		TBD
-Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
-Value:			HumanName
-
-EntryElement: 	SocialSecurityNumber
-Concept:		MTH#C1301821
-Description:	"A US social security number (SSN)"
-Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
-
-EntryElement:	DriversLicenseNumber
-Concept:		TBD
-Description:	"Identifying information from a drivers license"
-Value:			string
-1..1			StateOfIssue
-0..1			EffectivePeriod
-
-	Element:		StateOfIssue
-	Concept:		MTH#C1547728
-	Description:	"Issuing authority for a drivers license"
-	Value:			State // UnitedStatesState
-
-EntryElement:	PassportNumber
-Concept:		MTH#C1549737
-Description:	"Indicator of citizenship and identity"
-Value:			string
-1..1			CountryOfIssue
-0..1			EffectivePeriod
-
-	Element: 		CountryOfIssue
+	Element:		DriversLicenseNumber
 	Concept:		TBD
-	Description:	"A country acting as an assuing authority for a document"
-	Value:			Country
+	Description:	"Identifying information from a drivers license"
+	Value:			string
+	1..1			StateOfIssue
+	0..1			EffectivePeriod
 
+		Element:		StateOfIssue
+		Concept:		MTH#C1547728
+		Description:	"Issuing authority for a drivers license"
+		Value:			State // UnitedStatesState
+
+	Element:		PassportNumber
+	Concept:		MTH#C1549737
+	Description:	"Indicator of citizenship and identity"
+	Value:			string
+	1..1			CountryOfIssue
+	0..1			EffectivePeriod
+
+		Element: 		CountryOfIssue
+		Concept:		TBD
+		Description:	"A country acting as an assuing authority for a document"
+		Value:			Country
+
+// ------------------------- Address Used ----------------------
+
+	Element:   		AddressUsed
+	Concept:		MTH#C0682130
+	Description:	"An address used by for dwelling, work, or other purposes. May be a physical location or an address used only for deliveries, such as a PO box."
+	Value:			Address
+	1..*    		AddressUse
+	0..*			Setting
+	0..1			EffectivePeriod
+
+		Element:		AddressUse
+		Concept:		TBD
+		Description:	"Describes how the address is used, in particular, as a dwelling (primary, secondary, temporary), a former address, mailing address, etc."
+		Value:			Coding from AddressUseVS
+
+
+//----------------- Telecom Contact Information --------------------
+
+	Element:   		Telecom
+	Concept:		MTH#C2986441
+	Description:	"An electronic means of contacting an organization or individual"
+	Value:			TelecomNumberOrAddress
+	1..1			TelecomType
+	0..*			TelecomQualifier
+	0..1			EffectivePeriod
+
+		Element:		TelecomNumberOrAddress
+		Concept:		TBD
+		Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID"
+		Value:			string
+
+		Element:		TelecomType
+		Concept:		TBD
+		Description:	"The type or channel of the communication, such as email or telephone. If an messaging app, such as Skype, name the application using string"
+		Value:			(Coding from TelecomTypeVS or string)
+
+		Element:  		TelecomQualifier
+		Concept:		TBD
+		Description:	"Provides more information about the type and uses of the telephone number"
+		Value:			Coding from TelecomQualifierVS	
+	
+	
+	Element: 			MedicalInterpreterNeeded
+	Concept:			MTH#C1442531
+	Description:		"Whether the subject requires an interpreter to communicate with an English-speaking provider"
+	Value:				boolean
+	1..1				Language
+
+
+// ------------ TODO: move to Payment domain ------------
+	
 EntryElement:	HealthInsurance
 Concept:		MTH#C0021682 "HealthInsurance"
 Description:	"Health insurance coverage available (even if not used for payment for a given encounter)"
@@ -105,79 +157,3 @@ Value: 			Coding from InsuranceProviderTypeVS
 	Concept:		TBD
 	Description:	"Patient identifier at a healthcare provider, insurer, or other related organization."
 	Value:			id
-
-// ------------------------- Residence Address ----------------------
-
-EntryElement:   PlaceOfResidence
-Concept:		MTH#C0682130
-Description:	"A location where a person lives or has lived"
-Value:			Address
-1..1			AddressOfResidenceType
-0..*    		AddressOfResidenceQualifier
-0..1			EffectivePeriod
-
-	Element:		AddressOfResidenceQualifier
-	Concept:		TBD
-	Description:	"Describes how the residence is used, in particular, as a primary, secondary, or former address"
-	Value:			Coding from ResidenceAddressQualifierVS
-
-	Element:		AddressOfResidenceType
-	Concept:		TBD
-	Description:	"The type of residence, for example a private house, a skilled nursing facility, or homeless shelter"
-	Value:			Coding from ResidenceAddressDescriptionVS
-
-
-//----------------- Telecom Contact Information --------------------
-
-EntryElement:   Telecom
-Concept:		MTH#C2986441
-Description:	"A means of contacting an individual electronically"
-Value:			TelecomNumberOrAddress
-1..1			TelecomType
-0..*			TelecomQualifier
-0..1			EffectivePeriod
-
-	Element:		TelecomNumberOrAddress
-	Concept:		TBD
-	Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID"
-	Value:			string
-
-	Element:		TelecomType
-	Concept:		TBD
-	Description:	"The type or channel of the communication, such as email or telephone. If an messaging app, such as Skype, name the application using string"
-	Value:			(Coding from TelecomTypeVS or string)
-
-	Element:  		TelecomQualifier
-	Concept:		TBD
-	Description:	"Provides more information about the type and uses of the telephone number"
-	Value:			Coding from TelecomQualifierVS
-
-//-----------------   Language
-
-EntryElement:	LanguageUsed
-Concept:		TBD
-Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
-Value:			Language
-0..1 			SpokenLanguageProficiency
-0..1 			WrittenProficiency
-0..*			LanguageQualifier
-
-		Element:		SpokenLanguageProficiency
-		Concept:		MTH#C0678997
-		Description:	"Accuracy and fluency in spoken communication in a language."
-		Value:			Coding from SimplePerformanceGradingScaleVS
-
-		Element:		WrittenProficiency
-		Concept:		MTH#C0586739
-		Description:	"Accuracy and fluency of reading and writing in a language."
-		Value:			Coding from SimplePerformanceGradingScaleVS
-
-		Element:		LanguageQualifier
-		Description:	"Additional information about a person's use of language"
-		Value:			Coding from LanguageQualifierVS
-
-EntryElement: 		MedicalInterpreterNeeded
-Concept:			MTH#C1442531
-Description:		"Whether the subject requires an interpreter to communicate with an English-speaking provider"
-Value:				boolean
-1..1				Language

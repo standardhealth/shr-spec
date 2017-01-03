@@ -3,35 +3,22 @@ Uses:				shr.core, shr.base, shr.allergy
 
 EntryElement:	Travel
 Concept:		MTH#C0040802
-Description:	"Trip to a foreign country or an area posing particular health risks"
-Value:			GeopoliticalLocation
-1..*			OccurrencePeriod
-0..1			TBD "Purpose"
-0..1			TBD "ContactWithLivestock"
-0..*			TBD "ContractedIllnesses"
+Based on:		HistoryObservation
+Description:	"Trip to a foreign country or an area, particularly when a health risk is involved"
+1..1			SpecificCode is MTH#C0040802
 
 
 //------------ Household Information --------------------------
 
-EntryElement:	AnnualHouseholdIncome
-Concept:		MTH#C0557163
-Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported"
-Value:			Quantity with units MTH#C1555442 "US Dollar"
-
-EntryElement:	IncomeStability
-Concept:		TBD
-Description:	"Whether the subject regards his or her source of income as dependable"
-Value:			Coding from LikelihoodVS
-
-EntryElement:	RecentIncomeReduction
-Concept:		TBD
-Description:	"Whether the subject's household has had a significant income reduction (50% or more) over the past 12 months"
-Value:			boolean
-
-EntryElement:	AbilityToAffordNecessities
-Concept:		TBD
-Description:	"The ability of the subject to obtain and pay for the necessities of life"
-Value:			Coding from PerformanceGradingScaleVS
+Element:		FinancialResources
+Concept:		MTH#C0516918
+Based on:		Observation
+Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life"
+1..1			SpecificCode is MTH#C0516918
+0..1			AnnualIncome
+0..*			TBD "IncomeSource"
+0..1			IncomeStability
+0..1			RecentFinancialLoss
 0..1			CanAffordFood
 0..1			CanAffordHousing
 0..1			CanAffordClothing
@@ -40,72 +27,103 @@ Value:			Coding from PerformanceGradingScaleVS
 0..1			CanAffordMedication
 0..1			CanAffordDentalCare
 0..1			CanAffordChildCare
+0..*			NonCashBenefit
+
+	EntryElement:	AnnualIncome
+	Concept:		MTH#C0557163
+	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported"
+	Value:			Quantity with units MTH#C1555442 "US Dollar"
+
+	Element:		IncomeStability
+	Concept:		MTH#C1820459
+	Description:	"Whether the subject regards his or her source of income as dependable"
+	Value:			Coding from QualitativeLikelihoodVS
+
+	Element:		RecentFinancialLoss
+	Concept:		MTH#C2136077
+	Description:	"Whether the subject's household has recently suffered a significant financial loss, e.g., an income reduction (50% or more) over the past 12 months"
+	Value:			boolean
 
 	EntryElement:	CanAffordFood
 	Concept:		TBD
 	Description:	"How often can the subject afford food?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordHousing
 	Concept:		TBD
 	Description:	"How often can the subject afford housing?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordClothing
 	Concept:		TBD
 	Description:	"How often can the subject afford clothing?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordUtilities
 	Concept:		TBD
 	Description:	"How often can the subject afford utilities?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordTransportation
 	Concept:		TBD
 	Description:	"How often can the subject afford transportation?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordMedication
 	Concept:		TBD
 	Description:	"How often can the subject afford medications?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordDentalCare
 	Concept:		TBD
 	Description:	"How often can the subject afford dental care?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordChildCare
 	Concept:		TBD
 	Description:	"How often can the subject afford child care?"
-	Value:			Coding from FiveFrequencyScaleVS
+	Value:			Coding from QualitativeFrequencyVS
+	
+	Element:		NonCashBenefit
+	oncept:			TBD
+	Description:	"Government benefits received by the focal subject, other than cash benefits"
+	Value:			Coding from NonCashBenefitVS
+	0..1			EffectivePeriod
 
-EntryElement:	HouseholdSize
-Concept:		MTH#C0000768
-Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
-Value:			positiveInt
+EntryElement:		HouseholdComposition
+Concept:			TBD
+Based on:			Observation
+Description:		"Information about the makeup of the household of the subject"
+1..1				SpecificCode is TBD
+0..1				HouseholdSize
+0..*				Coinhabitant
+0..1				NumberOfDependents
+	
+		Entry:			HouseholdSize
+		Concept:		MTH#C0000768
+		Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
+		Value:			positiveInt
 
-EntryElement:	Coinhabitants
-Concept:		TBD
-Description: 	"The people living with the subject"
-Value:			1..* Coding from CoinhabitantVS
+		Entry:			Coinhabitant
+		Concept:		TBD
+		Description: 	"A person living with the subject"
+		Value:			Coding from CoinhabitantVS
 
-EntryElement:	NumberOfDependents
-Concept:		MTH#C0557509
-Description:	"The number of dependents supported by the subject"
-Value:			unsignedInt
+		Element:		NumberOfDependents
+		Concept:		MTH#C0557509
+		Description:	"The number of dependents supported by the subject"
+		Value:			unsignedInt
 
-EntryElement:	NonCashBenefit
-Concept:		TBD
-Description:	"Government benefits received by the focal subject, other than cash benefits"
-Value:			Coding from NonCashBenefitVS
-0..1			EffectivePeriod
+//LEFT OFF HERE
+
+//NEXT LIVING SITUATION	
+	
+
 
 EntryElement:	TransportationAvailability
 Concept:		TBD
 Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications"
-Value:			Coding from FiveFrequencyScaleVS
+Value:			Coding from QualitativeFrequencyVS
 
 /*
 EntryElement:	SocialEnvironment
@@ -116,15 +134,10 @@ EntryElement:	JusticeInvolvement
 
 EntryElement:	AnimalExposure
 Concept:		TBD
+Based on:		ExposureToSubstance
 Description:	"The type of animals or pets the subject is exposed to"
-Value:			Coding from AnimalExposureVS
-0..1			FrequencyOfExposure
-0..*			AllergyIntolerance  // associated allergy, if any
-
-	Element:		FrequencyOfExposure
-	Concept:		TBD
-	Description:	"How often the subject is exposed to an agent"
-	Value:			Coding from QualitativeOccurrenceFrequencyVS
+Value:			
+1..1			Vector is Coding from AnimalExposureVS
 
 EntryElement:	HousingSecurity
 Concept:		TBD
@@ -134,30 +147,29 @@ Value:			Coding from HousingSecurityVS
 EntryElement:	PerceivedPhysicalSafety
 Concept:		TBD
 Description:	"How often the subject feels physically safe in the subject's home environment"
-Value:			Coding from FiveFrequencyScaleVS
+Value:			Coding from QualitativeFrequencyVS
 
 EntryElement:	PerceivedEmotionalSafety
 Concept:		TBD
 Description:	"How often the subject feels physically safe in the subject's home environment"
-Value:			Coding from FiveFrequencyScaleVS
+Value:			Coding from QualitativeFrequencyVS
 
 EntryElement:	DomesticViolenceTarget
 Concept:		TBD
 Description:	"How often the subject is or was a target of domestic violence"
-Value:			Coding from FiveFrequencyScaleVS
+Value:			Coding from QualitativeFrequencyVS
 0..1			OccurrencePeriod
 	
 EntryElement:	DomesticViolenceAggressor
 Concept:		TBD
 Description:	"How often the subject is a domestic abuser"
-Value:			Coding from QualitativeOccurrenceFrequencyVS
+Value:			Coding from SemiquantitativeFrequencyVS
 0..1			OccurrencePeriod
 
 EntryElement:	HomeEnvironmentRisk
 Concept:		TBD
-Description:	"An risk experienced in the home environment"
+Description:	"A risk experienced in the home environment"
 Value:			Coding from HomeEnvironmentRiskVS
-
 
 
 // EntryElement:		EnvironmentRisk

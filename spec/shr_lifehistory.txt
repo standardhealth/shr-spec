@@ -1,65 +1,64 @@
 DataDefinitions:    shr.lifehistory
 Uses:				shr.core, shr.base, shr.actor
 
-Vocabulary:		SOC = http://www.bls.gov/soc/
-
 EntryElement:	PrenatalExposure
+Based on:		SubstanceExposure  // brings the temporal context into the picture
 Concept:		MTH#C0871747
 Description:	"Fetal contact with a dangerous substance or other risk, via the mother."
 Value:			Coding from TeratogenVS
+1..1			TemporalContext with Coding from GestationalAge or Coding from GestationalPeriod
+1..1			SpecificCode is MTH#C0871747
 
 EntryElement:	CongenitalAbnormalities
 Concept:		MTH#C0000768
+Based on:		Observation
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities"
 Value:			1..* Coding from CongenitalAbnormalitiesVS
+1..1			SpecificCode is MTH#C0000768
 
 EntryElement:	EducationalAttainment
-Concept:		MTH#C0013658, LNC#63504-5
+Concept:		MTH#C0013658
+Based on:		Observation
 Description:	"Educational attainment or level of education of individuals."
 Value:			Coding from EducationalAttainmentVS
+1..1			SpecificCode is LNC#63504-5
 
+EntryElement:	Occupation
+Concept:		MTH#C0028811
+Based on:		Observation
+Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, tor example, accountant, programmer analyst, patient care associate, staff nurse, etc."
+Value:			Coding from http://www.bls.gov/soc/
+1..1			SpecificCode is LNC#74287-4
+
+	
 EntryElement:	EmploymentStatus
-Concept:		MTH#C0242271
-Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
-Value:			Coding from EmploymentStatusVS
-
-EntryElement:	Employment
 Concept:		MTH#C0014003
+Based on:		Observation
 Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
-0..1			Occupation
-0..1			SelfEmployed
+Value:			EmploymentStatus
+1..1			SpecificCode is LNC#74165-2
 0..1			Employer
-0..1			EffectivePeriod
 
-	Element:		Occupation
-	Concept:		MTH#C0028811
-	Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, tor example, accountant, programmer analyst, patient care associate, staff nurse, etc."
-	Value:			Coding from SOC
-
-	Element:		SelfEmployed
-	Concept:		MTH#C0425092
-	Description:	"The earning of income directly from customers, clients, or other organizations rather than as a specified salary or wages from an employer"
-	Value:			boolean
+	Entry:			EmploymentStatus
+	Concept:		MTH#C0242271
+	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
+	Value:			Coding from EmploymentStatusVS
 
 	Element:		Employer
 	Concept:		MTH#C1274022
 	Description:	"A person or entity which hires the services of another."
-	Value:			TBD "Person" or Organization or string
-	
-EntryElement:	ParticipationInProstitution
-BasedOn:		Employment
-Value:			boolean
-
+	Value:			Person or Organization or MTH#C0425092 "Self-employed"
 
 
 // TODO:  EntryElement:	Disability
 
 
-EntryElement:	USMilitaryService
-Concept:		TBD
+EntryElement:	MilitaryService
+Concept:		MTH#C3714797
+Based on:		Observation
 Description:	"History of service in the US military"
-Value:			boolean
-0..1			MilitaryStatus 
+Value:			MilitaryStatus 
+1..1			SpecificCode is MTH#C3714797 
 0..1			TBD "MilitaryRank"
 0..1 			MilitaryServiceDischargeStatus
 0..1			MilitaryBranch
@@ -68,7 +67,7 @@ Value:			boolean
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Description:	"The currently connection to the US military"
+	Description:	"The current connection to the US military"
 	Value:			Coding from MilitaryStatusVS
 	
 	Element:		MilitaryServiceDischargeStatus
@@ -77,19 +76,20 @@ Value:			boolean
 	Value:			Coding from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
-	Concept:		TBD
+	Concept:		MTH#C2129058
 	Description:	"The branch of the US military that the subject has served"
 	Value:			Coding from USMilitaryBranchVS
+	
+	Element:		MilitaryServiceEra
+	Concept:		TBD
+	Description:	"The time period of US military service."
+	Value:			Coding from MilitaryServiceEraVA
 	
 	Element:		ServiceConnectedDisability
 	Concept:		TBD
 	Description:	"Percentage disability resulting from US Military Service"
 	Value:			Percentage
 
-	Element:		MilitaryServiceEra
-	Concept:		TBD
-	Description:	"The time period of US military service."
-	Value:			Coding from MilitaryServiceEraVA
 
 
 
