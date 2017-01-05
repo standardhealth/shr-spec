@@ -4,37 +4,62 @@ Uses:				shr.core, shr.demographics, shr.actor
 Vocabulary: 	OBSCAT = http://hl7.org/fhir/observation-category
 Path:	OBS = http://hl7.org/fhir/observation-status
 
+
+//----------------  Entry -------------------
+
+Element:		Entry
+Concept:		MTH#C1705654
+Description:	"An item inserted in an electronic record"
+1..1			Meta
+1..1			ShrID
+1..1			FocalSubject
+1..1			SubjectIsThirdParty
+0..1			Summary
+// exactly one EntryElement (not any old element, just entry elements)
+
+	Element:		ShrID
+	Concept:		MTH#C0600091
+	Description:	"A unique, persistent identifier for the Standard Health Record to which this entry belongs."
+	Value:			Identifier
+	
+	Element:		FocalSubject
+	Concept:		TBD
+	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)"
+	Value:			Person
+
+	Element:		SubjectIsThirdParty
+	Concept:		TBD
+	Description:	"A flag indicating this entry concerns someone other than the Person of Record"
+	Value:			boolean
+
+
 //----------------  Metadata  -----------------------
 // Elements for all entries in the SHR
 
 Element:		Meta
+Concept:		MTH#C1708992
 Description:	"Contains elements common to all entries, describing the identification, timing, attribution, and other properties of the entry."
-1..1    		EntryID
-1..1			PersonOfRecord  // the "ultimate stakeholder"
-1..1			FocalSubject   // usually the person of record, but could be a family member, or another involved individual, etc.
-1..1			EntryType
+1..1			EntryID
+1..*			EntryType
+0..1			Version
+0..*    		Informant
+0..*			Author
 0..*			AssociatedEncounter 
 1..1    		DateEntered
 0..*			DateUpdated
-0..*    		Informant
-0..*			Author
 0..1			Language
-0..1			Summary
-0..1			Version
+0..*			TBD "SecurityLabel"
+0..*			TBD "Tags"
+
 
 	Element:    	EntryID
 	Concept:        MTH#C0600091
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
 	Value:          id
 
-	Element:		FocalSubject
-	Concept:		TBD
-	Description:	"The person or thing that this entry refers to. Note that not all entries refer to the Person of Record. For example, the entry could refer to a fetus, care giver, or relative (living or dead)"
-	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty  //?? How to refer to the Person of record? Organ donor? Fetus (if recorded as a separate person)?
-
 	Element:		EntryType
 	Concept:		TBD
-	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk"
+	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk. The EntryType array includes the entire 'based on' hierarchy to enable searching for classes of things, for example, searching for all vital signs, or all types of behavioral observations."
 	Value:			uri
 
 	Element:		AssociatedEncounter
@@ -68,11 +93,11 @@ Description:	"Contains elements common to all entries, describing the identifica
 	Value:			Coding from http://hl7.org/fhir/ValueSet/languages
 
 
-Element:		ContributingRecord
+Element:		ExternalHealthRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record"
 1..1			HealthRecordID
-1..1			TBD "ContentAttribution"
+1..1			Organization
 1..1			AccessTime
 
 	Element:		HealthRecordID
@@ -137,7 +162,7 @@ Description:	"The result of a laboratory, radiologic, or other clinical test or 
 	Element:		TestTime
 	Concept:		MTH#C0429928
 	Description:	"The clincally-relevant time or time period at which a measurement was taken or specimen collected. Use a period if the measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-	Value:			dateTime or Period
+	Value:			dateTime or TimePeriod
 
 	Element:		Interpretation
 	Concept:		MTH#C0420833
@@ -183,7 +208,7 @@ Description:	"An exposure or potential exposure to a substance, type of substanc
 		Element:		LikelihoodExposureOccurred
 		Concept:		TBD
 		Description:	"Whether or not the event or action happened, and/or the likelihood it did happen. For example, a HistoryObservation can report an exposure that did not happen, i.e., subject was not exposed to asbestos in his workplace (using Setting). If missing, the situation, event, or action is assumed to have occurred (or is occurring)."
-		Value:			Coding from QualitativeLikelihoodVS
+		Value:			QualitativeLikelihood
 		
 		Element:		SourceOrVector
 		Concept:		MTH#C0012656
@@ -223,7 +248,7 @@ Description:	"Observable responses, actions, or activities of the subject."
 	Element:		ReadinessToChange
 	Concept:		TBD
 	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
-	Value:			Coding from QualitativeLikelihoodVS
+	Value:			QualitativeLikelihood
 
 //------------ Social Observation -----------------------
 	

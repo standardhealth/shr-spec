@@ -20,7 +20,7 @@ Value:			0..* HumanName
 0..*			AddressUsed
 0..*			Telecom
 0..*			LanguageUsed
-0..1			DeceasedIndicator
+0..1			Deceased
 
 	Element:		Anonymized
 	Concept:		TBD
@@ -35,7 +35,7 @@ Value:			0..* HumanName
 	Element:   		DateOfBirth
 	Concept:        MTH#C2919018, LNC#21112-8
 	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
-	Value: 			date or Period
+	Value: 			date or TimePeriod
 
 	Element:		AdministrativeGender
 	Concept:		MTH#C1550327
@@ -94,23 +94,31 @@ Value:			0..* HumanName
 			Description:	"Additional information about a person's use of language"
 			Value:			Coding from LanguageQualifierVS
 
-	Element:		DeceasedIndicator
+	Element:		Deceased
 	Concept:		MTH#C0011065
-	Description:	"Boolean indicator where true indicates the person is deceased."
-	Value:			Coding from ThreeValueLogicVS
+	Description:	"Date or time of death, or boolean indicates the person is deceased."
+	Value:			boolean
+	0..1			DateOfDeath 
+	0..1			AgeAtDeath
 	
+		Element:		DateOfDeath
+		Concept:		MTH#C1148348
+		Descriptoin		"The calendar date of subject's death."
+		Value:			GeneralizedDate
+	
+		Element:		AgeAtDeath
+		Concept:		MTH#C1546180
+		Description:	"The age, age range, or age group when the cessation of life happens."
+		Value:			GeneralizedAge
+
+
 //--------------  Practitioner -------------------
 	
 Element:		Practitioner
 Based on:		Person
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-Value:			HumanName
-0..1			DateOfBirth
-0..1			AdministrativeGender
-0..*			AddressUsed
-0..*			Telecom
-0..*			LanguageUsed
+Value:			HumanName   // only one (limitation imposed by us-core)
 0..*			Affiliation
 0..1    		NationalProviderIdentifier
 0..*    		MedicalSpecialty
@@ -168,8 +176,14 @@ Value:			OrganizationName
 //  -------------------- Involvement in Healthcare -------------------------
 //  One individual can play different or multiple roles at different times
 
+TODO:  
+// EntryElement:	Involvement  SUCH AS ORGAN DONOR, EMERGENCY CONTACT, HEALTHCARE PROVIDER
+
+
+
 EntryElement:	Provider			  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
 Concept:		MTH#C1314939
+Based on:		Involvement
 Description:	"A person or organization providing a service to the person of record at a particular time or over a given time interval."
 Value: 			Person or Organization   // #none_answer implies no one in the given role during the stated timeframe, e.g., subject has no PCP; #exists_answer implies someone was in the given role during the time period but the identity of that actor is unknown
 1..*			HealthcareRole
@@ -186,7 +200,7 @@ Concept:		MTH#C1550369
 Description:	"An actor who performs a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with a specific task, such admitting a patient, performing a procedure, or taking a measurement"
 Value:			Person or Organization
 0..1 			ParticipationType
-0..1			dateTime or Period
+0..1			dateTime or TimePeriod
 
 	Element:		ParticipationType
 	Concept:		MTH#C1553854

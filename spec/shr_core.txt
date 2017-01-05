@@ -9,6 +9,7 @@ Vocabulary:     SCT = http://snomed.info/sct
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 Vocabulary:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 Vocabulary:     UCUM = http://unitsofmeasure.org
+Vocabulary:		CURRENCY = "urn:iso:std:iso:4217"
 
 
 //---------------  Missing Information -----------------------
@@ -16,7 +17,7 @@ Vocabulary:     UCUM = http://unitsofmeasure.org
 
 Element:		MissingValueReason
 Concept:		TBD
-Description:	"The reason a required element, complex type, or primitive value is missing"
+Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value."
 Value: 			Coding from MissingValueReasonVS
 
 
@@ -27,7 +28,7 @@ Concept:		MTH#C0805701
 Description:	"Coding of a concept, drawn from a controlled vocabulary. Includes the vocabulary and version, if applicable. May include a display text, and a descriptor expressing the intended interpretation of the code"
 Value:			code
 0..1			Vocabulary
-0..1 			Version
+0..1 			VocabularyVersion
 0..1			DisplayText
 0..1			CodeDescriptor
 
@@ -40,31 +41,60 @@ Value:			code
 	Concept:		TBD
 	Description:	"A description of the purpose or origin of the code that assists in the interpretation of the code."
 	Value:			Coding from CodeDescriptorVS
+	
+	Element:		VocabularyVersion
+	Concept:		TBD
+	Description:	"The version of the vocabulary being used, if applicable"
+	Value:			Version
 
+	
 Element:		SpecificCode
 Concept:		TBD
-Description:	"A term from a controlled vocabulary that defines the data element as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept of a medication statement is medication used by the patient, but the specific code is the particular medication used. For tests, it identifies the specific test being performed, and for observations, the question being asked."
+Description:	"A term from a controlled vocabulary that defines the data element as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept associated with medications is code for 'medication used', but the SpecificCode is the code for the particular medication used. For tests, SpecificCode identifies the specific test being performed, and for observations, the specific question being asked."
 Value:			Coding
+
+
+Element:		CodeableConcept
+Concept:		TBD
+Description:	"A set of codes drawn from different coding systems, representing the same concept"
+0..*			Coding
+1..1			DisplayText
 
 // -------------------  Quantities -----------------
 
-Element:		Quantity
+Element:		BoundedQuantity
 Concept:		TBD
-Description:	"A measured or measurable amount"
+Description:	"A measured or measurable amount with Units and name of the statistic the quantity represents"
 Value:			decimal
-0..1			QuantityInterpretation
-0..1			UnitOfMeasure
+1..1			BoundingType
+0..1			Units
 
-		Element:		QuantityInterpretation
+		Element:		BoundingType
 		Concept:		TBD
-		Description:	"Whether the quantity is an maximum, minimum, mean, median, etc."
-		Value:			Coding from QuantityInterpretationVS
+		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value"
+		Value: 			Coding from http://hl7.org/fhir/quantity-comparator
 		
-		Element:		UnitOfMeasure
+		Element:		Units
 		Concept:		TBD
-		Description:	"UCUM code for the unit of measure of the quantity"
-		Value:			Coding from UCUM
+		Description:	"Code for the unit of measure of the quantity"
+		Value:			Coding from UCUM or Coding from CURRENCY
 
+Element:		Quantity
+BasedOn:		BoundedQuantity
+Description:	"A quantity with Units"
+0..0			BoundingType
+
+Element:		Statistic
+Concept:		MTH#C2828391
+Based on:		Quantity
+Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
+1..1			StatisticType
+
+		Element:		StatisticType
+		Concept:		TBD
+		Description:	"The type of statistic that is represented by the value"
+		Value:			Coding from StatisticTypeVS
+		
 Element: 		Priority
 Concept:		MTH#C0549179
 Description:	"An ordinal numbered priority where 1=highest priority, 2=second highest priority, etc"
@@ -84,7 +114,7 @@ Description:	"A unit of measurement for the quotient of the amount of one entity
 	Element:		Numerator
 	Concept:		MTH#C2825219
 	Description:	"The dividend of a fraction."
-	Value:			Quantity
+	Value:			BoundedQuantity
 	
 	Element:		Denominator
 	Concept:		MTH#C2825218
@@ -96,115 +126,177 @@ Concept:		MTH#C0439165
 Description:	"A percentage value, 0 to 100"
 Value:			positiveInt
 
-Element:		QuantitativeLikelihood
+Element:		Likelihood
 Concept:		MTH#C0033204
 Description:	"A measure of the expectation of the occurrence of a particular event."
-Value:			decimal  // between 1.0 and 1.0
+Value:			Percentage
 
-Element:		Likelihood
+Element:		QualitativeLikelihood
 Concept:		TBD
-Description:	"A quantitative or qualitative (subjective) likelihood"
-Value:			QuantitativeLikelihood or Coding from QualitativeLikelihoodVS
+Description:	"A qualitative (subjective) likelihood"
+Value:			Coding from QualitativeLikelihoodVS
 
-// --------------- Period, Duration, Frequency ----------------
-
-Element:		DateTime
+Element:		GeneralizedLikelihood
 Concept:		TBD
-Description:	"A point in time, specified qualitatively or quantitatively"
-Value:			dateTime or Coding from QualitativeDateTimeVS
+Description:	"Quantitative or qualitative measure of likelihood"
+Value:			Likelihood or QualitativeLikelihood
 
-Element:		Period
+Element:		DollarAmount
+Concept:		MTH#C0562019
+Based on:		Quantity
+Description:	"An amount of money expressed in US dollars"
+1..1			Units is CURRENCY#USD
+
+
+// --------------- Times and Time TimePeriods ----------------
+
+Element:		QualitativeDateTime
+Concept:		TBD
+Description:	"A point in time, described qualitatively"
+Value:			Coding from QualitativeDateTimeVS
+
+Element:		TimePeriod
 Concept:		MTH#C1948053
 Description:	"A period of time defined by a start and end time, date, or year"
-1..1			StartDateTime
-0..1			EndDateTime  // lack of end time indicates the period was continuing at the time the entry was created
+1..1			TimePeriodStart
+0..1			TimePeriodEnd  // lack of end time indicates the period was continuing at the time the entry was created
 
-	Element: 		StartDateTime    // synonym "EffectiveDate"
+	Element: 		TimePeriodStart    // synonym "EffectiveDate"
 	Concept: 		MTH#C1301880
 	Description: 	"The time at which something is to take effect, start, or did start."
 	Value:			dateTime
 
-	Element:		EndDateTime
+	Element:		TimePeriodEnd
 	Concept:		MTH#C1522314
 	Description:	"The time at which something is to end or did end."
 	Value:			dateTime
+	
 
-Element:		QuantitativeDuration
+// -----------  Age --------------------------
+
+Element:		Age
+Concept:		MTH#C0001779
+Description:	"How long something has existed (quantitative)."
+Value:			Duration
+
+Element:		AgeRange
+Concept:		TBD
+Description:	"A range of ages, quantitative"
+1..1			AgeRangeLowerBound
+0..1			AgeRangeUpperBound
+
+	Element:		AgeRangeLowerBound
+	Concept:		TBD
+	Description:	"The lower end of an age range"
+	Value:			Age
+	0..1			ExclusiveBound
+	
+	Element:		AgeRangeUpperBound
+	Concept:		TBD
+	Description:	"The upper end of an age range"
+	Value:			Age
+	0..1			ExclusiveBound
+	
+		Element:		ExclusiveBound
+		Concept:		TBD
+		Description:	"Whether a bound (upper or lower) is considered to be exclusive. If not given, the bounds are considered inclusive, so the range 10 to 20 would include 10 and 20."
+		Value:			boolean
+	
+Element:		AgeGroup
+Concept:		MTH#C0027362
+Description:	"Subgroups of populations based on age."
+Value:			Coding from AgeGroupVS
+
+Element:		GestationalAge
+Concept:		MTH#C0017504
+Description:	"The age of the embryo or fetus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
+Value:			Age
+
+Element:		GestationalTimePeriod
+Concept:		TBD
+Description:	"A time relative to a pregnancy or childbirth event"
+Value:			TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
+
+
+//------------ Generalized ways to refer to when an event happened
+
+Element:		GeneralizedDateTime
+Concept:		TBD
+Description:	"A point in time, specified qualitatively or quantitatively"
+Value:			dateTime or TimePeriod or QualitativeDateTime or GestationalTimePeriod
+
+Element:		GeneralizedAge
+Concept:		TBD
+Description:	"Qualitative or quantitative, exact or inexact description of age"
+Value:			Age or AgeRange or AgeGroup or GestationalAge 
+
+Element:		TemporalContext
+Concept:		TBD
+Description:	"A generalized indicator of a dateTime or an age when an event happened."
+Value:			GeneralizedDateTime or GeneralizedAge
+
+
+//-------------- Duration and Frequency  -----------------
+
+Element:		Duration
 Based on:		Quantity
 Concept:		MTH#C0449238
 Description:	"The length of time that something continues"
-Value:			Quantity
-1..1			Quantity.UnitOfMeasure is Coding from TimeUnitOfMeasureVS
+1..1			Quantity.Units with Coding from TimeUnitOfMeasureVS
 
-Element:		Duration
+Element:		SemiquantDuration
+Concept:		TBD
+Description:	"The duration of an event, described semi-quantitatively"
+Value:			Coding from SemiquantDurationVS
+
+Element:		QualitativeDuration
+Concept:		TBD
+Description:	"The duration of an action or event, described qualitatively"
+Value:			Coding from QualitativeDurationVS
+
+Element:		GeneralizedDuration
 Concept:		TBD
 Description:	"The duration of an event, qualitatively or quantitatively"
-Value:			QuantitativeDuration or Coding from SemiquantitativeDurationVS
+Value:			Duration or SemiquantDuration or QualitativeDuration 
 
-Element:		QuantitiveFrequency
+Element:		Frequency   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
 Concept:		MTH#C0376249
 Description:	"How many occurrences of an event per unit of time"
 1..1			Count
 1..1			Duration
 
-Element:		Frequency
+Element:		SemiquantFrequency
+Concept:		TBD
+Description:	"The frequency of an event, described semi-quantitatively"
+Value:			Coding from SemiquantFrequencyVS
+
+Element:		QualitativeFrequency
+Concept:		TBD
+Description:	"The frequency of an event, described qualitatively"
+Value:			Coding from QualitativeFrequencyVS
+
+Element:		GeneralizedFrequency
 Concept:		TBD
 Description:	"The frequency of an event, qualitatively or quantitatively"
-Value:			QuantitativeFrequency or Coding from SemiquantitativeFrequencyVS or Coding from QualitativeFrequencyVS
+Value:			QuantitativeFrequency or SemiquantFrequency or QualitativeFrequency
 
 
-// ---------------- Interpretations of Time
-
-Element:		TemporalContext
-Concept:		TBD
-Description:	"The range of dates or other indication of time associated with a past, present, or future event."
-Value:			dateTime or Period or QualitativeDateTime or Age or AgeRange or GestationalAge or GestationalPeriod
-
-Element:		Age
-Concept:		MTH#C0001779
-Description:	"How long something has existed."
-Value:			Duration
-
-Element:		AgeRange
-Concept:		TBD
-Description:	"A range of ages"
-1..1			LowerAge
-0..1			UpperAge
-
-	Element:		LowerAge
-	Concept:		TBD
-	Description:	"The lower end of an age range"
-	Value:			Age
-	
-	Element:		UpperAge
-	Concept:		TBD
-	Description:	"The upper end of an age range"
-	Value:			Age
-
-Element:		GestationalPeriod
-Concept:		TBD
-Description:	"A time relative to a pregnancy or childbirth event"
-Value:			TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
-
-Element:		GestationalAge
-Concept:		MTH#C0017504
-Description:	"The age of the conceptus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
-Value:			Age
+//------------- Interpretations of Time -------------------
 
 Element:		EffectiveDate
 Concept:		MTH#C1301880
 Description:	"The date when something is to take effect"
 Value:			date
 
-Element:		EffectivePeriod
+Element:		EffectiveTimePeriod
 Concept:		MTH#C2985763
 Description:	"The date and time span for which something is active, valid, or in force."
-Value:			Period
+Value:			TimePeriod
 
-Element:		OccurrencePeriod
+Element:		OccurrenceTimePeriod
 Concept:		TBD
 Description:	"The date and time span in which something happens."
-Value:			Period
+Value:			TimePeriod
 
 //---------------  Locations and Addresses -----------------
 
@@ -229,14 +321,6 @@ Concept:		TBD
 		Description:	"Height above sea level or above the earth's surface. Measured with with WGS84 datum."
 		Value:			decimal
 		
-
-Element: 		GeopoliticalLocation
-Concept:		MTH#C0017446
-Description:	"The countries of the world and major geopolitical subregions, such as US states"
-0..1    		City
-0..1    		State
-1..1    		Country
-
 Element:   		Address
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
 0..2    		AddressLine
@@ -275,6 +359,13 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 	Concept:		MTH#C0454664
 	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
 	Value:         	Coding from CC  // Coding is not a string!
+
+Element: 		GeopoliticalLocation
+Concept:		MTH#C0017446
+Based on:		Address
+Description:	"The countries of the world and major geopolitical subregions, such as US states"
+0..0    		AddressLine
+0..0    		PostalCode
 	
 Element:		Location
 Concept:		MTH#C0450429
@@ -314,7 +405,7 @@ Value:			string
 0..1    		FamilyName
 0..*    		HumanNameSuffix
 0..* 			HumanNameUse
-0..1 			EffectivePeriod
+0..1 			EffectiveTimePeriod
 
 		Element:    	GivenName
 		Concept:		LNC#45392-8, SCT#408677003
