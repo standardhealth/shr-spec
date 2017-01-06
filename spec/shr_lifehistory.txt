@@ -1,5 +1,7 @@
 DataDefinitions:    shr.lifehistory
-Uses:				shr.core, shr.base
+Uses:				shr.core, shr.base, shr.actor
+
+Vocabulary:		SOC = http://www.bls.gov/soc/
 
 EntryElement:	PrenatalExposure
 Concept:		MTH#C0871747
@@ -17,15 +19,38 @@ Description:	"Educational attainment or level of education of individuals."
 Value:			Coding from EducationalAttainmentVS
 
 EntryElement:	EmploymentStatus
-Concept:		TBD
-Description:	"The current work or occupation status"
+Concept:		MTH#C0242271
+Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
 Value:			Coding from EmploymentStatusVS
 
-EntryElement:	Employer
-Concept:		TBD
-Description:	"The subject's current primary employer"
-Value:			string
+EntryElement:	Employment
+Concept:		MTH#C0014003
+Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
+0..1			Occupation
+0..1			SelfEmployed
+0..1			Employer
 0..1			EffectivePeriod
+
+	Element:		Occupation
+	Concept:		MTH#C0028811
+	Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, tor example, accountant, programmer analyst, patient care associate, staff nurse, etc."
+	Value:			Coding from SOC
+
+	Element:		SelfEmployed
+	Concept:		MTH#C0425092
+	Description:	"The earning of income directly from customers, clients, or other organizations rather than as a specified salary or wages from an employer"
+	Value:			boolean
+
+	Element:		Employer
+	Concept:		MTH#C1274022
+	Description:	"A person or entity which hires the services of another."
+	Value:			TBD "Person" or Organization or string
+	
+EntryElement:	ParticipationInProstitution
+BasedOn:		Employment
+Value:			boolean
+
+
 
 // TODO:  EntryElement:	Disability
 
@@ -35,13 +60,14 @@ Concept:		TBD
 Description:	"History of service in the US military"
 Value:			boolean
 0..1			MilitaryStatus 
+0..1			TBD "MilitaryRank"
 0..1 			MilitaryServiceDischargeStatus
 0..1			MilitaryBranch
 0..*			MilitaryServiceEra
 0..1			ServiceConnectedDisability
 
 	Element:		MilitaryStatus
-	Concept:		TBD
+	Concept:		MTH#C1550416
 	Description:	"The currently connection to the US military"
 	Value:			Coding from MilitaryStatusVS
 	
