@@ -70,8 +70,6 @@ Value:			0..* HumanName
 		Value:			Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html or Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-detailed-ethnicity.html
 	
 
-//-----------------   Language
-
 	Element:		LanguageUsed
 	Concept:		TBD
 	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
@@ -103,7 +101,7 @@ Value:			0..* HumanName
 	
 		Element:		DateOfDeath
 		Concept:		MTH#C1148348
-		Descriptoin		"The calendar date of subject's death."
+		Description:		"The calendar date of subject's death."
 		Value:			GeneralizedDate
 	
 		Element:		AgeAtDeath
@@ -111,6 +109,7 @@ Value:			0..* HumanName
 		Description:	"The age, age range, or age group when the cessation of life happens."
 		Value:			GeneralizedAge
 
+		
 
 //--------------  Practitioner -------------------
 	
@@ -136,10 +135,17 @@ Value:			HumanName   // only one (limitation imposed by us-core)
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
 	Description:	"A branch of medicine practiced by the provider"
-	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
-	// possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
+	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes    // possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
 
+//-------------  Family Member -------------------------
+
+Element:		FamilyMember
+Concept:		MTH#C0086282
+Based on:		Person
+1..1			FamilialRelationship
+
+	
 // ------------- Organizations ------------------
 
 Element:		Organization
@@ -176,17 +182,14 @@ Value:			OrganizationName
 //  -------------------- Involvement in Healthcare -------------------------
 //  One individual can play different or multiple roles at different times
 
-TODO:  
-// EntryElement:	Involvement  SUCH AS ORGAN DONOR, EMERGENCY CONTACT, HEALTHCARE PROVIDER
 
-
-
-EntryElement:	Provider			  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
+EntryElement:	ProviderRelationshipStatement			  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
 Concept:		MTH#C1314939
-Based on:		Involvement
-Description:	"A person or organization providing a service to the person of record at a particular time or over a given time interval."
-Value: 			Person or Organization   // #none_answer implies no one in the given role during the stated timeframe, e.g., subject has no PCP; #exists_answer implies someone was in the given role during the time period but the identity of that actor is unknown
+Description:	"Statement about a person or organization providing services to the person of record at a particular time or over a given time interval. Can also be used to state that a provider relationship does not exist, e.g., patient does not have a primary care provider"
 1..*			HealthcareRole
+1..1			DoesProviderRelationshipExist
+0..1 			Provider
+0..1			OccurrenceTime
 
 	Element:		HealthcareRole
 	Concept:		TBD
@@ -195,14 +198,59 @@ Value: 			Person or Organization   // #none_answer implies no one in the given r
 	0..1			TemporalContext
 	0..1			Priority  //  If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example is a prioritized list of emergency contacts
 
-Element:		Performer
+	Element:		DoesProviderRelationshipExist
+	Concept:		TBD
+	Description:	"Whether the person of record has a provider relationship of the type mentioned"
+	Value:			boolean
+	
+	Element:		Provider
+	Concept:		MTH#C1138603
+	Description:	"A person or organization who provides a service to the person of record. This includes healthcare and relevant non-healthcare services, and personal services such as transportation."
+	Value:			Person or Organization
+
+	
+EntryElement:	EmergencyContact
+Concept:		MTH#C1552023
+Based on:		ProviderRelationshipStatement
+Description:	"A personal contact specifically designated to be used for emergencies."
+1..1			HealthcareRole is MTH#C1552023
+1..1			ProviderRelationshipExists is true
+1..1			Provider
+0..1			Priority   // extension
+
+
+EntryElement:	PrimaryCareProvider
+Concept:		MTH#C2735026
+Based on:		ProviderRelationshipStatement
+Description:	"The medical professional responsible for first-line care of an individual."
+1..1			HealthcareRole is MTH#C2735026
+1..1			ProviderRelationshipExists is true
+1..1			Provider
+
+EntryElement:	NoPrimaryCareProvider
+Concept:		TBD
+Based on:		ProviderRelationshipStatement
+Description:	"The medical professional responsible for first-line care of an individual."
+1..1			HealthcareRole is MTH#C2735026
+1..1			ProviderRelationshipExists is false
+0..1			Provider
+
+
+Element:		ParticipationStatement
 Concept:		MTH#C1550369
 Description:	"An actor who performs a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with a specific task, such admitting a patient, performing a procedure, or taking a measurement"
-Value:			Person or Organization
+1..1			Person
 0..1 			ParticipationType
-0..1			dateTime or TimePeriod
+1..1			DidOrDidNotParticipate
+0..1			OccurrenceTime
 
 	Element:		ParticipationType
 	Concept:		MTH#C1553854
 	Description:	"The detail of how the performer engaged in the task, for example, as the attending physician, surgical assistant, etc."
 	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ParticipationType
+
+	Element:		DidOrDidNotParticipate
+	Concept:		TBD
+	Description:	"Whether the mentioned person or organization participated in the described activity"
+	Value:			Coding from DidOrDidNotParticipateVS
+	

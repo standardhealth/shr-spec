@@ -1,15 +1,20 @@
 ValueSetDefinitions:	shr.allergy 
 
 Vocabulary:    SCT = http://snomed.info/sct
+Vocabulary:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 
 ValueSet:		AllergenIrritantVS
 Includes codes descending from SCT#105590001
 
-ValueSet:		NonDrugSubstanceVS
-Includes codes descending from SCT#105590001 "Substance" and not descending from SCT#410942007 "Drug or medicament"
-
-ValueSet:		NoKnownSubstanceRiskVS
-Includes codes descending from SCT#716186003 "No known allergy"
-
 ValueSet:		FoodSubstanceVS
 Includes codes descending from SCT#xxxxxxxxxx 
+
+ValueSet:		DrugAllergyVS
+Description:	"Drug allergies involve ingredients or mixtures, not specific dose forms. The value set focuses on drug ingredients."
+Includes codes from RXN with TTY=IN   // See https://www.nlm.nih.gov/research/umls/rxnorm/docs/2015/appendix5.html for explanation of RxNorm term types (TTY)
+Includes codes from RXN with TTY=MIN
+
+ValueSet:		VerifiedVS
+Description:	"Whether the allergy has been verified or not. Intentionally a subset of the codes in FHIR, since refuted would be reflected by correcting the 'elevated risk' element, and records entered in error are not included in SHR."
+#confirmed		"Confirmed"
+#unconfirmed	"Unconfirmed"

@@ -42,14 +42,16 @@ Value:			FacilityName
 	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
 
 
-EntryElement:	Encounter
+EntryElement:	EncounterStatement
 Concept:		TBD
-Description:	"An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
-0..1			OccurrenceTimePeriod  // start-end
+Description:	"A statement about a planned or actual interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
+0..1			OccurrenceTime  // start-end
 0..1			ReferralDate
 0..1			ReferralSourceType
 0..*			EncounterType
-0..*			Provider
+1..1			DidEncounterHappen
+0..1			ReasonEncounterDidNotHappen
+0..*			ParticipationStatement
 1..*			ProviderOrganization
 0..1			Facility  // location
 0..1			TreatmentParticipationQualifier
@@ -77,6 +79,16 @@ Description:	"An interaction between a patient and healthcare provider(s) for th
 	Description:	""
 	Value:			Coding from EncounterTypeVS
 	
+	Element:		DidEncounterHappen
+	Concept:		TBD
+	Description:	"Whether the encounter actually occurred. Can be used to record missed appointments."
+	Value:			boolean
+	
+	Element:		ReasonEncounterDidNotHappen
+	Concept:		TBD
+	Description:	"If encounter did not occur, describes the reason it did not, e.g., patient hospitalized, cancelled, lost touch with patient, withdrew from trial, etc."
+	Value:			Coding from TBD "ReasonEncounterDidNotHappenVS"
+	
 	Element:		TreatmentParticipationQualifier
 	Concept:		TBD
 	Description:	""
@@ -92,8 +104,6 @@ Description:	"An interaction between a patient and healthcare provider(s) for th
 	Description:	""
 	Value:			Coding from TreatmentServiceVS
 	1..1			TBD "UnitsOfService"
-
-	
 
 	Element:		PaymentSource
 	Concept:		MTH#C0680269

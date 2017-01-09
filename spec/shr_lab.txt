@@ -2,13 +2,22 @@ DataDefinitions:	shr.lab
 Uses:				shr.core, shr.base
 
 Vocabulary: 	OBSCAT = http://hl7.org/fhir/observation-category
+Vocabulary:     LNC = http://loinc.org
+
+
+Element:		TestCode
+Based on:		ObservationCode
+Concept:		TBD
+Description:	"The code for a laboratory, radiologic, or other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
+Value:			Coding from LNC
+
 
 //-------------- Base for Test Requests and Results(diagnostic measurements, tests, vital signs, radiology, etc.) -------------
 		
 EntryElement:	TestRequest
 Concept:		MTH#C1273874
 Description:	"A record of a request for a diagnostic investigation service to be performed. The requested test can be any laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
-Value: 			SpecificCode
+Value: 			TestCode
 0..1 			SpecimenType
 0..1			TestMethod
 0..1 			BodySite
@@ -22,11 +31,6 @@ Value: 			SpecificCode
 0..1			ReasonForRequest
 0..1			PerformerInstructions
 0..1			PatientInstructions
-
-		Element:		SpecificCode
-		Concept:		TBD
-		Description:	"The code for a laboratory, radiologic, or other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
-		Value:			Coding
 
 		Element:		SpecimenType
 		Concept:		TBD
@@ -90,24 +94,24 @@ Value: 			SpecificCode
 EntryElement:	HIVScreeningTestRequest
 Description:	"A request for a rapid HIV screening test"
 Based on:		TestRequest
-1..1			SpecificCode with Coding from HIVScreeningTestCodeVS
+1..1			ObservationCode with Coding from HIVScreeningTestCodeVS
 
 EntryElement:	HIVScreeningTestResult
 Based on:		TestResult
 Description:	"The result of an HIV Screening Test"
 Value:			Coding from HIVScreeningTestResultVS
-1..1			SpecificCode with Coding from HIVScreeningTestCodeVS
+1..1			ObservationCode with Coding from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
 Based on:		TestRequest
-1..1			SpecificCode with Coding from HIVSupplementalTestCodeVS
+1..1			ObservationCode with Coding from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVSupplementalTestResult
 Based on:		TestResult
 Concept:		TBD
 Description:	"The result of a supplement HIV test, following up an initial screening"
 Value:			Coding from HIVSupplementalTestResultVS
-1..1			SpecificCode with Coding from HIVSupplementalTestCodeVS
+1..1			ObservationCode with Coding from HIVSupplementalTestCodeVS
 
 
 // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"

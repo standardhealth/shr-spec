@@ -9,16 +9,7 @@ Vocabulary:     SCT = http://snomed.info/sct
 Vocabulary:     MTH = http://uts.nlm.nih.gov/metathesaurus
 Vocabulary:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 Vocabulary:     UCUM = http://unitsofmeasure.org
-Vocabulary:		CURRENCY = "urn:iso:std:iso:4217"
-
-
-//---------------  Missing Information -----------------------
-// By convention, any require elements or value can be substituted for with a missing value reason
-
-Element:		MissingValueReason
-Concept:		TBD
-Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value."
-Value: 			Coding from MissingValueReasonVS
+Vocabulary:		CURRENCY = urn:iso:std:iso:4217
 
 
 //---------------- Coding ----------------------------------------
@@ -47,18 +38,21 @@ Value:			code
 	Description:	"The version of the vocabulary being used, if applicable"
 	Value:			Version
 
-	
-Element:		SpecificCode
-Concept:		TBD
-Description:	"A term from a controlled vocabulary that defines the data element as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept associated with medications is code for 'medication used', but the SpecificCode is the code for the particular medication used. For tests, SpecificCode identifies the specific test being performed, and for observations, the specific question being asked."
-Value:			Coding
 
+// TODO: Replace Coding with CodeableConcept, where appropriate
 
 Element:		CodeableConcept
 Concept:		TBD
 Description:	"A set of codes drawn from different coding systems, representing the same concept"
 0..*			Coding
 1..1			DisplayText
+
+//---------------- Existential Elements -------------------------
+
+Element:		DidOrDidNotOccur
+Concept:		TBD
+Description:	"Whether an event, such as an adverse reaction, occurred or not."
+Value:			Coding from DidOrDidNotOccurVS
 
 // -------------------  Quantities -----------------
 
@@ -80,7 +74,7 @@ Value:			decimal
 		Value:			Coding from UCUM or Coding from CURRENCY
 
 Element:		Quantity
-BasedOn:		BoundedQuantity
+Based on:		BoundedQuantity
 Description:	"A quantity with Units"
 0..0			BoundingType
 
@@ -215,7 +209,12 @@ Value:			Age
 Element:		GestationalTimePeriod
 Concept:		TBD
 Description:	"A time relative to a pregnancy or childbirth event"
-Value:			TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
+Value:			Coding from TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
+
+Element:		GestationalTemporalContext
+Concept:		TBD
+Description:	"A named gestational time period, or a gestational age"
+Value:			GestationalAge or GestationalTimePeriod
 
 
 //------------ Generalized ways to refer to when an event happened
@@ -223,17 +222,17 @@ Value:			TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, pr
 Element:		GeneralizedDateTime
 Concept:		TBD
 Description:	"A point in time, specified qualitatively or quantitatively"
-Value:			dateTime or TimePeriod or QualitativeDateTime or GestationalTimePeriod
+Value:			dateTime or TimePeriod or QualitativeDateTime
 
 Element:		GeneralizedAge
 Concept:		TBD
 Description:	"Qualitative or quantitative, exact or inexact description of age"
-Value:			Age or AgeRange or AgeGroup or GestationalAge 
+Value:			Age or AgeRange or AgeGroup 
 
 Element:		TemporalContext
 Concept:		TBD
 Description:	"A generalized indicator of a dateTime or an age when an event happened."
-Value:			GeneralizedDateTime or GeneralizedAge
+Value:			GeneralizedDateTime or GeneralizedAge or GestationalTemporalContext
 
 
 //-------------- Duration and Frequency  -----------------
@@ -293,10 +292,10 @@ Concept:		MTH#C2985763
 Description:	"The date and time span for which something is active, valid, or in force."
 Value:			TimePeriod
 
-Element:		OccurrenceTimePeriod
+Element:		OccurrenceTime
 Concept:		TBD
-Description:	"The date and time span in which something happens."
-Value:			TimePeriod
+Description:	"The point in time or span of time in which something happens."
+Value:			dateTime or TimePeriod
 
 //---------------  Locations and Addresses -----------------
 
@@ -384,7 +383,7 @@ Element:    	UnitedStatesAddress
 Concept:		TBD   // more specific concept than Address
 Based on:		Address
 Description:    "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)"
-1..1			State is UnitedStatesState
+1..1			State is a UnitedStatesState
 1..1			Country is CC#US   // fixed
 
 	Element:		UnitedStatesState
@@ -401,7 +400,7 @@ Concept: 		MTH#C1547383
 Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)"
 Value:			string
 0..1    		HumanNamePrefix
-0..1    		GivenName
+0..*    		GivenName
 0..1    		FamilyName
 0..*    		HumanNameSuffix
 0..* 			HumanNameUse

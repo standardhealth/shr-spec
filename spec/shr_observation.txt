@@ -1,0 +1,180 @@
+DataDefinitions:	shr.observation
+Uses:				shr.base, shr.core, shr.demographics, shr.actor
+
+Vocabulary: 	OBSCAT = http://hl7.org/fhir/observation-category
+Vocabulary:		OBSSTAT = http://hl7.org/fhir/observation-status
+
+
+//------------- Base for all observations -----------------------------
+
+Element: 		Observation
+Concept:		MTH#C1554188
+Description:	"A statement about an act that is intended to result in new information about a subject. The focus of an observation can include the subject's behavior, physiological state, functional status, environment, exposures to substances, etc. The method of observing can be via a question, assessment, laboratory test, or imaging procedure."
+1..1			ObservationCode
+1..1			ObservationNotMade
+0..1			ObservationNotMadeReason
+1..1			ObservationStatus
+0..*			ObservationCategory
+0..1			TemporalContext
+
+		Element:		ObservationCode
+		Concept:		TBD
+		Description:	"A term from a controlled vocabulary that defines the data element (the question, not the answer) as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept associated with medications is code for 'medication used', but the ObservationCode is the code for the particular medication used. For tests, ObservationCode identifies the specific test being performed, and for observations, the specific question being asked."
+		Value:			Coding
+
+		Element:		ObservationNotMade
+		Concept:		TBD
+		Description:	"Whether the observation described by the specific concept code was not made (or not ordered). This is the equivalent of 'not asked'. Particularly important if an observation or test is normally ordered, but was not ordered in a particular instance. This is distinct from a missing value, in which the observation was attempted (the question asked), but the value normally resulting from the observation was not obtained (question not answered)."
+		Value:			boolean
+		
+		Element:		ObservationNotMadeReason
+		Concept:		TBD
+		Description:	"An explanation of why the observation was not made (or ordered), i.e., why the question was not asked."
+		Value:			string // TODO: value set
+
+		Element: 		ObservationStatus
+		Concept:		TBD
+		Description:	"Qualifier describing the stage or administrative state of the observation."
+		Value:			Coding from http://hl7.org/fhir/ValueSet/observation-status
+
+		Element:		ObservationCategory
+		Concept:		TBD
+		Description:	"A categorization of the observation according to how the observation was collected or its clinical area."
+		Value:			Coding from http://hl7.org/fhir/ValueSet/observation-category or Coding
+
+
+Element:		HistoryObservation
+Concept:		MTH#C2004062 "History of previous events"
+Based on:		Observation
+Description:	"Captures some aspect of the life, health, or medical history of a subject."
+1..*			ObservationCategory includes MTH#C2004062 "History of previous events"
+1..1			ObservationStatus with Coding from NonLabObservationStatusVS
+0..*			Setting
+0..*			Location
+0..1			Frequency
+
+
+Element:		TestResult
+Based on:		Observation
+Concept:		MTH#C0456984
+Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
+1..1			ObservationCode is TestCode
+0..1			BodySite
+0..1 			BodyPosition
+0..*			Qualifier
+0..1 			TBD "Device"
+0..1			TBD "Specimen"
+0..*			Performer
+1..1			TestTime
+0..1 			Interpretation
+0..1			ReferenceRange
+0..1			ChangeFlag
+0..*			TestComponent
+0..1			TestRequest  // optional reference to the request for this test
+
+	Element:		TestTime
+	Concept:		MTH#C0429928
+	Description:	"The clincally-relevant time or time period at which a measurement was taken or specimen collected. Use a period if the measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+	Value:			dateTime or TimePeriod
+
+	Element:		Interpretation
+	Concept:		MTH#C0420833
+	Description:	"A clinical interpretation of a measurement"
+	Value:			Coding from TestInterpretationVS
+	
+	Element:		ReferenceRange
+	Concept:		MTH#C0883335
+	Description:		"The usual or acceptable range for a test result"
+	Value:			TBD "Range"   // TODO: align this with FHIR
+
+	Element:		ChangeFlag
+	Concept:		MTH#C1705241
+	Description:	"Indicator of significant change (delta) from the last or previous measurement."
+	Value:			Coding from ChangeFlagVS
+
+	Element:		TestComponent
+	Concept:		TBD
+	Description:	"A sub-measurement that is part of a larger test result. Component observations are expressed as separate code-value pairs. With the exception of reference range, qualifiers and attributes on the primary measurement apply to the test component. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations."
+	1..1			ObservationCode
+	0..1			Interpretation
+	0..1			ReferenceRange
+
+		
+//------------- Exposure Observation ---------------------
+
+EntryElement:	ExposureToSubstanceStatement
+Based on:		HistoryObservation
+Concept:		MTH#C0332157
+Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
+1..1			Substance
+1..1 			ObservationCode is MTH#C0332157 "Exposure"
+1..*			ObservationCategory includes MTH#C0332157 "Exposure"
+1..1			DidExposureOccur
+0..*			SourceOrVector
+0..1			TBD "AmountOrDosage"
+0..*			Reason with Coding from ExposureReasonVS
+0..1			ExposureMethod
+0..1			RouteIntoBody
+0..*			TestResult  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
+0..*			TBD "Impact" // adverse event, allergic reaction, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+		
+		Element:		DidExposureOccur
+		Concept:		TBD
+		Description:	"The likelihood the exposure happened, e.g. exposed to asbestos in his workplace (using Setting). If missing, it is assumed the exposure did occur."
+		Value:			Coding from QualitativeLikelihoodVS   // OR QualitativeLikelihood  OR Likelihood, given as a Coding from QualitativeLikelihoodVS
+		
+		Element:		SourceOrVector
+		Concept:		MTH#C0012656
+		Description:	"Where the substance originated. Vectors include animals (e.g., tick, mosquito, cats, livestock) capable of transmitting an infectious agent among vertebrates. Sources could include food, contaminated drinking water, air, radon gas in the home, etc."
+		Value:			Coding from TBD "SourceOrVectorVS"
+
+		Element:		ExposureMethod
+		Concept:		TBD
+		Description:	"How the exposure occurred, e.g. injection, ingestion, sexual contact, inhalation, cutaneous contact."
+		Value:			Coding from TBD "ExposureMethodVS"
+
+		
+/*
+		Element:		
+		Concept:		
+		Description:	
+		Value:
+*/
+
+//------------- Behavioral History ---------------------
+
+EntryElement:	BehavioralHistory
+Concept:		MTH#C0004927
+Based on:		HistoryObservation
+Description:	"A statement about observable responses, actions, or activities of the subject. Can be used to assert or deny behaviors."
+1..1 			ObservationCode is LNC#54511-1 "Behavior"
+1..*			ObservationCategory includes LNC#54511-1 "Behavior"
+1..1			DidBehaviorOccur
+0..*			TBD "Impact" // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+0..*			AssessmentTool 
+0..1			ReadinessToChange
+
+	Element:		DidBehaviorOccur
+	Concept:		TBD
+	Description:	"The likelihood the behavior happened. If missing, it is assumed the exposure did occur."
+	Value:			Coding from QualitativeLikelihoodVS   // OR QualitativeLikelihood  OR Likelihood, given as a Coding from QualitativeLikelihoodVS
+
+	Element:		AssessmentTool
+	Concept:		TBD
+	Description:	"The name of the formal assessment or screening tool used to assess the behavior"
+	Value:			Coding
+
+	Element:		ReadinessToChange
+	Concept:		TBD
+	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
+	Value:			Coding from QualitativeLikelihoodVS
+
+//------------ Social Observation -----------------------
+	
+Element:		SocialHistory
+Concept:		MTH#C3714536
+Based on:		HistoryObservation
+Description:	"The external elements and conditions which surround, influence, and affect the life and development of the subject. Includes social conditions such as poverty, violence, bullying."
+1..1			ObservationStatus with Coding from NonLabObservationStatusVS
+1..*			ObservationCategory includes OBSCAT#social-history "social history"
+

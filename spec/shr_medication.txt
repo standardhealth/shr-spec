@@ -9,7 +9,7 @@ Vocabulary:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 Element:		Medication
 Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
-1..1 			SpecificCode with Coding from RXN
+Value: 			Coding from RXN
 0..1			DoseForm
 0..1			MedicationStrength
 0..1			BrandName
@@ -41,14 +41,27 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 		Value: 			string
 
 
-EntryElement:	MedicationTaken
+EntryElement:	MedicationStatement
 Concept:		TBD
-Description:	"Report of a medication prescribed and/or consumed. Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
+Description:	"Report of a medication used or not used. Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 1..1			Medication
+1..1			UsedOrNotUsed
+1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
+1..1			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
 0..1			Dosage		// do not include if dosage was not known
 0..1			Adherence
-1..1			OccurrenceTimePeriod
-1..1 			ReasonForUse
+1..1			OccurrenceTime
+
+	Element:		UsedOrNotUsed
+	Concept:		TBD
+	Description:	"Whether the medication stated was used or not used"
+	Value:			Coding from UsedOrNotUsedVS
+
+	Element:		ReasonMedicationNotGiven
+	Concept:		TBD
+	Description:	"The rationale for NOT using particular medication treatment"
+	Value:			Coding from ReasonNotGivenVS
+
 
 	Element:		Dosage
 	Concept:		MTH#C0178602
@@ -130,21 +143,45 @@ Description:	"Report of a medication prescribed and/or consumed. Medication use 
 	Element:		ReasonForUse
 	Concept:		TBD
 	Description:	"The rationale for why the patient receives a medication or prescription"
-	Value:			Explanation   // TODO: add a reference to problem or condition
+	Value:			Explanation   // TODO: create VS and add a reference to problem or condition
+
+	
+EntryElement:	MedicationPrescribed
+Concept:		TBD
+Description:	"Report of a medication prescription."
+1..1			Medication
+1..1			UsedOrNotUsed is #prescribed
+1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
+1..0			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
+0..1			Dosage		// do not include if dosage was not known
+0..0			Adherence
+1..1			OccurrenceTime
+	
+	
+EntryElement:	MedicationNotPrescribed
+Concept:		TBD
+Based on:		MedicationStatement
+Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
+1..1			Medication
+1..1			UsedOrNotUsed is #not_prescribed
+1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
+1..1			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
+0..0			Dosage		// do not include if dosage was not known
+0..0			Adherence
 
 
 EntryElement:	MedicationNotAdministered
 Concept:		TBD
-Description:	"A record of a medication not prescribed or administered. Recorded only when deviating from the normal expectation, care plan, or standard of care."
+Based on:		MedicationStatement
+Description:	"A record of a medication NOT administered. Recorded when deviating from the care plan."
 1..1			Medication
-0..1 			ReasonForUse   // the reason that the medication would have been expected to be prescribed or given
-1..1			ReasonMedicationNotGiven  //  The reason it was not prescribed or given as expected
+1..1			UsedOrNotUsed is #not_administered
+1..1			ReasonMedicationNotGiven
+0..0			Doseage
+0..0			Adherence
 
-	Element:		ReasonMedicationNotGiven
-	Concept:		TBD
-	Description:	"The rationale for NOT using particular medication treatment"
-	Value:			Coding from ReasonNotGivenVS
 
+// TODO: Not yet mapped to FHIR
 EntryElement:	MedicationChange
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."

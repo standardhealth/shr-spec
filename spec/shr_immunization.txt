@@ -21,28 +21,75 @@ Value:			Coding from CVX
 	Description:	"A distinctive alpha-numeric identification code assigned by the manufacturer or distributor to a specific quantity of manufactured material or product within a batch."
 	Value:			string
 
-EntryElement:	ImmunizationAdministered
+	
+EntryElement:	ImmunizationStatement
 Concept:		MTH#C0020971
-Description:	"A record of a vaccination that is or has been administered to the subject."
-1..1 			Vaccine   // has type, lot, manufacturer
+Description:	"A statement relating to a vaccination that was or was not administered to the subject."
+1..1 			Vaccine
+1..1			WasNotGiven
+1..1			ImmunizationNotAdministeredReason 
+0..1			BodySite   // from core
+0..1			RouteIntoBody  // from medication
+0..1			AmountOfMedication  // from medication
+0..1			TBD "DoseSequenceNumber"
+
+	Element:		WasNotGiven
+	Concept:		MTH#C1548562
+	Description:	"Indicates a medication or substance was not given or administered."
+	Value:			boolean
+
+	Element:		ImmunizationNotAdministeredReason
+	Concept:		TBD
+	Description:	"Reason the scheduled or intended immunization was not given, e.g., refused, no supply, patient didn't show up."
+	Value:			Coding from http://hl7.org/fhir/ValueSet/no-immunization-reason
+
+	
+EntryElement:	ImmunizationAdministered
+Concept:		MTH#C0580520
+Based on:		ImmunizationStatement
+Description:	"Represents an immunization that was administered to the subject"
+1..1			Vaccine.VaccineManufacturer  // required
+1..1			Vaccine.LotNumber   // required
+1..1			WasNotGiven is false
+0..0			ImmunizationNotAdministeredReason 
 0..1			BodySite   // from core
 0..1			RouteIntoBody  // from medication
 0..1			AmountOfMedication  // from medication
 0..1			TBD "DoseSequenceNumber"
 
 
-EntryElement:	ImmunizatonNotAdministered
-Concept:		TBD
-Description:	"Immunization that was not given to the subject."
+	
+EntryElement:	ImmunizationRefused
+Concept:		MTH#C0580520
+Based on:		ImmunizationStatement
+Description:	"Represents an immunization that was offered but declined by the subject or the subject's guardian"
 1..1 			Vaccine
-0..1			TBD "DoseSequenceNumber"   // which dose was missed
-1..1			ImmunizationNotAdministeredReason //e.g., refused, no supply, patient didn't show up, etc.
+1..1			WasNotGiven is true
+1..1			ImmunizationNotAdministeredReason 
+0..0			BodySite   // from core
+0..0			RouteIntoBody  // from medication
+0..0			AmountOfMedication  // from medication
+0..1			TBD "DoseSequenceNumber"
 
-	Element:		ImmunizationNotAdministeredReason
-	Concept:		TBD
-	Description:	"Reason the scheduled or intended immunization was not given"
-	Value:			Coding from http://hl7.org/fhir/ValueSet/no-immunization-reason
 
+// Example of detailed profile
+
+EntryElement:	ZostavaxImmunizationAdministered
+Concept:		TBD
+Based on:		ImmunizationAdministered
+1..1			Vaccine is CVX#36 "VZIG"
+1..1			AgeOfSubjectAtTimeOfEvent // extension particular to this vaccination - should be >60 to qualify for reimbursement
+
+	Element:		AgeOfSubjectAtTimeOfEvent
+	Concept:		MTH#C2348575
+	Description:	"The age of the subject at a specific time when an event happened"
+	Value:			Age
+	
+	
+
+
+
+TO DO: Not mapped, not complete
 EntryElement:	ImmunizationRecommended
 1..1			Vaccine
 0..1			TBD "DoseNumber"
@@ -58,37 +105,3 @@ EntryElement:	ImmunizationRecommendedAgainst
 0..1			(RouteIntoBody or TBD "Protocol")
 1..1			ReasonMedicationNotGiven  // From shr_medication_vs
 
-
-
-/*
-add list of high risk conditions which alter the schedule. Military might get anthrax or other special vaccines
-How about other prophylactics, e.g. For malaria?
-
-Tetanus (Td)						every 10 years
-With Pertussius (Tdap)						1 dose unless pregnant then booster each pregnancy
-Vericella (Chicken Pox) shot or illness						2 doses
-Pneumovax (pneumonia)
-Influenza (flu shot)						annual; IIV or LIAV route
-Hepatitis A						2 doses
-Hepatitis B						3 doses
-MMR						2 doses
-Meningococcus						2 doses
-Zostavax (shingles)						1 dose starting age 60
-HPV						3 doses
-Rotavirus(RV)						2 doses
-DTaP						5 doses
-HiB						3-4 doses
-PCV13						4 doses as child; one age 65
-IPV						4doses
-Pneumococcal polysaccharide (PPSV23)
-MPSV4						1 or more doses
-Meningococcus B						2 or 3 doses
-
-Contraindications
-pregnancy, immunocompromized or HIV CD4 cound <200--varicella, zoster, and MMR
-others with special recommendations: MSM, renal failure/ESRD on dialysis; heart dz; chronic lung dz; Etoh'ism; asplenia; chronic liver fzl DM; healthcare worker
-
-
-Susan: Immunizations--both history per SHR v0.2 and confirmation that ones due during pregnancy are given. TDaP; flu for everyone.  If indicated Hep A, Hep B, meningococcal, pneumococcal. Rhogam at 28 weeks if indicted and other times in pregnancy if indicated.  If patient is not immune needs Varicella and MMR postpartum-----and way to flag that in the SHR with notification triggered by birth.
-
-*/

@@ -5,26 +5,42 @@ Vocabulary:     LNC = http://loinc.org
 Vocabulary:     SCT = http://snomed.info/sct
 
 
-EntryElement:	SubstanceUse
-Based on:		ExposureToSubstance, BehavioralHistory   // Special gift to Chris and his team :)
+EntryElement:	SubstanceUseStatement
+Based on:		ExposureToSubstanceStatement
+Based on:		BehavioralHistory
 Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
 1..1			Substance with Coding from SubstanceOfAbuseVS
-1..1			SpecificCode is MTH#C024251 "Substance Use"
+1..1			ObservationCode is MTH#C024251 "Substance Use"
 1..*			ObservationCategory includes MTH#C024251 "Substance Use"
+1..1			DidExposureOccur is DoesSubjectUseSubstance
 
-// It is not clear how to handle smoking status except as a simple observation. It should really be aligned with SubstanceUse.
+		Element:		DoesSubjectUseSubstance
+		Based on:		DidExposureOccur
+		Description:	"Records if the subject uses a particular substance or class of substances"
+		Value:			Coding from QualitativeLikelihoodVS
+
+
+EntryElement:   IntravenousDrugUseStatement
+Based on:        SubstanceUseStatement
+Concept:        MTH #C0242566
+Description:    "Records whether the subject injects recreational drugs"
+1..1            RouteIntoBody.Coding is FHIR#47625008 "Intravenous route"
+1..1            ExposureMethod.Coding is FHIR#422145002 "Inject"
+
+
+// It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUseStatement.
 EntryElement:	SmokingStatus
 Based on:		Observation
 Concept:		LNC#11367-0
 Description:	"Records the subject's use of tobacco"
 Value:			Coding from http://hl7.org/fhir0/us/core/ValueSet/daf-observation-ccdasmokingstatus
-1..1			SpecificCode is LNC#11367-0
+1..1			ObservationCode is LNC#11367-0
 
 
 // How can we indicate that a subject used to be an alcoholic, but is now "on the wagon"?
 EntryElement:	AlcoholUse
-Based on:		SubstanceUse
+Based on:		SubstanceUseStatement
 Concept:		MTH#C0001948
 Description:	"The history of the subject's use of alcohol"
 Value:			Coding from TBD "AlcoholAbuseVS"  // e.g. former heavy drinker, non-drinker, light drinker, moderate drinker, heavy drinker, binge drinker
@@ -36,14 +52,14 @@ Value:			Coding from TBD "AlcoholAbuseVS"  // e.g. former heavy drinker, non-dri
 	Concept:		MTH#C0556346
 	Description:	"How often have you had 6 or more Units if female, or 8 or more if male, on a single occasion in the last year?"
 	Value:			Coding from SemiquantitativeFrequencyVS
-	1..1			SpecificCode is MTH#C0556346
+	1..1			ObservationCode is MTH#C0556346
 
 EntryElement:	ReligiousPractice
 Concept:		MTH#C0035039
 Based on:		Observation
 Description:	"The religion practiced by the focal subject"
 Value:			Coding from http://hl7.org/fhir/v3/ReligiousAffiliation
-1..1			SpecificCode is LNC#81364-2
+1..1			ObservationCode is LNC#81364-2
 0..1			ReligiousPracticeStatus
 0..*			ReligiousRestriction
 0..1			ReligiousCongregation
@@ -69,7 +85,7 @@ Concept:			MTH#C0012155
 Based on:			Observation
 Description:		"The usual food and drink consumed by an individual"
 Value:				Coding from TBD "DietAndNutritionVS"  // summary values for overall nutrition healthiness
-1..1				SpecificCode is MTH#C0012155
+1..1				ObservationCode is MTH#C0012155
 0..*				SpecialDietFollowed
 1..1				HasSufficientFood
 0..*				DietNutritionConcern
@@ -96,7 +112,7 @@ Concept:			MTH#C0424563
 Based on:			Observation
 Description:		"Self-reported sleep quality"
 Value:				Coding from PerformanceGradingScaleVS
-1..1				SpecificCode is LNC#28323-4
+1..1				ObservationCode is LNC#28323-4
 0..1				TroubleFallingAsleep
 0..1				TroubleStayingAsleep
 0..1				WakeFeelingRested
@@ -133,7 +149,7 @@ Based on:			Observation
 Concept:			MTH#C0026606
 Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288"
 Value:				Coding from QualitativeValueScaleVS
-1..1				SpecificCode is LNC#28323-4
+1..1				ObservationCode is LNC#28323-4
 0..1				ExerciseHoursPerWeek
 0..*				PhysicalActivityLimitation
 
@@ -152,7 +168,7 @@ Concept: 		TBD
 Based on:		TBD "Program"
 Description:	"The treatment program used to address a substance abuse problem"
 1..1			SubstanceAbuseTreatmentType
-0..1			OccurrenceTimePeriod
+0..1			OccurrenceTime
 0..1			Facility
 
 		Element:		SubstanceAbuseTreatmentType
