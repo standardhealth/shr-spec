@@ -1,5 +1,6 @@
-DataDefinitions:	shr.observation
+Namespace:	shr.observation
 Uses:				shr.base, shr.core, shr.demographics, shr.actor
+Grammar:	DataElement 4.0
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
 
 
@@ -13,9 +14,9 @@ Element: 		Observation
 Concept:		MTH#C1554188
 Description:	"A statement about an act that is intended to result in new information about a subject. The focus of an observation can include the subject's behavior, physiological state, functional status, environment, exposures to substances, etc. The method of observing can be via questions, assessment, laboratory test, or imaging procedure."
 1..1			ObservationCode
-1..1			ObservationNotMade
+0..1			ObservationNotMade
 0..1			ObservationNotMadeReason
-1..1			ObservationStatus
+0..1			ObservationStatus
 0..*			ObservationCategory
 0..1			TemporalContext
 
@@ -36,7 +37,7 @@ Description:	"A statement about an act that is intended to result in new informa
 
 		Element: 		ObservationStatus
 		Concept:		TBD
-		Description:	"Qualifier describing the stage or administrative state of the observation."
+		Description:	"Qualifier describing the stage or administrative state of the observation. If not given, it is assumed the status is final."
 		Value:			Coding from http://hl7.org/fhir/ValueSet/observation-status
 
 		Element:		ObservationCategory
@@ -60,14 +61,14 @@ Element:		TestResult
 Based on:		Observation
 Concept:		MTH#C0456984
 Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
-1..1			ObservationCode is TestCode
+				ObservationCode is TestCode
 0..1			BodySite
 0..1 			BodyPosition
 0..*			Qualifier
 0..1 			TBD "Device"
 0..1			TBD "Specimen"
 0..*			Performer
-1..1			TestTime
+0..1			TestTime
 0..1 			Interpretation
 0..1			ReferenceRange
 0..1			ChangeFlag
@@ -96,10 +97,9 @@ Description:	"The result of a laboratory, radiologic, or other clinical test or 
 
 	Element:		TestComponent
 	Concept:		TBD
+	Based on:		Observation
 	Description:	"A sub-measurement that is part of a larger test result. Component observations are expressed as separate code-value pairs. With the exception of reference range, qualifiers and attributes on the primary measurement apply to the test component. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations."
-	1..1			ObservationCode
-	0..1			Interpretation
-	0..1			ReferenceRange
+
 
 		
 //------------- Exposure Observation ---------------------
@@ -109,12 +109,12 @@ Based on:		HistoryObservation
 Concept:		MTH#C0332157
 Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
 1..1			Substance
-1..1 			ObservationCode is MTH#C0332157 "Exposure"
-1..*			ObservationCategory includes MTH#C0332157 "Exposure"
+				ObservationCode is MTH#C0332157 "Exposure"
+				ObservationCategory includes MTH#C0332157 "Exposure"
 1..1			DidExposureOccur
 0..*			SourceOrVector
 0..1			TBD "AmountOrDosage"
-0..*			Reason with Coding from ExposureReasonVS
+				Reason with Coding from ExposureReasonVS
 0..1			ExposureMethod
 0..1			RouteIntoBody
 0..*			TestResult  // Related tests that might confirm or refute the exposure and measure the effects of the exposure

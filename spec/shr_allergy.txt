@@ -1,5 +1,6 @@
-DataDefinitions:	shr.allergy
-Uses:				shr.core, shr.base, shr.adverse
+Namespace:	shr.allergy
+Uses:		shr.core, shr.base, shr.adverse
+Grammar:	DataElement 4.0
 Description:		"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
 
 Path:     		FHIR = http://hl7.org/fhir/ValueSet
@@ -14,13 +15,13 @@ EntryElement:	AdverseReactionRiskStatement
 Concept:		SCT#420134006 "Propensity to adverse reactions"
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances. Can be used to record that a substance does not pose an elevated risk to the subject (ElevatedRiskExists = false)"
 0..1 			AllergenIrritant
-0..1			SubstanceCategory
+0..*			SubstanceCategory
 1..1			ElevatedRiskExists
 1..1			Verified
 0..1			AdverseReactionType
 0..1			AdverseReactionCriticality
 0..*			ExpectedManifestation
-0..1			Onset
+0..1			Onset    //  Age or date or dateTime
 0..1			MostRecentOccurrence
 0..*			AdverseReaction
 
@@ -69,48 +70,52 @@ Based on:		AdverseReactionRiskStatement
 Concept:		MTH#C0013182
 Description:	"An immune or biochemical adverse reaction to a medication"
 1..1 			AllergenIrritant with Coding from DrugAllergyVS
-0..1			SubstanceCategory is AIC#food
-1..1			ElevatedRiskExists is true
-1..1			AdverseReactionType is AIT#allergy		
+1..1			SubstanceCategory is AIC#drug
+				ElevatedRiskExists is true
+				AdverseReactionType is AIT#allergy		
+
 	
 EntryElement:	FoodAllergyStatement
 Based on:		AdverseReactionRiskStatement
 Concept:		MTH#C0016470
 Description:	"An immune or biochemical adverse reaction to a food substance"
 1..1 			AllergenIrritant with Coding from FoodSubstanceVS
-0..1			SubstanceCategory is AIC#food
-1..1			ElevatedRiskExists is true
-1..1			AdverseReactionType is AIT#allergy
+1..1			SubstanceCategory is AIC#food
+				ElevatedRiskExists is true
+				AdverseReactionType is AIT#allergy
 
+				
 EntryElement:	NoKnownAllergy
 Based on:		AdverseReactionRiskStatement
 Concept:		MTH#C0262580
 Description:	"The subject has no known allergies to drugs, foods, biologics, or environmental factors"
 0..0			AllergenIrritant  // no specific allergen or irritant
 4..4			SubstanceCategory includes AIC#food includes AIC#medication includes AIC#biologic includes AIC#environment
-1..1			ElevatedRiskExists is false
-1..1			Verified is #unconfirmed  // there is no way to test every single substance
-1..1			AdverseReactionType is AIT#allergy
+				ElevatedRiskExists is false
+				Verified is #unconfirmed  // there is no way to test every single substance
+				AdverseReactionType is AIT#allergy
 0..0			AdverseReactionCriticality
 0..0			ExpectedManifestation
 0..0			Onset
 0..0			MostRecentOccurrence
 0..0			AdverseReaction
 
+
 EntryElement:	NoKnownFoodAllergy
 Based on:		AdverseReactionRiskStatement
-Concept:		MTH#
+Concept:		MTH#C1997970
 Description:	"The subject has no known allergies to any foods"
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#food  // Chris -- should this be "includes" even though there is just one value included?
-1..1			ElevatedRiskExists is false
-1..1			Verified is #unconfirmed  // since there is no way to know about every single food
-1..1			AdverseReactionType is AIT#allergy
+				ElevatedRiskExists is false
+				Verified is #unconfirmed  // since there is no way to know about every single food
+				AdverseReactionType is AIT#allergy
 0..0			AdverseReactionCriticality
 0..0			ExpectedManifestation
 0..0			Onset
 0..0			MostRecentOccurrence
 0..0			AdverseReaction
+
 
 EntryElement:	NoKnownDrugAllergy
 Based on:		AdverseReactionRiskStatement
@@ -118,14 +123,15 @@ Concept:		MTH#C0262581
 Description:	"The subject has no known allergies to any medications."
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#drug
-1..1			ElevatedRiskExists is false
-1..1			Verified is #unconfirmed  // since there is no way to know about every single drug
-1..1			AdverseReactionType is AIT#allergy
+				ElevatedRiskExists is false
+				Verified is #unconfirmed  // since there is no way to know about every single drug
+				AdverseReactionType is AIT#allergy
 0..0			AdverseReactionCriticality
 0..0			ExpectedManifestation
 0..0			Onset
 0..0			MostRecentOccurrence
 0..0			AdverseReaction
+
 
 EntryElement:	NoKnownEnvironmentalAllergy
 Based on:		AdverseReactionRiskStatement
@@ -133,13 +139,14 @@ Concept:		MTH#C1998290
 Description:	"The subject has no known allergies to any environmental factors."
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#environment
-1..1			ElevatedRiskExists is false
-1..1			Verified is #unconfirmed  // since there is no way to know about every single environmental agent
-1..1			AdverseReactionType is AIT#allergy
+				ElevatedRiskExists is false
+				Verified is #unconfirmed  // since there is no way to know about every single environmental agent
+				AdverseReactionType is AIT#allergy
 0..0			AdverseReactionCriticality
 0..0			ExpectedManifestation
 0..0			Onset
 0..0			MostRecentOccurrence
 0..0			AdverseReaction
+
 
 

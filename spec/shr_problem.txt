@@ -1,21 +1,59 @@
-DataDefinitions:	shr.problem
+Namespace:	shr.problem
+Uses:				shr.core, shr.base, shr.actor
+Grammar:	DataElement 4.0
+Description:		"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and diseases."
 
-/*
-Problem/Diagnosis*		
-	Name	
-	Code	Code
+EntryElement:		ProblemConditionConcernStatement
+Concept:			MTH#C0033213
+Description:		"A statement about a difficulty, disorder, symptom, or trouble. May be used to state the non-existence of a condition, problem, or concern."			
+Value:				Coding
+Likelihood
+1..1				ClinicalStatus
+0..1				VerificationStatus
+Category
+ProblemExists
+
 	Clinical Description	
-	Affected Body Site(s)	Body site*
-	Severity	
-	Criticality
-	Stage/Grade/Classification	
+BodySite
+Severity	
+Criticality
+Stage/Grade/Classification	
 	Diagnostic Certainty	
 	Encounters*	Reference(Encounter)
-	DateTime of Onset	
-	DateTime Clinically Recognized	
+0..1	Onset	
+Abatement
+Clinically Recognized		DateTime 
 	Evidence	Observations, Tests, Imaging Results
 	Course Description (progress notes)	Progress Note (complex type with text, date, author)
 	Related Medications	Reference
 	Include in problem list	Boolean
 	
-	*/
+// Examples of how to specialize Problem
+	
+EntryElement:		AcademicProblem
+Concept:			MTH#C0000873
+Based on:			Problem
+Description:		"A problem with learning or behavior in a learning environment"
+Value:				Coding from AcademicProblemVS
+0..0				BodySite
+
+
+EntryElement:		MentalHealthProblem
+Concept:			MTH#C1446377
+Based on:			ProblemOrConditionStatement
+Description:		"A problem relating to a person’s psychological and emotional well-being"
+Value:				Coding from DSM-IV
+Axis1:
+
+
+	
+	
+EntryElement:		Concern
+Concept:			TBD
+Based on:			
+Description:		"A concern or worry expressed by the subject, not necessarily related to a current health problem experienced by the subject. Examples include 'worried about losing health insurance' or 'worried about losing the ability to drive' or 'worried about relapse'."
+
+
+EntryElement:		FamilyMemberCondition
+Based on:			Condition
+1..1				Entry.FocalSubject is a FamilyMember
