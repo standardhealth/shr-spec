@@ -3,9 +3,9 @@ Namespace:		shr.vital
 Description:	"The SHR Vital domain contains definitions for basic physiological measurements categorized as vital signs."
 Uses:			shr.core, shr.base
 
-Vocabulary:     LNC = http://loinc.org
-Vocabulary:		UCUM = http://unitsofmeasure.org
-Vocabulary:		MTH = http://uts.nlm.nih.gov/metathesaurus
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		UCUM = http://unitsofmeasure.org
+CodeSystem:		MTH = http://uts.nlm.nih.gov/metathesaurus
 
 //------------------ Vital Sign ---------------------------
 
@@ -27,7 +27,6 @@ Value:			Quantity with units UCUM#C66967 "/min"
 				TestCode is LNC#9279-1   // or potentially a value set of LOINC codes that include 9279-1 and more specific codes?
 				Qualifier with Coding from RespiratoryRateQualifierVS
 0..1			TestMethod with Coding from RespiratoryRateMethodVS
-0..0			TestComponent
 
 EntryElement:	HeartRate
 Based on:		VitalSign
@@ -37,7 +36,6 @@ Value:			Quantity wit units UCUM#C66967 "/min"
 				TestCode is LNC#8867-4
 				Qualifier with Coding from HeartRateQualifierVS
 0..1			TestMethod with Coding from HeartRateMethodVS
-0..0			TestComponent
 
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
@@ -46,7 +44,6 @@ Description:	"Oxygen saturation in Arterial blood by Pulse oximetry"
 Value:			Quantity with units UCUM#C25613 "%"
 				TestCode is LNC#59408-5
 0..1			BodySite with Coding from OxygenSaturationBodySiteVS
-0..0			TestComponent
 
 EntryElement:	BodyTemperature
 Based on:		VitalSign
@@ -56,7 +53,6 @@ Value:			Quantity with units UCUM#C42559 "C"
 				TestCode is LNC#8310-5
 				TestMethod with Coding from BodyTemperatureMethodVS
 				Qualifier with Coding from BodyTemperatureQualifierVS
-0..0			TestComponent
 
 EntryElement:	BodyHeight
 Based on:		VitalSign
@@ -65,7 +61,6 @@ Description:	"The distance from the sole to the crown of the head"
 Value:			Quantity with units UCUM#C49668 "cm"
 				TestCode is LNC#8302-2
 				Qualifier with Coding from BodyHeightQualifierVS
-0..0			TestComponent
 
 EntryElement:	BodyLength
 Based on:		BodyHeight
@@ -73,7 +68,6 @@ Concept:		LNC#8306-3
 Description:	"The distance from the sole to the crown of the head, lying down (typically 0-2 years)."
 Value:			Quantity with units is UCUM#C49668 "cm"
 				TestCode is LNC#8306-3
-0..0			TestComponent
 
 EntryElement:	BodyWeight
 Based on:		VitalSign
@@ -82,7 +76,6 @@ Description:	"The mass or quantity of heaviness of an individual. Does not inclu
 Value:			Quantity with Units UCUM#C28252 "kg"
 				TestCode is LNC#29463-7
 				Qualifier with Coding from BodyWeightQualifierVS
-0..0			TestComponent
 
 EntryElement:	HeadCircumference
 Based on:		VitalSign
@@ -90,14 +83,14 @@ Concept:		LNC#8287-5
 Description:	"Circumference of the head (typically 0-2 years)"
 Value:			Quantity with units UCUM#C49668 "cm"
 				TestCode is LNC#8287-5
-0..0			TestComponent
 
 EntryElement:	BodyMassIndex
 Based on:		VitalSign
 Concept:		LNC#39156-5
 Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
 				TestCode is LNC#39156-5
-1..2			TestComponent includes BodyWeight includes BodyHeight
+0..1			BodyWeight
+0..1			BodyHeight
 
 
 EntryElement:	BloodPressure    // Essentially a panel
@@ -105,7 +98,8 @@ Concept:		LNC#55284-4
 Description:	"The force of circulating blood on the walls of the arteries."
 0..0			Value
 				TestCode is LNC#55284-4
-1..2			TestComponent includes SystolicPressure includes DiastolicPressure
+1..1			SystolicPressure
+1..1			DiastolicPressure
 				BodySite with Coding from BloodPressureBodySiteVS
 				TestMethod with Coding from BloodPressureMethodVS
 				Qualifier with Coding from BloodPressureQualifierVS
@@ -113,14 +107,12 @@ Description:	"The force of circulating blood on the walls of the arteries."
 
 	Element:		SystolicPressure
 	Concept:		LNC#8480-6
-	Based on:		TestComponent
 	Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest"
 	Value:			Quantity with units UCUM#49670 "mmHg"
 					TestCode is LNC#8480-6
 
 	Element:		DiastolicPressure
 	Concept:		LNC#8462-4
-	Based on:		TestComponent
 	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest"
 	Value:			Quantity with units UCUM#49670 "mmHg"
 					TestCode is LNC#8462-4

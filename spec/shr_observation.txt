@@ -3,8 +3,8 @@ Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
 Uses:		shr.base, shr.core, shr.demographics, shr.actor
 
-Vocabulary: 	OBSCAT = http://hl7.org/fhir/observation-category
-Vocabulary:		OBSSTAT = http://hl7.org/fhir/observation-status
+CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		OBSSTAT = http://hl7.org/fhir/observation-status
 
 
 //------------- Base for all observations -----------------------------
@@ -17,7 +17,7 @@ Description:	"A statement about an act that is intended to result in new informa
 0..1			ObservationNotMadeReason
 0..1			ObservationStatus
 0..*			ObservationCategory
-0..1			TemporalContext
+0..1			GeneralizedTemporalContext
 
 		Element:		ObservationCode
 		Concept:		TBD
@@ -71,7 +71,6 @@ Description:	"The result of a laboratory, radiologic, or other clinical test or 
 0..1 			Interpretation
 0..1			ReferenceRange
 0..1			ChangeFlag
-0..*			TestComponent
 0..1			TestRequest  // optional reference to the request for this test
 
 	Element:		TestTime
@@ -94,11 +93,6 @@ Description:	"The result of a laboratory, radiologic, or other clinical test or 
 	Description:	"Indicator of significant change (delta) from the last or previous measurement."
 	Value:			Coding from ChangeFlagVS
 
-	Element:		TestComponent
-	Concept:		TBD
-	Based on:		Observation
-	Description:	"A sub-measurement that is part of a larger test result. Component observations are expressed as separate code-value pairs. With the exception of reference range, qualifiers and attributes on the primary measurement apply to the test component. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations."
-
 
 		
 //------------- Exposure Observation ---------------------
@@ -107,7 +101,7 @@ EntryElement:	ExposureToSubstanceStatement
 Based on:		HistoryObservation
 Concept:		MTH#C0332157
 Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
-1..1			Substance
+0..1			Substance
 				ObservationCode is MTH#C0332157 "Exposure"
 				ObservationCategory includes MTH#C0332157 "Exposure"
 1..1			DidExposureOccur

@@ -1,38 +1,122 @@
-Grammar:	DataElement 4.0
-Namespace:	shr.problem
-Description:		"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and diseases."
-Uses:				shr.core, shr.base, shr.actor
+Grammar:		DataElement 4.0
+Namespace:		shr.problem
+Description:	"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
+Uses:			shr.core, shr.base, shr.actor
 
 
-EntryElement:		ConditionStatement
+//------------  Symptom -------------
+
+Element:   		Symptom 
+Concept:		MTH#C1457887
+Description:	"A complaint or observed (subjective) indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
+Value:			Coding from SymptomVS
+0..1			Severity
+0..1			BodySite
+
+	
+
+
+	
+/*  NOT SURE IF THIS WILL BE USED
+
+Element:		DiseaseFinding
+Concept:		MTH#C0012634, SCT#64572001
+Description:	"A clinical finding of a physical or mental illness"
+Value:			Coding from DiseaseFindingVS
+
+Element:		ClinicalFindingAbsent
+Concept:		SCT#373572006
+Description:	"A situation when an measurement or observation reveals no finding"
+Value:			Coding from ClinicalFindingAbsentVS
+
+*/
+
+
+
+EntryElement:		ProblemStatement
 Concept:			MTH#C0033213
-Description:		"A statement about a disorder, problem, complaint, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, or trouble. May be used to state the non-existence of a condition, problem, or concern."			
-Value:				Coding
-Likelihood
+Description:		"A statement about a disorder, abnormality, problem, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, or trouble. May be used to state the existence or non-existence of a problem."			
+Value:				Problem
+0..*				ProblemCategory
+1..1				LikelihoodThisProblemExists
+0..1				SupportingEvidenceQuality
 1..1				ClinicalStatus
-0..1				VerificationStatus
-Category
-Conditon Exists
+1..1				IncludeOnProblemList
+0..1				Onset
+0..1				ClinicallyRecognized
+0..1				Abatement
+0..*				BodySite
+0..1				Severity
+0..1				Criticality
+0..1				GradeOrStage
+0..*				Manifestation
+
+			Element:		Problem
+			Concept:		TBD
+			Description:	"A problem (symptom, disorder, abnormality, condition, etc.)."
+			Value:			Coding
+			
+			Element:		ProblemCategory
+			Concept:		TBD
+			Description:	"A categorization of the problem using common clinical categories."
+			Value:			Coding from ProblemCategoryVS
+			
+			Element:		LikelihoodThisProblemExists
+			Concept:		TBD
+			Description:	"Whether this problem exists in the patient."
+			Value:			GeneralizedLikelihood
+			
+			Element:		SupportingEvidenceQuality
+			Concept:		TBD
+			Description:	"An assessment of the quality and/or quantity of the source information that supports judgment."
+			Value:			Coding from EvidenceQualityVS
+
+			Element:		IncludeOnProblemList
+			Concept:		TBD
+			Description:	"Whether or not to include this problem on the subject's current problem list."
+			Value:			boolean
+
+			Element:		Onset  
+			Concept:		MTH#C0277793
+			Description:	"The beginning or first appearance of a mental or physical disorder."
+			Value:			GeneralizedTemporalContext
+			
+			Element:		ClinicallyRecognized
+			Concept:		TBD
+			Description:	"The time at which a condition or problem was first identified in a healthcare context"
+			
+			Element:		Abatement
+			Concept:		MTH#C1880019
+			Description:	"The end, remission or resolution."
+			Value:			GeneralizedTemporalContext
+			
+			Element:		Severity
+			Concept:		MTH#C0392364
+			Description:	"Degree of severity of a symptom, disorder, or problem."
+			Value: 			Coding from FHIR/condition-severity   
+	
+			Element:		Criticality
+			Concept:		MTH#C3858539 "Criticality"
+			Description:	"A clinical judgment of potential clinical harm, or seriousness, of a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
+			Value:			Coding from FHIR/allergy-intolerance-criticality	
+			
+			Element:		GradeOrStage
+			Concept:		MTH#C0699749
+			Desciption:		"The stage or grade of a disease."
+			Value:			Coding from GradeOrStageVS
+
 Clinical Description	
-BodySite
-Severity	
-Criticality
-Stage/Grade/Classification	
-	Diagnostic Certainty	
-	Encounters*	Reference(Encounter)
-0..1	Onset	
-Abatement
 Clinically Recognized		DateTime 
-	Evidence	Observations, Tests, Imaging Results
-	Course Description (progress notes)	Progress Note (complex type with text, date, author)
-	Related Medications	Reference
-	Include in problem list	Boolean
+Evidence	Observations, Tests, Imaging Results
+Course Description (progress notes)	Progress Note (complex type with text, date, author)
+Related Medications	Reference
+
 	
 // Examples of how to specialize Problem
 	
 EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
-Based on:			Problem
+Based on:			ProblemStatement
 Description:		"A problem with learning or behavior in a learning environment"
 Value:				Coding from AcademicProblemVS
 0..0				BodySite
@@ -40,14 +124,14 @@ Value:				Coding from AcademicProblemVS
 
 EntryElement:		MentalHealthProblem
 Concept:			MTH#C1446377
-Based on:			ProblemOrConditionStatement
+Based on:			ProblemStatement
 Description:		"A problem relating to a person’s psychological and emotional well-being"
 Value:				Coding from DSM-IV
 Axis1:
 
-EntryElement:	 Asplenia
+EntryElement:	 	Asplenia
 Code:		
-ConditionExists: false
+
 	
 EntryElement:		Concern
 Concept:			TBD
@@ -56,5 +140,5 @@ Description:		"A concern or worry expressed by the subject, not necessarily rela
 
 
 EntryElement:		FamilyMemberCondition
-Based on:			Condition
+Based on:			ProblemStatement
 1..1				Entry.FocalSubject is a FamilyMember
