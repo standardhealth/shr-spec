@@ -3,7 +3,7 @@ Namespace:		shr.problem
 Description:	"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
 Uses:			shr.core, shr.base, shr.actor, shr.allergy
 
-Vocabulary:		DSM = "http://www.dsm5.org/"
+Vocabulary:		DSM = http://www.dsm5.org/
 
 //------------  Manifestation -------------
 
@@ -33,8 +33,8 @@ Value:			Coding from ClinicalFindingAbsentVS
 
 EntryElement:		ProblemStatement
 Concept:			MTH#C0033213
-Description:		"A statement about a disorder, abnormality, problem, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, or trouble. May be used to state the existence or non-existence of a problem."			
-Value:				Problem
+Description:		"A statement about a disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, or trouble. May be used to state the existence or non-existence of a problem."			
+0..1				ProblemCode
 0..*				ProblemCategory
 1..1				LikelihoodThisProblemExists
 0..1				SupportingEvidenceQuality
@@ -49,7 +49,7 @@ Value:				Problem
 0..1				GradeOrStage
 0..*				Manifestation
 
-			Element:		Problem
+			Element:		ProblemCode
 			Concept:		TBD
 			Description:	"A problem (symptom, disorder, abnormality, condition, etc.)."
 			Value:			Coding
@@ -106,14 +106,16 @@ Value:				Problem
 			
 			Element:		GradeOrStage
 			Concept:		MTH#C0699749
-			Description:		"The stage or grade of a disease."
+			Description:	"The stage or grade of a disease."
 			Value:			Coding from GradeOrStageVS
 
+			
+			
 /*  
 TO DO:
-Evidence	Observations, Tests, Imaging Results	
-Progress Notes (complex type with text, date, author)
-Related Medications
+Associate the problem with Evidence, such as Observations, Tests, Imaging Results	
+Provide for Progress Notes (complex type with text, date, author)
+Link to Related Medications
 */
 
 	
@@ -123,8 +125,15 @@ EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
 Based on:			ProblemStatement
 Description:		"A problem with learning or behavior in a learning environment"
-Value:				Coding from AcademicProblemVS
+					ProblemCode	with Coding from TBD "AcademicProblemVS"
 0..0				BodySite
+
+EntryElement:		Injury
+Concept:			MTH#C3263722
+Based on:			ProblemStatement
+Description:		"Damage inflicted on the body by an external force."
+0..1				Setting   // where injury happened (work, home, school)
+0..1				Location  // where (on earth) did the injury happen
 
 
 EntryElement:		MentalHealthProblem
@@ -133,10 +142,12 @@ Based on:			ProblemStatement
 Description:		"A problem relating to a person’s psychological and emotional well-being"
 Value:				Coding from DSM-IV
 
-/* Work in progress
-EntryElement:	 	Asplenia
-Code:		
 
+EntryElement:	 	Asplenia
+Code:				MTH#C0600031
+Based on:			ProblemStatement
+Description:		"Congenital absence of spleen."
+Value:			 	SCT#93030006
 	
 EntryElement:		Concern
 Concept:			TBD
