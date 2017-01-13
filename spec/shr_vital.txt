@@ -1,7 +1,7 @@
 Grammar:		DataElement 4.0
 Namespace:		shr.vital
 Description:	"The SHR Vital domain contains definitions for basic physiological measurements categorized as vital signs."
-Uses:			shr.core, shr.base
+Uses:			shr.core, shr.base, shr.observation, shr.lab
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		UCUM = http://unitsofmeasure.org
@@ -32,7 +32,7 @@ EntryElement:	HeartRate
 Based on:		VitalSign
 Concept:		LNC#8867-4
 Description:	"The number of times the HEART VENTRICLES contract per unit of time, usually per minute."
-Value:			Quantity wit units UCUM#C66967 "/min"
+Value:			Quantity with units UCUM#C66967 "/min"
 				TestCode is LNC#8867-4
 				Qualifier with Coding from HeartRateQualifierVS
 0..1			TestMethod with Coding from HeartRateMethodVS
@@ -73,7 +73,7 @@ EntryElement:	BodyWeight
 Based on:		VitalSign
 Concept:		LNC#29463-7
 Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
-Value:			Quantity with Units UCUM#C28252 "kg"
+Value:			Quantity with units UCUM#C28252 "kg"
 				TestCode is LNC#29463-7
 				Qualifier with Coding from BodyWeightQualifierVS
 
@@ -94,12 +94,13 @@ Description:	"A general indicator of the body fat an individual is carrying base
 
 
 EntryElement:	BloodPressure    // Essentially a panel
+Based on:		VitalSign
 Concept:		LNC#55284-4
 Description:	"The force of circulating blood on the walls of the arteries."
-0..0			Value
+0..0			Value  // no value!
 				TestCode is LNC#55284-4
-1..1			SystolicPressure
-1..1			DiastolicPressure
+1..1			SystolicPressure  // component
+1..1			DiastolicPressure   // component
 				BodySite with Coding from BloodPressureBodySiteVS
 				TestMethod with Coding from BloodPressureMethodVS
 				Qualifier with Coding from BloodPressureQualifierVS
@@ -121,4 +122,3 @@ Description:	"The force of circulating blood on the walls of the arteries."
 	Concept: 		LNC#8360-0
 	Description:	"The angle at which the head is tilted relative to a level position while physiologic TestResults are taken"
 	Value:			Quantity with units UCUM#C68667 "deg"
-	

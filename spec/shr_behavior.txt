@@ -1,23 +1,23 @@
 Grammar:	DataElement 4.0
 Namespace:	shr.behavior
 Description:		"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
-Uses:		shr.core, shr.base, shr.medication, shr.encounter, shr.allergy
+Uses:		shr.core, shr.base, shr.medication, shr.encounter, shr.allergy, shr.observation
 
 
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     MTH = http://uts.nlm.nih.gov/metathesaurus
 
 
 EntryElement:	SubstanceUseStatement
 Based on:		ExposureToSubstanceStatement
-Based on:		BehavioralHistory
 Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
 				Substance with Coding from SubstanceOfAbuseVS
 				ObservationCode is MTH#C024251 "Substance Use"
 				ObservationCategory includes MTH#C024251 "Substance Use"
-				DidExposureOccur is DoesSubjectUseSubstance
+				DidExposureOccur is type DoesSubjectUseSubstance
 
 		Element:		DoesSubjectUseSubstance
 		Based on:		DidExposureOccur
@@ -29,8 +29,8 @@ EntryElement:   IntravenousDrugUseStatement
 Based on:       SubstanceUseStatement
 Concept:        MTH #C0242566
 Description:    "Records whether the subject injects recreational drugs"
-1..1            RouteIntoBody.Coding is FHIR#47625008 "Intravenous route"
-1..1            ExposureMethod.Coding is FHIR#422145002 "Inject"
+1..1            RouteIntoBody is MTH#C1522726 "Intravenous route"
+1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
 
 // It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUseStatement.
@@ -93,7 +93,7 @@ Value:				Coding from TBD "DietAndNutritionVS"  // summary values for overall nu
 0..*				SpecialDietFollowed
 1..1				HasSufficientFood
 0..*				DietNutritionConcern
-0..*				FoodAllergy  // optional pointers to food allergies, defined in shr.allergy
+0..*				FoodAllergyStatement  // optional pointers to food allergies, defined in shr.allergy
 
 		Element:		SpecialDietFollowed
 		Concept:		TBD

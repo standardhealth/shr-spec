@@ -1,20 +1,18 @@
 Grammar:		DataElement 4.0
 Namespace:		shr.problem
 Description:	"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
-Uses:			shr.core, shr.base, shr.actor
+Uses:			shr.core, shr.base, shr.actor, shr.allergy
 
+Vocabulary:		DSM = "http://www.dsm5.org/"
 
-//------------  Symptom -------------
+//------------  Manifestation -------------
 
-Element:   		Symptom 
+Element:   		Manifestation 
 Concept:		MTH#C1457887
 Description:	"A complaint or observed (subjective) indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
-Value:			Coding from SymptomVS
+Value:			Coding from ManifestationVS
 0..1			Severity
 0..1			BodySite
-
-	
-
 
 	
 /*  NOT SURE IF THIS WILL BE USED
@@ -43,7 +41,7 @@ Value:				Problem
 1..1				ClinicalStatus
 1..1				IncludeOnProblemList
 0..1				Onset
-0..1				ClinicallyRecognized
+0..1				WhenClinicallyRecognized
 0..1				Abatement
 0..*				BodySite
 0..1				Severity
@@ -70,6 +68,11 @@ Value:				Problem
 			Concept:		TBD
 			Description:	"An assessment of the quality and/or quantity of the source information that supports judgment."
 			Value:			Coding from EvidenceQualityVS
+			
+			Element:		ClinicalStatus
+			Concept:		TBD
+			Description:	"A flag indicating whether the problem is active or inactive, recurring, in remission, or resolved."
+			Value:			Coding from http://hl7.org/fhir/condition-clinical
 
 			Element:		IncludeOnProblemList
 			Concept:		TBD
@@ -81,9 +84,10 @@ Value:				Problem
 			Description:	"The beginning or first appearance of a mental or physical disorder."
 			Value:			GeneralizedTemporalContext
 			
-			Element:		ClinicallyRecognized
+			Element:		WhenClinicallyRecognized
 			Concept:		TBD
 			Description:	"The time at which a condition or problem was first identified in a healthcare context"
+			Value:			GeneralizedTemporalContext
 			
 			Element:		Abatement
 			Concept:		MTH#C1880019
@@ -102,14 +106,15 @@ Value:				Problem
 			
 			Element:		GradeOrStage
 			Concept:		MTH#C0699749
-			Desciption:		"The stage or grade of a disease."
+			Description:		"The stage or grade of a disease."
 			Value:			Coding from GradeOrStageVS
 
-Clinical Description	
-Clinically Recognized		DateTime 
-Evidence	Observations, Tests, Imaging Results
-Course Description (progress notes)	Progress Note (complex type with text, date, author)
-Related Medications	Reference
+/*  
+TO DO:
+Evidence	Observations, Tests, Imaging Results	
+Progress Notes (complex type with text, date, author)
+Related Medications
+*/
 
 	
 // Examples of how to specialize Problem
@@ -127,8 +132,8 @@ Concept:			MTH#C1446377
 Based on:			ProblemStatement
 Description:		"A problem relating to a person’s psychological and emotional well-being"
 Value:				Coding from DSM-IV
-Axis1:
 
+/* Work in progress
 EntryElement:	 	Asplenia
 Code:		
 
@@ -141,4 +146,6 @@ Description:		"A concern or worry expressed by the subject, not necessarily rela
 
 EntryElement:		FamilyMemberCondition
 Based on:			ProblemStatement
-1..1				Entry.FocalSubject is a FamilyMember
+1..1				Entry.FocalSubject is type FamilyMember
+
+*/

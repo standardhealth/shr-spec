@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.0
 Namespace:	shr.actor
 Description:		"The SHR Actor domain contains definitions for people and organizations that are involved with the person of record, in some capacity."
-Uses:		shr.core, shr.demographics
+Uses:		shr.core, shr.demographics, shr.base
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
@@ -103,8 +103,8 @@ Value:			0..* HumanName
 	
 		Element:		DateOfDeath
 		Concept:		MTH#C1148348
-		Description:		"The calendar date of subject's death."
-		Value:			GeneralizedDate
+		Description:	"The calendar date of subject's death."
+		Value:			GeneralizedDateTime
 	
 		Element:		AgeAtDeath
 		Concept:		MTH#C1546180
@@ -132,7 +132,7 @@ Value:			HumanName   // only one (limitation imposed by us-core)
 	Element: 		NationalProviderIdentifier
 	Concept:		MTH#C1549728
 	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry"
-	Value:			TBD "Identifier"
+	Value:			id
 
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
@@ -178,7 +178,7 @@ Value:			OrganizationName
 	Element:		OrganizationIdentifyingCode
 	Concept:		TBD
 	Description:	"A code identifying a specific organization. The NPI should be provided, if available. Other business identifiers, such employer tax ID, or MVX code for vaccine manufacturers, should also be provided."
-	Value:			TBD "Identifier"
+	Value:			id
 
 
 //  -------------------- Involvement in Healthcare -------------------------
@@ -216,7 +216,7 @@ Concept:		MTH#C1552023
 Based on:		ProviderRelationshipStatement
 Description:	"A personal contact specifically designated to be used for emergencies."
 				HealthcareRole is MTH#C1552023
-				ProviderRelationshipExists is true
+				DoesProviderRelationshipExist is true
 1..1			Provider
 0..1			Priority   // extension
 
@@ -226,7 +226,7 @@ Concept:		MTH#C2735026
 Based on:		ProviderRelationshipStatement
 Description:	"The medical professional responsible for first-line care of an individual."
 				HealthcareRole is MTH#C2735026
-				ProviderRelationshipExists is true
+				DoesProviderRelationshipExist is true
 1..1			Provider
 
 EntryElement:	NoPrimaryCareProvider
@@ -234,13 +234,13 @@ Concept:		TBD
 Based on:		ProviderRelationshipStatement
 Description:	"The medical professional responsible for first-line care of an individual."
 HealthcareRole is MTH#C2735026
-ProviderRelationshipExists is false
+DoesProviderRelationshipExist is false
 0..0			Provider
 
 
 Element:		ParticipationStatement
 Concept:		MTH#C1550369
-Description:	"An actor who performs a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with a specific task, such admitting a patient, performing a procedure, or taking a measurement"
+Description:	"A statement about an actor who did or did not perform a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with doing or not doing a specific task, such admitting a patient, performing a procedure, or taking a measurement"
 1..1			Person
 0..1 			ParticipationType
 1..1			DidOrDidNotParticipate
@@ -255,4 +255,6 @@ Description:	"An actor who performs a certain task or activity. Unlike a Healthc
 	Concept:		TBD
 	Description:	"Whether the mentioned person or organization participated in the described activity"
 	Value:			Coding from DidOrDidNotParticipateVS
+	
+
 	

@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.0
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication
 
 CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:		OBSSTAT = http://hl7.org/fhir/observation-status
@@ -60,13 +60,13 @@ Element:		TestResult
 Based on:		Observation
 Concept:		MTH#C0456984
 Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
-				ObservationCode is TestCode
+				ObservationCode is type TestCode
 0..1			BodySite
 0..1 			BodyPosition
 0..*			Qualifier
 0..1 			TBD "Device"
 0..1			TBD "Specimen"
-0..*			Performer
+0..*			ParticipationStatement
 0..1			TestTime
 0..1 			Interpretation
 0..1			ReferenceRange
@@ -112,6 +112,7 @@ Description:	"A statement about exposure to a substance, type of substance, or d
 0..1			RouteIntoBody
 0..*			TestResult  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
 0..*			TBD "Impact" // adverse event, allergic reaction, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+
 		
 		Element:		DidExposureOccur
 		Concept:		TBD

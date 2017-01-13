@@ -4,8 +4,9 @@ Description:		"The SHR Core domain contains definitions for a variety of general
 
 // TODO: support version numbers
 Path:			http://standardhealthrecord.org/core/vs/         // default when no namespace is given
-Path:     		CC = http://www.nationsonline.org/oneworld/country_code_list
 Path:			FHIR = http://hl7.org/fhir/ValueSet
+
+CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://uts.nlm.nih.gov/metathesaurus
@@ -58,27 +59,28 @@ Value:			Coding from DidOrDidNotOccurVS
 
 // -------------------  Quantities -----------------
 
-Element:		BoundedQuantity
-Concept:		TBD
-Description:	"A measured or measurable amount with Units and name of the statistic the quantity represents"
+
+Element:		Quantity
+Description:	"A quantity with Units"
 Value:			decimal
-1..1			BoundingType
 0..1			Units
 
-		Element:		BoundingType
-		Concept:		TBD
-		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value"
-		Value: 			Coding from http://hl7.org/fhir/quantity-comparator
-		
 		Element:		Units
 		Concept:		TBD
 		Description:	"Code for the unit of measure of the quantity"
 		Value:			Coding from UCUM or Coding from CURRENCY
 
-Element:		Quantity
-Based on:		BoundedQuantity
-Description:	"A quantity with Units"
-0..0			BoundingType
+Element:		UpperOrLowerBound
+Concept:		TBD
+Based on:		Quantity
+Description:	"A measured or measurable amount with units that is known to be bounded by  the quantity represents"
+1..1			BoundingType
+
+		Element:		BoundingType
+		Concept:		TBD
+		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value"
+		Value: 			Coding from http://hl7.org/fhir/quantity-comparator
+
 
 Element:		Statistic
 Concept:		MTH#C2828391
@@ -110,7 +112,7 @@ Description:	"A unit of measurement for the quotient of the amount of one entity
 	Element:		Numerator
 	Concept:		MTH#C2825219
 	Description:	"The dividend of a fraction."
-	Value:			BoundedQuantity
+	Value:			UpperOrLowerBound
 	
 	Element:		Denominator
 	Concept:		MTH#C2825218
@@ -279,7 +281,7 @@ Value:			Coding from QualitativeFrequencyVS
 Element:		GeneralizedFrequency
 Concept:		TBD
 Description:	"The frequency of an event, qualitatively or quantitatively"
-Value:			QuantitativeFrequency or SemiquantFrequency or QualitativeFrequency
+Value:			Frequency or SemiquantFrequency or QualitativeFrequency
 
 
 //------------- Interpretations of Time -------------------
@@ -385,7 +387,7 @@ Element:    	UnitedStatesAddress
 Concept:		TBD   // more specific concept than Address
 Based on:		Address
 Description:    "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)"
-1..1			State is a UnitedStatesState
+1..1			State is type UnitedStatesState
 1..1			Country is CC#US   // fixed
 
 	Element:		UnitedStatesState
@@ -433,7 +435,12 @@ Value:			string
 		Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
 		Value:          Coding from FHIR/name-use
 
+//--------------------  Substance -------------------------------
 
+Element:		Substance
+Concept:		MTH#C0439861
+Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
+Value:			Coding
 
 //---------------------  Body Site ---------------------------------
 
