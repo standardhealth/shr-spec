@@ -17,7 +17,7 @@ Description:	"A statement about an act that is intended to result in new informa
 0..1			ObservationNotMadeReason
 0..1			ObservationStatus
 0..*			ObservationCategory
-0..1			GeneralizedTemporalContext
+0..1			ClinicallyRelevantTime
 
 		Element:		ObservationCode
 		Concept:		TBD
@@ -44,6 +44,11 @@ Description:	"A statement about an act that is intended to result in new informa
 		Description:	"A categorization of the observation according to how the observation was collected or its clinical area."
 		Value:			Coding from http://hl7.org/fhir/ValueSet/observation-category or Coding
 
+		Element:		ClinicallyRelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered."
+		Value:			GeneralizedTemporalContext
+		
 
 Element:		HistoryObservation
 Concept:		MTH#C2004062 "History of previous events"
@@ -61,13 +66,14 @@ Based on:		Observation
 Concept:		MTH#C0456984
 Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
 				ObservationCode is type TestCode
+0..1			TestMethod
 0..1			BodySite
 0..1 			BodyPosition
 0..*			Qualifier
 0..1 			TBD "Device"
 0..1			TBD "Specimen"
 0..*			ParticipationStatement
-0..1			TestTime
+0..1			ClinicallyRelevantTime is type TestTime
 0..1 			Interpretation
 0..1			ReferenceRange
 0..1			ChangeFlag
@@ -107,7 +113,7 @@ Description:	"A statement about exposure to a substance, type of substance, or d
 1..1			DidExposureOccur
 0..*			SourceOrVector
 0..1			TBD "AmountOrDosage"
-				Reason with Coding from ExposureReasonVS
+0..*			Reason with Coding from ExposureReasonVS
 0..1			ExposureMethod
 0..1			RouteIntoBody
 0..*			TestResult  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
@@ -174,3 +180,12 @@ Description:	"The external elements and conditions which surround, influence, an
 1..1			ObservationStatus with Coding from NonLabObservationStatusVS
 1..*			ObservationCategory includes OBSCAT#social-history "social history"
 
+//-------------- Breathing ------------------
+
+EntryElement:		BreathingAssessment
+
+0..*			BreathSound
+
+		Element:		BreathSound
+		Concept:		TBD
+		Description:	""
