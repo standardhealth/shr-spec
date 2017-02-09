@@ -13,61 +13,74 @@ Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
 Value: 			Coding from RXN
 0..1			DoseForm
-0..1			MedicationStrength
-0..1			BrandName
+0..*			Ingredient
+0..1			Brand
+0..1			OverTheCounter
 
 		Element:		DoseForm
 		Concept:		MTH#C0013058
-		Description:	"The form in which active and/or inert ingredient(s) are physically presented"
+		Description:	"The form in which active and/or inert ingredient(s) are physically presented."
 		Value:			Coding from FHIR/medication-form-codes
 
-		Element:		MedicationStrength
+		Element:		Ingredient
 		Concept:		MTH#C3176062
-		Description:	"Specifies how many (or how much) of the active ingredient there is in this Medication, to be interpreted as a ratio. For example, 250 mg per tablet. This is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
-		1..1			ActiveIngredientAmount
+		Description:	"Specifies how many (or how much) of an ingredient there is in this Medication. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
+		Value:			Coding from RXN
+		1..1			IngredientAmount
 		1..1			AmountOfMedication
+		1..1			IsActiveIngredient
 
-			Element:		ActiveIngredientAmount
+			Element:		IngredientAmount
 			Concept:		TBD
-			Description:	"The amount of an active ingredient in a medication"
+			Description:	"The amount of an ingredient in a medication."
 			Value:			Quantity
 
 			Element:		AmountOfMedication
 			Concept:		TBD
 			Description:	"A standardized measure or discrete amount of medication serving as a reference for dosing or strength, for example, 1 tablet."
 			Value:			Quantity
+			
+			Element:		IsActiveIngredient
+			Concept:		TBD
+			Description:	"True if the ingredient is an active ingredient in the medication."
+			Value:			boolean
 
-		Element:		BrandName
+		Element:		Brand
 		Concept:		TBD
-		Description:	"The brand name of a product"
-		Value: 			string
+		Description:	"If the product is branded, and if so, the brand name of a product."
+		Value: 			boolean
+		0..1			BrandName
+		
+			Element: 		BrandName
+			Concept:		TBD
+			Description:	"The marketing name for a brand name product"
+			Value:			string
 
-
-EntryElement:	MedicationStatement
+		Element:		OverTheCounter
+		Concept:		TBD
+		Description:	"True if the medication is available to consumers without a prescription."
+		Value:			boolean
+			
+			
+EntryElement:	MedicationUse
 Concept:		TBD
-Description:	"Report of a medication used or not used. Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
+Description:	"Report of a medication used (or not used). Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 1..1			Medication
-1..1			UsedOrNotUsed
-1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
-1..1			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
+0..1			MedicationNotUsedModifier
+1..1 			Reason
 0..1			Dosage		// do not include if dosage was not known
 0..1			Adherence
 1..1			PeriodOfUse
 
-	Element:		UsedOrNotUsed
+	Element:		MedicationNotUsedModifier
 	Concept:		TBD
-	Description:	"Whether the medication stated was used or not used"
-	Value:			Coding from UsedOrNotUsedVS
-
-	Element:		ReasonMedicationNotGiven
-	Concept:		TBD
-	Description:	"The rationale for NOT using particular medication treatment"
-	Value:			Coding from ReasonNotGivenVS
-
+	Based on:		NonOccurrenceModifier
+	Description:	"True, if the medication was not prescribed, administered, or used by the subject."
+					Reason with Coding from ReasonMedicationNotUsedVS
 
 	Element:		Dosage
 	Concept:		MTH#C0178602
-	Description:	"The dosage of the medication as prescribed"
+	Description:	"The dosage of the medication as prescribed."
 	1..1			AmountPerDose 
 	1..1			TimingOfDoses
 	1..1			DoseAsNeededIndicator
@@ -80,12 +93,12 @@ Description:	"Report of a medication used or not used. Medication use is either 
 
 		Element:		AmountPerDose
 		Concept:		TBD
-		Description:	"The amount of medication taken at each dose, as a quantity or range"
+		Description:	"The amount of medication taken at each dose, as a quantity or range."
 		Value:			Quantity or TBD "Range"
 
 		Element:		TimingOfDoses
 		Concept:		TBD
-		Description:	"When doses of medication should be administered"
+		Description:	"When doses of medication should be administered."
 		Value:			TBD "Timing"
 
 		Element:		DoseAsNeededIndicator
@@ -100,7 +113,7 @@ Description:	"Report of a medication used or not used. Medication use is either 
 
 		Element:		AdditionalDoseInstruction
 		Concept:		MTH#C1644714
-		Description:	"Supplemental instructions - e.g. 'with meals'"
+		Description:	"Supplemental instructions - e.g. 'with meals'."
 		Value:			Coding from FHIR/additional-instructions-codes
 
 		Element:		RouteIntoBody
@@ -110,7 +123,7 @@ Description:	"Report of a medication used or not used. Medication use is either 
 
 		Element:		AdministrationMethod
 		Concept:		MTH#C1547585
-		Description:	"Technique for administering medication"
+		Description:	"Technique for administering medication."
 		Value:			Coding from FHIR/administration-method-codes
 
 		Element:		AdministrationBodySite
@@ -127,7 +140,7 @@ Description:	"Report of a medication used or not used. Medication use is either 
 	Element:		Adherence
 	Concept:		MTH#C2364172
 	Description:	"A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
-	0..*			(TBD "MedicationTreatment" or TBD "SupplementTreatment") // If no medication is given, then the adherence statement is general; it refers to no particular medication(s)
+	0..*			TBD "MedicationTreatment" or TBD "SupplementTreatment" // If no medication is given, then the adherence statement is general; it refers to no particular medication(s)
 	1..1			AdherenceLevel
 	0..*			NonAdherenceReason
 	1..1			Details   // from core
@@ -142,45 +155,59 @@ Description:	"Report of a medication used or not used. Medication use is either 
 		Description:	"Reason for not following the stated treatment plan, prescription, or protocol."
 		Value:			Coding from MedicationNonAdherenceReasonVS
 
-	Element:		ReasonForUse
-	Concept:		TBD
-	Description:	"The rationale for why the patient receives a medication or prescription"
-	Value:			Explanation   // TODO: create VS and add a reference to problem or condition
-
-	
-EntryElement:	MedicationPrescribed
-Concept:		TBD
-Description:	"Report of a medication prescription."
-1..1			Medication
-1..1			UsedOrNotUsed is #prescribed
-1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
-1..0			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
-0..1			Dosage		// do not include if dosage was not known
-0..0			Adherence
-1..1			OccurrenceTime
-	
-	
-EntryElement:	MedicationNotPrescribed
-Concept:		TBD
-Based on:		MedicationStatement
-Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
-1..1			Medication
-1..1			UsedOrNotUsed is #not_prescribed
-1..1 			ReasonForUse   // the reason that the medication is expected to be prescribed or given, e.g., standard of care
-1..1			ReasonMedicationNotGiven  //  The reason it was not used, prescribed, or administered, e.g., allergy
-0..0			Dosage		// do not include if dosage was not known
-0..0			Adherence
-
-
+		
 EntryElement:	MedicationNotAdministered
 Concept:		TBD
-Based on:		MedicationStatement
+Based on:		MedicationUse
 Description:	"A record of a medication NOT administered. Recorded when deviating from the care plan."
 1..1			Medication
-1..1			UsedOrNotUsed is #not_administered
-1..1			ReasonMedicationNotGiven
+1..1			MedicationNotUsedModifier is true
 0..0			Dosage
 0..0			Adherence
+
+
+
+// ------------- Prescription ---------------------
+	
+EntryElement:	MedicationPrescription
+Concept:		TBD
+Based on:		Request
+Description:	"Report of a medication prescription."
+1..1			Medication
+				RequestNotToPerformActionModifier is type MedicationNotPrescribedModifier
+0..1			Dosage
+0..1			NumberOfRepeatsAllowed
+0..1			QuantityPerDispense
+0..1			SupplyDuration
+
+	Element:		MedicationNotPrescribedModifier
+	Concept:		TBD
+	Based on:		RequestNotToPerformActionModifier
+	Description:	"True, if the medication should not, or was not prescribed for a particular reason."
+					Reason with Coding from ReasonMedicationNotUsedVS
+					
+	Element:		NumberOfRepeatsAllowed
+	Concept:		TBD
+	Description:	"How many times the medication prescription can be refilled. This integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
+	Value:			unsignedInt   // wrong in FHIR (positiveInt)
+
+	Element:		QuantityPerDispense
+	Concept:		TBD
+	Description:	"The amount that is to be dispensed for one fill."
+	Value:			Quantity
+	
+	Element:		SupplyDuration
+	Concept:		TBD
+	Description:	"Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
+	Value: 			Duration
+	
+					
+EntryElement:	MedicationNotPrescribed
+Concept:		TBD
+Based on:		MedicationPrescription
+Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
+1..1			MedicationNotPrescribedModifier is true
+
 
 
 // TODO: Not yet mapped to FHIR
@@ -195,17 +222,17 @@ Description:	"Description of a modification or change of a medication or dosage.
 
 		Element:		TypeOfChange
 		Concept:		TBD
-		Description:	"Whether the change is a dose change, switch to a new medication, or discontinuation"
+		Description:	"Whether the change is a dose change, switch to a new medication, or discontinuation."
 		Value:			Coding from MedicationChangeTypeVS
 
 		Element:		MedicationBeforeChange
 		Concept:		TBD
-		Description:	"The medication taken, prior to the change"
-		Value:			MedicationStatement
+		Description:	"The medication taken, prior to the change."
+		Value:			MedicationUse
 
 		Element:		MedicationAfterChange
 		Concept:		TBD
-		Description:	"A medication taken, after the change"
-		Value:			MedicationStatement
+		Description:	"A medication taken, after the change."
+		Value:			MedicationUse
 
 		

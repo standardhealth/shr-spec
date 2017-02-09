@@ -1,7 +1,7 @@
-Grammar:	DataElement 4.0
-Namespace:	shr.actor
-Description:		"The SHR Actor domain contains definitions for people and organizations that are involved with the person of record, in some capacity."
-Uses:		shr.core, shr.demographics, shr.base
+Grammar:		DataElement 4.0
+Namespace:		shr.actor
+Description:	"The SHR Actor domain contains definitions for people and organizations that are involved with the person of record, in some capacity."
+Uses:			shr.core, shr.demographics, shr.base
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
@@ -9,14 +9,13 @@ Path:     	FHIR = http://hl7.org/fhir/ValueSet
 // ------------- Person ---------------------
 
 Element:		Person
-Concept:		TBD
-Description:	"A person, particularly those relevant to the health or social situation of the subject (including the person of record)."
+Concept:		MTH#C0027361
+Description:	"A person. In practical terms, people relevant to the health or social situation of the subject (including the person of record)."
 Value:			0..* HumanName
 0..1			Anonymized
 0..1			FictionalPerson
 0..1			DateOfBirth
 0..1			AdministrativeGender
-0..1			FamilialRelationship
 0..1		 	Race
 0..1		 	Ethnicity
 0..*			AddressUsed
@@ -25,13 +24,13 @@ Value:			0..* HumanName
 0..1			Deceased
 
 	Element:		Anonymized
-	Concept:		TBD
-	Description:	"Flag indicating if personally identifiable information has been withheld"
+	Concept:		MTH#C3858751
+	Description:	"Flag indicating if personally identifiable information has been withheld."
 	Value:			boolean
 
 	Element:		FictionalPerson
-	Concept:		TBD
-	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person"
+	Concept:		MTH#C0887933
+	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
 	Value:			boolean
 
 	Element:   		DateOfBirth
@@ -43,11 +42,6 @@ Value:			0..* HumanName
 	Concept:		MTH#C1550327
 	Description:    "Gender is used to refer to administrative sex rather than biological sex and therefore should easily be classified into female and male.  This attribute does not include terms related to clinical gender."
 	Value:          Coding from FHIR/administrative-gender
-
-	Element:		FamilialRelationship
-	Concept:		TBD
-	Description:	"The relationship of this person to the person of record, if the person is in the same (extended) family"
-	Value:			Coding from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
 	
 	Element:		Race
 	Concept:		MTH#C0034510
@@ -68,7 +62,7 @@ Value:			0..* HumanName
 	
 		Element:		EthnicityDetail
 		Concept:		TBD
-		Description:	"Additional description of ethnicity"
+		Description:	"Additional description of ethnicity."
 		Value:			Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-omb-ethnicity.html or Coding from http://hl7.org/fhir/us/core/2017Jan/ValueSet-detailed-ethnicity.html
 	
 
@@ -91,7 +85,7 @@ Value:			0..* HumanName
 			Value:			Coding from SimplePerformanceGradingScaleVS
 
 			Element:		LanguageQualifier
-			Description:	"Additional information about a person's use of language"
+			Description:	"Additional information about a person's use of language."
 			Value:			Coding from LanguageQualifierVS
 
 	Element:		Deceased
@@ -126,39 +120,31 @@ Value:			HumanName   // only one (limitation imposed by us-core)
 
 	Element:    	Affiliation
 	Concept:        MTH#C0932026
-	Description:    "Membership, association, or connection to an organization"
+	Description:    "Membership, association, or connection to an organization."
 	Value:			Organization
 
 	Element: 		NationalProviderIdentifier
 	Concept:		MTH#C1549728
-	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry"
+	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry."
 	Value:			id
 
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
-	Description:	"A branch of medicine practiced by the provider"
+	Description:	"A branch of medicine practiced by the provider."
 	Value:			Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes    // possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
 
-//-------------  Family Member -------------------------
-
-Element:		FamilyMember
-Concept:		MTH#C0086282
-Based on:		Person
-1..1			FamilialRelationship
-
-	
-// ------------- Organizations ------------------
 
 Element:		Organization
 Concept:        MTH#C1561598
-Description:    "A social or legal structure formed by human beings"
+Description:    "A social or legal structure formed by human beings."
 Value:			OrganizationName
 0..*			OrganizationAlias
 1..1			OrganizationType
 0..*			OrganizationIdentifyingCode
 0..*			AddressUsed
 0..*			Telecom
+0..1			ActiveFlag
 
 	Element:		OrganizationName
 	Concept:		TBD
@@ -172,7 +158,7 @@ Value:			OrganizationName
 
 	Element:		OrganizationType
 	Concept:		TBD
-	Description:	"A classification of the organization in terms of its major role in healthcare"
+	Description:	"A classification of the organization in terms of its major role in healthcare."
 	Value:			Coding from FHIR/organization-type   // should be extensible. Also see http://hl7.org/fhir/ValueSet/c80-facilitycodes
 
 	Element:		OrganizationIdentifyingCode
@@ -180,81 +166,70 @@ Value:			OrganizationName
 	Description:	"A code identifying a specific organization. The NPI should be provided, if available. Other business identifiers, such employer tax ID, or MVX code for vaccine manufacturers, should also be provided."
 	Value:			id
 
+	Element:		ActiveFlag
+	Concept:		TBD
+	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
+	Value:			boolean
+	
 
-//  -------------------- Involvement in Healthcare -------------------------
-//  One individual can play different or multiple roles at different times
-
-
-EntryElement:	ProviderRelationshipStatement			  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
+EntryElement:	ProviderRelationship	  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc. 		 
 Concept:		MTH#C1314939
-Description:	"Statement about a person or organization providing services to the person of record at a particular time or over a given time interval. Can also be used to state that a provider relationship does not exist, e.g., patient does not have a primary care provider"
-1..*			HealthcareRole
-1..1			DoesProviderRelationshipExist
+Description:	"A person or organization responsible for providing a service to the person of record. Such a relationship can exist without a specific encounter or services being rendered; for example, an emergency contact relationship can exist without ever calling upon that person. The entry can also be used to state that a provider relationship does not exist, e.g., patient does not have a primary care provider."
 0..1 			Provider
-0..1			OccurrenceTime
+1..1			HealthcareRole
+0..1			NonOccurrenceModifier
+0..1			GeneralizedTemporalContext
+0..1			Priority  //  If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example is a prioritized list of emergency contacts.
 
 	Element:		HealthcareRole
 	Concept:		TBD
-	Description:	"A type of service provided to the subject"
+	Description:	"A type of service provided to the subject."
 	Value:			Coding from HealthcareRoleVS or Coding from http://hl7.org/fhir/ValueSet/c80-practice-codes
-	0..1			GeneralizedTemporalContext
-	0..1			Priority  //  If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example is a prioritized list of emergency contacts
-
-	Element:		DoesProviderRelationshipExist
-	Concept:		TBD
-	Description:	"Whether the person of record has a provider relationship of the type mentioned"
-	Value:			boolean
+	
+	
 	
 	Element:		Provider
 	Concept:		MTH#C1138603
-	Description:	"A person or organization who provides a service to the person of record. This includes healthcare and relevant non-healthcare services, and personal services such as transportation."
+	Description:	"A person or organization who provides services. This includes healthcare and relevant non-healthcare services, including personal services such as transportation."
 	Value:			Person or Organization
-
 	
-EntryElement:	EmergencyContact
+EntryElement:	EmergencyContact   // relationship assertion
 Concept:		MTH#C1552023
-Based on:		ProviderRelationshipStatement
+Based on:		ProviderRelationship
 Description:	"A personal contact specifically designated to be used for emergencies."
 				HealthcareRole is MTH#C1552023
-				DoesProviderRelationshipExist is true
 1..1			Provider
 0..1			Priority   // extension
 
 
 EntryElement:	PrimaryCareProvider
 Concept:		MTH#C2735026
-Based on:		ProviderRelationshipStatement
+Based on:		ProviderRelationship
 Description:	"The medical professional responsible for first-line care of an individual."
 				HealthcareRole is MTH#C2735026
-				DoesProviderRelationshipExist is true
+0..0			NonOccurrenceModifier
 1..1			Provider
 
 EntryElement:	NoPrimaryCareProvider
 Concept:		TBD
-Based on:		ProviderRelationshipStatement
+Based on:		ProviderRelationship
 Description:	"The medical professional responsible for first-line care of an individual."
-HealthcareRole is MTH#C2735026
-DoesProviderRelationshipExist is false
+				HealthcareRole is MTH#C2735026
+				NonOccurrenceModifier is true
 0..0			Provider
 
 
-Element:		ParticipationStatement
+Element:		Participation
 Concept:		MTH#C1550369
-Description:	"A statement about an actor who did or did not perform a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with doing or not doing a specific task, such admitting a patient, performing a procedure, or taking a measurement"
+Description:	"A statement about an actor who did or did not participate in a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the performer is associated with doing or not doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
 1..1			Person
 0..1 			ParticipationType
-1..1			DidOrDidNotParticipate
+0..1			NonOccurrenceModifier
+0..1			Reason
 0..1			OccurrenceTime
 
 	Element:		ParticipationType
 	Concept:		MTH#C1553854
 	Description:	"The detail of how the performer engaged in the task, for example, as the attending physician, surgical assistant, etc."
 	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ParticipationType
-
-	Element:		DidOrDidNotParticipate
-	Concept:		TBD
-	Description:	"Whether the mentioned person or organization participated in the described activity"
-	Value:			Coding from DidOrDidNotParticipateVS
-	
-
 	

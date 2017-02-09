@@ -1,0 +1,164 @@
+Grammar:	DataElement 4.0
+Namespace:	shr.skin
+Description:	"SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
+Uses:  			shr.core, shr.base, shr.actor, shr.device, shr.problem, shr.observation, shr.lab
+
+CodeSystem:  	UCUM = http://unitsofmeasure.org
+CodeSystem:     LNC = http://loinc.org
+
+
+Element:		SupportSurface
+Concept:		SCT#272243001
+Based on:		Device
+Description:	"A specific instance of a support surface used to distribute pressure and support a patient. The value is coding of the type of support surface."
+Value:			Coding from SupportSurfaceVS 
+0..1			SupportSurfaceCategory
+0..1			SupportSurfaceBodyPosition
+0..*			SupportSurfaceComponent
+
+		Element:		SupportSurfaceCategory
+		Concept:		TBD
+		Description:	"The category of support surface."
+		Value:			Coding from SupportSurfaceCategoryVS
+		
+		Element:		SupportSurfaceBodyPosition
+		Concept:		TBD
+		Description:	"What body positions the surface can be used for, specifically, sitting or lying."
+		Value:			Coding from SupportSurfaceBodyPositionVS	
+		
+		Element:		SupportSurfaceComponent
+		Concept:		TBD
+		Description:	"A physical material, structure, or system used alone or in combination with other components to fashion a support surface."
+		Value:			Coding from SupportSurfaceComponentVS
+		
+Element:		SupportSurfaceEmployed
+Concept:		TBD
+Based on:		DeviceUse
+Description:	"A paricular instance of the use of a support surface in patient care."
+Value: 			Device is type SupportSurface
+				Implanted is false
+0..1			ImmersionDepth
+
+		Element:		ImmersionDepth
+		Concept:		TBD
+		Description:	"Depth of penetration (sinking) into a support surface."
+		Value:			Quantity with units UCUM#C49668 "cm"
+
+		
+EntryElement:		PressureUlcer
+Concept:			MTH#C0011127
+Based on:			Problem
+Description:		"A single pressure ulcer, tracked over a period of time. Multiple PressureUlcerAssessments (at different times) may be associated with a single PressureUlcer."
+Value:				Coding is TBD#TBD
+0..*				BodySite is type PressureUlcerBodySite
+0..*				Manifestation is type PressureUlcerManifestation
+0..*				CausativeFactor
+0..*				TBD "PressureUlcerIntervention"    // pointer could go in the other direction
+
+
+		Element:		PressureUlcerBodySite
+		Concept:		TBD
+		Based on:		BodySite
+		Description:	"The site of a pressure ulcer."
+		Value:			Coding from PressureUlcerBodySiteVS
+		0..1 			Laterality
+		0..0			Directionality
+		0..0 			PortionTotality	
+		
+		Element:		CausativeFactor
+		Concept:		TBD
+		Description:	"The cause the irritation or inflammation."
+		Value:			Coding from TBD "PressureUlcerCausationVS" or Device
+
+
+EntryElement:		PressureUlcerNotPresent
+Concept:			TBD
+Based on:			PressureUlcer
+Description:		"A statement that there is no pressure ulcer at a given body site. If body site is omitted, or if the body site is a coding representing the entire body, then the inference is that no pressure ulcers is present anywhere on the body."	
+					NonOccurrenceModifier is true
+0..1				GeneralizedLikelihood
+0..1				SupportingEvidenceQuality
+1..1				ClinicalStatus
+0..0				IncludeOnProblemList
+0..0				Onset
+0..0				WhenClinicallyRecognized
+0..0				Preexisting
+0..0				Abatement
+0..0				Severity
+0..0				Criticality
+0..0				GradeOrStage
+0..0				Manifestation		
+
+		
+		
+EntryElement:		PressureUlcerManifestation
+Concept:			LNC#54574-9
+Based on:			Manifestation
+Description:		"Observation regarding the properties and severity of a single pressure ulcer."
+					ObservationCode is LNC#54574-9
+					ObservationStatus with Coding from NonLabObservationStatusVS
+0..1				ClinicallyRelevantTime
+0..*				VisibleInternalStructure
+0..1				WoundSize
+0..1				WoundTunnelling
+0..1				WoundUndermining
+0..1				WoundBedAndEdge
+0..1				WoundExudate
+0..1				ChangeFlag
+
+	
+		Element:		VisibleInternalStructure
+		Concept:		TBD
+		Description:	"An internal body structure visible from outside the body, for example, due to injury."
+		Value:			Coding from VisibleInternalStructureVS
+		
+		Element:		WoundSize
+		Concept:		MTH#C3496620
+		Description:	"The estimated or measured dimensions of a wound."
+		0..1			Area
+		0..1			Circumference
+		0..1			Volume
+		1..1			Width
+		1..1			Depth
+		1..1			Length
+		
+		Element:		WoundTunnelling
+		Concept:		MTH#C0406830
+		Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
+		Value:			boolean
+		1..1			ClockDirection 
+		1..1			Length
+	
+		Element:		WoundUndermining
+		Concept:		TBD
+		Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Tunneling is just under the skin surface and doesn't involve deep tissue, and sinus tracts are a narrow tract that are away from the wound margins and go downward into the wound."
+		Value:			boolean
+		1..1			ClockDirection
+		1..1			TBD "WoundUnderminingLength"
+		
+		Element:		WoundBedAndEdge
+		Concept:		TBD
+		Description:	""
+		1..1			TBD "WoundBaseAppearance"
+		1..1			TBD "WoundBaseColor"
+		1..1			WoundEdgeAppearance
+		1..1			TBD "WoundEdgeColor"
+		0..1			TBD "WoundClosureType"
+		
+			Element:		WoundEdgeAppearance
+			Concept:		LNC#723204-9
+			Description:	"Evaluation of the state of the tissue at the edge of the wound."
+			Value:			Coding from WoundEdgeAppearanceVS
+		
+		Element:		WoundExudate
+		Concept:		TBD
+		Description:	"A mass of cells and fluid that has seeped out of a wound."
+		Value:			boolean
+		1..1			TBD "WoundExudateOdor"
+		1..1			TBD "WoundExudateColor"
+		1..1			TBD "DrainageAmount"
+		1..1			TBD "WoundExudateAppearance"
+
+
+		
+		

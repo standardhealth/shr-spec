@@ -1,8 +1,7 @@
-Grammar:	DataElement 4.0
-Namespace:	shr.core
-Description:		"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
+Grammar:		DataElement 4.0
+Namespace:		shr.core
+Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
 
-// TODO: support version numbers
 Path:			http://standardhealthrecord.org/core/vs/         // default when no namespace is given
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 
@@ -19,26 +18,26 @@ CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
 Element:		Coding
 Concept:		MTH#C0805701
-Description:	"Coding of a concept, drawn from a controlled vocabulary. Includes the vocabulary and version, if applicable. May include a display text, and a descriptor expressing the intended interpretation of the code"
+Description:	"Coding of a concept, drawn from a controlled vocabulary. Includes the vocabulary and version, if applicable. May include a display text, and a descriptor expressing the intended interpretation of the code."
 Value:			code
 0..1			Vocabulary
 0..1 			VocabularyVersion
 0..1			DisplayText
-0..1			CodeDescriptor
+0..*			CodingQualifier
 
 	Element:		Vocabulary
 	Concept:		TBD
-	Description:	"A formal terminology system"
+	Description:	"A formal terminology system."
 	Value:			uri
-
-	Element:		CodeDescriptor
+	
+	Element:		CodingQualifier
 	Concept:		TBD
 	Description:	"A description of the purpose or origin of the code that assists in the interpretation of the code."
-	Value:			Coding from CodeDescriptorVS
-
+	Value:			Coding from CodingQualifierVS
+	
 	Element:		VocabularyVersion
 	Concept:		TBD
-	Description:	"The version of the vocabulary being used, if applicable"
+	Description:	"The version of the vocabulary being used, if applicable."
 	Value:			Version
 
 
@@ -46,39 +45,32 @@ Value:			code
 
 Element:		CodeableConcept
 Concept:		TBD
-Description:	"A set of codes drawn from different coding systems, representing the same concept"
+Description:	"A set of codes drawn from different coding systems, representing the same concept."
 0..*			Coding
 1..1			DisplayText
 
-//---------------- Existential Elements -------------------------
-
-Element:		DidOrDidNotOccur
-Concept:		TBD
-Description:	"Whether an event, such as an adverse reaction, occurred or not."
-Value:			Coding from DidOrDidNotOccurVS
 
 // -------------------  Quantities -----------------
 
-
 Element:		Quantity
-Description:	"A quantity with Units"
+Description:	"A quantity with Units."
 Value:			decimal
 0..1			Units
 
 		Element:		Units
 		Concept:		TBD
-		Description:	"Code for the unit of measure of the quantity"
+		Description:	"Code for the unit of measure of the quantity."
 		Value:			Coding from UCUM or Coding from CURRENCY
 
 Element:		UpperOrLowerBound
 Concept:		TBD
 Based on:		Quantity
-Description:	"A measured or measurable amount with units that is known to be bounded by  the quantity represents"
+Description:	"A measured or measurable amount with units that is known to be bounded by  the quantity represents."
 1..1			BoundingType
 
 		Element:		BoundingType
 		Concept:		TBD
-		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value"
+		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value."
 		Value: 			Coding from http://hl7.org/fhir/quantity-comparator
 
 
@@ -90,17 +82,17 @@ Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mea
 
 		Element:		StatisticType
 		Concept:		TBD
-		Description:	"The type of statistic that is represented by the value"
+		Description:	"The type of statistic that is represented by the value."
 		Value:			Coding from StatisticTypeVS
-
+		
 Element: 		Priority
 Concept:		MTH#C0549179
-Description:	"An ordinal numbered priority where 1=highest priority, 2=second highest priority, etc"
+Description:	"An ordinal numbered priority where 1=highest priority, 2=second highest priority, etc."
 Value:			positiveInt
 
 Element:		Count
 Concept:		MTH#C0750480
-Description:	"The number of non-null items in a referenced set of items or values"
+Description:	"The number of non-null items in a referenced set of items or values."
 Value:			positiveInt
 
 Element:		Ratio
@@ -112,50 +104,84 @@ Description:	"A unit of measurement for the quotient of the amount of one entity
 	Element:		Numerator
 	Concept:		MTH#C2825219
 	Description:	"The dividend of a fraction."
-	Value:			UpperOrLowerBound
-
+	Value:			Quantity
+	
 	Element:		Denominator
 	Concept:		MTH#C2825218
 	Description:	"The divisor of a fraction."
 	Value:			Quantity
-
+	
 Element:		Percentage
 Concept:		MTH#C0439165
-Description:	"A percentage value, 0 to 100"
-Value:			positiveInt
+Description:	"A percentage value where 100.0 represents 100%."
+Value:			decimal
 
 Element:		Likelihood
 Concept:		MTH#C0033204
-Description:	"A measure of the expectation of the occurrence of a particular event."
-Value:			Percentage
+Description:	"A measure of the expectation of the occurrence of a particular event, as a percentage."
+Value:			positiveInt   // do not allow zero, since this will create an implicit modifier
 
 Element:		QualitativeLikelihood
 Concept:		TBD
-Description:	"A qualitative (subjective) likelihood"
+Description:	"A qualitative (subjective) likelihood."
 Value:			Coding from QualitativeLikelihoodVS
 
 Element:		GeneralizedLikelihood
 Concept:		TBD
-Description:	"Quantitative or qualitative measure of likelihood"
+Description:	"Quantitative or qualitative measure of likelihood."
 Value:			Likelihood or QualitativeLikelihood
 
 Element:		DollarAmount
 Concept:		MTH#C0562019
 Based on:		Quantity
-Description:	"An amount of money expressed in US dollars"
+Description:	"An amount of money expressed in US dollars."
 1..1			Units is CURRENCY#USD
+
+Element:		Length
+Concept:		MTH#C1444754
+Description:	"The measurement or linear extent of something from end to end; the greater of two or the greatest of three dimensions of a body."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Width
+Concept:		MTH#C0487742
+Description:	"The measurement or extent of something from side to side."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Depth
+Concept:		MTH#C0205125
+Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Volume
+Concept:		MTH#C0449468
+Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Area
+Concept:		MTH#C0205146
+Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Circumference
+Concept:		MTH#C0332520
+Description:	"The length of such a boundary line of a figure, area, or object."
+
+Element:		ClockDirection
+Concept:		LNC#72294-2
+Description:	"A direction indicated by an angle relative to 12 o'clock."
+Value:			Coding from ClockDirectionVS
 
 
 // --------------- Times and Time TimePeriods ----------------
 
 Element:		QualitativeDateTime
 Concept:		TBD
-Description:	"A point in time, described qualitatively"
+Description:	"A point in time, described qualitatively."
 Value:			Coding from QualitativeDateTimeVS
 
 Element:		TimePeriod
 Concept:		MTH#C1948053
-Description:	"A period of time defined by a start and end time, date, or year"
+Description:	"A period of time defined by a start and end time, date, or year."
 1..1			TimePeriodStart
 0..1			TimePeriodEnd  // lack of end time indicates the period was continuing at the time the entry was created
 
@@ -168,7 +194,7 @@ Description:	"A period of time defined by a start and end time, date, or year"
 	Concept:		MTH#C1522314
 	Description:	"The time at which something is to end or did end."
 	Value:			dateTime
-
+	
 
 // -----------  Age --------------------------
 
@@ -179,27 +205,27 @@ Value:			Duration
 
 Element:		AgeRange
 Concept:		TBD
-Description:	"A range of ages, quantitative"
+Description:	"A range of ages, quantitative."
 1..1			AgeRangeLowerBound
 0..1			AgeRangeUpperBound
 
 	Element:		AgeRangeLowerBound
 	Concept:		TBD
-	Description:	"The lower end of an age range"
+	Description:	"The lower end of an age range."
 	Value:			Age
 	0..1			ExclusiveBound
-
+	
 	Element:		AgeRangeUpperBound
 	Concept:		TBD
-	Description:	"The upper end of an age range"
+	Description:	"The upper end of an age range."
 	Value:			Age
 	0..1			ExclusiveBound
-
+	
 		Element:		ExclusiveBound
 		Concept:		TBD
 		Description:	"Whether a bound (upper or lower) is considered to be exclusive. If not given, the bounds are considered inclusive, so the range 10 to 20 would include 10 and 20."
 		Value:			boolean
-
+	
 Element:		AgeGroup
 Concept:		MTH#C0027362
 Description:	"Subgroups of populations based on age."
@@ -212,12 +238,13 @@ Value:			Age
 
 Element:		GestationalTimePeriod
 Concept:		TBD
-Description:	"A time relative to a pregnancy or childbirth event"
+Description:	"A time relative to a pregnancy or childbirth event."
 Value:			Coding from TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
 
 Element:		GestationalTemporalContext
 Concept:		TBD
-Description:	"A named gestational time period, or a gestational age"
+Based on:		GeneralizedTemporalContext
+Description:	"A named gestational time period, or a gestational age."
 Value:			GestationalAge or GestationalTimePeriod
 
 
@@ -225,13 +252,13 @@ Value:			GestationalAge or GestationalTimePeriod
 
 Element:		GeneralizedDateTime
 Concept:		TBD
-Description:	"A point in time, specified qualitatively or quantitatively"
+Description:	"A point in time, specified qualitatively or quantitatively."
 Value:			dateTime or TimePeriod or QualitativeDateTime
 
 Element:		GeneralizedAge
 Concept:		TBD
-Description:	"Qualitative or quantitative, exact or inexact description of age"
-Value:			Age or AgeRange or AgeGroup
+Description:	"Qualitative or quantitative, exact or inexact description of age."
+Value:			Age or AgeRange or AgeGroup 
 
 Element:		GeneralizedTemporalContext
 Concept:		TBD
@@ -244,43 +271,43 @@ Value:			GeneralizedDateTime or GeneralizedAge or GestationalTemporalContext
 Element:		Duration
 Based on:		Quantity
 Concept:		MTH#C0449238
-Description:	"The length of time that something continues"
+Description:	"The length of time that something continues."
 1..1			Units with Coding from TimeUnitOfMeasureVS
 
 Element:		SemiquantDuration
 Concept:		TBD
-Description:	"The duration of an event, described semi-quantitatively"
+Description:	"The duration of an event, described semi-quantitatively."
 Value:			Coding from SemiquantDurationVS
 
 Element:		QualitativeDuration
 Concept:		TBD
-Description:	"The duration of an action or event, described qualitatively"
+Description:	"The duration of an action or event, described qualitatively."
 Value:			Coding from QualitativeDurationVS
 
 Element:		GeneralizedDuration
 Concept:		TBD
-Description:	"The duration of an event, qualitatively or quantitatively"
-Value:			Duration or SemiquantDuration or QualitativeDuration
+Description:	"The duration of an event, qualitatively or quantitatively."
+Value:			Duration or SemiquantDuration or QualitativeDuration 
 
 Element:		Frequency   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
 Concept:		MTH#C0376249
-Description:	"How many occurrences of an event per unit of time"
+Description:	"How many occurrences of an event per unit of time."
 1..1			Count
 1..1			Duration
 
 Element:		SemiquantFrequency
 Concept:		TBD
-Description:	"The frequency of an event, described semi-quantitatively"
+Description:	"The frequency of an event, described semi-quantitatively."
 Value:			Coding from SemiquantFrequencyVS
 
 Element:		QualitativeFrequency
 Concept:		TBD
-Description:	"The frequency of an event, described qualitatively"
+Description:	"The frequency of an event, described qualitatively."
 Value:			Coding from QualitativeFrequencyVS
 
 Element:		GeneralizedFrequency
 Concept:		TBD
-Description:	"The frequency of an event, qualitatively or quantitatively"
+Description:	"The frequency of an event, qualitatively or quantitatively."
 Value:			Frequency or SemiquantFrequency or QualitativeFrequency
 
 
@@ -288,7 +315,7 @@ Value:			Frequency or SemiquantFrequency or QualitativeFrequency
 
 Element:		EffectiveDate
 Concept:		MTH#C1301880
-Description:	"The date when something is to take effect"
+Description:	"The date when something is to take effect."
 Value:			date
 
 Element:		EffectiveTimePeriod
@@ -310,6 +337,7 @@ Value:			TimePeriod
 
 Element:		Geoposition
 Concept:		TBD
+Description:	"The location on the surface of the Earth, described by a latitude and longitude (and optional altitude)."
 1..1			Latitude
 1..1			Longitude
 0..1			Altitude
@@ -318,19 +346,19 @@ Concept:		TBD
 		Concept:		MTH#C1627936
 		Description:	"The angular distance north or south between an imaginary line around a heavenly body parallel to its equator and the equator itself. Measured with with WGS84 datum."
 		Value:			decimal
-
+		
 		Element:		Longitude
 		Concept:		MTH#C1657623
 		Description:	"An imaginary great circle on the surface of a heavenly body passing through the poles at right angles to the equator. Measured with with WGS84 datum."
 		Value:			decimal
-
+		
 		Element:		Altitude
 		Concept:		MTH#C0002349
 		Description:	"Height above sea level or above the earth's surface. Measured with with WGS84 datum."
 		Value:			decimal
-
+		
 Element:   		Address
-Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)"
+Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)."
 0..2    		AddressLine
 0..1    		City
 0..1    		County
@@ -340,22 +368,22 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 
 	Element:    	AddressLine
 	Concept:		TBD
-	Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)"
+	Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	City
 	Concept:		MTH#C1555315
-	Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)"
+	Description:    "The name of a city, town, village or other community or delivery center. (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	County
 	Concept:		MTH#C0079170
-	Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)"
+	Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. Outside the US, a district or the equivalent. (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	State
 	Concept:		MTH#C1552743
-	Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)"
+	Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	PostalCode
@@ -365,20 +393,20 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 
 	Element:    	Country
 	Concept:		MTH#C0454664
-	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes"
+	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes."
 	Value:         	Coding from CC  // Coding is not a string!
 
 Element: 		GeopoliticalLocation
 Concept:		MTH#C0017446
 Based on:		Address
-Description:	"The countries of the world and major geopolitical subregions, such as US states"
+Description:	"The countries of the world and major geopolitical subregions, such as US states."
 0..0    		AddressLine
 0..0    		PostalCode
-
+	
 Element:		Location
 Concept:		MTH#C0450429
 Description:	"A position, site, or point in space where something can be found."
-Value:			Address or Geoposition or GeopoliticalLocation
+Value:			Address or Geoposition or GeopoliticalLocation	
 
 Element:		Setting
 Concept:		TBD
@@ -388,25 +416,25 @@ Value:			Coding from SettingVS
 
 //------------  US Address Profile -----------
 
-Element:    	UnitedStatesAddress
+Element:    	UnitedStatesAddress 
 Concept:		TBD   // more specific concept than Address
 Based on:		Address
-Description:    "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)"
+Description:    "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)."
 1..1			State is type UnitedStatesState
 1..1			Country is CC#US   // fixed
 
 	Element:		UnitedStatesState
 	Based on:		State
 	Concept:		MTH#C3148680
-	Description:	"A state or territory in the USA expressed by 2-letter US Postal code"
+	Description:	"A state or territory in the USA expressed by 2-letter US Postal code."
 	//Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
-
+	
 //-------------------  Human Name ------------------
 // Defines a human name element
 
 Element:   		HumanName
 Concept: 		MTH#C1547383
-Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)"
+Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)."
 Value:			string
 0..1    		HumanNamePrefix
 0..*    		GivenName
@@ -417,24 +445,24 @@ Value:			string
 
 		Element:    	GivenName
 		Concept:		LNC#45392-8, SCT#408677003
-		Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)"
+		Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Note also that this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)."
 		Value:          string
 
 		Element:    	FamilyName
 		Concept:		LNC#45394-4
-		Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)"
+		Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)."
 		Value:          string
 
 		Element:    	HumanNamePrefix
 		Concept:		MTH#C3476361
-		Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)"
+		Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)."
 		Value:          string  // punting on value set - there is little value in standardizing this element
 
 		Element:    	HumanNameSuffix
 		Concept:		LNC#45395-1, SCT#715196001
 		Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
 		Value:          string
-
+		
 		Element:    	HumanNameUse
 		Concept:		TBD
 		Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
@@ -451,11 +479,11 @@ Value:			Coding
 
 Element:		BodySite
 Concept:		MTH#C1268086
-Description:	"Location on or in the body"
+Description:	"Location on or in the body."
 Value:			Coding from BodySiteVS
 0..1 			Laterality
 0..1			Directionality
-0..1 			PortionTotality
+0..1 			PortionTotality	
 0..1 			Description   // text description of body site
 
 	Element:		Laterality
@@ -465,20 +493,20 @@ Value:			Coding from BodySiteVS
 
 	Element:		Directionality
 	Concept:		NCI#C99074
-	Description:	"Anatomical location or specimen further detailing directionality"
+	Description:	"Anatomical location or specimen further detailing directionality."
 	Value:			Coding from DirectionalityVS
-
+	
 	Element:		PortionTotality
 	Concept:		NCI#C99075
-	Description:	"Qualifier for anatomical location or specimen further detailing the portion or totality, which means arrangement of, or apportioning of an entity"
+	Description:	"ObservationQualifier for anatomical location or specimen further detailing the portion or totality, which means arrangement of, or apportioning of an entity."
 	Value:			Coding from PortionTotalityVS
-
+		
 
 Element:		BodyPosition
 Concept:		MTH#C1262869
 Description:	"The position or physical attitude of the body."
 Value:			Coding from BodyPositionVS
-
+	
 
 
 //------------- Reusable text elements: Description, Summary, Comment, Explanation, Details --------------
@@ -520,5 +548,5 @@ Value:			string
 
 Element:		Reason
 Concept:		MTH#C0566251
-Description:	"The justification for an action, conclusion, opinion, etc."
+Description:	"The justification for an action or non-action, conclusion, opinion, etc."
 Value:			string or Coding

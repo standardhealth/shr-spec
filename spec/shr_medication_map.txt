@@ -3,10 +3,23 @@ Namespace:	shr.medication
 Target:		FHIR_STU_3
 
 
-MedicationStatement maps to MedicationStatement:
-	Medication maps to medicaiton
-	PeriodOfUse maps to effectiveTimePeriod
-	ReasonForUse maps to reasonForUseCodeableConcept
+Medication maps to Medication:
+	Value maps to code
+	DoseForm maps to form
+	Ingredient maps to ingredient.item[x.itemCodeableConcept]
+	Ingredient.IngredientAmount maps to ingredient.amount.numerator
+	Ingredient.AmountOfMedication maps to ingredient.amount.denominator
+	Ingredient.IsActiveIngredient maps to ingredient.isActive
+	Brand maps to isBrand
+	OverTheCounter maps to isOverTheCounter
+
+
+MedicationUse maps to MedicationStatement:
+	Medication maps to medication[x.Reference]
+	OccurrenceTime maps to effectiveTimePeriod
+	Reason maps to reasonForUseCodeableConcept
+	MedicationNotUsedModifier maps to taken  
+	MedicationNotUsedModifier.Reason maps to reasonNotTaken
 	Dosage.AmountPerDose[Quantity] maps to dosage.doseQuantity
 	Dosage.AmountPerDose[TBD "Range"] maps to dosage.doseRange
 	Dosage.TimingOfDoses maps to dosage.timing
@@ -16,5 +29,26 @@ MedicationStatement maps to MedicationStatement:
 	Dosage.RouteIntoBody maps to dosage.route
 	Dosage.AdministrationMethod maps to dosage.method
 	Dosage.AdministrationBodySite maps to dosage.site
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerTimePeriod
-
+	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerTimePeriod 
+	
+MedicationPrescription maps to MedicationRequest:
+	Medication maps to medication[x.Reference]
+	Reason maps to reasonCode
+	RequestStatus maps to status
+	RequestedPerformanceTime maps to dispense.validityPeriod
+	PriorityOfRequest maps to priority
+	RequestedPerformer[Organization] maps to dispenseRequest.performer
+	PerformerInstructions maps to note
+	NumberOfRepeatsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	QuantityPerDispense maps to dispenseRequest.quantity
+	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	Dosage.AmountPerDose[Quantity] maps to dosage.doseQuantity
+	Dosage.AmountPerDose[Range] maps to dosage.doseRange
+	Dosage.TimingOfDoses maps to dosage.timing
+	Dosage.DoseAsNeededIndicator maps to dosage.asNeededBoolean
+	Dosage.DoseInstructionsText maps to dosage.text
+	Dosage.AdditionalDoseInstruction maps to dosage.additionalInstructions
+	Dosage.RouteIntoBody maps to dosage.route
+	Dosage.AdministrationMethod maps to dosage.method
+	Dosage.AdministrationBodySite maps to dosage.site
+	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerTimePeriod 

@@ -3,38 +3,35 @@ Namespace:	shr.adverse
 Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
 Uses:				shr.base, shr.core, shr.allergy, shr.observation, shr.problem
 
-/*------------------  Adverse Reaction  -------------------
+CodeSystem:		MEDDRA = http://www.meddra.org
 
-   An instance of an adverse reaction to any substance.
-
------------------------------------------------------------------------------*/
-
-
-
-
-EntryElement:	AdverseReactionStatement
-Concept:		MTH#C0559966 "Adverse reaction to substance"
-Based on:		Observation  //??
-Description:	"A statement about a possible adverse reaction attributed to exposure to a substance. It is not necessarily associated with a previously-recorded SubstanceRisk. This Entry could be used to record an adverse reaction to an immunization or food."
-1..1			Substance  // Specific substance or pharmaceutical product considered to be responsible for event
-1..1			DidOrDidNotOccur
-0..1			Onset
-1..*			Manifestation // Normally, a MedDRA code!
-0..1			Description   // from core
+EntryElement:	AdverseReaction
+Concept:		MTH#C0559966 
+Based on:		Problem
+Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This Entry could be used to record the occurrence or non-occurrence of an adverse reaction."
+Value:			Coding from MEDDRA
+1..*			ProblemCategory includes #adverse_reaction
+0..1			NonOccurrenceModifier
+1..*			Manifestation
+0..*			AdverseReactionAttribution
 0..1			TBD "PatternOfEvent"  // from STDM
 0..1			TBD "AssociatedStudy"
-0..1			AttributionCertainty
-//ActionTakenWithMedication
-//OtherActionTaken
-//Outcome
+0..1			TBD "ActionTakenWithMedication"
+0..1			TBD "OtherActionTaken"
+0..1			TBD "Outcome"
 
-	Element:		AttributionCertainty
+	Element:		AdverseReactionAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or Procedure"
-	Description:	"A specific identifiable level (defined qualitatively or quantitatively) of probability of adverse event being caused or associated with the product or procedure administration to a patient."
-	Value:			Coding from http://hl7.org/fhir/reaction-event-certainty
+	Description:	"The cause of the adverse reaction (either known or theorized)."
+	1..1			Substance or TBD "Procedure"
+	0..1			AttributionCertainty
+	
+		Element:		AttributionCertainty
+		Concept:		TBD
+		Description:	"A specific identifiable level (defined qualitatively or quantitatively) of probability of adverse event being caused or associated with the product or procedure administration to a patient."
+		Value:			Coding from http://hl7.org/fhir/reaction-event-certainty
 
-	
-	
+
 
 
 //AdverseEvent -- TBD

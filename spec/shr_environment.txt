@@ -1,13 +1,13 @@
 Grammar:			DataElement 4.0
 Namespace:			shr.environment
 Description:		"The SHR Environment domain contains definitions related to surroundings experienced by the person of record, including both the physical and sociological environments."
-Uses:				shr.core, shr.base, shr.allergy, shr.observation
+Uses:				shr.core, shr.base, shr.allergy, shr.observation, shr.medication, shr.lab
 
 
 EntryElement:	Travel
 Concept:		MTH#C0040802
 Based on:		HistoryObservation
-Description:	"Trip to a foreign country or an area, particularly when a health risk is involved"
+Description:	"Trip to a foreign country or an area, particularly when a health risk is involved."
 				ObservationCode is MTH#C0040802
 
 
@@ -16,7 +16,7 @@ Description:	"Trip to a foreign country or an area, particularly when a health r
 Element:		FinancialResources
 Concept:		MTH#C0516918
 Based on:		Observation
-Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life"
+Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life."
 				ObservationCode is MTH#C0516918
 0..1			AnnualIncome
 0..*			IncomeSource
@@ -33,69 +33,69 @@ Description:	"Measures of the ability of the subject to obtain and pay for the n
 
 	EntryElement:	AnnualIncome
 	Concept:		MTH#C0557163
-	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported"
+	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
 	Value:			DollarAmount
 	
 	Element:		IncomeSource
 	Concept:		TBD
-	Description:	"Where the household income comes from"
+	Description:	"Where the household income comes from."
 	Value:			Coding from IncomeSourceVS
 
 	Element:		IncomeStability
 	Concept:		MTH#C1820459
-	Description:	"Whether the subject regards his or her source of income as dependable"
+	Description:	"Whether the subject regards his or her source of income as dependable."
 	Value:			Coding from ResourceStabilityVS
 
 	EntryElement:	CanAffordFood
 	Concept:		TBD
-	Description:	"How often can the subject afford food?"
+	Description:	"How often can the subject afford food?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordHousing
 	Concept:		TBD
-	Description:	"How often can the subject afford housing?"
+	Description:	"How often can the subject afford housing?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordClothing
 	Concept:		TBD
-	Description:	"How often can the subject afford clothing?"
+	Description:	"How often can the subject afford clothing?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordUtilities
 	Concept:		TBD
-	Description:	"How often can the subject afford utilities?"
+	Description:	"How often can the subject afford utilities?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordTransportation
 	Concept:		TBD
-	Description:	"How often can the subject afford transportation?"
+	Description:	"How often can the subject afford transportation?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordMedication
 	Concept:		TBD
-	Description:	"How often can the subject afford medications?"
+	Description:	"How often can the subject afford medications?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordDentalCare
 	Concept:		TBD
-	Description:	"How often can the subject afford dental care?"
+	Description:	"How often can the subject afford dental care?."
 	Value:			Coding from QualitativeFrequencyVS
 
 	EntryElement:	CanAffordChildCare
 	Concept:		TBD
-	Description:	"How often can the subject afford child care?"
+	Description:	"How often can the subject afford child care?."
 	Value:			Coding from QualitativeFrequencyVS
 	
 	Element:		NonCashBenefit
 	Concept:		TBD
-	Description:	"Government benefits received by the focal subject, other than cash benefits"
+	Description:	"Government benefits received by the focal subject, other than cash benefits."
 	Value:			Coding from NonCashBenefitVS
 	0..1			EffectiveTimePeriod
 
 EntryElement:		HouseholdComposition
 Concept:			TBD
 Based on:			Observation
-Description:		"Information about the makeup of the household of the subject"
+Description:		"Information about the makeup of the household of the subject."
 1..1				ObservationCode is TBD#TBD 
 0..1				HouseholdSize
 0..*				Coinhabitant
@@ -108,14 +108,48 @@ Description:		"Information about the makeup of the household of the subject"
 
 		Element:			Coinhabitant
 		Concept:		TBD
-		Description: 	"A person living with the subject"
+		Description: 	"A person living with the subject."
 		Value:			Coding from CoinhabitantVS
 
 		Element:		NumberOfDependents
 		Concept:		MTH#C0557509
-		Description:	"The number of dependents supported by the subject"
+		Description:	"The number of dependents supported by the subject."
 		Value:			unsignedInt
 
+
+//------------- Exposure ---------------------
+
+EntryElement:	ExposureToSubstance
+Based on:		HistoryObservation
+Concept:		MTH#C0332157
+Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
+0..1			Substance
+				ObservationCategory includes MTH#C0332157 "Exposure"
+0..1			GeneralizedLikelihood
+0..*			ExposureSourceOrVector
+0..1			TBD "AmountOrDosage"
+0..1			ExposureReason
+0..1			ExposureMethod
+0..1			RouteIntoBody
+0..*			Test  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
+0..*			TBD "Impact" // adverse event, allergic reaction, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+		
+		Element:		ExposureSourceOrVector
+		Concept:		MTH#C0012656
+		Description:	"Where the substance originated. Vectors include animals (e.g., tick, mosquito, cats, livestock) capable of transmitting an infectious agent among vertebrates. Sources could include food, contaminated drinking water, air, radon gas in the home, etc."
+		Value:			Coding from TBD "ExposureSourceOrVectorVS"
+
+		Element:		ExposureMethod
+		Concept:		TBD
+		Description:	"How the exposure occurred, e.g. cutaneous contact, injection, ingestion, sexual contact, inhalation."
+		Value:			Coding from TBD "ExposureMethodVS"		
+		
+		Element:		ExposureReason
+		Concept:		TBD
+		Based on:		Reason
+		Description:	"Why the exposure occurred."
+		Value:			Coding from ExposureReasonVS
+		
 //LEFT OFF HERE
 
 //NEXT LIVING SITUATION	
@@ -124,7 +158,7 @@ Description:		"Information about the makeup of the household of the subject"
 
 EntryElement:	TransportationAvailability
 Concept:		TBD
-Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications"
+Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications."
 Value:			Coding from QualitativeFrequencyVS
 
 /*
@@ -134,43 +168,43 @@ EntryElement:	Anxiety
 EntryElement:	JusticeInvolvement
 */
 
-EntryElement:	AnimalExposureStatement
+EntryElement:	AnimalExposure
 Concept:		TBD
-Based on:		ExposureToSubstanceStatement
-Description:	"The type of animals or pets the subject is exposed to"
+Based on:		ExposureToSubstance
+Description:	"The type of animals or pets the subject is exposed to."
 Value:			
-1..1			SourceOrVector with Coding from AnimalExposureVS
+1..1			ExposureSourceOrVector with Coding from AnimalExposureVS
 
 EntryElement:	HousingSecurity
 Concept:		TBD
-Description:	"Whether the subject is at-risk of losing their housing or in a stable housing situation"
+Description:	"Whether the subject is at-risk of losing their housing or in a stable housing situation."
 Value:			Coding from ResourceStabilityVS
 
 EntryElement:	PerceivedPhysicalSafety
 Concept:		TBD
-Description:	"How often the subject feels physically safe in the subject's home environment"
+Description:	"How often the subject feels physically safe in the subject's home environment."
 Value:			Coding from QualitativeFrequencyVS
 
 EntryElement:	PerceivedEmotionalSafety
 Concept:		TBD
-Description:	"How often the subject feels physically safe in the subject's home environment"
+Description:	"How often the subject feels physically safe in the subject's home environment."
 Value:			Coding from QualitativeFrequencyVS
 
 EntryElement:	DomesticViolenceTarget
 Concept:		TBD
-Description:	"How often the subject is or was a target of domestic violence"
+Description:	"How often the subject is or was a target of domestic violence."
 Value:			Coding from QualitativeFrequencyVS
 0..1			OccurrenceTime
 	
 EntryElement:	DomesticViolenceAggressor
 Concept:		TBD
-Description:	"How often the subject is a domestic abuser"
+Description:	"How often the subject is a domestic abuser."
 Value:			Coding from SemiquantitativeFrequencyVS
 0..1			OccurrenceTime
 
 EntryElement:	HomeEnvironmentRisk
 Concept:		TBD
-Description:	"A risk experienced in the home environment"
+Description:	"A risk experienced in the home environment."
 Value:			Coding from HomeEnvironmentRiskVS
 
 

@@ -1,87 +1,83 @@
 Grammar:	DataElement 4.0
 Namespace:		shr.base
 Description:		"The SHR Base domain contains definitions for elements that are widely shared in SHR, including the base Entry and associated metadata."
-Uses:				shr.core, shr.demographics, shr.actor
+Uses:				shr.core, shr.demographics, shr.actor, shr.encounter
 
 //---------------  Missing Information -----------------------
-// By convention, any require elements or value can be substituted for with a missing value reason
 
 Element:		MissingValueReason
 Concept:		TBD
-Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value."
+Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value. By convention in SHR, any required element or value can be substituted with a missing value reason."
 Value: 			Coding from MissingValueReasonVS
+
+// ------------   Modifiers  -----------------------
+
+Element:		NonOccurrenceModifier
+Concept:		TBD
+Description:	"When true, indicates either that the event or action documented in the entry did not occur, or the the thing documented is absent or does not exist."
+Value:			boolean
+0..1			Reason   // The reason that an event or action did not occur, or the thing document is absent or does not exist.
 
 
 //----------------  Entry -------------------
 
 Element:		Entry
 Concept:		MTH#C1705654
-Description:	"An item inserted in an electronic record"
-1..1			Meta
-1..1			ShrID
+Description:	"An item inserted in an electronic record."
+1..1			ShrId
+1..1			EntryId
+0..1			Version
+1..*			EntryType
 1..1			FocalSubject
-1..1			SubjectIsThirdParty
+0..1			SubjectIsThirdPartyModifier
 0..1			Summary
-// exactly one EntryElement (not any old element, just entry elements)
+0..*    		Informant
+0..*			Author
+0..*			AssociatedEncounter 
+1..1    		OriginalCreationDate
+1..1			LastUpdateDate
+0..1			Language
+0..*			TBD "SecurityLabel"
+0..*			TBD "Tag"
 
-	Element:		ShrID
+	Element:		ShrId
 	Concept:		MTH#C0600091
 	Description:	"A unique, persistent identifier for the Standard Health Record to which this entry belongs."
 	Value:			id
 	
-	Element:		FocalSubject
-	Concept:		TBD
-	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)"
-	Value:			Person
-
-	Element:		SubjectIsThirdParty
-	Concept:		TBD
-	Description:	"A flag indicating this entry concerns someone other than the Person of Record"
-	Value:			boolean
-
-
-//----------------  Metadata  -----------------------
-// Elements for all entries in the SHR
-
-Element:		Meta
-Concept:		MTH#C1708992
-Description:	"Contains elements common to all entries, describing the identification, timing, attribution, and other properties of the entry."
-1..1			EntryID
-1..*			EntryType
-0..1			Version
-0..*    		Informant
-0..*			Author
-0..*			AssociatedEncounter 
-1..1    		DateEntered
-0..*			DateUpdated  // Assumes Entries can be altered, as opposed to versioned
-0..1			Language
-0..*			TBD "SecurityLabel"
-0..*			TBD "Tags"
-
-
-	Element:    	EntryID
+	Element:    	EntryId
 	Concept:        MTH#C0600091
-	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
+	Description:    "A unique, persistent, permanent identifier for an entry in a health record."
 	Value:          id
 
 	Element:		EntryType
 	Concept:		TBD
 	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk. The EntryType array includes the entire 'based on' hierarchy to enable searching for classes of things, for example, searching for all vital signs, or all types of behavioral observations."
 	Value:			uri
+	
+	Element:		FocalSubject
+	Concept:		TBD
+	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)."
+	Value:			Person
+
+	Element:		SubjectIsThirdPartyModifier
+	Concept:		TBD
+	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
+	Value:			boolean
 
 	Element:		AssociatedEncounter
 	Concept:		TBD
-	Description:	"The encounter or episode of care that led to creation of this entry"
-	Value:			TBD "Encounter"
+	Description:	"The encounter or episode of care that led to creation of this entry."
+	Value:			Encounter
 
-	Element:   	 	DateEntered
+	Element:   	 	OriginalCreationDate
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the information was recorded in the system of record."
 	Value:          dateTime
 
-	Element: 		DateUpdated
+	Element: 		LastUpdateDate
 	Concept:		TBD
-	Description:	"A date that the entry was changed"
+	Description:	"A date that the entry was changed."
 	Value:			dateTime
 
 	Element:    	Informant
@@ -96,13 +92,13 @@ Description:	"Contains elements common to all entries, describing the identifica
 
 	Element:		Language
 	Concept:		MTH#C0023008
-	Description: 	"A human language, spoken or written"
+	Description: 	"A human language, spoken or written."
 	Value:			Coding from http://hl7.org/fhir/ValueSet/languages
 
 
 Element:		ExternalHealthRecord
 Concept: 		TBD
-Description:	"A health record used to help populate the current health record"
+Description:	"A health record used to help populate the current health record."
 1..1			HealthRecordID
 1..1			Organization
 1..1			AccessTime
@@ -114,5 +110,77 @@ Description:	"A health record used to help populate the current health record"
 
 	Element:		AccessTime
 	Concept:		TBD
-	Description:	"Point in time when data was accessed"
+	Description:	"Point in time when data was accessed."
 	Value:			dateTime
+
+//-------------  Action, Request, Proposal 
+	
+Element:		Action
+Concept:		TBD
+Description:	"An action that either has or has not taken place."
+1..1			ActionCode
+0..1			NonOccurrenceModifier
+0..1			Reason
+0..1			OccurrenceTime  // when the action took place
+0..*			Participation    // who was involved
+
+		Element:		ActionCode
+		Concept:		TBD
+		Description:	"The code for the action, such as an intervention or test, to be carried out."
+		Value:			Coding
+
+	
+Element:		Request
+Concept:		MTH#C1705178
+Based on:		Action
+Description:	"An order for something to take place. Using NonOccurrenceModifier, it may document why a request was NOT made."
+0..1			RequestNotToPerformActionModifier
+1..1			RequestStatus // orders with 'draft' or 'entered in error' status do not appear in the SHR
+0..1			RequestedPerformanceTime
+0..1			Reason
+0..1 			PriorityOfRequest
+0..*			RequestedPerformerType or RequestedPerformer
+0..1			PerformerInstructions
+0..1			PatientInstructions
+
+		Element:		RequestNotToPerformActionModifier
+		Concept:		TBD
+		Description:	"If true, the thing requested should not take place. For example, a request to NOT elevate the head of a bed using the code for elevating the bed, and setting RequestNotToPerformActionModifier to true. Other examples include do not ambulate, do not flush NG tube, do not take blood pressure on a certain arm, etc. If the Request.code and RequestAgainstModifier both contain negation, that will reinforce the prohibition, and should not be interpreted as a double negative that equals a positive."
+		Value:			boolean
+		0..1			Reason
+		
+		Element:		RequestStatus
+		Concept:		TBD
+		Description:	"The extent to which the ordering process has progressed, for this order."
+		Value:			Coding from http://hl7.org/fhir/ValueSet/medication-request-status
+
+		Element:		RequestedPerformanceTime
+		Concept:		TBD
+		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			dateTime or TimePeriod or TBD "Timing"
+
+		Element:		PriorityOfRequest
+		Concept:		TBD
+		Description:	"Urgency level for which results must be reported to the requestor or responsible individual."
+		Value:			Coding from RequestPriorityVS
+
+		Element:		RequestedPerformerType
+		Concept:		TBD
+		Description:	"What type of actor should carry out the testing."
+		Value:			TBD
+
+		Element:		RequestedPerformer
+		Concept:		TBD
+		Description:	"Who should carry out the tests. For example, the patient or caregiver."
+		Value:			Person or Organization // How can we refer to the Person of Record here? The organ or egg donor?
+		
+		Element:		PerformerInstructions
+		Concept:		TBD
+		Description:	"Information for the performer of the test, if needed."
+		Value:			string
+
+		Element:		PatientInstructions
+		Concept:		TBD
+		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
+		Value:			string
+
