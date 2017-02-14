@@ -5,50 +5,50 @@ Target:		FHIR_STU_3
 
 Medication maps to Medication:
 	Value maps to code
-	DoseForm maps to form
-	Ingredient maps to ingredient.item[x].itemCodeableConcept
-	Ingredient.IngredientAmount maps to ingredient.amount.numerator
-	Ingredient.AmountOfMedication maps to ingredient.amount.denominator
-	Ingredient.IsActiveIngredient maps to ingredient.isActive
+	DoseForm maps to product.form
+	Ingredient maps to product.ingredient.item[x].CodeableConcept
+	Ingredient.IngredientAmount maps to product.ingredient.amount.numerator
+	Ingredient.AmountOfMedication maps to product.ingredient.amount.denominator
+	// Ingredient.IsActiveIngredient maps to ingredient.isActive // In nightly build, but not in FHIR 1.8 (Jan 2017)
 	Brand maps to isBrand
-	OverTheCounter maps to isOverTheCounter
+	// OverTheCounter maps to isOverTheCounter // In nightly build, but not in FHIR 1.8 (Jan 2017)
 
 
 MedicationUse maps to MedicationStatement:
 	Medication maps to medication[x].Reference
-	PeriodOfUse maps to effectiveTimePeriod
+	PeriodOfUse maps to effective[x].Period
 	Reason maps to reasonForUseCodeableConcept
-	MedicationNotUsedModifier maps to taken
+	MedicationNotUsedModifier maps to notTaken
 	MedicationNotUsedModifier.Reason maps to reasonNotTaken
-	Dosage.AmountPerDose[Quantity] maps to dosage.doseQuantity
-	Dosage.AmountPerDose[TBD "Range"] maps to dosage.doseRange
+	Dosage.AmountPerDose[Quantity] maps to dosage.dose[x].SimpleQuantity
+	Dosage.AmountPerDose[TBD "Range"] maps to dosage.dose[x].Range
 	Dosage.TimingOfDoses maps to dosage.timing
-	Dosage.DoseAsNeededIndicator maps to dosage.asNeededBoolean
+	Dosage.DoseAsNeededIndicator maps to dosage.asNeeded[x].boolean
 	Dosage.DoseInstructionsText maps to dosage.text
 	Dosage.AdditionalDoseInstruction maps to dosage.additionalInstructions
 	Dosage.RouteIntoBody maps to dosage.route
 	Dosage.AdministrationMethod maps to dosage.method
 	Dosage.AdministrationBodySite maps to dosage.site
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerTimePeriod
+	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod
 
 MedicationPrescription maps to MedicationRequest:
 	Medication maps to medication[x].Reference
 	Reason maps to reasonCode
 	RequestStatus maps to status
-	RequestedPerformanceTime maps to dispense.validityPeriod
-	PriorityOfRequest maps to priority
+	RequestedPerformanceTime maps to dispenseRequest.validityPeriod
+	// PriorityOfRequest maps to priority // In nightly build, but not in FHIR 1.8 (Jan 2017)
 	RequestedPerformer[Organization] maps to dispenseRequest.performer
 	PerformerInstructions maps to note
 	NumberOfRepeatsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
 	QuantityPerDispense maps to dispenseRequest.quantity
 	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
-	Dosage.AmountPerDose[Quantity] maps to dosage.doseQuantity
-	Dosage.AmountPerDose[TBD "Range"] maps to dosage.doseRange
-	Dosage.TimingOfDoses maps to dosage.timing
-	Dosage.DoseAsNeededIndicator maps to dosage.asNeededBoolean
-	Dosage.DoseInstructionsText maps to dosage.text
-	Dosage.AdditionalDoseInstruction maps to dosage.additionalInstructions
-	Dosage.RouteIntoBody maps to dosage.route
-	Dosage.AdministrationMethod maps to dosage.method
-	Dosage.AdministrationBodySite maps to dosage.site
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerTimePeriod
+	Dosage.AmountPerDose[Quantity] maps to dosageInstruction.dose[x].SimpleQuantity
+	Dosage.AmountPerDose[TBD "Range"] maps to dosageInstruction.dose[x].Range
+	Dosage.TimingOfDoses maps to dosageInstruction.timing
+	Dosage.DoseAsNeededIndicator maps to dosageInstruction.asNeeded[x].boolean
+	Dosage.DoseInstructionsText maps to dosageInstruction.text
+	Dosage.AdditionalDoseInstruction maps to dosageInstruction.additionalInstructions
+	Dosage.RouteIntoBody maps to dosageInstruction.route
+	Dosage.AdministrationMethod maps to dosageInstruction.method
+	Dosage.AdministrationBodySite maps to dosageInstruction.site
+	Dosage.MaximumDosePerTimePeriod maps to dosageInstruction.maxDosePerPeriod
