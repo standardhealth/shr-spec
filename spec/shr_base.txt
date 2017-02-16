@@ -30,7 +30,7 @@ Description:	"An item inserted in an electronic record."
 1..*			EntryType
 1..1			FocalSubject
 0..1			SubjectIsThirdPartyModifier
-0..1			Summary
+0..1			Narrative
 0..*    		Informant
 0..*			Author
 0..*			AssociatedEncounter
@@ -64,7 +64,17 @@ Description:	"An item inserted in an electronic record."
 	Concept:		TBD
 	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
 	Value:			boolean
-
+	
+	Element:		Narrative
+	Concept:		TBD
+	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Value:			xhtml
+	1..1			NarrativeQualifier
+	
+			Element:		NarrativeQualifier
+			Concept:		TBD
+			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+			Value:			code from http://hl7.org/fhir/narrative-status
 	Element:		AssociatedEncounter
 	Concept:		TBD
 	Description:	"The encounter or episode of care that led to creation of this entry."
@@ -93,20 +103,14 @@ Description:	"An item inserted in an electronic record."
 	Element:		Language
 	Concept:		MTH#C0023008
 	Description: 	"A human language, spoken or written."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages
+	Value:			code from http://hl7.org/fhir/ValueSet/languages
 
 
 Element:		ExternalHealthRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record."
-1..1			HealthRecordID
-1..1			Organization
+1..1			Identifier
 1..1			AccessTime
-
-	Element:		HealthRecordID
-	Concept:		MTH#C0600091
-	Description:	"Identifier for a health record. Interpreted in the context of the providing organization."
-	Value:			id
 
 	Element:		AccessTime
 	Concept:		TBD
@@ -139,7 +143,7 @@ Description:	"An order for something to take place. Using NonOccurrenceModifier,
 0..1			RequestedPerformanceTime
 0..1			Reason
 0..1 			PriorityOfRequest
-0..*			(RequestedPerformerType or RequestedPerformer)
+0..1			(RequestedPerformerType or RequestedPerformer)
 0..1			PerformerInstructions
 0..1			PatientInstructions
 
@@ -152,7 +156,7 @@ Description:	"An order for something to take place. Using NonOccurrenceModifier,
 		Element:		RequestStatus
 		Concept:		TBD
 		Description:	"The extent to which the ordering process has progressed, for this order."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/medication-request-status
+		Value:			code from http://hl7.org/fhir/ValueSet/medication-request-status
 
 		Element:		RequestedPerformanceTime
 		Concept:		TBD
@@ -162,7 +166,7 @@ Description:	"An order for something to take place. Using NonOccurrenceModifier,
 		Element:		PriorityOfRequest
 		Concept:		TBD
 		Description:	"Urgency level for which results must be reported to the requestor or responsible individual."
-		Value:			CodeableConcept from RequestPriorityVS
+		Value:			code from RequestPriorityVS
 
 		Element:		RequestedPerformerType
 		Concept:		TBD
