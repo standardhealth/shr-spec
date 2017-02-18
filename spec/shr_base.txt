@@ -1,46 +1,75 @@
-DataDefinitions:	shr.base
+Grammar:	DataElement 4.0
+Namespace:		shr.base
+Description:		"The SHR Base domain contains definitions for elements that are widely shared in SHR, including the base Entry and associated metadata."
 Uses:				shr.core, shr.demographics, shr.actor
 
-//----------------  Base Entry  -----------------------
-// Elements for all entries in the SHR
+//---------------  Missing Information -----------------------
+// By convention, any require elements or value can be substituted for with a missing value reason
+
+Element:		MissingValueReason
+Concept:		TBD
+Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value."
+Value: 			Coding from MissingValueReasonVS
+
+
+//----------------  Entry -------------------
 
 Element:		Entry
-Concept:		TBD
-Description:	"Metadata elements added to entries in the SHR, describing the identification, timing, attribution, and other circumstances involved in an SHR entry."
-1..1    		EntryID
-1..1			StandardHealthRecordID
-1..1			PersonOfRecordID
-1..1			FocalSubject   // usually the person of record, but could be a family member, or another involved individual, etc.
-0..1			EncounterOfEntry
-1..1    		DateEntered  // Creation of the entry
-0..*			DateUpdated
-0..*    		Informant   // person or entity that provided the information in the entry
-0..*			InformationResponsiblePerson
-0..1			Language
+Concept:		MTH#C1705654
+Description:	"An item inserted in an electronic record"
+1..1			Meta
+1..1			ShrID
+1..1			FocalSubject
+1..1			SubjectIsThirdParty
 0..1			Summary
+// exactly one EntryElement (not any old element, just entry elements)
+
+	Element:		ShrID
+	Concept:		MTH#C0600091
+	Description:	"A unique, persistent identifier for the Standard Health Record to which this entry belongs."
+	Value:			id
+	
+	Element:		FocalSubject
+	Concept:		TBD
+	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)"
+	Value:			Person
+
+	Element:		SubjectIsThirdParty
+	Concept:		TBD
+	Description:	"A flag indicating this entry concerns someone other than the Person of Record"
+	Value:			boolean
+
+
+//----------------  Metadata  -----------------------
+// Elements for all entries in the SHR
+
+Element:		Meta
+Concept:		MTH#C1708992
+Description:	"Contains elements common to all entries, describing the identification, timing, attribution, and other properties of the entry."
+1..1			EntryID
+1..*			EntryType
 0..1			Version
+0..*    		Informant
+0..*			Author
+0..*			AssociatedEncounter 
+1..1    		DateEntered
+0..*			DateUpdated  // Assumes Entries can be altered, as opposed to versioned
+0..1			Language
+0..*			TBD "SecurityLabel"
+0..*			TBD "Tags"
+
 
 	Element:    	EntryID
 	Concept:        MTH#C0600091
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record"
 	Value:          id
 
-	Element: 		PersonOfRecordID
-	Concept:		MTH#C0030705
-	Description:	"The persistent, unique ID of the person described by and tracked by this record. This ID has no intrinsic meaning and should not contain any identifiable information, such a mashup of name and birth date."
-	Value:			id
-
-	Element:		FocalSubject
+	Element:		EntryType
 	Concept:		TBD
-	Description:	"The person or thing that this entry refers to. Note that not all entries refer to the Subject of SHR (the Person of Record). For example, the entry could refer to a fetus, care giver, or relative (living or dead)"
-	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty  //?? How to refer to the Person of record? Organ donor? Fetus (if recorded as a separate person)?
-
-	Element:		DataElement
-	Concept:		TBD
-	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk"
+	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk. The EntryType array includes the entire 'based on' hierarchy to enable searching for classes of things, for example, searching for all vital signs, or all types of behavioral observations."
 	Value:			uri
 
-	Element:		EncounterOfEntry
+	Element:		AssociatedEncounter
 	Concept:		TBD
 	Description:	"The encounter or episode of care that led to creation of this entry"
 	Value:			TBD "Encounter"
@@ -57,13 +86,13 @@ Description:	"Metadata elements added to entries in the SHR, describing the iden
 
 	Element:    	Informant
 	Concept:        MTH#C0449416
-	Description:    "From whom or what the information originates, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
-	1..1	        (CareProfessional or FamilyMember or UnrelatedThirdParty) // or ComputerProgram or Device or Organization
+	Description:    "The person or entity that provided the information in the entry, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
+	1..1	        Person // TODO: ComputerProgram or Device or Organization or ContributingRecord
 
-	Element:		InformationResponsiblePerson
+	Element:		Author
 	Concept:		TBD
-	Description:	"The person who is responsible for (and may certify) the content of the entry."
-	Value:			CareProfessional or FamilyMember or UnrelatedThirdParty // or PersonOfRecord
+	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
+	Value:			Person or Organization  // TODO: Does Person imply references to Practitioner are allowed, or does it need to be explicit? (that IS what is intended)
 
 	Element:		Language
 	Concept:		MTH#C0023008
@@ -71,37 +100,11 @@ Description:	"Metadata elements added to entries in the SHR, describing the iden
 	Value:			Coding from http://hl7.org/fhir/ValueSet/languages
 
 
-//-------------- Header Entry Concerning the SHR as a Whole ------------------
-
-EntryElement:	ShrHeader
-Concept:		TBD
-Description:	"Basic information about the SHR and the subject"
-1..1			StandardHealthRecordID
-1..1			PersonOfRecordID
-1..1			Anonymized
-1..1			FictionalPerson
-
-	Element:		StandardHealthRecordID
-	Concept:		TBD
-	Description:	"The persistent, unique ID of this standard health record"
-	Value:			id
-
-	Element:		Anonymized
-	Concept:		TBD
-	Description:	"Flag indicating if this record has been anonymized"
-	Value:			boolean
-
-	Element:		FictionalPerson
-	Concept:		TBD
-	Description:	"Flag indicating if this record represents a fictional (not real) person"
-	Value:			boolean
-
-
-Element:		ContributingRecord
+Element:		ExternalHealthRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record"
 1..1			HealthRecordID
-1..1			TBD "ContentAttribution"
+1..1			Organization
 1..1			AccessTime
 
 	Element:		HealthRecordID
@@ -113,143 +116,3 @@ Description:	"A health record used to help populate the current health record"
 	Concept:		TBD
 	Description:	"Point in time when data was accessed"
 	Value:			dateTime
-
-
-//-------------  Base for simple (non-lab) observations ---------------------
-
-//DegreeOfCertainty
-//DateOfObservation
-
-
-//-------------- Base structure for Test Requests and Results(diagnostic measurements, tests, vital signs, radiology, etc.) -------------
-
-Element: 		Test
-Concept:		TBD
-Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition or assess the health of an individual. Includes patient-generated data, such as pedometer readings."
-Value: 			TestCode
-0..1 			BodySite  // site of measurement or sample, if appropriate
-0..1 			SpecimenType
-0..1			TestMethod
-0..1 			BodyPosition
-0..1 			TBD "Device"
-0..*			Qualifier
-
-		Element:		TestCode
-		Concept:		TBD
-		Description:	"The code for a laboratory, radiologic, or other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
-		Value:			Coding from http://hl7.org/fhir/ValueSet/diagnostic-requests
-
-		Element:		SpecimenType
-		Concept:		TBD
-		Description:	"Kind of material that forms the specimen"
-		Value:			Coding from http://hl7.org/fhir/ValueSet/v2-0487
-
-		Element:		TestMethod
-		Concept:		MTH#C1299991
-		Description:	"The technique used to carry out a procedure, if not implicit in the test code"
-		Value:			Coding
-
-		Element:		Qualifier
-		Concept:		MTH#C1443279
-		Description:	"A description of the conditions or context of a test, for example, under sedation, fasting or post-exercise. Note that body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
-		Value:			Coding
-
-
-EntryElement:	TestRequest
-Concept:		MTH#C1273874
-Description:	"A record of a request for a diagnostic investigation service to be performed."
-// Note that a number of key attributes are captured in the metadata of the entry:
-// 1. FHIR Requestor captured in Entry.InformationOriginator
-// 2. FHIR Subject is captured in Entry.SubjectOfEntry (almost always the Person of Record)
-// 3. FHIR Context captured in Entry.EncounterOfEntry
-1..*			Test
-1..1			RequestStatus  // orders with 'draft' or 'entered in error' status do not appear in the SHR
-1..1			EffectivePeriod
-0..1			TestTiming
-0..1 			PriorityOfRequest // STAT, etc.
-0..*			(RequestedPerformerType or RequestedPerformer)
-0..1			ReasonForRequest
-0..1			PerformerInstructions
-0..1			PatientInstructions
-
-
-		Element:		RequestStatus
-		Concept:		TBD
-		Description:	"The extent to which the ordering process has progressed, for this order."
-		Value:			Coding from TestStatusVS
-
-		Element:		TestTiming
-		Concept:		TBD
-		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			(dateTime or Period or TBD "Timing")
-
-		Element:		PriorityOfRequest
-		Concept:		TBD
-		Description:	"Urgency level for which results must be reported to the requestor or responsible individual"
-		Value:			Coding from RequestPriorityVS
-
-		Element:		RequestedPerformerType
-		Concept:		TBD
-		Description:	"What type of actor should carry out the testing"
-		Value:			TBD
-
-		Element:		RequestedPerformer
-		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver"
-		Value:			HealthcareActor // How can we refer to the Person of Record here? The organ or egg donor?
-
-		Element:		ReasonForRequest
-		Concept:		TBD
-		Description:	"The justification for this order, which may be because the subject is at risk for a disease, as part of a diagnostic process, due to a symptom or problem, a part of a care plan, or periodic monitoring"
-		Value:			TBD
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
-
-
-EntryElement:	TestResult
-Concept:		MTH#C0456984
-Description:	"The result of a laboratory, radiologic, or other clinical test or measurement performed to determine the presence, absence, or degree of a condition or assess the health of an individual."
-Value:			(Quantity or Coding)
-1..1			Test
-1..*			Performer   //from actor
-1..1			(TestTime or TestPeriod)
-0..1 			TestInterpretation
-0..1			ChangeFlag
-0..1			TestRequest  // optional reference back to the request
-
-	Element:		TestTime
-	Concept:		TBD
-	Description:	"The time at which a measurement was taken or specimen collected."
-	Value:			dateTime
-
-	Element:		TestPeriod
-	Concept:		TBD
-	Description:	"The start and end times for a measurement, if observed over a period of time, or the start and end of the specimen collection, if collected over a significant period of time (e.g. 24 hour Urine Sodium)."
-	Value:			Period
-
-	Element:		TestInterpretation
-	Concept:		TBD
-	Description:	"A clinical interpretation of a measurement"
-	Value:			Coding from TestInterpretationVS
-
-	Element:		ChangeFlag
-	Concept:		TBD
-	Description:	"Indicator of change from the last or previous measurement."
-	Value:			Coding from ChangeFlagVS
-
-
-
-//------------------ Action or Inaction ----------------------
-
-//Action "ClinicalEntry"
-//Topic: Immunization, Test, MedicationChange, BehaviorChange, Referral, Procedure
-//ActionType:  Proposal, ProposalNotMade, RecommendAgainst, Order, OrderNotMade, OrderCancelled, ActionExecuted, ActionNotExecuted (postponed, aborted, etc. )
-//Proposal is different than a recommendation, there might be several proposals and one recommendation among those.
