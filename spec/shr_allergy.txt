@@ -12,13 +12,13 @@ CodeSystem:		AIT = http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 //--- Statement about a risk of adverse reaction to a substance
 
 
-EntryElement:	AdverseReactionRisk
+EntryElement:	AllergyIntolerance
 Concept:		SCT#420134006 "Propensity to adverse reactions"
 Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances. Can be used to record that a substance does not pose an elevated risk to the subject (NonOccurrenceModifier = true)."
 0..1 			AllergenIrritant
 0..*			SubstanceCategory
 1..1			NonOccurrenceModifier
-1..1			Verified
+1..1			VerificationStatus
 0..1			AdverseReactionType
 0..1			Criticality
 0..*			Manifestation
@@ -37,10 +37,10 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
 		Value:			code from FHIR/allergy-intolerance-category
 
-		Element:		Verified
+		Element:		AllergyVerificationStatus
 		Concept:		TBD
 		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			code from VerifiedVS
+		Value:			code from AllergyVerificationStatusVS   // contains two codes from the required FHIR value set (valid profile restriction)
 
 		Element:		AdverseReactionType
 		Concept:		TBD
@@ -54,7 +54,7 @@ Description:	"A statement pertaining to an individual's allergies and intoleranc
 
 
 EntryElement:	DrugAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C0013182
 Description:	"An immune or biochemical adverse reaction to a medication."
 1..1 			AllergenIrritant with CodeableConcept from DrugIngredientVS
@@ -63,7 +63,7 @@ Description:	"An immune or biochemical adverse reaction to a medication."
 
 
 EntryElement:	FoodAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C0016470
 Description:	"An immune or biochemical adverse reaction to a food substance."
 1..1 			AllergenIrritant with CodeableConcept from FoodSubstanceVS
@@ -72,7 +72,7 @@ Description:	"An immune or biochemical adverse reaction to a food substance."
 
 
 EntryElement:	NoKnownAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C0262580
 Description:	"The subject has no known allergies to drugs, foods, biologics, or environmental factors."
 0..0			AllergenIrritant  // no specific allergen or irritant
@@ -88,7 +88,7 @@ Description:	"The subject has no known allergies to drugs, foods, biologics, or 
 
 
 EntryElement:	NoKnownFoodAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C1997970
 Description:	"The subject has no known allergies to any foods."
 0..0			AllergenIrritant  // no specific allergen or irritant
@@ -104,7 +104,7 @@ Description:	"The subject has no known allergies to any foods."
 
 
 EntryElement:	NoKnownDrugAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C0262581
 Description:	"The subject has no known allergies to any medications."
 0..0			AllergenIrritant  // no specific allergen or irritant
@@ -120,7 +120,7 @@ Description:	"The subject has no known allergies to any medications."
 
 
 EntryElement:	NoKnownEnvironmentalAllergy
-Based on:		AdverseReactionRisk
+Based on:		AllergyIntolerance
 Concept:		MTH#C1998290
 Description:	"The subject has no known allergies to any environmental factors."
 0..0			AllergenIrritant  // no specific allergen or irritant
