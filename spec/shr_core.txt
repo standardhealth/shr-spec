@@ -37,8 +37,8 @@ Value:			code
 
 	Element:		VocabularyVersion
 	Concept:		TBD
+	Based on:		Version
 	Description:	"The version of the vocabulary being used, if applicable."
-	Value:			Version
 
 Element:		CodeableConcept
 Concept:		TBD
@@ -59,16 +59,27 @@ Value:			decimal
 		Description:	"Code for the unit of measure of the quantity."
 		Value:			Coding from http://hl7.org/fhir/ValueSet/ucum-units or Coding from CURRENCY
 
-Element:		UpperOrLowerBound
+Element:		UpperBound
 Concept:		TBD
 Based on:		Quantity
-Description:	"A measured or measurable amount with units that is known to be bounded by  the quantity represents."
-1..1			BoundingType
+Description:	"A measured or measurable amount with units that is known to be bounded from above by the quantity represented."
+1..1			UpperBoundType
 
-		Element:		BoundingType
+		Element:		UpperBoundType
 		Concept:		TBD
-		Description:	"Indicates the actual value is lt (<), lte (<=), gt (>), or gte (>=) the given value."
-		Value: 			Coding from http://hl7.org/fhir/quantity-comparator
+		Description:	"Indicates the actual value is lt (<) or lte (<=) the given value."
+		Value: 			code from UpperBoundTypeVS
+		
+Element:		LowerBound
+Concept:		TBD
+Based on:		Quantity
+Description:	"A measured or measurable amount with units that is known to be bounded from below by the quantity represented."
+1..1			LowerBoundType
+
+		Element:		LowerBoundType
+		Concept:		TBD
+		Description:	"Indicates the actual value is gt (>) or gte (>=) the given value."
+		Value: 			code from LowerBoundingTypeVS
 
 
 Element:		Statistic
@@ -82,6 +93,13 @@ Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mea
 		Description:	"The type of statistic that is represented by the value."
 		Value:			CodeableConcept from StatisticTypeVS
 
+Element:		Range
+Concept:		TBD
+Description:	"An interval defined by an upper and/or lower bound. One of the two bounds must be specified, and the lower bound must be less than the upper bound."
+0..1			LowerBound
+0..1			UpperBound
+
+		
 Element: 		Priority
 Concept:		MTH#C0549179
 Description:	"An ordinal numbered priority where 1=highest priority, 2=second highest priority, etc."
@@ -197,31 +215,15 @@ Description:	"A period of time defined by a start and end time, date, or year."
 
 Element:		Age
 Concept:		MTH#C0001779
+Based on:		Duration
 Description:	"How long something has existed (quantitative)."
-Value:			Duration
 
 Element:		AgeRange
 Concept:		TBD
-Description:	"A range of ages, quantitative."
-1..1			AgeRangeLowerBound
-0..1			AgeRangeUpperBound
-
-	Element:		AgeRangeLowerBound
-	Concept:		TBD
-	Description:	"The lower end of an age range."
-	Value:			Age
-	0..1			ExclusiveBound
-
-	Element:		AgeRangeUpperBound
-	Concept:		TBD
-	Description:	"The upper end of an age range."
-	Value:			Age
-	0..1			ExclusiveBound
-
-		Element:		ExclusiveBound
-		Concept:		TBD
-		Description:	"Whether a bound (upper or lower) is considered to be exclusive. If not given, the bounds are considered inclusive, so the range 10 to 20 would include 10 and 20."
-		Value:			boolean
+Based on:		Range
+Description:	"A quantitative range of ages. One of the two ages must be specified."
+0..1			LowerBound
+0..1			UpperBound
 
 Element:		AgeGroup
 Concept:		MTH#C0027362
@@ -310,9 +312,9 @@ Description:	"The date when something is to take effect."
 Value:			date
 
 Element:		EffectiveTimePeriod
+Based on:		TimePeriod
 Concept:		MTH#C2985763
 Description:	"The date and time span for which something is active, valid, or in force."
-Value:			TimePeriod
 
 Element:		OccurrenceTime
 Concept:		TBD
@@ -321,8 +323,9 @@ Value:			dateTime or TimePeriod
 
 Element:		PeriodOfUse
 Concept:		TBD
+Based on:		TimePeriod
 Description:	"A period of time when a device, medication, or other therapy is used."
-Value:			TimePeriod
+
 
 //---------------  Locations and Addresses -----------------
 
