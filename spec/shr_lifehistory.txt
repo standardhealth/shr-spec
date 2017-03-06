@@ -1,35 +1,35 @@
-Grammar:	DataElement 4.0
-Namespace:	shr.lifehistory
-Description:		"The SHR Lifehistory domain contains definitions related to the course of events in the life of the person of record that might impact health, health risks, or future treatment."
-Uses:				shr.core, shr.base, shr.actor, shr.observation
+Grammar:		DataElement 4.1
+Namespace:		shr.lifehistory
+Description:	"The SHR Lifehistory domain contains definitions related to the course of events in the life of the person of record that might impact health, health risks, or future treatment."
+Uses:			shr.core, shr.base, shr.actor, shr.observation, shr.environment
 
 EntryElement:	PrenatalExposure
-Based on:		ExposureToSubstanceStatement  // brings the temporal context into the picture
+Based on:		ExposureToSubstance  // brings the temporal context into the picture
 Concept:		MTH#C0871747
 Description:	"Fetal contact with a dangerous substance via the mother."
-				Substance with Coding from TeratogenVS
-0..1			ClinicallyRelevantTime.GeneralizedTemporalContext.GestationalTemporalContext // Using dot notation to get through the choices
+				Substance with CodeableConcept from TeratogenVS
+0..1			GeneralizedTemporalContext value is type GestationalTemporalContext
 				ObservationCode is MTH#C0871747
 
 EntryElement:	CongenitalAbnormalities
 Concept:		MTH#C0000768
 Based on:		Observation
-Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities"
-Value:			1..* Coding from CongenitalAbnormalitiesVS
+Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
+Value:			1..* CodeableConcept from CongenitalAbnormalitiesVS
 				ObservationCode is MTH#C0000768
 
 EntryElement:	EducationalAttainment
 Concept:		MTH#C0013658
 Based on:		Observation
 Description:	"Educational attainment or level of education of individuals."
-Value:			Coding from EducationalAttainmentVS
+Value:			CodeableConcept from EducationalAttainmentVS
 				ObservationCode is LNC#63504-5
 
 EntryElement:	Occupation
 Concept:		MTH#C0028811
 Based on:		Observation
-Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, tor example, accountant, programmer analyst, patient care associate, staff nurse, etc."
-Value:			Coding from http://www.bls.gov/soc/
+Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
+Value:			CodeableConcept from http://www.bls.gov/soc/
 				ObservationCode is LNC#74287-4
 
 
@@ -42,10 +42,10 @@ Description:	"Engagement in an activity or service for profit, wages, salary, or
 0..1			Employer
 0..1			OccurrenceTime
 
-	Element:			EmploymentStatus
+	Element:		EmploymentStatus
 	Concept:		MTH#C0242271
 	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
-	Value:			Coding from EmploymentStatusVS
+	Value:			CodeableConcept from EmploymentStatusVS
 
 	Element:		Employer
 	Concept:		MTH#C1274022
@@ -58,10 +58,10 @@ Description:	"Engagement in an activity or service for profit, wages, salary, or
 
 EntryElement:	MilitaryService
 Concept:		MTH#C3714797
-Based on:		Observation
-Description:	"History of service in the US military"
-Value:			MilitaryStatus
+Based on:		Panel
+Description:	"History of service in the US military."
 1..1			ObservationCode is MTH#C3714797
+1..1			MilitaryStatus
 0..1			TBD "MilitaryRank"
 0..1 			MilitaryServiceDischargeStatus
 0..1			MilitaryBranch
@@ -70,30 +70,35 @@ Value:			MilitaryStatus
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Description:	"The current connection to the US military"
-	Value:			Coding from MilitaryStatusVS
+	Based on:		Observation
+	Description:	"The current connection to the US military."
+	Value:			CodeableConcept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
 	Concept:		TBD
-	Description:	"How the subject was formally discharged from the US Military"
-	Value:			Coding from MilitaryServiceDischargeStatusVS
+	Description:	"How the subject was formally discharged from the US Military."
+	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Description:	"The branch of the US military that the subject has served"
-	Value:			Coding from USMilitaryBranchVS
+	Description:	"The branch of the US military that the subject has served."
+	Value:			CodeableConcept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
 	Concept:		TBD
 	Description:	"The time period of US military service."
-	Value:			Coding from MilitaryServiceEraVA
+	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
 	Concept:		TBD
-	Description:	"Percentage disability resulting from US Military Service"
+	Description:	"Percentage disability resulting from US Military Service."
 	Value:			Percentage
 
 
-
+EntryElement:	Travel
+Concept:		MTH#C0040802
+Based on:		HistoryObservation
+Description:	"Trip to a foreign country or an area, particularly when a health risk is involved."
+				ObservationCode is MTH#C0040802
 
 

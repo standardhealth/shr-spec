@@ -1,119 +1,93 @@
-Grammar:	DataElement 4.0
+Grammar:	DataElement 4.1
 Namespace:	shr.lab
 Description:		"The SHR Lab domain contains definitions for elements related to laboratory measurements."
-Uses:				shr.core, shr.base, shr.observation, shr.actor
+Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device
 
 CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:     LNC = http://loinc.org
 
 
-Element:		TestCode
-Based on:		ObservationCode
-Concept:		TBD
-Description:	"The code for a laboratory, radiologic, and other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
-Value:			Coding from LNC
-
-
-//-------------- Base for Test Requests and Results(diagnostic measurements, tests, vital signs, radiology, etc.) -------------
-
-EntryElement:	TestRequest
-Concept:		MTH#C1273874
-Description:	"A record of a request for a diagnostic investigation service to be performed. The requested test can be any laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
-Value: 			TestCode
-0..1 			SpecimenType
-0..1			TestMethod
+Element:		Test
+Concept:		MTH#C0456984
+Based on:		Observation
+Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
+1..1 			ObservationCode is type TestCode
+0..1			ObservationMethod is type TestMethod
 0..1 			BodySite
 0..1 			BodyPosition
-0..*			Qualifier
-0..1 			TBD "Device"
-1..1			RequestStatus // orders with 'draft' or 'entered in error' status do not appear in the SHR
-0..1			TestTiming
-0..1 			PriorityOfRequest
-0..*			(RequestedPerformerType or RequestedPerformer)
-0..1			ReasonForRequest
-0..1			PerformerInstructions
-0..1			PatientInstructions
+0..1 			Device
+0..1			TBD "Specimen"
+0..1 			Interpretation
+0..1			ReferenceRange
+0..1			ChangeFlag
+0..1			TestRequest  // optional reference to the request for this test
+
+		Element:		TestCode
+		Based on:		ObservationCode
+		Concept:		TBD
+		Description:	"The code for a laboratory, radiologic, and other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-codes
 
 		Element:		SpecimenType
 		Concept:		TBD
-		Description:	"Kind of material that forms the specimen"
-		Value:			Coding from http://hl7.org/fhir/ValueSet/v2-0487
+		Description:	"Kind of material that forms the specimen."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v2-0487
 
 		Element:		TestMethod
 		Concept:		MTH#C1299991
-		Description:	"The technique used to carry out a procedure, if not implicit in the test code"
-		Value:			Coding
+		Based on:		ObservationMethod
+		Description:	"The technique used to carry out a procedure, if not implicit in the test code."
+		Value:			CodeableConcept
 
-		Element:		Qualifier
-		Concept:		MTH#C1443279
-		Description:	"A description of the conditions or context of a test, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
-		Value:			Coding
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a measurement."
+		Value:			CodeableConcept from TestInterpretationVS
 
-		Element:		RequestStatus
-		Concept:		TBD
-		Description:	"The extent to which the ordering process has progressed, for this order."
-		Value:			Coding from TestStatusVS
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			TBD "Range"   // TODO: align this with FHIR
 
-		Element:		TestTiming
-		Concept:		TBD
-		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			(dateTime or TimePeriod or TBD "Timing")
-
-		Element:		PriorityOfRequest
-		Concept:		TBD
-		Description:	"Urgency level for which results must be reported to the requestor or responsible individual"
-		Value:			Coding from RequestPriorityVS
-
-		Element:		RequestedPerformerType
-		Concept:		TBD
-		Description:	"What type of actor should carry out the testing"
-		Value:			TBD
-
-		Element:		RequestedPerformer
-		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver"
-		Value:			Person or Organization // How can we refer to the Person of Record here? The organ or egg donor?
-
-		Element:		ReasonForRequest
-		Concept:		TBD
-		Description:	"The justification for this order, which may be because the subject is at risk for a disease, as part of a diagnostic process, due to a symptom or problem, a part of a care plan, or periodic monitoring"
-		Value:			Coding from TBD "ReasonForRequestVS"
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
+		Element:		ChangeFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			CodeableConcept from ChangeFlagVS
 
 
-// Common laboratory tests
+EntryElement:	TestRequest   // TODO: how to request something NOT be done? (as opposed something not requested)
+Concept:		MTH#C1273874
+Based on:		Request
+Description:	"A record of a request (order) for a test to be performed."
+1..1 			ActionCode is type TestCode
+0..1 			BodySite
+0..1 			TBD "Specimen" or SpecimenType
+				RequestStatus with code from http://hl7.org/fhir/ValueSet/procedure-request-status
 
+
+// Examples of lab tests and results
+
+EntryElement:	HIVScreeningTest
+Based on:		Test
+Description:	"The result of an HIV Screening Test."
+Value:			CodeableConcept from HIVScreeningTestResultVS
+1..1			TestCode with CodeableConcept from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+
+EntryElement:	HIVSupplementalTest
+Based on:		Test
+Concept:		TBD
+Description:	"The result of a supplement HIV test, following up an initial screening."
+Value:			CodeableConcept from HIVSupplementalTestResultVS
+1..1			TestCode with CodeableConcept from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVScreeningTestRequest
-Description:	"A request for a rapid HIV screening test"
+Description:	"A request for a rapid HIV screening test."
 Based on:		TestRequest
-Value:			TestCode with Coding from HIVScreeningTestCodeVS
-
-EntryElement:	HIVScreeningTestResult
-Based on:		TestResult
-Description:	"The result of an HIV Screening Test"
-Value:			Coding from HIVScreeningTestResultVS
-1..1			ObservationCode with Coding from HIVScreeningTestCodeVS
+1..1			TestCode with CodeableConcept from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
+Description:	"A request for a confirmatory or additional test for HIV infection."
 Based on:		TestRequest
-Value:			TestCode with Coding from HIVSupplementalTestCodeVS
-
-EntryElement:	HIVSupplementalTestResult
-Based on:		TestResult
-Concept:		TBD
-Description:	"The result of a supplement HIV test, following up an initial screening"
-Value:			Coding from HIVSupplementalTestResultVS
-				ObservationCode with Coding from HIVSupplementalTestCodeVS
+1..1			TestCode with CodeableConcept from HIVSupplementalTestCodeVS
 
 
-// potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"

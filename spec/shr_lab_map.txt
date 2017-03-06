@@ -1,15 +1,38 @@
-Grammar:	Map 4.0
+Grammar:	Map 4.1
 Namespace:	shr.lab
 Target:		FHIR_STU_3
 
-TestRequest maps to DiagnosticRequest:
-	Entry.Meta.Author maps to requestor
+
+
+Test:
+// Test is based on SHR Observation and therefore maps to FHIR Observation
+// The following are additional maps
+	BodySite maps to bodySite
+	BodyPosition maps to http://hl7.org/fhir/StructureDefinition/observation-bodyPosition
+	Device maps to device
+	TBD "Specimen" maps to specimen
+	Interpretation maps to interpretation
+	ReferenceRange maps to referenceRange
+	ChangeFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
+	// TestRequest maps to basedOn // In nightly build, but not in FHIR 1.8 (Jan 2017)
+
+
+TestRequest maps to ProcedureRequest:
+	Entry.Author maps to orderer
 	Entry.FocalSubject maps to subject
-	Entry.Meta.AssociatedEncounter maps to context
-	Entry.Meta.DateEntered maps to authoredOn
+	Entry.AssociatedEncounter maps to encounter
+	Reason maps to reason[x].CodeableConcept
+	OccurrenceTime maps to orderedOn   // could potentially map Entry.DateEntered to authoredOn
 	TestCode maps to code
-	TBD "Device" maps to device
+	// RequestNotToPerformActionModifier maps to doNotPerform // In nightly build, but not in FHIR 1.8 (Jan 2017)
 	RequestStatus maps to status
-	TestTiming maps to occurrence
+	RequestedPerformanceTime maps to scheduled[x]
 	PriorityOfRequest maps to priority
-	ReasonForRequest maps to reasonCode
+	// RequestedPerformerType maps to performerType // In nightly build, but not in FHIR 1.8 (Jan 2017)
+	RequestedPerformer maps to performer
+	// PerformerInstructions
+	// PatientInstructions
+	BodySite maps to bodySite
+	TBD "Specimen" maps to specimen
+
+

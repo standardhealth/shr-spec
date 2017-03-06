@@ -1,28 +1,28 @@
-Grammar:	Map 4.0
+Grammar:	Map 4.1
 Namespace:	shr.observation
 Target:		FHIR_STU_3
 
+Panel maps to DiagnosticReport:
+	Entry.FocalSubject maps to subject
+	Entry.AssociatedEncounter maps to encounter
+	Entry.OriginalCreationDate maps to issued
+	Value maps to codedDiagnosis
+	Observation maps to result
+	TBD "Specimen" maps to specimen
+	Interpretation maps to conclusion
+	ObservationCategory maps to category
 
 Observation maps to Observation:
-	Entry.Meta.Author maps to performer
 	Entry.FocalSubject maps to subject
-	Entry.Meta.AssociatedEncounter maps to encounter
-	Entry.Meta.DateEntered maps to issued
+	Entry.AssociatedEncounter maps to encounter
+	Entry.OriginalCreationDate maps to issued
 	ObservationCode maps to code
-	ObservationStatus maps to status
 	ObservationCategory maps to category
-	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[TimePeriod]
-	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[dateTime]
+	ObservationStatus maps to status
+	ObservationMethod maps to method
+	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
+	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
+	Participant maps to performer
 
-TestResult:
-// TestResult is based on SHR Observation and therefore maps to FHIR Observation
-// The following are additional maps
-	BodySite maps to bodySite
-	BodyPosition maps to http://build.fhir.org/extension-observation-bodyposition.html
-	TBD "Device" maps to device
-	TBD "Specimen" maps to specimen
-	ParticipationStatement maps to performer   // override of Author mapping to performer
-	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime maps to effective
-	ChangeFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
-	Interpretation maps to interpretation
-	ReferenceRange maps to referenceRange
+CodeableConceptObservation:
+	Value maps to value[x].CodeableConcept

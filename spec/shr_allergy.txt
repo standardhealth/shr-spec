@@ -1,7 +1,7 @@
-Grammar:	DataElement 4.0
-Namespace:	shr.allergy
-Description:		"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
-Uses:		shr.core, shr.base, shr.adverse, shr.problem
+Grammar:		DataElement 4.1
+Namespace:		shr.allergy
+Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
+Uses:			shr.core, shr.base, shr.adverse, shr.problem
 
 Path:     		FHIR = http://hl7.org/fhir/ValueSet
 CodeSystem:     SCT = http://snomed.info/sct
@@ -11,133 +11,128 @@ CodeSystem:		AIT = http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 
 //--- Statement about a risk of adverse reaction to a substance
 
-EntryElement:	AdverseReactionRiskStatement
+
+EntryElement:	AllergyIntolerance
 Concept:		SCT#420134006 "Propensity to adverse reactions"
-Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances. Can be used to record that a substance does not pose an elevated risk to the subject (ElevatedRiskExists = false)"
+Description:	"A statement pertaining to an individual's allergies and intolerances to substances or classes of substances. Can be used to record that a substance does not pose an elevated risk to the subject (NonOccurrenceModifier = true)."
 0..1 			AllergenIrritant
 0..*			SubstanceCategory
-1..1			ElevatedRiskExists
-1..1			Verified
+1..1			NonOccurrenceModifier
+1..1			AllergyVerificationStatus
 0..1			AdverseReactionType
 0..1			Criticality
 0..*			Manifestation
-0..1			Onset    //  Age or date or dateTime
+0..1			Onset
 0..1			Abatement
 0..1			MostRecentOccurrence
-0..*			AdverseReactionStatement
+0..*			AdverseReaction
 
 		Element:		AllergenIrritant
 		Concept:		SCT#105590001
-		Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc. that may be implicated as sources of intolerances and allergies."
-		Value: 			Coding from AllergenIrritantVS  // a list of common allergens and irritants might be substituted
+		Description:	"A material, mixture, class or category of substance, including drugs, foods, environmental agents, etc. that may be implicated as a cause of intolerances and allergies."
+		Value: 			CodeableConcept from AllergenIrritantVS  // a list of common allergens and irritants might be substituted
 
 		Element:		SubstanceCategory
 		Concept:		TBD
-		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. Difficult-to-classify substances can be leave this empty or choose the most typical category."
-		Value:			Coding from FHIR/allergy-intolerance-category
+		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
+		Value:			code from FHIR/allergy-intolerance-category
 
-		Element:		ElevatedRiskExists
-		Concept:		TBD
-		Description:	"Whether the substance poses an elevated risk to the subject"
-		Value:			Coding from ThreeValueLogicVS 
-		
-		Element:		Verified
+		Element:		AllergyVerificationStatus
 		Concept:		TBD
 		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			Coding from VerifiedVS
+		Value:			code from AllergyVerificationStatusVS   // contains two codes from the required FHIR value set (valid profile restriction)
 
 		Element:		AdverseReactionType
 		Concept:		TBD
 		Description:	"Identification of the underlying physiological mechanism for a Reaction Risk."
-		Value:			Coding from FHIR/allergy-intolerance-type
+		Value:			code from FHIR/allergy-intolerance-type
 
 		Element:		MostRecentOccurrence
 		Concept:		TBD
-		Description:	"The time of the last or latest of a series of events"
+		Description:	"The time of the last or latest of a series of events."
 		Value:			OccurrenceTime
 
-EntryElement:	DrugAllergyStatement
-Based on:		AdverseReactionRiskStatement
-Concept:		MTH#C0013182
-Description:	"An immune or biochemical adverse reaction to a medication"
-1..1 			AllergenIrritant with Coding from DrugAllergyVS
-1..1			SubstanceCategory is AIC#drug
-				ElevatedRiskExists is #true
-				AdverseReactionType is AIT#allergy		
 
-	
-EntryElement:	FoodAllergyStatement
-Based on:		AdverseReactionRiskStatement
-Concept:		MTH#C0016470
-Description:	"An immune or biochemical adverse reaction to a food substance"
-1..1 			AllergenIrritant with Coding from FoodSubstanceVS
-1..1			SubstanceCategory is AIC#food
-				ElevatedRiskExists is #true
+EntryElement:	DrugAllergy
+Based on:		AllergyIntolerance
+Concept:		MTH#C0013182
+Description:	"An immune or biochemical adverse reaction to a medication."
+1..1 			AllergenIrritant with CodeableConcept from DrugIngredientVS
+1..1			SubstanceCategory is AIC#drug
 				AdverseReactionType is AIT#allergy
 
-				
+
+EntryElement:	FoodAllergy
+Based on:		AllergyIntolerance
+Concept:		MTH#C0016470
+Description:	"An immune or biochemical adverse reaction to a food substance."
+1..1 			AllergenIrritant with CodeableConcept from FoodSubstanceVS
+1..1			SubstanceCategory is AIC#food
+				AdverseReactionType is AIT#allergy
+
+
 EntryElement:	NoKnownAllergy
-Based on:		AdverseReactionRiskStatement
+Based on:		AllergyIntolerance
 Concept:		MTH#C0262580
-Description:	"The subject has no known allergies to drugs, foods, biologics, or environmental factors"
+Description:	"The subject has no known allergies to drugs, foods, biologics, or environmental factors."
 0..0			AllergenIrritant  // no specific allergen or irritant
 				SubstanceCategory includes AIC#food includes AIC#medication includes AIC#biologic includes AIC#environment
-				ElevatedRiskExists is #false
-				Verified is #unconfirmed  // there is no way to test every single substance
+1..1			NonOccurrenceModifier is true
+				AllergyVerificationStatus is #unconfirmed  // there is no way to test every single substance
 				AdverseReactionType is AIT#allergy
 0..0			Criticality
 0..0			Manifestation
 0..0			Onset
 0..0			MostRecentOccurrence
-0..0			AdverseReactionStatement
+0..0			AdverseReaction
 
 
 EntryElement:	NoKnownFoodAllergy
-Based on:		AdverseReactionRiskStatement
+Based on:		AllergyIntolerance
 Concept:		MTH#C1997970
-Description:	"The subject has no known allergies to any foods"
+Description:	"The subject has no known allergies to any foods."
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#food  // Chris -- should this be "includes" even though there is just one value included?
-				ElevatedRiskExists is #false
-				Verified is #unconfirmed  // since there is no way to know about every single food
+				NonOccurrenceModifier is true
+				AllergyVerificationStatus is #unconfirmed  // since there is no way to know about every single food
 				AdverseReactionType is AIT#allergy
 0..0			Criticality
 0..0			Manifestation
 0..0			Onset
 0..0			MostRecentOccurrence
-0..0			AdverseReactionStatement
+0..0			AdverseReaction
 
 
 EntryElement:	NoKnownDrugAllergy
-Based on:		AdverseReactionRiskStatement
+Based on:		AllergyIntolerance
 Concept:		MTH#C0262581
 Description:	"The subject has no known allergies to any medications."
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#drug
-				ElevatedRiskExists is #false
-				Verified is #unconfirmed  // since there is no way to know about every single drug
+				NonOccurrenceModifier is true
+				AllergyVerificationStatus is #unconfirmed  // since there is no way to know about every single drug
 				AdverseReactionType is AIT#allergy
 0..0			Criticality
 0..0			Manifestation
 0..0			Onset
 0..0			MostRecentOccurrence
-0..0			AdverseReactionStatement
+0..0			AdverseReaction
 
 
 EntryElement:	NoKnownEnvironmentalAllergy
-Based on:		AdverseReactionRiskStatement
+Based on:		AllergyIntolerance
 Concept:		MTH#C1998290
 Description:	"The subject has no known allergies to any environmental factors."
 0..0			AllergenIrritant  // no specific allergen or irritant
 1..1			SubstanceCategory is AIC#environment
-				ElevatedRiskExists is #false
-				Verified is #unconfirmed  // since there is no way to know about every single environmental agent
+				NonOccurrenceModifier is true
+				AllergyVerificationStatus is #unconfirmed  // since there is no way to know about every single environmental agent
 				AdverseReactionType is AIT#allergy
 0..0			Criticality
 0..0			Manifestation
 0..0			Onset
 0..0			MostRecentOccurrence
-0..0			AdverseReactionStatement
+0..0			AdverseReaction
 
 
 
