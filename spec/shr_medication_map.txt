@@ -2,6 +2,9 @@ Grammar:	Map 4.1
 Namespace:	shr.medication
 Target:		FHIR_STU_3
 
+MaximumDosePerTimePeriod maps to Ratio:
+	AmountOfMedication maps to numerator
+	Duration maps to denominator
 
 Medication maps to Medication:
 	Value maps to code
@@ -20,6 +23,7 @@ MedicationUse maps to MedicationStatement:
 	Reason maps to reasonForUseCodeableConcept
 	MedicationNotUsedModifier maps to notTaken
 	MedicationNotUsedModifier.Reason maps to reasonNotTaken
+	constrain dosage to 0..1
 	Dosage.AmountPerDose[Quantity] maps to dosage.dose[x].SimpleQuantity
 	Dosage.AmountPerDose[TBD "Range"] maps to dosage.dose[x].Range
 	Dosage.TimingOfDoses maps to dosage.timing
@@ -38,10 +42,12 @@ MedicationPrescription maps to MedicationRequest:
 	RequestedPerformanceTime maps to dispenseRequest.validityPeriod
 	// PriorityOfRequest maps to priority // In nightly build, but not in FHIR 1.8 (Jan 2017)
 	RequestedPerformer[Organization] maps to dispenseRequest.performer
+	constrain note to 0..1
 	PerformerInstructions maps to note.text
 	NumberOfRepeatsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
 	QuantityPerDispense maps to dispenseRequest.quantity
 	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	constrain dosageInstruction to 0..1
 	Dosage.AmountPerDose[Quantity] maps to dosageInstruction.dose[x].SimpleQuantity
 	Dosage.AmountPerDose[TBD "Range"] maps to dosageInstruction.dose[x].Range
 	Dosage.TimingOfDoses maps to dosageInstruction.timing
