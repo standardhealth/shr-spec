@@ -64,17 +64,16 @@ EntryElement:	MedicationUse
 Concept:		TBD
 Description:	"Report of a medication used (or not used). Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 1..1			Medication
-0..1			MedicationNotUsedModifier
+1..1			MedicationWasTaken
 1..1 			Reason
 0..1			Dosage		// do not include if dosage was not known
 0..1			Adherence
 1..1			PeriodOfUse
 
-	Element:		MedicationNotUsedModifier
+	Element:		MedicationWasTaken
 	Concept:		TBD
-	Based on:		NonOccurrenceModifier
-	Description:	"True, if the medication was not prescribed, administered, or used by the subject."
-					Reason with CodeableConcept from ReasonMedicationNotUsedVS
+	Description:	"Indicator of the certainty of whether the medication was taken by the patient."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/medication-statement-taken
 
 	Element:		Dosage
 	Concept:		MTH#C0178602
@@ -159,7 +158,7 @@ Concept:		TBD
 Based on:		MedicationUse
 Description:	"A record of a medication NOT administered. Recorded when deviating from the care plan."
 1..1			Medication
-1..1			MedicationNotUsedModifier is true
+1..1			MedicationWasTaken is #n "no"
 0..0			Dosage
 0..0			Adherence
 

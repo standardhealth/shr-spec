@@ -1,0 +1,171 @@
+Grammar:		DataElement 4.1
+Namespace:		shr.oncology
+Description:	"SHR implementation of ASCO requirements."
+Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+
+EntryElement:	BreastCancerStage
+Concept:		LNC#59522-3
+Based on:		CodeableConceptObservation
+Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
+Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
+1..1			BreastTumorCategory    // component
+1..1			BreastNodeCategory 
+1..1			BreastMetastatisCategory
+0..1			PostSurgeryIndicator    // qualifier
+
+	EntryElement:	BreastTumorCategory	
+	Concept:		LNC#59528-0 
+	Based on:		CodeableConceptObservation
+	Description:	"The TNM tumor category based on the tumor size (greatest dimension), based on criteria from the American Joint Committee on Cancer. See Table 152 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
+	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.13 
+	
+	EntryElement:	BreastNodeCategory	
+	Concept:		LNC#59525-6
+	Based on:		CodeableConceptObservation
+	Description:	"The presence of metastases in regional lymph nodes. TNM node category for staging derived from the American Joint Committee on Cancer. See Table 147 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
+	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.14
+	
+	Element:		BreastMetastatisCategory
+	Concept:		LNC#59522-3
+	Based on:		CodeableConceptObservation
+	Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body. See Table 144 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
+	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.25 
+	
+	Element:		PostSurgeryIndicator
+	Concept:		TBD
+	Description:	"Indicator, when true, indicates the stage is reflects the tumor size extent and location after surgical removal. If missing, it is assumed the staging is not post-surgical."
+	Value:			boolean
+
+	
+EntryElement:	MetastaticBreastCancerDiagnosis 
+Concept:		MTH#C1446377
+Based on:		Problem
+Description:	"A diagnosis of Stage IV breast cancer, cancer originating in the breast that has spread to other organs of the body, most often the bones, lungs, liver, or brain."
+Value:			CodeableConcept from MetastaticBreastCancerDiagnosisVS
+				ProblemCategory includes #disease
+1..1			GradeOrStage is SCT#2640006 "Clinical stage IV"
+1..1			BodySite is type PrimaryTumorBodySite
+0..0			NonOccurrenceModifier
+				IncludeOnProblemList is true
+				
+			Element: 		PrimaryTumorBodySite
+			Based on:		BodySite
+			Concept:		TBD
+			Description:	"The body site of the primary tumor."
+			
+EntryElement:	BreastCancerReceptorStatus
+Based on:		Panel
+Concept:		TBD
+Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
+1..1			EstrogenReceptorStatus
+1..1			ProgesteroneReceptorStatus
+1..1			HumanEpiduralGrowthFactorReceptor2Status
+			
+			EntryElement:	EstrogenReceptorStatus
+			Based on:	CodeableConceptObservation
+			Concept:	TBD
+			Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+			Value:		CodeableConcept from PositiveNegativeVS
+			//0..1		ReceptorPositivity
+			//0..1		ReceptorProportionScore
+			//0..1		ReceptorIntensityScore
+			//0..1		ReceptorTotalScore
+			
+			EntryElement:	ProgesteroneReceptorStatus
+			Based on:		CodeableConceptObservation
+			Concept:		TBD
+			Description:	"Progesterone receptor is expressed in 65% of breast carcinomas.13 PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+			Value:		CodeableConcept from PositiveNegativeVS
+			//0..1		ReceptorPositivity
+			//0..1		ReceptorProportionScore
+			//0..1		ReceptorIntensityScore
+			//0..1		ReceptorTotalScore
+			
+			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
+			Based on:		CodeableConceptObservation
+			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+			Value:		CodeableConcept from PositiveNegativeVS
+
+
+
+			
+/*  WORK in PROGRESS
+
+EntryElement: 	TumorGrossMeasurements 
+Desciption:		"See CDISC Table 3.3.2"
+Based on:		Panel
+
+
+		EntryElement:	TumorSize
+		Description:	"The longest diameter of the primary tumor."
+		Based on:		QuantitativeObservation
+		Value:			Quantity (mm)
+		0..1			GreatestPerpendicularTumorSize
+
+		
+		EntryElement:	SizeOfGrossTumorBed
+		Description:	""
+		Concept:		TBD
+		Based on:		QuantitativeObservation
+		
+		
+		Element: 	TumorMargins (clean (negative) or positive)
+
+		Element:	Cellularity
+		Description:	"Percentage of cells in the same that are cancerous"
+		
+		Element:	PercentageInSituCarcinoma
+		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+		
+		Element:	LargestLymphNodeSize
+		Description:	""
+		Value: 		Quantity (mm)
+
+FHIR Genomics:
+https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
+https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
+https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
+https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
+		
+		
+Element:	BRCA1Mutation
+Value:		CodeableConcept from PositiveNegativeVS
+
+Element:	BRCA2Mutation
+Value:		CodeableConcept from PositiveNegativeVS
+
+
+
+
+		Element:	Biomarkers
+		Based on:	Panel
+		
+			EntryElement: 	Ki-67LabelingIndex
+			Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells. "
+			Value:		Percentage
+			ReferenceRange: Low <10, Intermediate 10-20, >20 High
+			
+			EntryElement:	S-PhaseFraction
+			Description: "The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells."	
+			Value:		Percentage
+			ReferenceRange: Low <6, Intermediate 6-10, >10 High
+			
+			EntryElement:	LuminalA
+			
+			EntryElement:	LuminalB
+			
+		Element:	NottinghamGrade
+
+		Element:	HistologicType
+		
+		Element:	MicroscopicAppearance (poorly differentiated or well differentiated)
+
+
+		
+
+
+*/
