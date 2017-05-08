@@ -8,10 +8,11 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 EntryElement:	BreastCancerStage
-Concept:		LNC#59522-3
+Concept:		LNC#21908-9
 Based on:		CodeableConceptObservation
 Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
+				ObservationCode is LNC#21908-9
 1..1			BreastTumorCategory    // component
 1..1			BreastNodeCategory 
 1..1			BreastMetastatisCategory
@@ -22,18 +23,21 @@ Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12
 	Based on:		CodeableConceptObservation
 	Description:	"The TNM tumor category based on the tumor size (greatest dimension), based on criteria from the American Joint Committee on Cancer. See Table 152 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.13 
+					ObservationCode is LNC#59528-0
 	
 	EntryElement:	BreastNodeCategory	
 	Concept:		LNC#59525-6
 	Based on:		CodeableConceptObservation
 	Description:	"The presence of metastases in regional lymph nodes. TNM node category for staging derived from the American Joint Committee on Cancer. See Table 147 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.14
+					ObservationCode is LNC#59525-6
 	
 	Element:		BreastMetastatisCategory
 	Concept:		LNC#59522-3
 	Based on:		CodeableConceptObservation
 	Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body. See Table 144 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 	Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.25 
+					ObservationCode is LNC#59522-3
 	
 	Element:		PostSurgeryIndicator
 	Concept:		TBD
@@ -57,39 +61,71 @@ Value:			CodeableConcept from MetastaticBreastCancerDiagnosisVS
 			Concept:		TBD
 			Description:	"The body site of the primary tumor."
 			
+Element:		ReceptorStatusObservation   // abstract parent class. Do we need a new keyword?
+Concept:		MTH#C0449443
+Based on:		CodeableConceptObservation
+Description:	"Refers to the presence or absence of specific receptor molecules on the surface of a cells in a specimen."
+Value:			CodeableConcept from PositiveNegativeVS
+1..1			Receptor
+0..1			ReceptorPositivityPercentage
+0..1			ReceptorProportionScore
+0..1			ReceptorIntensityScore
+0..1			ReceptorTotalScore
+
+		Element:		Receptor
+		Concept:		MTH#C0597357 //or SCT#116647005
+		Description:	"A protein located on the cell surface, or in the cytoplasm, that binds to a specific signaling factor, such as a hormone, antigen, or neurotransmitter, causing a conformational and functional change in the receptor molecule. The ligand-bound receptor then alters its interaction with target molecules, which leads to changes in cellular physiology through modification of the activity of one or more signal transduction pathways."
+		Value:			CodeableConcept from ReceptorVS
+
+		Element:		ReceptorPositivityPercentage
+		Concept:		TBD
+		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
+		Value:			Percentage
+		
+		Element:		ReceptorProportionScore
+		Concept:		TBD
+		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
+		Value:			unsignedInt  // limit to maximum value of 5
+
+		Element:		ReceptorIntensityScore
+		Concept:		TBD
+		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
+		Value:			unsignedInt  // limit to max of 3
+		
+		Element:		ReceptorTotalScore
+		Concept:		TBD
+		Description:	"Part of the Allred scoring, the total of proportion and intensity scores, from 0 to 8."
+		Value:			unsignedInt // limit to max of 8
+
+			
 EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
 1..1			EstrogenReceptorStatus
 1..1			ProgesteroneReceptorStatus
-1..1			HumanEpiduralGrowthFactorReceptor2Status
+1..1			HER2Status
 			
 			EntryElement:	EstrogenReceptorStatus
-			Based on:	CodeableConceptObservation
-			Concept:	TBD
+			Based on:		ReceptorStatusObservation
+			Concept:		TBD
 			Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-			Value:		CodeableConcept from PositiveNegativeVS
-			//0..1		ReceptorPositivity
-			//0..1		ReceptorProportionScore
-			//0..1		ReceptorIntensityScore
-			//0..1		ReceptorTotalScore
-			
+							ObservationCode is TBD#TBD
+							Receptor is SCT#23307004
+
 			EntryElement:	ProgesteroneReceptorStatus
-			Based on:		CodeableConceptObservation
+			Based on:		ReceptorStatusObservation
 			Concept:		TBD
 			Description:	"Progesterone receptor is expressed in 65% of breast carcinomas.13 PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-			Value:		CodeableConcept from PositiveNegativeVS
-			//0..1		ReceptorPositivity
-			//0..1		ReceptorProportionScore
-			//0..1		ReceptorIntensityScore
-			//0..1		ReceptorTotalScore
+							ObservationCode is TBD#TBD
+							Receptor is SCT#61078009
 			
-			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
-			Based on:		CodeableConceptObservation
+			EntryElement:	HER2Status
+			Based on:		ReceptorStatusObservation
+			Concept:		TBD
 			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-			Value:		CodeableConcept from PositiveNegativeVS
-
+							ObservationCode is TBD#TBD
+							Receptor is TBD#TBD
 
 
 			
