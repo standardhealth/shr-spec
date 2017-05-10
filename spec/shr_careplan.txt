@@ -1,0 +1,93 @@
+Grammar:	ValueSet 4.0
+Namespace:	shr.careplan
+
+Uses:			shr.core, shr.problem
+
+/*
+
+Element:		Intervention
+Concept:		TBD
+Description:	"An action taken to address a undesired health state, behavior, risk, or goal."
+1..1			InterventionStatus
+0..*			ReasonToDo
+0..*			ReasonNotToDo
+0..*			ReasonHalted
+0..1			DoNotDoModifer
+0..*			Participant
+
+	Element:		InterventionStatus
+	Concept:		TBD
+	Description:	"The lifecycle or workflow state of a executable action or process."
+	Value:			CodeableConcept from InterventionStatusVS
+
+	Element:		ReasonToDo
+	Concept:		MTH#C3146298
+	Description:	"A situation which makes a particular treatment or procedure advisable."
+	Value:			CodeableConcept or Problem or Risk or Goal
+	
+	Element:		ReasonNotToDo
+	Concept:		TBD
+	Description:	"The explanation on why the intervention should not be done, for example, a contraindication."
+	Value:			CodeableConcept or Risk or Problem or Behavior or MedicationUse //SubstanceUse? Environment? Genetic marker?
+	
+	Element:		ReasonHalted
+	Concept:		TBD
+	Description:	"The explanation on why the intervention was halted or otherwise interrupted."
+	Value:			CodeableConcept or Risk or Condition
+	
+	Element:		DoNotDoModifier
+	Concept:		TBD
+	Description:	"If true, indicates the intervention described should not be done. In this case, the intervention status should be rejected."
+	Value:			boolean
+
+	
+	
+EntryElement:	Goal
+Concept:		MTH#C0018017
+Description:	"A broad statement about what should be accomplished. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities."
+0..1			Title
+0..1			Description
+1..1			GoalStatus   // has the same value set as InterventionStatus
+0..1			ProjectedAchieveDate
+0..1			ActualAchieveDate
+0..1			DeferredDate
+0..*			Objective
+
+
+	Element:		Objective
+	Concept:		TBD
+	Description:	"An expected or desired achievement that is well-defined, specific, measurable, and derived from one or more goal(s)."
+	Based on:		Goal
+	0..0			Objective  // do not allow sub-objectives
+	1..*			TBD "Target"
+	
+
+
+
+
+EntryElement:	Careplan
+Concept:		MTH#C0178916
+Description:	"Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions."
+0..1			Title
+0..1			Description
+1..1			ActionStatus
+0..*			CareplanCategory
+0..1			EffectiveTimePeriod
+0..*			Author
+0..*			Participant
+1..*			Goal
+1..*			Activity
+
+
+		Element:		CareplanStatus
+		Concept:		TBD
+		Description:	"A code specifying the state of the care plan."
+		Value:			code from http://hl7.org/fhir/ValueSet/event-status
+
+		Element:		CareplanCategory
+		Concept:		TBD
+		Description:	"Identifies what kind of plan this is to support differentiation between multiple co-existing plans, e.g. Home health, psychiatric, asthma, disease management, wellness, etc."
+		Value:			CodeableConcept
+		
+*/
+

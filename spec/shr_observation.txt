@@ -19,6 +19,8 @@ Description:	"An act that is intended to result in new information about a subje
 0..1			ObservationMethod
 0..1			ClinicallyRelevantTime
 0..*			Participant 	// TODO: add to metadata?
+0..*			Setting
+0..*			Location
 
 		Element:		ObservationCode
 		Based on:		ActionCode
@@ -68,16 +70,51 @@ Concept:		TBD
 Description:	"An observation whose value is a codeable concept"
 Value:			CodeableConcept
 
+EntryElement:	QuantitativeObservation
+Based on:		Observation
+Concept:		TBD
+Description:	"An observation whose value is a quantity"
+Value:			Quantity
+
+EntryElement:	BooleanObservation
+Based on:		Observation
+Concept:		TBD
+Description:	"An observation whose value is a quantity"
+Value:			boolean
 
 EntryElement:	Panel
 Concept:		TBD
-Description:	"A group of related observations, usually taken together. Typically the ObservationCategory and ObservationReason are not given for panel observations, but rather given at the level of the panel itself."
-Value:			0..* CodeableConcept
-0..*			Observation
-0..1			TBD "Specimen"
-0..1			ObservationCategory
+Description:	"A group of related observations, usually (but not always) taken together, whose result is captured in a report. Typically the ObservationCategory and ObservationReason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. Typically, the panel and all its sub-observations share the same metadata (provenance)."
+1..1			PanelCode
+0..1			ServiceCategory
 0..1			ObservationReason
-0..1			Interpretation
+0..1			ObservationNonOccurrenceModifier
+1..1			ReportStatus
+0..1			ObservationMethod
+0..1			ClinicallyRelevantTime
+0..*			Participant 	// TODO: add to metadata?
+0..*			TBD "Specimen"
+0..*			Interpretation
+0..1			Comment
+0..*			Setting
+0..*			Location
+
+		Element:		PanelCode
+		Based on:		ActionCode
+		Concept:		TBD
+		Description:	"A term from a controlled vocabulary that defines the data element (the question, not the answer) as specifically as possible. The panel code provides the identity of the type of panel."
+		Value:			CodeableConcept
+
+		Element:		ServiceCategory
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept
+		
+		Element:		ReportStatus
+		Concept:		TBD
+		Description:	"The status of the report associated with this panel."
+		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status 
+		
 
 Element:		HistoryObservation
 Concept:		MTH#C2004062 "History of previous events"
@@ -85,9 +122,6 @@ Based on:		Observation
 Description:	"Captures some aspect of the life, health, or medical history of a subject."
 1..*			ObservationCategory includes MTH#C2004062 "History of previous events"
 1..1			ObservationStatus with CodeableConcept from NonLabObservationStatusVS
-0..*			Setting
-0..*			Location
-0..1			Frequency
 
 
 //------------ Social Observation -----------------------

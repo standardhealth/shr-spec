@@ -6,11 +6,12 @@ Uses:				shr.core, shr.base, shr.allergy, shr.observation, shr.medication, shr.l
 
 //------------ Household Information --------------------------
 
-Element:		FinancialSituationPanel
+EntryElement:	FinancialSituation
 Concept:		MTH#C0516918
 Based on:		Panel
 Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life."
 Value:			CodeableConcept is MTH#C0516918
+				PanelCode is LNC#83335-0
 0..1			AnnualIncome
 0..*			IncomeSource
 0..1			IncomeStability
@@ -26,82 +27,82 @@ Value:			CodeableConcept is MTH#C0516918
 
 	EntryElement:	AnnualIncome
 	Concept:		MTH#C0557163
-	Based on:		Observation
+	Based on:		QuantitativeObservation
 	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
-	Value:			DollarAmount
+	Value:			Quantity is type DollarAmount
 					ObservationCode is MTH#C0557163
 
-	Element:		IncomeSource
+	EntryElement:	IncomeSource
 	Concept:		MTH#C0557162
 	Based on:		CodeableConceptObservation
 	Description:	"Where the household income comes from."
 	Value:			CodeableConcept from IncomeSourceVS
 					ObservationCode is MTH#C0557162
 
-	Element:		IncomeStability
+	EntryElement:	IncomeStability
 	Concept:		MTH#C1820459
 	Based on:		CodeableConceptObservation
 	Description:	"Whether the subject regards his or her source of income as dependable."
 	Value:			CodeableConcept from ResourceStabilityVS
 					ObservationCode is MTH#C1820459
 
-	Element:		CanAffordFood
+	EntryElement:	CanAffordFood
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford food?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordHousing
+	EntryElement:	CanAffordHousing
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford housing?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordClothing
+	EntryElement:	CanAffordClothing
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford clothing?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordUtilities
+	EntryElement:	CanAffordUtilities
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford utilities?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordTransportation
+	EntryElement:	CanAffordTransportation
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford transportation?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordMedication
+	EntryElement:	CanAffordMedication
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford medications?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordDentalCare
+	EntryElement:	CanAffordDentalCare
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford dental care?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		CanAffordChildCare
+	EntryElement:	CanAffordChildCare
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often can the subject afford child care?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
 
-	Element:		NonCashBenefit
+	EntryElement:	NonCashBenefit
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"Government benefits received by the focal subject, other than cash benefits."
@@ -109,35 +110,34 @@ Value:			CodeableConcept is MTH#C0516918
 					ObservationCode is TBD#TBD
 	0..1			EffectiveTimePeriod
 
-EntryElement:		HouseholdSituationPanel
+EntryElement:		HouseholdSituation
 Concept:			TBD
 Based on:			Panel
 Description:		"Information about the makeup of the household of the subject."
-					// ObservationCode is TBD#TBD // Panel doesn't have an ObservationCode
+					PanelCode is TBD#TBD
 0..1				HouseholdSize
 0..*				Coinhabitant
 0..1				NumberOfDependents
 
-		Element:		HouseholdSize
+		EntryElement:	HouseholdSize
 		Concept:		MTH#C0000768
-		Based on:		Observation
+		Based on:		QuantitativeObservation
 		Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
-		Value:			positiveInt
+		Value:			Quantity  // should be positiveInt but FHIR Observations don't support integers
 						ObservationCode is MTH#C0000768
 
-		Element:		Coinhabitant
+		EntryElement:	Coinhabitant
 		Concept:		TBD
-		Based on:		Observation
+		Based on:		CodeableConceptObservation
 		Description: 	"A person living with the subject."
 		Value:			CodeableConcept from CoinhabitantVS
 						ObservationCode is TBD#TBD
 
-
-		Element:		NumberOfDependents
+		EntryElement:	NumberOfDependents
 		Concept:		MTH#C0557509
-		Based on:		Observation
+		Based on:		QuantitativeObservation
 		Description:	"The number of dependents supported by the subject."
-		Value:			unsignedInt
+		Value:			Quantity  // should be unsignedInt but FHIR Observations don't support integers
 						ObservationCode is MTH#C0557509
 
 
@@ -175,16 +175,17 @@ Description:	"A statement about exposure to a substance, type of substance, or d
 		Value:			CodeableConcept from ExposureReasonVS
 
 
-EntryElement:	EnvironmentalExposuresPanel
+EntryElement:	EnvironmentalExposures   // not yet mapped
 Concept:		TBD
 Based on:		Panel
+				PanelCode is TBD#TBD
 0..*			AnimalExposure
 0..*			TBD "RadiationExposure"
 0..*			TBD "AllergenExposure"
 0..*			TBD "AirQuality"
 0..*			TBD "WaterQuality"
 
-	Element:		AnimalExposure
+	EntryElement:	AnimalExposure
 	Concept:		MTH#C0238646
 	Based on:		ExposureToSubstance
 	Description:	"The type of animals or pets the subject is exposed to."
@@ -192,10 +193,11 @@ Based on:		Panel
 					ObservationCode is MTH#C0238646
 
 
-EntryElement:	SocialEnvironmentPanel
+EntryElement:	SocialEnvironment
 Concept:		TBD
 Based on:		Panel
 Description:	"Factors affecting the health of the subject in their daily living environment."
+				PanelCode is TBD#TBD
 0..1			TransportationAvailability
 0..1			HousingSecurity
 0..1			PhysicalSafety
@@ -203,51 +205,45 @@ Description:	"Factors affecting the health of the subject in their daily living 
 0..1			DomesticViolence
 0..*			HomeEnvironmentRisk
 
-	Element:		TransportationAvailability
+	EntryElement:	TransportationAvailability
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-	0..1			Details
 
-	Element:		HousingSecurity
+	EntryElement:	HousingSecurity
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"Whether the subject is at-risk of losing their housing or in a stable housing situation."
 	Value:			CodeableConcept from ResourceStabilityVS
-	0..1			Details
 
-	Element:		PhysicalSafety
+	EntryElement:	PhysicalSafety
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"How often the subject feels physically safe in the subject's home environment."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-	0..1			Details
 
-	Element:		EmotionalSafety
+	EntryElement:	EmotionalSafety
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"Whether the subject feels physically safe in the subject's home environment."
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is TBD#TBD
-	0..1			Details
 
-	Element:		DomesticViolence
+	EntryElement:	DomesticViolence
 	Concept:		MTH#C0206073
 	Based on:		CodeableConceptObservation
 	Description:	"Whether the subject experiences domestic violence."
 	Value:			CodeableConcept from QualitativeFrequencyVS
 					ObservationCode is MTH#C0206073
 	0..1			OccurrenceTime
-	0..1			Details
 
-	Element:		HomeEnvironmentRisk
+	EntryElement:	HomeEnvironmentRisk
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"A risk experienced in the home environment."
 	Value:			CodeableConcept from HomeEnvironmentRiskVS
 					ObservationCode is TBD#TBD
-	0..1			Details
 
 
 
