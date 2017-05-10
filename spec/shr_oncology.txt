@@ -6,6 +6,7 @@ Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
 
 EntryElement:	BreastCancerStage
 Concept:		LNC#21908-9
@@ -102,9 +103,10 @@ EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
+				PanelCode is TBD#TBD
 1..1			EstrogenReceptorStatus
 1..1			ProgesteroneReceptorStatus
-1..1			HER2Status
+1..1			HumanEpiduralGrowthFactorReceptor2Status
 			
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
@@ -120,47 +122,67 @@ Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) a
 							ObservationCode is TBD#TBD
 							Receptor is SCT#61078009
 			
-			EntryElement:	HER2Status
+			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
 			Based on:		ReceptorStatusObservation
-			Concept:		TBD
+			Concept:		MTH#C3810543
 			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							ObservationCode is TBD#TBD
+							ObservationCode is MTH#C3810543
 							Receptor is TBD#TBD
 
-
-			
-/*  WORK in PROGRESS
-
-EntryElement: 	TumorGrossMeasurements 
-Desciption:		"See CDISC Table 3.3.2"
+EntryElement: 	TumorMeasurements
+Description:	"Measurements and assessment of tumor, in situ via imaging, or of removed tumor. See CDISC Table 3.3.2"
+Concept:		MTH#C4086369
 Based on:		Panel
+				PanelCode is MTH#C4086369
+//0..1			TumorID
+1..1			TumorPrimaryDimensionSize
+0..1			TumorSecondaryDimensionSize
+0..1			SizeOfGrossTumorBed
+0..1			TumorMargins
+0..1			Cellularity
+0..1			PercentageInSituCarcinoma
 
-
-		EntryElement:	TumorSize
+		EntryElement:	TumorPrimaryDimensionSize
 		Description:	"The longest diameter of the primary tumor."
 		Based on:		QuantitativeObservation
-		Value:			Quantity (mm)
-		0..1			GreatestPerpendicularTumorSize
+		Value:			Quantity with units UCUM#mm
 
+		EntryElement:	TumorSecondaryDimensionSize
+		Description:	"The longest perpendicular diameter of the primary tumor."
+		Based on:		QuantitativeObservation
+		Value:			Quantity with units UCUM#mm
 		
 		EntryElement:	SizeOfGrossTumorBed
-		Description:	""
+		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
+		Concept:		TBD#TBD
+		Based on:		QuantitativeObservation
+		Value:			Quantity with units UCUM#mm
+		
+		Element: 		TumorMargins
+		Concept:		MTH#C1269830
+		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+		Based on:		CodeableConceptObservation
+		Value:			CodeableConcept from PositiveNegativeVS
+		
+		Element:		Cellularity
+		Concept:		MTH#C4055283
+		Description:	"The percentage of cells in a sample that are cancerous"
+		Based on:		QuantitativeObservation
+		// Value:			Percentage  
+		
+		Element:		PercentageInSituCarcinoma
 		Concept:		TBD
 		Based on:		QuantitativeObservation
-		
-		
-		Element: 	TumorMargins (clean (negative) or positive)
-
-		Element:	Cellularity
-		Description:	"Percentage of cells in the same that are cancerous"
-		
-		Element:	PercentageInSituCarcinoma
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+		// Value:			Percentage 
 		
-		Element:	LargestLymphNodeSize
+		Element:		LargestLymphNodeSize
 		Description:	""
-		Value: 		Quantity (mm)
+		Concept:		MTH#C1285847
+		Based on:		QuantitativeObservation
+		Value: 			Quantity with units UCUM#mm
 
+/*
 FHIR Genomics:
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
@@ -179,6 +201,7 @@ Value:		CodeableConcept from PositiveNegativeVS
 
 		Element:	Biomarkers
 		Based on:	Panel
+					PanelCode is TBD#TBD
 		
 			EntryElement: 	Ki-67LabelingIndex
 			Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells. "

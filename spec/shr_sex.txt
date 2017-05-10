@@ -4,6 +4,7 @@ Description:	"The SHR Sex domain contains definitions related to the sexual heal
 Uses:			shr.core, shr.base, shr.observation
 
 CodeSystem: LNC = http://loinc.org
+CodeSystem:	MTH = http://ncimeta.nci.nih.gov
 
 EntryElement:	PregnancyIntention
 Concept:		TBD
@@ -17,19 +18,19 @@ EntryElement:	SexualIdentity
 Concept:		TBD
 Based on:		Panel
 Description:	"Information on gender identity and sexual orientation."
-1..1			ObservationCode is TBD#TBD
+				PanelCode is TBD#TBD
 0..1			GenderIdentity
 0..1			SexualOrientation
 
 	EntryElement:	GenderIdentity
 	Concept:		MTH#C0017249
-	Based on:		Observation
+	Based on:		CodeableConceptObservation
 	Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
 	Value:			CodeableConcept from GenderIdentityVS  // Do not use Snomed; it stupidly refers to atypical gender identities as "disorders"
 
 	EntryElement:	SexualOrientation
 	Concept:		MTH#C0205949
-	Based on:		Observation
+	Based on:		CodeableConceptObservation
 	Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
 	Value:			CodeableConcept from SexualOrientationVS
 
@@ -38,10 +39,10 @@ EntryElement:	SexualBehavior
 Concept:		MTH#C1314687
 Based on:		Panel
 Description:	"Experience with sexual intercourse."
-1..1			ObservationCode is MTH#C1314687
+				PanelCode is MTH#C1314687
 1..*			SexualActivity
 0..1			NumberOfSexualPartnersPastYear
-0..*			DifficultyWithIntercourse
+0..*			IntercourseDifficulty
 
 	EntryElement:	SexualActivity
 	Concept:		MTH#C0241028
@@ -56,20 +57,25 @@ Description:	"Experience with sexual intercourse."
 	Description:	"Number of sexual partners in past year."
 	Value:			Quantity  // can use > or < modifiers
 
-	EntryElement:	DifficultyWithIntercourse
+	EntryElement:	IntercourseDifficulty
 	Concept:		TBD
 	Based on:		CodeableConceptObservation
 	Description:	"Problem with sexual intercourse."
-	Value:			CodeableConcept from DifficultyWithIntercourseVS
+	Value:			CodeableConcept from IntercourseDifficultyVS
 
 
-EntryElement:	ContraceptiveMethodsUsed
-Based on:		Observation
+EntryElement:	ContraceptivesUsed
+Based on:		BooleanObservation
 Concept:		MTH#C0700589
 Description:	"The method or methods of contraception used."
-Value:			1..* CodeableConcept from ContraceptiveMethodVS  // allow multiple choice
 1..1			ObservationCode is MTH#C0700589
+0..* 			ContraceptiveMethod
 0..*			ReasonForContraceptiveMethod or ReasonForNotUsingContraceptive
+
+		Element:		ContraceptiveMethod
+		Concept:		TBD
+		Description:	"A contraceptive method used by the subject."
+		Value:			CodeableConcept from ContraceptiveMethodVS  // allow multiple choice
 
 		Element:		ReasonForContraceptiveMethod
 		Concept:		TBD
@@ -106,6 +112,7 @@ EntryElement:	PregnancyHistory
 Concept:		MTH#C0032967
 Based on:		Panel
 Description:	"Information about current and past pregnancies."
+				PanelCode is LNC#10163-4
 1..1			CurrentPregnancyStatus
 1..1			NumberOfPreviousPregnancies
 0..1			NumberOfLivingChildren
@@ -114,20 +121,20 @@ Description:	"Information about current and past pregnancies."
 	Concept:		MTH#C0552579
 	Based on:		BooleanObservation
 	Description:	"Whether or not the subject is currently pregnant."
-	Value:			boolean
+					ObservationCode is LNC#82810-3
+
 
 	EntryElement:	NumberOfPreviousPregnancies
 	Concept:		MTH#C0422807
-	Based on:		QuantitativeObservation
+	Based on:		QuantitativeObservation // should be IntegerObservation
 	Description:	"Number of previous pregnancies."
-	Value:			Quantity
+					ObservationCode is LNC#75201-4
 
 	EntryElement:	NumberOfLivingChildren
 	Concept:		MTH#C2229975
-	Based on:		QuantitativeObservation
+	Based on:		QuantitativeObservation  // should be IntegerObservation !!
 	Description:	"Number of living children."
-	Value:			Quantity
-
+					ObservationCode is LNC#11638-4
 /*
 EntryElement:	PreviousPregnancyDetails
 Concept:		TBD
