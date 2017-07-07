@@ -153,9 +153,14 @@ Based on:		Quantity
 Description:	"An amount of money expressed in US dollars."
 1..1			Units is CURRENCY#USD
 
+Element:		Distance
+Concept:		MTH#C0012751
+Description:	"The space separating two objects or points."
+Value:			Quantity with units UCUM#TBD
+
 Element:		Length
 Concept:		MTH#C1444754
-Description:	"The measurement or linear extent of something from end to end; the greater of two or the greatest of three dimensions of a body."
+Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
 Value:			Quantity with units UCUM#TBD
 
 Element:		Width
@@ -470,16 +475,20 @@ Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
 Value:			CodeableConcept
 
-//---------------------  Body Site ---------------------------------
+//---------------------  Body Site and Body Structure ---------------------------------
+
 
 Element:		BodySite
-Concept:		MTH#C1268086
-Description:	"Location on or in the body."
+Concept:		MTH#C1545955
+Description:	"A location in the body, including tissues, regions, cavities, and spaces, for example, right elbow, or left ventricle of the heart."
 Value:			CodeableConcept from BodySiteVS
 0..1 			Laterality
 0..1			Directionality
 0..1 			PortionTotality
-0..1 			Description   // text description of body site
+0..1			ClockDirection
+0..1			Distance // from landmark
+0..1 			Description	
+0..1			BodySiteMarker
 
 	Element:		Laterality
 	Concept:		MTH#C0925205 "Anatomical laterality"
@@ -496,12 +505,15 @@ Value:			CodeableConcept from BodySiteVS
 	Description:	"ObservationQualifier for anatomical location or specimen further detailing the portion or totality, which means arrangement of, or apportioning of an entity."
 	Value:			CodeableConcept from PortionTotalityVS
 
-
+	Element:		BodySiteMarker
+	Concept:		TBD
+	Description:	"A marker surgically placed at the site, often during a biopsy procedure, to pinpoint the location. The marker is typically a metal clip or radioactive seed."
+	Value:			string   // for right now, just a description
+	
 Element:		BodyPosition
 Concept:		MTH#C1262869
 Description:	"The position or physical attitude of the body."
 Value:			CodeableConcept from BodyPositionVS
-
 
 
 //------------- Reusable text elements: Description, Summary, Comment, Explanation, Details --------------
@@ -548,7 +560,7 @@ Concept:		MTH#C0333052
 Description:	"A string identifying the particular of form of something (such as a code system or software product) that is different in some way from another form of the same thing."
 Value:			id
 
-Element:		Identifier
+Element:		OrganizationalIdentifier  // as opposed to, e.g., BodyStructureIdentifier
 Concept:		TBD
 Description:	"A numeric or alphanumeric string that is associated with a single object or entity within a given system. Typically, identifiers are used to connect content in resources to external content available in other frameworks or protocols. Identifiers are associated with objects, and may be changed or retired due to human or system process and errors."
 Value:			string

@@ -11,8 +11,8 @@ Element:		Test
 Concept:		MTH#C0456984
 Based on:		Observation
 Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
-1..1 			ObservationCode is type TestCode
-0..1			ObservationMethod is type TestMethod
+1..1 			ObservationTypeCode is type TestTypeCode
+0..1			Method is type TestMethod
 0..1 			BodySite
 0..1 			BodyPosition
 0..1 			Device
@@ -22,8 +22,8 @@ Description:	"A laboratory, radiologic, or other clinical test or measurement us
 0..1			ChangeFlag
 0..1			TestRequest  // optional reference to the request for this test
 
-		Element:		TestCode
-		Based on:		ObservationCode
+		Element:		TestTypeCode
+		Based on:		ObservationTypeCode
 		Concept:		TBD
 		Description:	"The code for a laboratory, radiologic, and other clinical test or measurement that helps to determine the presence, absence, or degree of a condition, or assess the health of an individual."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-codes
@@ -35,14 +35,14 @@ Description:	"A laboratory, radiologic, or other clinical test or measurement us
 
 		Element:		TestMethod
 		Concept:		MTH#C1299991
-		Based on:		ObservationMethod
+		Based on:		Method
 		Description:	"The technique used to carry out a procedure, if not implicit in the test code."
 		Value:			CodeableConcept
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a measurement."
-		Value:			CodeableConcept from TestInterpretationVS
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation 
 
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
@@ -59,7 +59,7 @@ EntryElement:	TestRequest   // TODO: how to request something NOT be done? (as o
 Concept:		MTH#C1273874
 Based on:		Request
 Description:	"A record of a request (order) for a test to be performed."
-1..1 			ActionCode is type TestCode
+1..1 			ActionTypeCode is type TestTypeCode
 0..1 			BodySite
 0..1 			TBD "Specimen" or SpecimenType
 				RequestStatus with code from http://hl7.org/fhir/ValueSet/request-status
@@ -71,23 +71,23 @@ EntryElement:	HIVScreeningTest
 Based on:		Test
 Description:	"The result of an HIV Screening Test."
 Value:			CodeableConcept from HIVScreeningTestResultVS
-1..1			TestCode with CodeableConcept from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+1..1			TestTypeCode with CodeableConcept from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
 
 EntryElement:	HIVSupplementalTest
 Based on:		Test
 Concept:		TBD
 Description:	"The result of a supplement HIV test, following up an initial screening."
 Value:			CodeableConcept from HIVSupplementalTestResultVS
-1..1			TestCode with CodeableConcept from HIVSupplementalTestCodeVS
+1..1			TestTypeCode with CodeableConcept from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVScreeningTestRequest
 Description:	"A request for a rapid HIV screening test."
 Based on:		TestRequest
-1..1			TestCode with CodeableConcept from HIVScreeningTestCodeVS
+1..1			TestTypeCode with CodeableConcept from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
 Description:	"A request for a confirmatory or additional test for HIV infection."
 Based on:		TestRequest
-1..1			TestCode with CodeableConcept from HIVSupplementalTestCodeVS
+1..1			TestTypeCode with CodeableConcept from HIVSupplementalTestCodeVS
 
 

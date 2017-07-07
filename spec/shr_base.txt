@@ -12,7 +12,7 @@ Value: 			CodeableConcept from MissingValueReasonVS
 
 // ------------   Modifiers  -----------------------
 
-Element:		NonOccurrenceModifier
+Element:		NonOccurrenceModifier  // TO DO - develop into the "not performed" context
 Concept:		TBD
 Description:	"When true, indicates either that the event or action documented in the entry did not occur, or the the thing documented is absent or does not exist."
 Value:			boolean
@@ -21,7 +21,7 @@ Value:			boolean
 
 //----------------  Entry -------------------
 
-Element:		Entry
+Element:		Entry   // TO DO: align with CIMI ClinicalStatement
 Concept:		MTH#C1705654
 Description:	"An item inserted in an electronic record."
 1..1			ShrId
@@ -110,7 +110,7 @@ Description:	"An item inserted in an electronic record."
 Element:		ExternalHealthRecord
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record."
-1..1			Identifier
+1..1			OrganizationalIdentifier
 1..1			AccessTime
 
 	Element:		AccessTime
@@ -118,23 +118,36 @@ Description:	"A health record used to help populate the current health record."
 	Description:	"Point in time when data was accessed."
 	Value:			dateTime
 
-//-------------  Action, Request, Proposal
+//-------------  Action, Request, Proposal-----------//
 
 Element:		Action
 Concept:		TBD
-Description:	"An action that either has or has not taken place."
-1..1			ActionCode
+Description:	"A deed or endeavor. An action can have various contexts: performed (took place), did not take place, promised to happen, recommended to happen, etc."
+1..1			ActionTypeCode
+1..1			Status
+0..*			Category
 0..1			NonOccurrenceModifier
-0..1			Reason
+0..*			Reason
 0..1			OccurrenceTime  // when the action took place
 0..*			Participant
 
-		Element:		ActionCode
+		Element:		ActionTypeCode
 		Concept:		TBD
-		Description:	"The code for the action, such as an intervention or test, to be carried out."
+		Description:	"A code identifying the action."
 		Value:			CodeableConcept
-
-
+		
+		Element:		Status
+		Concept:		MTH#C0449438
+		Description:	"The position of affairs at a particular time"
+		Value:			CodeableConcept
+		
+		Element:		Category
+		Concept:		TBD
+		Description:	"A categorization of the action according its type, often a code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept
+		
+		
+// Not used yet TODO - refactor to align with topic and context
 Element:		Request
 Concept:		MTH#C1705178
 Based on:		Action

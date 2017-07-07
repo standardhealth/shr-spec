@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.finding
 
 CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:		OBSSTAT = http://hl7.org/fhir/observation-status
@@ -9,52 +9,34 @@ CodeSystem:		OBSSTAT = http://hl7.org/fhir/observation-status
 
 EntryElement: 	Observation
 Concept:		MTH#C1554188
-Description:	"An act that is intended to result in new information about a subject. The focus of an observation can include the subject's behavior, physiological state, functional status, environment, exposures to substances, etc. The method of observing can be via direct questions, formal assessment vehicle, laboratory test, or imaging procedure."
-1..1			ObservationCode  // what is being observed
-0..*			ObservationCategory
-0..1			ObservationReason
-0..1			ObservationNonOccurrenceModifier
-1..1			ObservationStatus
+Based on:		Action
+Description:	"Information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An observation contains information about the act of observing, as well as the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // or SampledData or Attachment (TODO)
+1..1			ActionTypeCode is type ObservationTypeCode  // e.g. Diagnosis, A1C
+0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
+0..1			Reason
+				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
+1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
+0..1			Method
 0..*			ObservationQualifier
-0..1			ObservationMethod
-0..1			ClinicallyRelevantTime
-0..*			Participant 	// TODO: add to metadata?
+0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
 0..*			Setting
 0..*			Location
+0..1			Interpretation
+0..1			Comment
 
-		Element:		ObservationCode
-		Based on:		ActionCode
+		Element:		ObservationTypeCode
+		Based on:		ActionTypeCode
 		Concept:		TBD
-		Description:	"A term from a controlled vocabulary that defines the data element (the question, not the answer) as specifically as possible. The specific code should always align with the concept of the element, but may be more specific. For example, the concept associated with medications is code for 'medication used', but the ObservationCode is the code for the particular medication used. For tests, ObservationCode identifies the specific test being performed, and for observations, the specific question being asked."
+		Description:	"A term from a controlled vocabulary that defines what is being observed, measured, or asked, as specifically as possible. The code should always align with the concept of the element, but may be more specific, for example, a blood pressure observation can be coded as a sitting blood pressure or standing blood pressure."
 		Value:			CodeableConcept
-
-		Element:		ObservationCategory
-		Concept:		TBD
-		Description:	"A categorization of the observation according to how the observation was collected or its clinical area."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category or CodeableConcept
-
-		Element:		ObservationReason
-		Concept:		TBD
-		Based on:		Reason
-		Description:	"The reason for making the observation."
-
-		Element:		ObservationNonOccurrenceModifier
-		Concept:		TBD
-		Based on:		NonOccurrenceModifier
-		Description:	"True if the observation did not occcur, e.g., if a test was not performed or the assessment was not done, when it might otherwise be expected."
-						Reason with CodeableConcept from ObservationNotMadeReasonVS
-
-		Element: 		ObservationStatus
-		Concept:		TBD
-		Description:	"A qualifier describing the stage or administrative state of the observation. If not given, it is assumed the status is final."
-		Value:			code from 		http://hl7.org/fhir/ValueSet/observation-status
 
 		Element:		ObservationQualifier
 		Concept:		MTH#C1443279
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
 
-		Element:		ObservationMethod
+		Element:		Method
 		Concept:		TBD
 		Description:	"The method of the observation, for example, the specific imaging technical or assessment vehicle."
 		Value:			CodeableConcept
@@ -82,46 +64,67 @@ Concept:		TBD
 Description:	"An observation whose value is a quantity"
 Value:			boolean
 
+EntryElement:	BodyStructureObservation
+Concept:		MTH#C1268086
+Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to this observation and tracked over time."
+Based on:		Observation
+Value:			CodeableConcept from BodyStructureVS
+1..1			BodySite
+0..1			NonOccurrenceModifier  // the structure does not exist at the given body site
+
+
 EntryElement:	Panel
 Concept:		TBD
-Description:	"A group of related observations, usually (but not always) taken together, whose result is captured in a report. Typically the ObservationCategory and ObservationReason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. Typically, the panel and all its sub-observations share the same metadata (provenance)."
-1..1			PanelCode
-0..1			ServiceCategory
-0..1			ObservationReason
-0..1			ObservationNonOccurrenceModifier
-1..1			ReportStatus
-0..1			ObservationMethod
-0..1			ClinicallyRelevantTime
-0..*			Participant 	// TODO: add to metadata?
-0..*			TBD "Specimen"
-0..*			Interpretation
-0..1			Comment
+Based on:		Action
+Description:	"A grouping of a set of related observations, frequently captured at the same time, and presented as a report, such as a pathology report. An example is a completed mental health assessment questionnaire, or a complete blood count (CBC). Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
+// Almost exactly the same attributes as an observation, but different mapping rules apply 
+1..1			ActionTypeCode is type ObservationTypeCode  // e.g. Diagnosis, A1C
+0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
+0..1			Reason
+				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
+1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/diagnostic-report-status
+0..1			Method
+0..*			ObservationQualifier
+0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
 0..*			Setting
 0..*			Location
+0..*			Interpretation
+0..1			Comment
 
-		Element:		PanelCode
-		Based on:		ActionCode
-		Concept:		TBD
-		Description:	"A term from a controlled vocabulary that defines the data element (the question, not the answer) as specifically as possible. The panel code provides the identity of the type of panel."
-		Value:			CodeableConcept
-
-		Element:		ServiceCategory
-		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept
-		
-		Element:		ReportStatus
-		Concept:		TBD
-		Description:	"The status of the report associated with this panel."
-		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status 
-		
 
 Element:		HistoryObservation
 Concept:		MTH#C2004062 "History of previous events"
 Based on:		Observation
 Description:	"Captures some aspect of the life, health, or medical history of a subject."
-1..*			ObservationCategory includes MTH#C2004062 "History of previous events"
-1..1			ObservationStatus with CodeableConcept from NonLabObservationStatusVS
+				Category is MTH#C2004062 "History of previous events"
+1..1			Status with CodeableConcept from NonLabObservationStatusVS
+
+
+Element:		ClinicalAssessment
+Concept:		MTH#C0220825
+Based on:		Action
+Description:	"Systematic, objective appraisal of the significance, effectiveness, and impact of activities or condition according to specified objectives and criteria."
+Value:			CodeableConcept or Finding
+1..1			ActionTypeCode is type ObservationTypeCode  // what is being assessed, e.g. disease progression
+0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
+0..1			Reason  // for the assessment
+				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
+1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/clinical-impression-status
+0..1			PreviousClinicalAssessment
+0..1			Method    // TODO: for now, this will appear as an extension, but in FHIR, there is an attribute called 'protocol' that is a uri...it might require a change request
+0..*			SupportingEvidence
+0..*			ObservationQualifier
+0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
+0..1			Summary
+0..1			Comment
+
+
+		Element:		PreviousClinicalAssessment
+		Concept:		TBD
+		Based on:		ClinicalAssessment
+		Description:	"The clinical assessment happening before another clinical assessment."
+
+
 
 
 //------------ Social Observation -----------------------
@@ -130,6 +133,6 @@ Element:		SocialHistory
 Concept:		MTH#C3714536
 Based on:		HistoryObservation
 Description:	"The external elements and conditions which surround, influence, and affect the life and development of the subject. Includes social conditions such as poverty, violence, bullying."
-1..1			ObservationStatus with CodeableConcept from NonLabObservationStatusVS
-1..*			ObservationCategory includes OBSCAT#social-history "social history"
+1..1			Status with CodeableConcept from NonLabObservationStatusVS
+				Category is OBSCAT#social-history "social history"
 

@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.skin
 Description:	"SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
-Uses:  			shr.core, shr.base, shr.actor, shr.device, shr.problem, shr.observation, shr.lab
+Uses:  			shr.core, shr.base, shr.actor, shr.device, shr.finding, shr.observation, shr.lab
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
@@ -47,11 +47,11 @@ Value: 			Device is type SupportSurface
 
 EntryElement:		PressureUlcer
 Concept:			MTH#C0011127
-Based on:			Problem
+Based on:			Finding
 Description:		"A single pressure ulcer, tracked over a period of time. Multiple PressureUlcerAssessments (at different times) may be associated with a single PressureUlcer."
 Value:				CodeableConcept is TBD#TBD
 0..*				BodySite is type PressureUlcerBodySite
-0..*				Manifestation is type PressureUlcerManifestation
+0..*				Manifestation is type PressureUlcerManifestation  // observations
 0..*				CausativeFactor
 0..*				TBD "PressureUlcerIntervention"    // pointer could go in the other direction
 
@@ -86,18 +86,18 @@ Description:		"A statement that there is no pressure ulcer at a given body site.
 0..0				Abatement
 0..0				Severity
 0..0				Criticality
-0..0				GradeOrStage
 0..0				Manifestation
+//0..0				Stage   TODO: figure out why this is causing an error
 
 
-
-EntryElement:		PressureUlcerManifestation
+EntryElement:		PressureUlcerManifestation // Observation
 Concept:			LNC#54574-9
 Based on:			Manifestation
 Description:		"Observation regarding the properties and severity of a single pressure ulcer."
-					ObservationCode is LNC#54574-9
-					ObservationStatus with CodeableConcept from NonLabObservationStatusVS
+					ObservationTypeCode is LNC#54574-9
+					Status with CodeableConcept from NonLabObservationStatusVS
 //0..1				ClinicallyRelevantTime
+1..1				BodySite
 0..*				VisibleInternalStructure
 0..1				WoundSize
 0..1				WoundTunnelling
