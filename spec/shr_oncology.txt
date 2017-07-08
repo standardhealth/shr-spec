@@ -1,7 +1,7 @@
 Grammar:		DataElement 4.1
 Namespace:		shr.oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.finding, shr.lab, shr.observation
+Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation, shr.procedure
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -14,37 +14,30 @@ Description:	"Observation of a (potentially) abnormal growth. The body site allo
 Based on:		BodyStructureObservation
 Concept:		TBD
 Value:			CodeableConcept from NeoplasmObservationVS
-0..1			NeoplasmIdentifier
+0..1			Identifier
 0..1			Method with CodeableConcept from NeoplasmObservationMethodVS
 
-		Element:		NeoplasmIdentifier
-		Concept:		MTH#C3897126
-		Description:	"A tag that uniquely identifies a specific growth or mass in the body. This identifier can be used to identify the source of biopsy or specimen."	
-		Value:			string
-	
-EntryElement:	BreastCancerDiagnosis 
+
+EntryElement:	BreastCancer 
 Concept:		MTH#C1446377
-Based on:		Finding
-Description:	"A diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
+Based on:		Problem
+Description:	"A cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 Value:			CodeableConcept from BreastCancerTypeVS 
 				Category includes #disease
 0..1			Stage is type BreastCancerStage
 0..1			BreastCancerHistologicGrade
-0..*			NeoplasmObservation  // related observations, also carries the tumor location(s)
-0..0			NonOccurrenceModifier
-				IncludeOnProblemList is true
-// Any other things in the initial diagnosis? 
-			
+0..*			Observation  // related observations
 
 			Element:		BreastCancerStage
 			Concept:		LNC#21908-9
 			Based on:		Stage
 			Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 			Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
-			1..1			BreastTumorCategory    // component
-			1..1			BreastNodeCategory 
-			1..1			BreastMetastatisCategory
-			0..1			PostOperativeIndicator    // qualifier
+			Members.Value
+				includes 1..1 BreastTumorCategory        // component
+				includes 1..1 BreastNodeCategory      // component
+				includes 1..1 BreastMetastatisCategory    // component
+			0..1		PostOperativeIndicator    // qualifier  TODO: Change so different landmark event time are included: initial diagnosis, post-operative, trial-enrollment, other, etc.
 
 					EntryElement:	BreastTumorCategory	
 					Concept:		LNC#59528-0 
@@ -142,9 +135,10 @@ Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
 				ObservationTypeCode is TBD#TBD
 1..1			NeoplasmIdentifier // or NeoplasmObservation or specimen -- the link to source of tissue
-1..1			EstrogenReceptorStatus
-1..1			ProgesteroneReceptorStatus
-1..1			HumanEpiduralGrowthFactorReceptor2Status
+Members.Value
+include 1..1 EstrogenReceptorStatus
+include 1..1 ProgesteroneReceptorStatus
+include 1..1 HumanEpiduralGrowthFactorReceptor2Status
 			
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
@@ -268,9 +262,9 @@ Value:			CodeableConcept from PositiveNegativeVS
 
 			Element:		GeneIdentifier
 			Concept:		MTH#C1706509
+			Based on:		Identifier
 			Description:	"A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
-			Value:			CodeableConcept
-			
+			Value:			CodeableConcept from GeneIdentifierVS
 			
 EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD

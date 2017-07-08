@@ -1,35 +1,56 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.finding
-
-CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
-CodeSystem:		OBSSTAT = http://hl7.org/fhir/observation-status
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.problem
 
 
 EntryElement: 	Observation
 Concept:		MTH#C1554188
 Based on:		Action
 Description:	"Information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An observation contains information about the act of observing, as well as the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
-Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // or SampledData or Attachment (TODO)
-1..1			ActionTypeCode is type ObservationTypeCode  // e.g. Diagnosis, A1C
+Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // or SampledData or Attachment (TODO: Add "Any" to the grammar)
+//----------- Define the observation to be made
+1..1			ObservationTypeCode // TODO: perhaps add "defaults to Concept" to grammar?
 0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
-0..1			Reason
+0..1			Reason 
+0..1			FocalProblem
+0..1			FocalIntervention
+0..1			AssociatedStudy
+//----------- Execution of the observation action
 				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
 1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Method
 0..*			ObservationQualifier
+//----------- Capture the result
+//				(the Value)
+0..1			DataAbsentReason
 0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
-0..*			Setting
-0..*			Location
 0..1			Interpretation
 0..1			Comment
+//----------- Related and Sub-Observations
+0..1			Members
+0..1			Components
 
 		Element:		ObservationTypeCode
-		Based on:		ActionTypeCode
 		Concept:		TBD
 		Description:	"A term from a controlled vocabulary that defines what is being observed, measured, or asked, as specifically as possible. The code should always align with the concept of the element, but may be more specific, for example, a blood pressure observation can be coded as a sitting blood pressure or standing blood pressure."
 		Value:			CodeableConcept
+		
+		Element:		FocalProblem
+		Concept:		TBD
+		Description:	"A condition that is the target of the topic/focus/measurement of the investigation. For example, if the question involves the progression of the subject's diabetes, then the FocalProblem would be diabetes."
+		Value:			ref(Problem)
+		
+		Element:		FocalIntervention
+		Concept:		TBD
+		Description:	"The intervention or treatment that is the target of the topic/focus/measurement of the investigation. For example, if the investigation involves the toxicity of chemotherapy regimen, the intervention would be that regimen (currently the MedicationUse of the chemotherapy drug)."
+		Value:			ref(Procedure) or ref(MedicationUse) // TODO: could we directly say "Intervention" if all these types are defined as Interventions?
+		
+		Element:		AssociatedStudy
+		Concept:		TBD
+		Description:	"The clinical trial or other formal study related to this finding."
+		0..1			Title
+		0..1			Identifier
 
 		Element:		ObservationQualifier
 		Concept:		MTH#C1443279
@@ -45,6 +66,20 @@ Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or t
 		Concept:		TBD
 		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			GeneralizedTemporalContext
+		
+		Element:		DataAbsentReason
+		Concept:		TBD
+		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
+		
+		Element:		Members
+		Concept:		TBD
+		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a common specimen, lab analysis, or clinician-author."
+		Value:			0..* Observation
+		
+		Element:		Components
+		Concept:		TBD
+		Description:	"Components are sub-parts of an observation that are always treated a part of a single observation; they are not separable. However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
+		Value:			0..* Observation
 
 EntryElement:	CodeableConceptObservation
 Based on:		Observation
@@ -69,27 +104,16 @@ Concept:		MTH#C1268086
 Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to this observation and tracked over time."
 Based on:		Observation
 Value:			CodeableConcept from BodyStructureVS
-1..1			BodySite
+0..1			BodySite
 0..1			NonOccurrenceModifier  // the structure does not exist at the given body site
 
 
 EntryElement:	Panel
 Concept:		TBD
-Based on:		Action
-Description:	"A grouping of a set of related observations, frequently captured at the same time, and presented as a report, such as a pathology report. An example is a completed mental health assessment questionnaire, or a complete blood count (CBC). Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-// Almost exactly the same attributes as an observation, but different mapping rules apply 
-1..1			ActionTypeCode is type ObservationTypeCode  // e.g. Diagnosis, A1C
-0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
-0..1			Reason
-				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
-1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-0..1			Method
-0..*			ObservationQualifier
-0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
-0..*			Setting
-0..*			Location
-0..*			Interpretation
-0..1			Comment
+Based on:		Observation
+Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
+Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)  // TODO: how can we just say 0..0 without specifying the all the possible datatypes?
+0..0			DataAbsentReason
 
 
 Element:		HistoryObservation
@@ -98,31 +122,6 @@ Based on:		Observation
 Description:	"Captures some aspect of the life, health, or medical history of a subject."
 				Category is MTH#C2004062 "History of previous events"
 1..1			Status with CodeableConcept from NonLabObservationStatusVS
-
-
-Element:		ClinicalAssessment
-Concept:		MTH#C0220825
-Based on:		Action
-Description:	"Systematic, objective appraisal of the significance, effectiveness, and impact of activities or condition according to specified objectives and criteria."
-Value:			CodeableConcept or Finding
-1..1			ActionTypeCode is type ObservationTypeCode  // what is being assessed, e.g. disease progression
-0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
-0..1			Reason  // for the assessment
-				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
-1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/clinical-impression-status
-0..1			PreviousClinicalAssessment
-0..1			Method    // TODO: for now, this will appear as an extension, but in FHIR, there is an attribute called 'protocol' that is a uri...it might require a change request
-0..*			SupportingEvidence
-0..*			ObservationQualifier
-0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
-0..1			Summary
-0..1			Comment
-
-
-		Element:		PreviousClinicalAssessment
-		Concept:		TBD
-		Based on:		ClinicalAssessment
-		Description:	"The clinical assessment happening before another clinical assessment."
 
 
 
