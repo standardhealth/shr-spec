@@ -33,10 +33,10 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Based on:		Stage
 			Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 			Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
-			Members.Value
+/*			Members.Value
 				includes 1..1 BreastTumorCategory        // component
 				includes 1..1 BreastNodeCategory      // component
-				includes 1..1 BreastMetastatisCategory    // component
+				includes 1..1 BreastMetastatisCategory    // component */
 			0..1		PostOperativeIndicator    // qualifier  TODO: Change so different landmark event time are included: initial diagnosis, post-operative, trial-enrollment, other, etc.
 
 					EntryElement:	BreastTumorCategory	
@@ -61,12 +61,13 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			
 			Element:		BreastCancerHistologicGrade
 			Concept:		MTH#C1511980
-			Based on:		Criticality
+			Based on:		Observation
 			Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 			Value:			CodeableConcept from NottinghamCombinedGradeVS
-			0..1			TubuleFormationScore
-			0..1			NuclearPleomorphismScore
-			0..1			MitoticCountScore
+			/*Components.Value
+			includes 0..1			TubuleFormationScore
+			includes 0..1			NuclearPleomorphismScore
+			includes 0..1			MitoticCountScore*/
 			
 					Element:		TubuleFormationScore
 					Concept:		TBD
@@ -130,15 +131,15 @@ Value:			CodeableConcept from PositiveNegativeVS
 
 			
 EntryElement:	BreastCancerReceptorStatus
-Based on:		Panel   // grouping of several observations
+Based on:		Panel 
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
 				ObservationTypeCode is TBD#TBD
-1..1			NeoplasmIdentifier // or NeoplasmObservation or specimen -- the link to source of tissue
-Members.Value
-include 1..1 EstrogenReceptorStatus
-include 1..1 ProgesteroneReceptorStatus
-include 1..1 HumanEpiduralGrowthFactorReceptor2Status
+1..1			TBD "Specimen" // TODO: change to Specimen?  or NeoplasmObservation?  the link to source of tissue
+/*				Members.Value
+includes 1..1 EstrogenReceptorStatus
+includes 1..1 ProgesteroneReceptorStatus
+includes 1..1 HumanEpiduralGrowthFactorReceptor2Status */
 			
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
@@ -167,13 +168,13 @@ Description:	"Measurement of the longest diameter of a tumor, in situ or on a ex
 Concept:		MTH#C4086369
 Based on:		QuantitativeObservation
 Value:			Quantity with units UCUM#mm
-1..1			NeoplasmIdentifier // or specimen? 
-// components
-0..1			TumorSecondaryDimensionSize
-0..1			SizeOfGrossTumorBed
-0..1			TumorMargins
-0..1			Cellularity   // not sure this belongs here
-0..1			PercentageInSituCarcinoma   // not sure this belongs here
+1..1			TBD "Specimen" // or NeoplasmIdentifier? 
+/*Components.Value
+include 0..1			TumorSecondaryDimensionSize
+include 0..1			SizeOfGrossTumorBed
+include 0..1			TumorMargins
+include 0..1			Cellularity   // not sure this belongs here
+include 0..1			PercentageInSituCarcinoma   // not sure this belongs here*/
 // Do we need to record the 'how'? whether the result of imaging, or study of a removed tumor after lumpectomy?
 
 
@@ -270,8 +271,9 @@ EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
 Based on:		Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-1..1			BRCA1Variant
-1..1			BRCA2Variant
+/*				Members.Value
+includes 1..1			BRCA1Variant
+includes 1..1			BRCA2Variant */
 
 	Element:		BRCA1Variant
 	Concept:		TBD
@@ -287,11 +289,13 @@ Description:	"The status of genes known or suspected to play a role in breast ca
 	Value:			CodeableConcept from PositiveNegativeVS
 					GeneIdentifier is HGNC#BRCA2
 		
-EntryElement:	SubjectiveProgression
-Based on:		ClinicalAssessment
+EntryElement:	Progression
+Based on:		Observation
 Concept:		MTH#C0449258
-Description:	"A finding related to the change of a disease over time. This concept is most often used for chronic and incurable diseases where the stage of the disease is an important determinant of therapy and prognosis."
+Description:	"A finding related to the change of a disease over time. This concept is most often used for chronic and incurable diseases where the stage of the disease is an important determinant of therapy and prognosis. The disorder should be cited in the FocalProblem."
 Value:			CodeableConcept from SubjectiveProgressionVS
+1..1			FocalProblem
+1..1			Method with CodeableConcept from ProgressionMethodVS
 
 
 

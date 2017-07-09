@@ -47,23 +47,15 @@ Value: 			Device is type SupportSurface
 
 EntryElement:		PressureUlcer
 Concept:			MTH#C0011127
-Based on:			Finding
+Based on:			Problem
 Description:		"A single pressure ulcer, tracked over a period of time. Multiple PressureUlcerAssessments (at different times) may be associated with a single PressureUlcer."
 Value:				CodeableConcept is TBD#TBD
-0..*				BodySite is type PressureUlcerBodySite
+0..*				BodySite with CodeableConcept from PressureUlcerBodySiteVS  // TODO: add "if covered"
 0..*				Manifestation is type PressureUlcerManifestation  // observations
 0..*				CausativeFactor
 0..*				TBD "PressureUlcerIntervention"    // pointer could go in the other direction
 
 
-		Element:		PressureUlcerBodySite
-		Concept:		TBD
-		Based on:		BodySite
-		Description:	"The site of a pressure ulcer."
-		Value:			CodeableConcept from PressureUlcerBodySiteVS
-		0..1 			Laterality
-		0..0			Directionality
-		0..0 			PortionTotality
 
 		Element:		CausativeFactor
 		Concept:		TBD
@@ -75,8 +67,8 @@ EntryElement:		PressureUlcerNotPresent
 Concept:			TBD
 Based on:			PressureUlcer
 Description:		"A statement that there is no pressure ulcer at a given body site. If body site is omitted, or if the body site is a coding representing the entire body, then the inference is that no pressure ulcers is present anywhere on the body."
-					NonOccurrenceModifier is true
-0..1				GeneralizedLikelihood
+					FindingNegationModifier is true
+0..1				Certainty
 0..1				SupportingEvidenceQuality
 1..1				ClinicalStatus
 0..0				IncludeOnProblemList
@@ -87,7 +79,7 @@ Description:		"A statement that there is no pressure ulcer at a given body site.
 0..0				Severity
 0..0				Criticality
 0..0				Manifestation
-//0..0				Stage   TODO: figure out why this is causing an error
+0..0				Stage
 
 
 EntryElement:		PressureUlcerManifestation // Observation

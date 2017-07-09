@@ -1,21 +1,23 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.problem
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.problem, shr.procedure
 
 
 EntryElement: 	Observation
 Concept:		MTH#C1554188
 Based on:		Action
 Description:	"Information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An observation contains information about the act of observing, as well as the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
-Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // or SampledData or Attachment (TODO: Add "Any" to the grammar)
+Value: 			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) // TODO: or SampledData or Attachment
+// TODO: Do we allow data types beyond a FHIR Observation? Add "Any" to the grammar?
 //----------- Define the observation to be made
 1..1			ObservationTypeCode // TODO: perhaps add "defaults to Concept" to grammar?
-0..1			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category
+0..*			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category  // TODO: add 'if covered'
 0..1			Reason 
 0..1			FocalProblem
 0..1			FocalIntervention
 0..1			AssociatedStudy
+0..1			BodySite
 //----------- Execution of the observation action
 				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
 1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
@@ -23,13 +25,14 @@ Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or t
 0..*			ObservationQualifier
 //----------- Capture the result
 //				(the Value)
+0..1			FindingNegationModifier  // reverse the polarity of the conclusion (only if the Value is a logical statement of condition, such as a disorder)
 0..1			DataAbsentReason
 0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
 0..1			Interpretation
 0..1			Comment
 //----------- Related and Sub-Observations
-0..1			Members
-0..1			Components
+0..1			Members  // separate observations occurring in a panel
+0..1			Components  // if inseparable
 
 		Element:		ObservationTypeCode
 		Concept:		TBD
@@ -70,11 +73,12 @@ Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or t
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
+		Value:			CodeableConcept
 		
 		Element:		Members
 		Concept:		TBD
-		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a common specimen, lab analysis, or clinician-author."
-		Value:			0..* Observation
+		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
+		Value:			0..* ref(Observation)
 		
 		Element:		Components
 		Concept:		TBD
@@ -85,9 +89,9 @@ EntryElement:	CodeableConceptObservation
 Based on:		Observation
 Concept:		TBD
 Description:	"An observation whose value is a codeable concept"
-Value:			CodeableConcept
+Value:			CodeableConcept   // TODO: is the correct syntax "Value is type CodeableConcept"?
 
-EntryElement:	QuantitativeObservation
+EntryElement:	QuantitativeObservation  // TODO: Is it worth it to make this a class and use inheritance of the Value type, when the particular classes can easilty declare their own types?
 Based on:		Observation
 Concept:		TBD
 Description:	"An observation whose value is a quantity"
@@ -105,14 +109,14 @@ Description:	"Observation of the existence (or non-existence) distinct anatomica
 Based on:		Observation
 Value:			CodeableConcept from BodyStructureVS
 0..1			BodySite
-0..1			NonOccurrenceModifier  // the structure does not exist at the given body site
 
 
 EntryElement:	Panel
 Concept:		TBD
 Based on:		Observation
 Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)  // TODO: how can we just say 0..0 without specifying the all the possible datatypes?
+// Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
+// TO DO: How to set value at 0..0 for the all the possible datatypes? How would "ANY" work in this case?
 0..0			DataAbsentReason
 
 

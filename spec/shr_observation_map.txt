@@ -6,16 +6,54 @@ Observation maps to Observation:
 	Entry.FocalSubject maps to subject
 	Entry.AssociatedEncounter maps to context
 	Entry.OriginalCreationDate maps to issued
-	Participant maps to performer
+	// TODO: Can we just say "Value maps to component.value[x]" and rely on matching types?
+	Value maps to value
+/*	Value[Quantity] maps to value[x].Quantity
+	Value[CodeableConcept] maps to value[x].CodeableConcept
+	Value[string] maps to value[x].string
+	Value[boolean] maps to value[x].boolean
+	Value[Range] maps to value[x].Range
+	Value[Ratio] maps to value[x].Ratio
+	Value[time] maps to value[x].time
+	Value[dateTime] maps to value[x].dateTime
+	Value[TimePeriod] maps to value[x].TimePeriod */
 	ObservationTypeCode maps to code
-	TBD "Specimen" maps to specimen
 	Category maps to category
+	//Reason extension
+	//FocalProblem extension
+	//FocalIntervention extension
+	//AssociatedStudy extension
+	BodySite.Value maps to bodySite
+	//NonOccurrenceModifier extension
 	Status maps to status
 	Method maps to method
+	//ObservationQualifier extension
+	TBD "Specimen" maps to specimen
+	//FindingNegationModifier extension
+	DataAbsentReason maps to dataAbsentReason
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
 	Interpretation maps to interpretation
 	Comment maps to comment
+	Members.Value maps to related.target
+	// TODO: How to constrain the value (not cardinality) of related.type to the specified code?
+	//constrain related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
+	// TODO: Can we just say "Components.Value maps to component.value[x]" and rely on matching types? (similar to comment on value)
+	// TODO: Do we need to specify slicing?
+	Components.Value[Quantity] maps to component.value[x].Quantity
+	Components.Value[CodeableConcept] maps to component.value[x].CodeableConcept
+	Components.Value[string] maps to component.value[x].string
+	Components.Value[boolean] maps to component.value[x].boolean
+	Components.Value[Range] maps to component.value[x].Range
+	Components.Value[Ratio] maps to component.value[x].Ratio
+	Components.Value[time] maps to component.value[x].time
+	Components.Value[dateTime] maps to component.value[x].dateTime
+	Components.Value[TimePeriod] maps to component.value[x].TimePeriod
+	Components.Value.ObservationTypeCode maps to component.code
+	Components.Value.DataAbsentReason maps to component.dataAbsentReason
+	Components.Value.Interpretation maps to component.interpretation	
+	// TODO: Participant comes from Action, but includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
+	Participant maps to performer  
 
 CodeableConceptObservation:
 	Value maps to value[x].CodeableConcept

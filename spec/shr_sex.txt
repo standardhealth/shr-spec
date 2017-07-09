@@ -19,8 +19,9 @@ Concept:		TBD
 Based on:		Panel
 Description:	"Information on gender identity and sexual orientation."
 				ObservationTypeCode is TBD#TBD
-0..1			GenderIdentity
-0..1			SexualOrientation
+/*				Members.Value
+includes 0..1			GenderIdentity
+includes 0..1			SexualOrientation */
 
 	EntryElement:	GenderIdentity
 	Concept:		MTH#C0017249
@@ -40,9 +41,10 @@ Concept:		MTH#C1314687
 Based on:		Panel
 Description:	"Experience with sexual intercourse."
 				ObservationTypeCode is MTH#C1314687
-1..*			SexualActivity
-0..1			NumberOfSexualPartnersPastYear
-0..*			IntercourseDifficulty
+/*				Members.Value
+includes 1..*			SexualActivity
+includes 0..1			NumberOfSexualPartnersPastYear
+includes 0..*			IntercourseDifficulty */
 
 	EntryElement:	SexualActivity
 	Concept:		MTH#C0241028
@@ -65,25 +67,29 @@ Description:	"Experience with sexual intercourse."
 
 
 EntryElement:	ContraceptivesUsed
-Based on:		BooleanObservation
+Based on:		Observation
 Concept:		MTH#C0700589
 Description:	"The method or methods of contraception used."
+Value:			boolean
 1..1			ObservationTypeCode is MTH#C0700589
+// TODO: Are these components or members?
 0..* 			ContraceptiveMethod
-0..*			ReasonForContraceptiveMethod or ReasonForNotUsingContraceptive
+0..*			ContraceptiveMethodReason
+0..*			ContraceptiveNotUsedReason   // only if false
 
 		Element:		ContraceptiveMethod
 		Concept:		TBD
 		Description:	"A contraceptive method used by the subject."
 		Value:			CodeableConcept from ContraceptiveMethodVS  // allow multiple choice
+		
 
-		Element:		ReasonForContraceptiveMethod
+		Element:		ContraceptiveMethodReason
 		Concept:		TBD
 		Based on:		Reason
-		Description:	"If using particular method of methods of contraception, why"
+		Description:	"If using particular method of methods of contraception, why? Or if not using a method of contraception, why."
 		Value:			CodeableConcept from ContraceptiveMethodReasonVS
 
-		Element:		ReasonForNotUsingContraceptive
+		Element:		ContraceptiveNotUsedReason
 		Concept:		TBD
 		Based on:		Reason
 		Description:	"If not using a method of contraception, why."
@@ -113,16 +119,17 @@ Concept:		MTH#C0032967
 Based on:		Panel
 Description:	"Information about current and past pregnancies."
 				ObservationTypeCode is LNC#10163-4
-1..1			CurrentPregnancyStatus
-1..1			NumberOfPreviousPregnancies
-0..1			NumberOfLivingChildren
+/*				Members.Value
+includes 1..1			CurrentPregnancyStatus
+includes 1..1			NumberOfPreviousPregnancies
+includes 0..1			NumberOfLivingChildren */
 
 	EntryElement:	CurrentPregnancyStatus
 	Concept:		MTH#C0552579
-	Based on:		BooleanObservation
+	Based on:		Observation
 	Description:	"Whether or not the subject is currently pregnant."
+	Value:			CodeableConcept from ThreeValueLogicVS
 					ObservationTypeCode is LNC#82810-3
-
 
 	EntryElement:	NumberOfPreviousPregnancies
 	Concept:		MTH#C0422807
