@@ -1,7 +1,7 @@
 Grammar:		DataElement 4.1
 Namespace:		shr.oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation, shr.procedure
+Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation, shr.procedure, shr.adverse, shr.medication
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -33,7 +33,7 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Based on:		Stage
 			Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 			Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
-/*			Members.Value
+/*			PanelMembers.Value
 				includes 1..1 BreastTumorCategory        // component
 				includes 1..1 BreastNodeCategory      // component
 				includes 1..1 BreastMetastatisCategory    // component */
@@ -83,6 +83,8 @@ Value:			CodeableConcept from BreastCancerTypeVS
 					Concept:		TBD
 					Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells."
 					Value:			positiveInt  // 1 to 3
+					
+					
 /*					
 			Element: 		PrimaryTumorSite
 			Based on:		BodySite
@@ -136,7 +138,7 @@ Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
 				ObservationTypeCode is TBD#TBD
 1..1			TBD "Specimen" // TODO: change to Specimen?  or NeoplasmObservation?  the link to source of tissue
-/*				Members.Value
+/*				PanelMembers.Value
 includes 1..1 EstrogenReceptorStatus
 includes 1..1 ProgesteroneReceptorStatus
 includes 1..1 HumanEpiduralGrowthFactorReceptor2Status */
@@ -271,7 +273,7 @@ EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
 Based on:		Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-/*				Members.Value
+/*				PanelMembers.Value
 includes 1..1			BRCA1Variant
 includes 1..1			BRCA2Variant */
 
@@ -296,6 +298,14 @@ Description:	"A finding related to the change of a disease over time. This conce
 Value:			CodeableConcept from SubjectiveProgressionVS
 1..1			FocalProblem
 1..1			Method with CodeableConcept from ProgressionMethodVS
+
+EntryElement:	MedicationToxicity
+Based on:		Observation
+Concept:		MTH#C0600688
+Description:	"Undesired harm to a specific patient associated with a medication."
+Value:			CodeableConcept from AdverseEventGradeVS
+1..1			MedicationRegimen // TODO: is this ref??
+
 
 
 
