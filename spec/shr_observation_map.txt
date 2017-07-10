@@ -6,7 +6,6 @@ Observation maps to Observation:
 	Entry.FocalSubject maps to subject
 	Entry.AssociatedEncounter maps to context
 	Entry.OriginalCreationDate maps to issued
-	// TODO: Can we just say "Value maps to component.value[x]" and rely on matching types?
 	Value maps to value[x]
 	ObservationTypeCode maps to code
 	Category maps to category
@@ -26,14 +25,17 @@ Observation maps to Observation:
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
 	Interpretation maps to interpretation
 	Comment maps to comment
-	PanelMembers.Value maps to related.target
-
-	// TODO: How to constrain the value (not cardinality) of related.type to the specified code?
-	//constrain related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
-	// TODO: Can we just say "Components.Value maps to component.value[x]" and rely on matching types? (similar to comment on value)
-	// TODO: Do we need to specify slicing?
 	
-	Components.Observation maps to component.value[x]
+	PanelMembers.Value maps to related.target 
+// (slice on = code)  TODO: Do we need to specify slicing?
+// IMPORTANT TODO: Constrain/fix the value of related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
+	
+
+	Components.Observation.Value maps to component.value[x]
+	Components.Observation.ObservationTypeCode maps to component.code
+	Components.Observation.DataAbsentReason maps to component.dataAbsentReason
+	Components.Observation.Interpretation maps to component.interpretation
+	// TODO: map reference range (set in labs, test, not here)
 
 	// TODO: Participant comes from Action, but includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
 	Participant maps to performer  
