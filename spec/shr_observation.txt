@@ -8,7 +8,7 @@ EntryElement: 	Observation
 Concept:		MTH#C1554188
 Based on:		Action
 Description:	"Information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An observation contains information about the act of observing, as well as the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
-Value: 			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) // TODO: or SampledData or Attachment
+Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) // TODO: or SampledData or Attachment
 // TODO: Do we allow data types beyond a FHIR Observation? Add "Any" to the grammar?
 //----------- Define the observation to be made
 1..1			ObservationTypeCode // TODO: perhaps add "defaults to Concept" to grammar?
@@ -78,22 +78,21 @@ Value: 			(Quantity or CodeableConcept or string or boolean or Range or Ratio or
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		0..* 			Observation
+		Value:			0..* 			Observation
 		
 		Element:		Components
 		Concept:		TBD
 		Description:	"Components are sub-parts of an observation that are always treated a part of a single observation; they are not separable. However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
-		0..* 			Observation
+		Value:			0..* 			Observation
 
 		
 EntryElement:	Panel
 Concept:		TBD
 Based on:		Observation
 Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
+//Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
 // TO DO: How to set value at 0..0 for the all the possible datatypes? How would "ANY" work in this case?
 0..0			DataAbsentReason
-		
 		
 EntryElement:	CodeableConceptObservation
 Based on:		Observation
