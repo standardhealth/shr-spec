@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.skin
 Description:	"SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
-Uses:  			shr.core, shr.base, shr.actor, shr.device, shr.problem, shr.observation, shr.lab
+Uses:  			shr.core, shr.base, shr.actor, shr.device, shr.condition, shr.observation, shr.lab
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
@@ -47,7 +47,7 @@ Value: 			Device is type SupportSurface
 
 EntryElement:		PressureUlcer
 Concept:			MTH#C0011127
-Based on:			Problem
+Based on:			Condition
 Description:		"A single pressure ulcer, tracked over a period of time. Multiple PressureUlcerAssessments (at different times) may be associated with a single PressureUlcer."
 Value:				CodeableConcept is TBD#TBD
 0..*				BodySite with CodeableConcept from PressureUlcerBodySiteVS  // TODO: add "if covered"
@@ -56,20 +56,18 @@ Value:				CodeableConcept is TBD#TBD
 0..*				TBD "PressureUlcerIntervention"    // pointer could go in the other direction
 
 
-
 		Element:		CausativeFactor
 		Concept:		TBD
 		Description:	"The cause the irritation or inflammation."
 		Value:			CodeableConcept from TBD "PressureUlcerCausationVS" or Device
 
-
+/* This has to be an Assessment, not a Condition */
 EntryElement:		PressureUlcerNotPresent
 Concept:			TBD
 Based on:			PressureUlcer
 Description:		"A statement that there is no pressure ulcer at a given body site. If body site is omitted, or if the body site is a coding representing the entire body, then the inference is that no pressure ulcers is present anywhere on the body."
-					FindingNegationModifier is true
+					AssessmentNegationModifier is true
 0..1				Certainty
-0..1				SupportingEvidenceQuality
 1..1				ClinicalStatus
 0..0				IncludeOnProblemList
 0..0				Onset
@@ -80,7 +78,7 @@ Description:		"A statement that there is no pressure ulcer at a given body site.
 0..0				Criticality
 0..0				Manifestation
 0..0				Stage
-
+*/
 
 EntryElement:		PressureUlcerManifestation // Observation
 Concept:			LNC#54574-9

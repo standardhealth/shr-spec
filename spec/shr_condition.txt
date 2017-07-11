@@ -1,18 +1,16 @@
 Grammar:		DataElement 4.1
-Namespace:		shr.problem
-Description:	"The SHR Problem domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
+Namespace:		shr.condition
+Description:	"The SHR Condition domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
 Uses:			shr.core, shr.base, shr.actor, shr.allergy, shr.observation
 
 CodeSystem:     SCT = http://snomed.info/sct
 
-EntryElement:	Problem
+EntryElement:	Condition
 Concept:		MTH#C0033213
-Description:	"A representation of a disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, or trouble. Problem can be used to track a problem over a period of time. By virtue of its continuity over time, Problem is different from a observation; an observation represents a point-in-time assertion or diagnosis. The two relate because a diagnosis (finding) can lead to creation of a Problem, and the Problem can have any number of related observations. A statement that a certain problem does not exist must be made using a finding (observation)"
+Description:	"A representation of a disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. Condition can be used to track a problem over a period of time. By virtue of its continuity over time, Condition is different from an Observation or Assessment; Observations represents evidence, and an Assessment is a judgment based on evidence and rendered at a point in time. Diagnosis is a type of Assessment that can lead to creation of a Condition. The two relate because observations can lead to creation (finding) of a Condition. A statement that a certain condition does not exist should be an assessment. Not all conditions are necessarily problems, and not all problems are (in some sense) conditions."
 Value:			CodeableConcept
-0..*			Category with CodeableConcept from ProblemCategoryVS
-0..1			FindingNegationModifier
-0..1			Certainty
-0..1			SupportingEvidenceQuality   // Might belong in the clinical finding
+0..*			Category with CodeableConcept from ConditionCategoryVS
+
 1..1			ClinicalStatus
 0..1			IncludeOnProblemList
 0..1			Onset
@@ -25,19 +23,15 @@ Value:			CodeableConcept
 0..1			Stage
 0..*			Manifestation   // TODO: Change to Related Observations?
 
-			Element:		SupportingEvidenceQuality
-			Concept:		TBD
-			Description:	"An assessment of the quality and/or quantity of the source information that supports judgment."
-			Value:			CodeableConcept from EvidenceQualityVS
 
 			Element:		ClinicalStatus
 			Concept:		TBD
-			Description:	"A flag indicating whether the problem is active or inactive, recurring, in remission, or resolved (as of the last update of the Problem)."
+			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
 			Value:			code from http://hl7.org/fhir/ValueSet/condition-clinical
 
 			Element:		IncludeOnProblemList
 			Concept:		TBD
-			Description:	"Whether or not to include this problem on the subject's current problem list."
+			Description:	"Whether or not to include this condition on the subject's current problem list."
 			Value:			boolean
 
 			Element:		Onset
@@ -47,7 +41,7 @@ Value:			CodeableConcept
 
 			Element:		WhenClinicallyRecognized
 			Concept:		TBD
-			Description:	"The time at which a condition or problem was first identified in a healthcare context."
+			Description:	"The time at which a condition or condition was first identified in a healthcare context."
 			Value:			GeneralizedTemporalContext
 
 			Element:		Preexisting
@@ -62,7 +56,7 @@ Value:			CodeableConcept
 
 			Element:		Severity
 			Concept:		MTH#C0392364
-			Description:	"Degree of harshness or extent of a symptom, disorder, or problem."
+			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
 			Value: 			CodeableConcept from FHIR/condition-severity
 
 			Element:		Criticality
@@ -87,38 +81,38 @@ Value:			CodeableConcept
 
 /*
 TO DO:
-Associate the problem with Evidence, such as Observations, Tests, Imaging Results
+Associate the condition with Evidence, such as Observations, Tests, Imaging Results
 Provide for Progress Notes (complex type with text, date, author)
 Link to Related Medications
 */
 
 
-// Examples of how to specialize Problem
+// Examples of how to specialize Condition
 
 EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
-Based on:			Problem
+Based on:			Condition
 Description:		"A problem with learning or behavior in a learning environment."
 Value:				CodeableConcept from TBD "AcademicProblemVS"
 0..0				BodySite
 
 EntryElement:		Injury
 Concept:			MTH#C3263722
-Based on:			Problem
+Based on:			Condition
 Description:		"Damage inflicted on the body by an external force."
 0..1				Setting   // where injury happened (work, home, school)
 0..1				Location  // where (on earth) did the injury happen
 
 
-EntryElement:		MentalHealthProblem
+EntryElement:		MentalHealthCondition
 Concept:			MTH#C1446377
-Based on:			Problem
-Description:		"A problem relating to a person’s psychological and emotional well-being."
+Based on:			Condition
+Description:		"A condition relating to a person’s psychological and emotional well-being."
 Value:				CodeableConcept from DSMVS
 
 EntryElement:	 	Asplenia
 Concept:			MTH#C0600031
-Based on:			Problem
+Based on:			Condition
 Description:		"Congenital absence of spleen."
 Value:			 	CodeableConcept is SCT#93030006
 
@@ -126,11 +120,11 @@ Value:			 	CodeableConcept is SCT#93030006
 EntryElement:		Concern
 Concept:			TBD
 Based on:
-Description:		"A concern or worry expressed by the subject, not necessarily related to a current health problem experienced by the subject. Examples include 'worried about losing health insurance' or 'worried about losing the ability to drive' or 'worried about relapse'."
+Description:		"A concern or worry expressed by the subject, not necessarily related to a current health condition experienced by the subject. Examples include 'worried about losing health insurance' or 'worried about losing the ability to drive' or 'worried about relapse'."
 
 
 EntryElement:		FamilyMemberCondition
-Based on:			Problem
+Based on:			Condition
 1..1				Entry.FocalSubject is type FamilyMember
 
 */

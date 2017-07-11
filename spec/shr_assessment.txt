@@ -1,0 +1,52 @@
+Grammar:		DataElement 4.1
+Namespace:		shr.assessment
+Description:	"The SHR Assessment domain contains definitions used to capture judgments, medical opinions, clinical impressions, diagnoses, and inferences drawn from evidence."
+Uses:			shr.core, shr.base, shr.actor, shr.allergy, shr.observation, shr.condition, shr.procedure, shr.medication
+
+CodeSystem:     SCT = http://snomed.info/sct
+
+
+EntryElement:	Assessment
+Concept:		MTH#C0220825
+Description:	"A conclusion (tentative or final) resulting from synthesis of evidence (one or more observations). An Assessment is a judgment rendered at a point in time. A diagnosis is a type of Assessment that can lead to creation of a Condition."
+1..1			AssessmentType  // category?
+1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/clinical-impression-status
+0..1			FocalCondition
+0..1			FocalIntervention
+0..1			ClinicallyRelevantTime
+0..*			AssessmentResult
+0..1			SupportingEvidenceQuality 
+0..*			SupportingEvidence
+0..1			Summary
+
+		Element:		AssessmentType
+		Concept:		TBD
+		Description:	"A code describing what is being assessed or the type of assessment activity, e.g. diagnosis, prognosis, disease progression, healing, toxicity, treatment efficacy."
+		Value:			CodeableConcept from AssessmentTypeVS //TODO: if covered
+
+		Element:		FocalCondition
+		Concept:		TBD
+		Description:	"A condition that is the target of the topic/focus/measurement of the assessment. For example, if the question involves the progression of the subject's diabetes, then the FocalCondition would be diabetes."
+		Value:			ref(Condition) or ref(AllergyIntolerance)
+		
+		Element:		FocalIntervention
+		Concept:		TBD
+		Description:	"The intervention or treatment that is the target of the assessment. For example, if the investigation involves the toxicity of chemotherapy regimen, the intervention would be that regimen (currently the MedicationUse of the chemotherapy drug)."
+		Value:			ref(Procedure) or ref(MedicationUse) // TODO: could we directly say "Intervention" if all these types are defined as Interventions?
+		
+		Element:		SupportingEvidenceQuality
+		Concept:		TBD
+		Description:	"An estimate of the quality and/or quantity of the source information that supports the assessment."
+		Value:			CodeableConcept from EvidenceQualityVS
+		
+		Element:		SupportingEvidence
+		Concept:		TBD
+		Description:	"Observations that support the current assessment."
+		Value:			ref(Observation)
+		
+		Element:		AssessmentResult
+		Concept:		TBD
+		Description:	"The conclusion drawn from this assessment. If the AssessmentNegationModifier is true, then the reverse of the result is asserted, and the certainty applies to the negated assessment."
+		Value:			CodeableConcept  // TODO: or references to Condition or AdverseReaction or AllergyIntolerance
+		0..1			AssessmentNegationModifier
+		0..1			Certainty

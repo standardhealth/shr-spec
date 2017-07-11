@@ -1,7 +1,7 @@
 Grammar:		DataElement 4.1
 Namespace:		shr.oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.problem, shr.lab, shr.observation, shr.procedure, shr.adverse, shr.medication
+Uses:  			shr.core, shr.base, shr.condition, shr.lab, shr.observation, shr.procedure, shr.adverse, shr.medication, shr.assessment
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -20,24 +20,22 @@ Value:			CodeableConcept from NeoplasmObservationVS
 
 EntryElement:	BreastCancer 
 Concept:		MTH#C1446377
-Based on:		Problem
+Based on:		Condition
 Description:	"A cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 Value:			CodeableConcept from BreastCancerTypeVS 
 				Category includes #disease
 0..1			Stage is type BreastCancerStage
 0..1			BreastCancerHistologicGrade
-0..*			Observation  // related observations
 
 			Element:		BreastCancerStage
 			Concept:		LNC#21908-9
 			Based on:		Stage
 			Description:	"The stage of breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping which categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 			Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
-/*			PanelMembers.Value
-				includes 1..1 BreastTumorCategory        // component
-				includes 1..1 BreastNodeCategory      // component
-				includes 1..1 BreastMetastatisCategory    // component */
-			0..1		PostOperativeIndicator    // qualifier  TODO: Change so different landmark event time are included: initial diagnosis, post-operative, trial-enrollment, other, etc.
+			1..1 			BreastTumorCategory  
+			1..1 			BreastNodeCategory  
+			1..1 			BreastMetastatisCategory 
+			0..1			PostOperativeIndicator    // qualifier  TODO: Change so different landmark event time are included: initial diagnosis, post-operative, trial-enrollment, other, etc.
 
 					EntryElement:	BreastTumorCategory	
 					Concept:		LNC#59528-0 
@@ -292,15 +290,15 @@ includes 1..1			BRCA2Variant */
 					GeneIdentifier is HGNC#BRCA2
 		
 EntryElement:	Progression
-Based on:		Observation
+Based on:		Assessment
 Concept:		MTH#C0449258
-Description:	"A finding related to the change of a disease over time. This concept is most often used for chronic and incurable diseases where the stage of the disease is an important determinant of therapy and prognosis. The disorder should be cited in the FocalProblem."
+Description:	"A finding related to the change of a disease over time. This concept is most often used for chronic and incurable diseases where the stage of the disease is an important determinant of therapy and prognosis. The disorder should be cited in the FocalCondition."
 Value:			CodeableConcept from SubjectiveProgressionVS
-1..1			FocalProblem
+1..1			FocalCondition
 1..1			Method with CodeableConcept from ProgressionMethodVS
 
 EntryElement:	MedicationToxicity
-Based on:		Observation
+Based on:		Assessment
 Concept:		MTH#C0600688
 Description:	"Undesired harm to a specific patient associated with a medication."
 Value:			CodeableConcept from AdverseEventGradeVS

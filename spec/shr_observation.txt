@@ -1,31 +1,29 @@
 Grammar:	DataElement 4.1
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.problem, shr.procedure
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure
 
 
 EntryElement: 	Observation
 Concept:		MTH#C1554188
 Based on:		Action
-Description:	"Information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An observation contains information about the act of observing, as well as the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+Description:	"An Observation represents evidence, both subjective and objective. Observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An Observation contains information about the act of observing or measuring, and the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
 Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) // TODO: or SampledData or Attachment
-// TODO: Do we allow data types beyond a FHIR Observation? Add "Any" to the grammar?
+
 //----------- Define the observation to be made
 1..1			ObservationTypeCode // TODO: perhaps add "defaults to Concept" to grammar?
 0..*			Category with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-category  // TODO: add 'if covered'
-0..1			Reason 
-0..1			FocalProblem
-0..1			FocalIntervention
-0..1			AssociatedStudy
 0..1			BodySite
+//----------- Why this observation is taking place
+0..1			Reason
+0..1			AssociatedStudy
 //----------- Execution of the observation action
-				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
 1..1			Status with CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
+				NonOccurrenceModifier.Reason with CodeableConcept from ObservationNotMadeReasonVS
 0..1			Method
 0..*			ObservationQualifier
-//----------- Capture the result
+//----------- Capture the result and its significance
 //				(the Value)
-0..1			FindingNegationModifier  // reverse the polarity of the conclusion (only if the Value is a logical statement of condition, such as a disorder)
 0..1			DataAbsentReason
 0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
 0..1			Interpretation
@@ -36,18 +34,8 @@ Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 
 		Element:		ObservationTypeCode
 		Concept:		TBD
-		Description:	"A term from a controlled vocabulary that defines what is being observed, measured, or asked, as specifically as possible. The code should always align with the concept of the element, but may be more specific, for example, a blood pressure observation can be coded as a sitting blood pressure or standing blood pressure."
+		Description:	"A term from a controlled vocabulary that defines what is being observed, measured, or asked, as specifically as possible. The code should always align with the concept of the element, but may be more specific, for example, a blood pressure observation can be coded as a sitting blood pressure or standing blood pressure, and may be from a different code system (e.g. LOINC versus MTH)."
 		Value:			CodeableConcept
-		
-		Element:		FocalProblem
-		Concept:		TBD
-		Description:	"A condition that is the target of the topic/focus/measurement of the investigation. For example, if the question involves the progression of the subject's diabetes, then the FocalProblem would be diabetes."
-		Value:			ref(Problem)
-		
-		Element:		FocalIntervention
-		Concept:		TBD
-		Description:	"The intervention or treatment that is the target of the topic/focus/measurement of the investigation. For example, if the investigation involves the toxicity of chemotherapy regimen, the intervention would be that regimen (currently the MedicationUse of the chemotherapy drug)."
-		Value:			ref(Procedure) or ref(MedicationUse) // TODO: could we directly say "Intervention" if all these types are defined as Interventions?
 		
 		Element:		AssociatedStudy
 		Concept:		TBD
@@ -92,33 +80,18 @@ Based on:		Observation
 Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
 //Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
 // TO DO: How to set value at 0..0 for the all the possible datatypes? How would "ANY" work in this case?
-0..0			DataAbsentReason
-		
+0..0			DataAbsentReason	
 
 EntryElement:	BodyStructureObservation
 Concept:		MTH#C1268086
 Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to this observation and tracked over time."
 Based on:		Observation
 Value:			CodeableConcept from BodyStructureVS
-0..1			BodySite
 
-
-
-Element:		HistoryObservation
-Concept:		MTH#C2004062 "History of previous events"
-Based on:		Observation
-Description:	"Captures some aspect of the life, health, or medical history of a subject."
-				Category is MTH#C2004062 "History of previous events"
-1..1			Status with CodeableConcept from NonLabObservationStatusVS
-
-
-
-
-//------------ Social Observation -----------------------
 
 Element:		SocialHistory
 Concept:		MTH#C3714536
-Based on:		HistoryObservation
+Based on:		Observation
 Description:	"The external elements and conditions which surround, influence, and affect the life and development of the subject. Includes social conditions such as poverty, violence, bullying."
 1..1			Status with CodeableConcept from NonLabObservationStatusVS
 				Category is OBSCAT#social-history "social history"
