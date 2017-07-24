@@ -44,8 +44,10 @@ Concept:		TBD
 Description:	"A statement about a planned or actual interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
 0..1			OccurrenceTime  // start-end
 0..1			ReferralDate
+1..1			Status from http://hl7.org/fhir/ValueSet/encounter-status
 0..1			ReferralSourceType
-0..1			EncounterType
+0..1			EncounterClass   // TODO: We should be using SpecificType here, but FHIR mapping is to Coding, not CodeableConcept. 
+0..*			ServiceGiven
 0..1			EncounterNonOccurrenceModifier
 0..*			Participant
 1..1			ProviderOrganization
@@ -70,16 +72,21 @@ Description:	"A statement about a planned or actual interaction between a patien
 	Description:	"The type of person or entity that instigated the encounter."
 	Value:			CodeableConcept from ReferralSourceTypeVS
 
-	Element:		EncounterType
-	Concept:		TBD
-	Description:	"The mode of interaction, whether inpatient, outpatient, or telecare."
-	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode 
-
 	Element:		EncounterNonOccurrenceModifier
 	Concept:		TBD
 	Based on:		NonOccurrenceModifier
 	Description:	"True if the encounter did not occur."
 					Reason from TBD "ReasonEncounterDidNotHappenVS"
+					
+	Element:		EncounterClass
+	Concept:		TBD
+	Description:	"The type of encounter, e.g., inpatient, outpatient, emergency, etc."
+	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered  // FHIR TODO: should be CodeableConcept
+					
+	Element:		ServiceGiven
+	Concept:		TBD
+	Description:	"Indicates a medical service provided."
+	Value:			CodeableConcept // TODO: Link to ICD-10 value set
 
 	Element:		TreatmentCooperation
 	Concept:		TBD

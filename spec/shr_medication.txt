@@ -9,7 +9,7 @@ Path:			CORE = http://standardhealthrecord.org/core/vs
 Element:		Medication
 Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
-Value: 			CodeableConcept from MedicationVS
+Value: 			SpecificType from MedicationVS
 0..1			DoseForm
 0..*			Ingredient
 0..1			Brand
@@ -63,6 +63,7 @@ Value: 			CodeableConcept from MedicationVS
 EntryElement:	MedicationUse
 Concept:		TBD
 Description:	"Report of a medication actually being used (or not used). Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
+// TODO:	Based on: 	Intervention
 1..1			Medication
 1..1			MedicationWasTaken
 1..1 			Reason
@@ -169,11 +170,12 @@ Description:	"A record of a medication NOT administered. Recorded when deviating
 EntryElement:	MedicationPrescription
 Concept:		TBD
 Based on:		Request
+// TODO:	Based on: 	Intervention -- or InterventionRequest
 Description:	"Report of a medication prescription."
 1..1			Medication
 				RequestNotToPerformActionModifier is type MedicationNotPrescribedModifier
-				RequestStatus with code from http://hl7.org/fhir/ValueSet/medication-request-status
-				PriorityOfRequest with code from http://hl7.org/fhir/ValueSet/medication-request-priority
+				Status from http://hl7.org/fhir/ValueSet/medication-request-status
+				PriorityOfRequest from http://hl7.org/fhir/ValueSet/medication-request-priority
 0..1			Dosage
 0..1			NumberOfRepeatsAllowed
 0..1			QuantityPerDispense

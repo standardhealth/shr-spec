@@ -6,8 +6,8 @@ Observation maps to Observation:
 	Entry.FocalSubject maps to subject
 	Entry.AssociatedEncounter maps to context
 	Entry.OriginalCreationDate maps to issued
-	Value maps to value[x]
-	ObservationTypeCode maps to code
+	ObservationResult maps to value[x]
+	SpecificType maps to code
 	Category maps to category
 	BodySite maps to bodySite
 	Status maps to status
@@ -19,28 +19,28 @@ Observation maps to Observation:
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
 	Interpretation maps to interpretation
 	Comment maps to comment
-	PanelMembers.Value maps to related.target 
+	PanelMembers.Value maps to related.target  //both are observation types
 // (slice on = code)  TODO: Do we need to specify slicing?
 // IMPORTANT TODO: Constrain/fix the value of related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
 
 // Temporary
 // Cannot do short-cut because Observation.Value has a boolean, but component.value[x] does not (sigh)
-//Components.Observation.Value maps to component.value[x]
-	Components.Observation.Quantity maps to component.value[x]
-	Components.Observation.CodeableConcept maps to component.value[x]
-	Components.Observation.string maps to component.value[x]
-	// Components.Observation.boolean maps to component.value[x]
-	Components.Observation.Range maps to component.value[x]
-	Components.Observation.Ratio maps to component.value[x]
-	Components.Observation.time maps to component.value[x]
-	Components.Observation.dateTime maps to component.value[x]
-	Components.Observation.TimePeriod maps to component.value[x]
+//Components.Observation.ObservationResult maps to component.value[x]
+	Components.Observation.ObservationResult[Quantity] maps to component.value[x]
+	Components.Observation.ObservationResult[CodeableConcept] maps to component.value[x]
+	Components.Observation.ObservationResult[string] maps to component.value[x]
+	// Components.Observation.ObservationResult[boolean] maps to component.value[x]
+	Components.Observation.ObservationResult[Range] maps to component.value[x]
+	Components.Observation.ObservationResult[Ratio] maps to component.value[x]
+	Components.Observation.ObservationResult[time] maps to component.value[x]
+	Components.Observation.ObservationResult[dateTime] maps to component.value[x]
+	Components.Observation.ObservationResult[TimePeriod] maps to component.value[x]
 // end Temporary
-	Components.Observation.ObservationTypeCode maps to component.code
+	Components.Observation.SpecificType maps to component.code
 	Components.Observation.DataAbsentReason maps to component.dataAbsentReason
 	Components.Observation.Interpretation maps to component.interpretation
 	// TODO: map reference range (set in labs, test, not here)
-	// TODO: Participant comes from Action, but includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
+	// TODO: Participant includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
 	Participant maps to performer  
 
 	

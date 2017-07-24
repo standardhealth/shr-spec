@@ -9,12 +9,11 @@ EntryElement: 	Observation
 Concept:		MTH#C1554188
 Based on:		Action
 Description:	"An Observation represents evidence, both subjective and objective. Observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An Observation contains information about the act of observing or measuring, and the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
-Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) // TODO: or SampledData or Attachment
 
 //----------- Define the observation to be made
-1..1			ObservationTypeCode // TODO: perhaps add "defaults to Concept" to grammar?
+1..1			SpecificType   // inherited from Action, here required
 0..*			Category from ObservationCategoryVS if covered
-0..1			BodySite
+0..1			BodySite  // TODO: this should be 0..* but that doesn't map to FHIR
 // TODO: 0..* AdditionalBodySite - observations can involve multiple body sites
 //----------- Why this observation is taking place
 0..1			Reason
@@ -23,9 +22,9 @@ Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 				NonOccurrenceModifier.Reason from ObservationNotMadeReasonVS
 0..1			Method
-0..*			ObservationQualifier
 //----------- Capture the result and its significance
-//				(the Value)
+0..1			ObservationResult
+0..*			ObservationQualifier
 0..1			DataAbsentReason
 0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
 0..1			Interpretation
@@ -33,11 +32,6 @@ Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 //----------- Related and Sub-Observations
 0..1			PanelMembers  // separate observations occurring in a panel
 0..1			Components  // if inseparable
-
-		Element:		ObservationTypeCode
-		Concept:		TBD
-		Description:	"A term from a controlled vocabulary that defines what is being observed, measured, or asked, as specifically as possible. The code should always align with the concept of the element, but may be more specific, for example, a blood pressure observation can be coded as a sitting blood pressure or standing blood pressure, and may be from a different code system (e.g. LOINC versus MTH)."
-		Value:			CodeableConcept
 		
 		Element:		AssociatedStudy
 		Concept:		TBD
@@ -60,6 +54,11 @@ Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			GeneralizedTemporalContext
 		
+		Element:		ObservationResult
+		Concept:		TBD
+		Description:	""
+		Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // TODO: or SampledData or Attachment
+		
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
@@ -75,9 +74,10 @@ Value: 			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 		Description:	"Components are sub-parts of an observation that are always treated a part of a single observation; they are not separable. However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 		Value:			0..* 			Observation
 
+		
 Element:		ComponentObservation
 Based on:		Observation
-Description:	"A simplified observation consisting of a type code, value (or data absent reason), reference range, and interpretation. Can be used in place of an observation when a full observation cannot be mapped, for example, in the components of an observation. Note that although Status is required, the value is not mapped to FHIR and is essentially ignored. The #final status is used."
+Description:	"A simplified observation consisting of a type code, value (or data absent reason), reference range, and interpretation. Can be used in place of an observation when a full observation cannot be mapped, for example, in the components of an observation. Note that although Status is required, the value is not mapped to FHIR and is essentially ignored."
 //----------- Define the observation to be made
 0..0			Category from ObservationCategoryVS if covered
 0..0			BodySite
@@ -85,7 +85,6 @@ Description:	"A simplified observation consisting of a type code, value (or data
 0..0			Reason
 0..0			AssociatedStudy
 //----------- Execution of the observation action
-				Status is #final
 0..0			NonOccurrenceModifier
 0..0			Method
 0..0			ObservationQualifier
@@ -96,7 +95,7 @@ Description:	"A simplified observation consisting of a type code, value (or data
 0..1			Interpretation
 0..0			Comment
 //----------- Related and Sub-Observations
-// TODO The following 0..0 constraints cause error:  ERROR shr: Cannot constrain cardinality to 0..0 because cardinality placement is ambiguous. Explicitly constrain parent elements in target path. (module=shr-fhir-export, shrId=shr.observation.ComponentObservation, target=Observation)
+// TODO The following 0..0 cardinality constraints cause error:  "ERROR shr: Cannot constrain cardinality to 0..0 because cardinality placement is ambiguous. Explicitly constrain parent elements in target path. (module=shr-fhir-export, shrId=shr.observation.ComponentObservation, target=Observation). We don't need to do this but it would be good to make sure components don't have panel members or other sub-components. "
 //0..0			PanelMembers  // separate observations occurring in a panel
 //0..0			Components  // if inseparable
 
@@ -107,7 +106,8 @@ Based on:		Observation
 Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
 //Value:			0..0 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
 // TO DO: How to set value at 0..0 for the all the possible datatypes? How would "ANY" work in this case?
-0..0			DataAbsentReason	
+0..0			DataAbsentReason
+1..1			PanelMembers
 
 
 EntryElement:	BodyStructureObservation
@@ -116,17 +116,20 @@ Description:	"Observation of the existence (or non-existence) distinct anatomica
 Based on:		Observation
 Value:			CodeableConcept from BodyStructureVS
 
-Element:   		Manifestation  // TODO: Relate to AdverseEvent?
+Element:   		Manifestation  // TODO: Relate to AdverseEvent, or is that something different
 Concept:		MTH#C1457887
 Based on:		Observation
 Description:	"A complaint or observed indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
 Value:			CodeableConcept from ManifestationVS
 				Category is #symptom
-1..1			ObservationTypeCode is MTH#C1457887
 0..1			Severity  // TODO: Grade?
 0..1			BodySite
 // TODO: AdditionBodySite - to capture additional sites where the manifestation exhibits
 
+Element:		Evidence
+Concept:		TBD
+Description:	"An observation that serves as evidence for some type of assessment."
+Value:			ref(Observation)
 
 Element:		SocialHistory
 Concept:		MTH#C3714536

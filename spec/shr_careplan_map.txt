@@ -1,3 +1,35 @@
 Grammar:	Map 4.1
 Namespace:	shr.careplan
 Target:		FHIR_STU_3
+
+GoalPursuit maps to Goal:
+// Includes attributes inherited from Action and Entry
+		Entry.FocalSubject maps to subject
+		Entry.Informant maps to expressedBy
+		SpecificType maps to description
+		Status maps to status
+		Category maps to category
+		Reason[Condition] maps to addresses
+		OccurrenceTime[date] maps to start[x].date
+		OccurrenceTime[TimePeriod].TimePeriodStart[date] maps to start[x].date
+		RequestedPerformanceTime[TimePeriod].TimePeriodEnd[date] maps to target.due[x].date
+		ResultAchieved[CodeableConcept] maps to outcomeCode
+		Annotation maps to note
+
+ObjectivePursuit maps to Goal:
+		Entry.FocalSubject maps to subject
+		Entry.Informant maps to expressedBy
+		SpecificType maps to description  // TODO Should this map (or additionally map) to target.measure?
+		Status maps to status
+		Category maps to category
+		Reason[Condition] maps to addresses
+		OccurrenceTime[date] maps to start[x].date
+		OccurrenceTime[TimePeriod].TimePeriodStart[date] maps to start[x].date
+		RequestedPerformanceTime[TimePeriod].TimePeriodEnd[date] maps to target.due[x].date 
+		//AssociatedGoalPursuit becomes extension
+		ResultTargeted[Quantity] maps to target.detail[x].Quantity
+		ResultTargeted[Range] maps to target.detail[x].Range
+		ResultTargeted[CodeableConcept] maps to target.detail[x].CodeableConcept
+		ResultAchieved[CodeableConcept] maps to outcomeCode  // TODO FHIR should align its outcome types to target.detail types (you can the target as a quantity, but outcome can only be a Codeable Concept)
+		Annotation maps to note
+		Evidence maps to outcomeReference

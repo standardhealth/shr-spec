@@ -1,93 +1,68 @@
 Grammar:	DataElement 4.0
 Namespace:	shr.careplan
 
-Uses:			shr.core, shr.condition
-
-/*
-
-Element:		Intervention
-Concept:		TBD
-Description:	"An action taken to address a undesired health state, behavior, risk, or goal."
-1..1			InterventionStatus
-0..*			ReasonToDo
-0..*			ReasonNotToDo
-0..*			ReasonHalted
-0..1			DoNotDoModifer
-0..*			Participant
-
-	Element:		InterventionStatus
-	Concept:		TBD
-	Description:	"The lifecycle or workflow state of a executable action or process."
-	Value:			CodeableConcept from InterventionStatusVS
-
-	Element:		ReasonToDo
-	Concept:		MTH#C3146298
-	Description:	"A situation which makes a particular treatment or procedure advisable."
-	Value:			CodeableConcept or Condition or Observation or Risk or Goal
-	
-	Element:		ReasonNotToDo
-	Concept:		TBD
-	Description:	"The explanation on why the intervention should not be done, for example, a contraindication."
-	Value:			CodeableConcept or Risk or Condition or Observation or Behavior or MedicationUse //SubstanceUse? Environment? Genetic marker?
-	
-	Element:		ReasonHalted
-	Concept:		TBD
-	Description:	"The explanation on why the intervention was halted or otherwise interrupted."
-	Value:			CodeableConcept or Risk or Condition
-	
-	Element:		DoNotDoModifier
-	Concept:		TBD
-	Description:	"If true, indicates the intervention described should not be done. In this case, the intervention status should be rejected."
-	Value:			boolean
+Uses:			shr.base, shr.core, shr.condition, shr.observation
 
 	
-	
-EntryElement:	Goal
+EntryElement:	GoalPursuit
 Concept:		MTH#C0018017
-Description:	"A broad statement about what should be accomplished. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities."
+Based on:		Action
+Description:	"A broad statement about what should be accomplished and the progress towards that goal. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities."
 0..1			Title
-0..1			Description
-1..1			GoalStatus   // has the same value set as InterventionStatus
-0..1			ProjectedAchieveDate
-0..1			ActualAchieveDate
-0..1			DeferredDate
-0..*			Objective
-
-
-	Element:		Objective
-	Concept:		TBD
-	Description:	"An expected or desired achievement that is well-defined, specific, measurable, and derived from one or more goal(s)."
-	Based on:		Goal
-	0..0			Objective  // do not allow sub-objectives
-	1..*			TBD "Target"
+1..1			SpecificType
+0..*			Category from http://hl7.org/fhir/ValueSet/goal-category if covered
+1..1			Status from http://hl7.org/fhir/ValueSet/goal-status
+0..1			RequestedPerformanceTime  // TODO: a separate object (e.g. GoalRequest)? The goal would then be in fulfillment of the request
+				Reason // TODO: Restrict this choice to ref(Condition). There is no grammar for constraining choices. This restriction would be to align with FHIR Goal.addresses
+0..1			ResultAchieved
+0..*			Annotation
+0..*			ObjectivePursuit
 	
+	
+Element:		ObjectivePursuit
+Concept:		TBD
+Based on:		Action
+Description:	"Describes the pursuit of an expected or desired achievement that is well-defined, specific, measurable, and derived from one or more goals. It is similiar to Observation, since an objective can sometimes be interpreted as a yet-to-be-made, future observation with a certain target result. "
+1..1			SpecificType // most likely an observation code
+1..1			Status from http://hl7.org/fhir/ValueSet/goal-status // note this is different from observation status
+0..*			Category from ObservationCategoryVS if covered  // objective is an observable
+0..1			AssociatedGoalPursuit  // TODO: not sure this is necessary (bidirectional pointers are unusual in FHIR)
+0..1			RequestedPerformanceTime
+1..1			ResultTargeted
+0..*			ResultAchieved
+0..*			Annotation
+0..*			Evidence
 
-
-
+		Element:		ResultTargeted
+		Concept:		TBD
+		Description:	"The desired value or status to be achieved."
+		Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // TODO: or SampledData or Attachment
+		
+		Element:		ResultAchieved
+		Concept:		TBD
+		Description:	"The actual value or status achieved."
+		Value:			Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod // TODO: or SampledData or Attachment
+		
+		Element:		AssociatedGoalPursuit
+		Concept:		TBD
+		Description:	"The goal pursuit associated with this objective."
+		Value:			ref(GoalPursuit)
 
 EntryElement:	Careplan
 Concept:		MTH#C0178916
-Description:	"Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions."
+Based on:		Action
+Description:	"Describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions."
 0..1			Title
 0..1			Description
-1..1			ActionStatus
-0..*			CareplanCategory
-0..1			EffectiveTimePeriod
-0..*			Author
-0..*			Participant
-1..*			Goal
-1..*			Activity
+				Category from http://hl7.org/fhir/ValueSet/care-plan-category if covered
+1..*			GoalPursuit
+1..*			PlannedIntervention
+0..*			Intervention
 
-
-		Element:		CareplanStatus
+		Element:		PlannedIntervention
 		Concept:		TBD
-		Description:	"A code specifying the state of the care plan."
-		Value:			code from http://hl7.org/fhir/ValueSet/event-status
+		Description:	"An intervention that is part of a plan of action."
+		Value:			Intervention
 
-		Element:		CareplanCategory
-		Concept:		TBD
-		Description:	"Identifies what kind of plan this is to support differentiation between multiple co-existing plans, e.g. Home health, psychiatric, asthma, disease management, wellness, etc."
-		Value:			CodeableConcept
-		
-*/
+
 

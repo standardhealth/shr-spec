@@ -1,7 +1,7 @@
 Grammar:	DataElement 4.1
 Namespace:		shr.base
 Description:		"The SHR Base domain contains definitions for elements that are widely shared in SHR, including the base Entry and associated metadata."
-Uses:				shr.core, shr.demographics, shr.actor, shr.encounter
+Uses:				shr.core, shr.demographics, shr.actor, shr.encounter, shr.device
 
 //---------------  Missing Information -----------------------
 
@@ -62,7 +62,7 @@ Description:	"An item inserted in an electronic record."
 	Element:		FocalSubject
 	Concept:		TBD
 	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)."
-	Value:			PersonOfRecord or Practitioner or RelatedPerson
+	Value:			ref(PersonOfRecord) or ref(Practitioner) or ref(RelatedPerson)
 
 	Element:		SubjectIsThirdPartyModifier
 	Concept:		TBD
@@ -83,7 +83,7 @@ Description:	"An item inserted in an electronic record."
 	Element:		AssociatedEncounter
 	Concept:		TBD
 	Description:	"The encounter or episode of care that led to creation of this entry."
-	Value:			Encounter
+	Value:			ref(Encounter)
 
 	Element:   	 	OriginalCreationDate
 	Concept:        MTH#C3669169
@@ -103,7 +103,7 @@ Description:	"An item inserted in an electronic record."
 	Element:		Author
 	Concept:		TBD
 	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
-	Value:			PersonOfRecord or Practitioner or RelatedPerson or Organization  // TODO: Does Person imply references to Practitioner are allowed, or does it need to be explicit? (that IS what is intended)
+	Value:			ref(PersonOfRecord) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) // TODO: Does Person imply references to Practitioner are allowed, or does it need to be explicit? (that IS what is intended)
 
 	Element:		Language
 	Concept:		MTH#C0023008
@@ -127,6 +127,7 @@ Description:	"A health record used to help populate the current health record."
 Element:		Action
 Concept:		TBD
 Description:	"A deed or endeavor. An action can have various contexts: performed, not performed, promised to happen, recommended to happen, etc."
+0..1			SpecificType
 1..1			Status
 0..*			Category
 0..1			NonOccurrenceModifier
@@ -137,21 +138,34 @@ Description:	"A deed or endeavor. An action can have various contexts: performed
 		Element:		Status
 		Concept:		MTH#C0449438
 		Description:	"The position of affairs at a particular time"
-		Value:			CodeableConcept
+		Value:			code or Coding or CodeableConcept
 		
 		Element:		Category
 		Concept:		TBD
 		Description:	"A categorization of the action according its type, often a code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This can be used for searching, sorting and display purposes."
 		Value:			CodeableConcept
-		
-		
+
+Element:		Intervention
+Concept:		TBD
+Based on:		Action
+Description:	"An action taken to address a undesired health state, behavior, risk, or goal."
+1..1			SpecificType
+0..1			DoNotDoModifier
+
+	Element:		DoNotDoModifier
+	Concept:		TBD
+	Description:	"If true, indicates the intervention should not be done. If true, the intervention status should be #rejected."
+	Value:			boolean	
+	0..1			Reason
+
+	
 // Not used yet TODO - refactor to align with topic and context
 Element:		Request
 Concept:		MTH#C1705178
 Based on:		Action
 Description:	"An order for something to take place. Using NonOccurrenceModifier, it may document why a request was NOT made."
 0..1			RequestNotToPerformActionModifier
-1..1			RequestStatus // orders with 'draft' or 'entered in error' status do not appear in the SHR
+1..1			Status from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
 0..1			RequestedPerformanceTime
 0..1			Reason
 0..1 			PriorityOfRequest
@@ -165,15 +179,10 @@ Description:	"An order for something to take place. Using NonOccurrenceModifier,
 		Value:			boolean
 		0..1			Reason
 
-		Element:		RequestStatus
-		Concept:		TBD
-		Description:	"The extent to which the ordering process has progressed, for this order."
-		Value:			code from http://hl7.org/fhir/ValueSet/request-status
-
 		Element:		RequestedPerformanceTime
 		Concept:		TBD
-		Description:	"When test or tests should be done. If the tests are a series or recur (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			dateTime or TimePeriod or TBD "Timing"
+		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			dateTime or date or TimePeriod or TBD "Timing"
 
 		Element:		PriorityOfRequest
 		Concept:		TBD
