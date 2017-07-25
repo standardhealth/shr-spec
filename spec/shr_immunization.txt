@@ -27,18 +27,14 @@ Value:			SpecificType from http://hl7.org/fhir/ValueSet/vaccine-code
 EntryElement:	Immunization
 Concept:		MTH#C0020971
 Description:	"A statement relating to a vaccination that was or was not administered to the subject."
+Based on:		Action
 1..1 			Vaccine // in the case of immunication not given, the vaccine will have a SpecificType, but not a lot or manufacturer. 
-1..1			ImmunizationNotGivenModifier  // should be 0..1 but FHIR's corresponding element is 1..1
+1..1			NonOccurrenceModifier
+				NonOccurrenceModifier.Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
 0..1			BodySite   // from core
 0..1			RouteIntoBody  // from medication
 0..1			AmountOfMedication  // from medication
 0..1			TBD "DoseSequenceNumber"
-
-	Element:		ImmunizationNotGivenModifier
-	Concept:		TBD
-	Based on:		NonOccurrenceModifier
-	Description:	"True, If the immunization was not given."
-	0..1			Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason  // should be 1..1 and ImmunizationNotGivenModifier should be 0..1, but FHIR is not compatible
 
 
 EntryElement:	ImmunizationAdministered
@@ -47,7 +43,7 @@ Based on:		Immunization
 Description:	"Represents an immunization that was administered to the subject."
 1..1			Vaccine.VaccineManufacturer  // required
 1..1			Vaccine.LotNumber   // required
-				ImmunizationNotGivenModifier is false
+				NonOccurrenceModifier is false
 0..1			BodySite   // from core
 0..1			RouteIntoBody  // from medication
 0..1			AmountOfMedication  // from medication
@@ -59,7 +55,7 @@ EntryElement:	ImmunizationNotGiven
 Concept:		MTH#C0580520
 Based on:		Immunization
 Description:	"Represents an immunization that was not given."
-				ImmunizationNotGivenModifier is true
+				NonOccurrenceModifier is true
 0..0			BodySite
 0..0			RouteIntoBody
 0..0			AmountOfMedication

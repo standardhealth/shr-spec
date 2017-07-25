@@ -12,16 +12,19 @@ Value: 			CodeableConcept from MissingValueReasonVS
 
 // ------------   Modifiers  -----------------------
 
-Element:		NonOccurrenceModifier  // TO DO - develop into the "not performed" context
+Element:		NonOccurrenceModifier 
 Concept:		TBD
-Description:	"When true, indicates either that the event or action documented in the entry did not occur, or the the thing documented is absent or does not exist."
+Description:	"When true, indicates either that the event or action documented in the entry did not occur. For example, if immunization is not given, the NonOccurrenceModifier=true will indicate this.
+When applied to a recommendation, the modifier indicates the action mentioned in the topic should not take place. For example, a request to NOT elevate the head of a bed using the code for elevating the bed, and setting ProhibitedModifier to true. Other examples include do not ambulate, do not flush NG tube, do not take blood pressure on a certain arm, etc. If the SpecificType contains negation and ProhibitedModifier is true, that will reinforce the prohibition, and should not be interpreted as a double negative that equals a positive."
 Value:			boolean
-0..1			Reason   // The reason that an event or action did not occur, or the thing document is absent or does not exist.
+0..1			Reason   // The reason that an event or action did not occur
 
-Element:		AssessmentNegationModifier
+
+Element:		ResultNegationModifier
 Concept:		TBD
-Description:	"When true, this modifier indicates that the associated finding is false or does not exist. For example, if the finding is 'allergy to peanuts' and the AssessmentNegationModifier is true, it means the subject has no allergy to peanuts."
+Description:	"When true, this modifier indicates that the associated observation, assessment, or finding is false, the condition is absent. For example, if the assessment is 'allergy to peanuts' and the ResultNegationModifier is true, it means the subject does not have an allergy to peanuts."
 Value:			boolean
+
 
 //----------------  Entry -------------------
 
@@ -33,7 +36,7 @@ Description:	"An item inserted in an electronic record."
 0..1			Version
 1..*			EntryType
 1..1			FocalSubject
-0..1			SubjectIsThirdPartyModifier
+0..1			SubjectIsThirdPartyFlag
 0..1			Narrative
 0..1    		Informant
 0..1			Author
@@ -64,7 +67,7 @@ Description:	"An item inserted in an electronic record."
 	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)."
 	Value:			ref(PersonOfRecord) or ref(Practitioner) or ref(RelatedPerson)
 
-	Element:		SubjectIsThirdPartyModifier
+	Element:		SubjectIsThirdPartyFlag
 	Concept:		TBD
 	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
 	Value:			boolean
@@ -126,14 +129,15 @@ Description:	"A health record used to help populate the current health record."
 
 Element:		Action
 Concept:		TBD
-Description:	"A deed or endeavor. An action can have various contexts: performed, not performed, promised to happen, recommended to happen, etc."
+Description:	"A deed or endeavor; an action taken to address a undesired health state, behavior, risk, or goal. An action can have various contexts: definitional, occurred/not occurred, ordered/not ordered, recommended/recommended against."
 0..1			SpecificType
 1..1			Status
 0..*			Category
-0..1			NonOccurrenceModifier
+0..1			NonOccurrenceModifier  // did not occur (often with the expectation of occurrence)
 0..*			Reason
 0..1			OccurrenceTime  // when the action took place
 0..*			Participant
+
 		
 		Element:		Status
 		Concept:		MTH#C0449438
@@ -145,26 +149,12 @@ Description:	"A deed or endeavor. An action can have various contexts: performed
 		Description:	"A categorization of the action according its type, often a code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This can be used for searching, sorting and display purposes."
 		Value:			CodeableConcept
 
-Element:		Intervention
-Concept:		TBD
-Based on:		Action
-Description:	"An action taken to address a undesired health state, behavior, risk, or goal."
-1..1			SpecificType
-0..1			DoNotDoModifier
-
-	Element:		DoNotDoModifier
-	Concept:		TBD
-	Description:	"If true, indicates the intervention should not be done. If true, the intervention status should be #rejected."
-	Value:			boolean	
-	0..1			Reason
-
 	
 // Not used yet TODO - refactor to align with topic and context
-Element:		Request
+Element:		Request 
 Concept:		MTH#C1705178
 Based on:		Action
-Description:	"An order for something to take place. Using NonOccurrenceModifier, it may document why a request was NOT made."
-0..1			RequestNotToPerformActionModifier
+Description:	"An order for something to take place."
 1..1			Status from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
 0..1			RequestedPerformanceTime
 0..1			Reason
@@ -172,13 +162,7 @@ Description:	"An order for something to take place. Using NonOccurrenceModifier,
 0..1			(RequestedPerformerType or RequestedPerformer)
 0..1			PerformerInstructions
 0..1			PatientInstructions
-
-		Element:		RequestNotToPerformActionModifier
-		Concept:		TBD
-		Description:	"If true, the thing requested should not take place. For example, a request to NOT elevate the head of a bed using the code for elevating the bed, and setting RequestNotToPerformActionModifier to true. Other examples include do not ambulate, do not flush NG tube, do not take blood pressure on a certain arm, etc. If the Request.code and RequestAgainstModifier both contain negation, that will reinforce the prohibition, and should not be interpreted as a double negative that equals a positive."
-		Value:			boolean
-		0..1			Reason
-
+		
 		Element:		RequestedPerformanceTime
 		Concept:		TBD
 		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."

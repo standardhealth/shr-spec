@@ -63,7 +63,6 @@ Value: 			SpecificType from MedicationVS
 EntryElement:	MedicationUse
 Concept:		TBD
 Description:	"Report of a medication actually being used (or not used). Medication use is either reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
-// TODO:	Based on: 	Intervention
 1..1			Medication
 1..1			MedicationWasTaken
 1..1 			Reason
@@ -170,22 +169,15 @@ Description:	"A record of a medication NOT administered. Recorded when deviating
 EntryElement:	MedicationPrescription
 Concept:		TBD
 Based on:		Request
-// TODO:	Based on: 	Intervention -- or InterventionRequest
 Description:	"Report of a medication prescription."
 1..1			Medication
-				RequestNotToPerformActionModifier is type MedicationNotPrescribedModifier
+				NonOccurrenceModifier.Reason from ReasonMedicationNotUsedVS
 				Status from http://hl7.org/fhir/ValueSet/medication-request-status
 				PriorityOfRequest from http://hl7.org/fhir/ValueSet/medication-request-priority
 0..1			Dosage
 0..1			NumberOfRepeatsAllowed
 0..1			QuantityPerDispense
 0..1			SupplyDuration
-
-	Element:		MedicationNotPrescribedModifier
-	Concept:		TBD
-	Based on:		RequestNotToPerformActionModifier
-	Description:	"True, if the medication should not, or was not prescribed for a particular reason."
-					Reason from ReasonMedicationNotUsedVS
 
 	Element:		NumberOfRepeatsAllowed
 	Concept:		TBD
@@ -214,7 +206,7 @@ EntryElement:	MedicationNotPrescribed
 Concept:		TBD
 Based on:		MedicationPrescription
 Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
-1..1			MedicationNotPrescribedModifier is true
+1..1			NonOccurrenceModifier is true
 
 
 
