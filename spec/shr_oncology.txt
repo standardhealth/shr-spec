@@ -8,6 +8,7 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
+CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
 
 EntryElement:	NeoplasmObservation
 Description:	"Observation of a (potentially) abnormal growth. The body site allows the abnormality to be located and identified. The abnormality identifier allows the tumor to be tracked over time."
@@ -286,12 +287,17 @@ Based on:		Observation // formerly CodeConceptObservation
 Description:	"Whether the patient carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			GeneIdentifier
+0..1			Refseq
 
 			Element:		GeneIdentifier
 			Concept:		MTH#C1706509
-			Based on:		Identifier
 			Description:	"A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
 			Value:			CodeableConcept from GeneIdentifierVS
+			
+			Element:		Refseq
+			Concept:		TBD
+			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
+			Value: 			CodeableConcept
 			
 EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
@@ -318,18 +324,11 @@ includes 1..1			BRCA2Variant */
 EntryElement:	Progression
 Based on:		Assessment
 Concept:		MTH#C0449258
-Description:	"A finding related to the change of a disease over time. This concept is most often used for chronic and incurable diseases where the stage of the disease is an important determinant of therapy and prognosis. The disorder should be cited in the FocalCondition."
+Description:	"A finding related to the current trend of a disease over time. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The disorder being evaluated must be cited in the AssessmentFocus as ref(Condition)."
 Value:			CodeableConcept from SubjectiveProgressionVS
-1..1			FocalCondition
-1..1			Method from ProgressionMethodVS
-
-
-EntryElement:	MedicationToxicity
-Based on:		Assessment
-Concept:		MTH#C0600688
-Description:	"Undesired harm to a specific patient associated with a medication."
-Value:			CodeableConcept from AdverseEventGradeVS
-1..1			MedicationRegimen // TODO: is this ref??
+				Category includes MTH#C0421176 "Progression"
+1..1			AssessmentFocus  // What condition is being evaluated for progression
+0..*			Evidence from ProgressionEvidenceTypeVS
 
 
 //EntryElement:	TreatmentResponse
