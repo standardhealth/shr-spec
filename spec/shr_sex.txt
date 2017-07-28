@@ -1,4 +1,4 @@
-Grammar:		DataElement 4.1
+Grammar:		DataElement 5.0
 Namespace:		shr.sex
 Description:	"The SHR Sex domain contains definitions related to the sexual health and behavior of the person of record."
 Uses:			shr.core, shr.base, shr.observation
@@ -42,9 +42,9 @@ Based on:		Panel
 Description:	"Experience with sexual intercourse."
 				SpecificType is MTH#C1314687
 /*				PanelMembers.Value
-includes 1..*			ref(SexualActivity)
-includes 0..1			ref(NumberOfSexualPartnersPastYear)
-includes 0..*			ref(IntercourseDifficulty) */
+includes 1..*			SexualActivity
+includes 0..1			NumberOfSexualPartnersPastYear
+includes 0..*			IntercourseDifficulty */
 
 	EntryElement:	SexualActivity
 	Concept:		MTH#C0241028
@@ -66,28 +66,22 @@ includes 0..*			ref(IntercourseDifficulty) */
 	Value:			CodeableConcept from IntercourseDifficultyVS
 
 
-EntryElement:	ContraceptivesUsed
-Based on:		Observation
+EntryElement:	ContraceptiveUse
 Concept:		MTH#C0700589
-Description:	"The method or methods of contraception used."
-Value:			boolean
+Description:	"Whether the subject uses contaceptives, and the method or methods of contraception used."
+Based on:		Observation
+Value:			CodeableConcept from QualitativeFrequencyVS
 1..1			SpecificType is MTH#C0700589
-// TODO: Are these components or members?
-0..* 			ContraceptiveMethod
-0..*			ContraceptiveMethodReason
-0..*			ContraceptiveNotUsedReason   // only if false
+0..*			ContraceptiveNotUsedReason 
+// TODO PanelMember.Value includes
+0..* 			ContraceptiveMethodUsed
 
-		Element:		ContraceptiveMethod
+		Element:		ContraceptiveMethodUsed
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"A contraceptive method used by the subject."
 		Value:			CodeableConcept from ContraceptiveMethodVS  // allow multiple choice
-		
-
-		Element:		ContraceptiveMethodReason
-		Concept:		TBD
-		Based on:		Reason
-		Description:	"If using particular method of methods of contraception, why? Or if not using a method of contraception, why."
-		Value:			CodeableConcept from ContraceptiveMethodReasonVS
+		0..1			Reason from ContraceptiveMethodReasonVS
 
 		Element:		ContraceptiveNotUsedReason
 		Concept:		TBD
@@ -119,10 +113,10 @@ Concept:		MTH#C0032967
 Based on:		Panel
 Description:	"Information about current and past pregnancies."
 				SpecificType is LNC#10163-4
-/*				PanelMembers.Value
-includes 1..1			CurrentPregnancyStatus
-includes 1..1			NumberOfPreviousPregnancies
-includes 0..1			NumberOfLivingChildren */
+//  PanelMembers.Value
+0..1			CurrentPregnancyStatus
+0..1			NumberOfPreviousPregnancies
+0..1			NumberOfLivingChildren
 
 	EntryElement:	CurrentPregnancyStatus
 	Concept:		MTH#C0552579
@@ -133,13 +127,13 @@ includes 0..1			NumberOfLivingChildren */
 
 	EntryElement:	NumberOfPreviousPregnancies
 	Concept:		MTH#C0422807
-	Based on:		Observation // formerly QuantitativeObservation // should be IntegerObservation
+	Based on:		Observation // formerly QuantitativeObservation // should be IntegerObservation if there were such a thing
 	Description:	"Number of previous pregnancies."
 					SpecificType is LNC#75201-4
 
 	EntryElement:	NumberOfLivingChildren
 	Concept:		MTH#C2229975
-	Based on:		Observation // formerly QuantitativeObservation  // should be IntegerObservation !!
+	Based on:		Observation // formerly QuantitativeObservation // should be IntegerObservation if there were such a thing
 	Description:	"Number of living children."
 					SpecificType is LNC#11638-4
 /*

@@ -1,4 +1,4 @@
-Grammar:		DataElement 4.1
+Grammar:		DataElement 5.0
 Namespace:		shr.assessment
 Description:	"The SHR Assessment domain contains definitions used to capture judgments, medical opinions, clinical impressions, diagnoses, and inferences drawn from evidence."
 Uses:			shr.core, shr.base, shr.actor, shr.allergy, shr.observation, shr.condition, shr.procedure, shr.medication
@@ -11,25 +11,25 @@ Description:	"A conclusion (tentative or final) resulting from synthesis of evid
 0..*			Category from AssessmentTypeVS if covered
 1..1			Status from http://hl7.org/fhir/ValueSet/clinical-impression-status
 0..*			AssessmentFocus
-0..* 			Assertion   // the result of the assessment as a text or code
+0..* 			AssessmentResult  // the result of the assessment as a text or code
+0..1			Method
 0..1			ClinicallyRelevantTime
 0..1			EvidenceQuality 
 0..*			Evidence
 0..1			Summary
 
 
-		Element:		AssessmentFocus
+		Element:		AssessmentFocus  // This is an assessment of X (or finding regarding X) where X is the AssessmentFocus
 		Concept:		TBD
 		Description:	"The topic or target of an analysis or assessment. For example, if the question involves the progression of the subject's diabetes, then the FocalCondition would be diabetes. If the investigation involves the toxicity of chemotherapy regimen, the focus would be that regimen (currently the MedicationUse of the chemotherapy drug). If the analysis involves certain observations, they would be listed as the focus."
-		Value:			CodeableConcept or ref(Action) or ref(Condition) or ref(AllergyIntolerance) // note: Action includes Observation
+		Value:			CodeableConcept or ref(Procedure) or ref(Observation) or ref(Condition) or ref(AllergyIntolerance) // or ref(Device)
 
-		
 		Element:		EvidenceQuality
 		Concept:		TBD
 		Description:	"An estimate of the quality and/or quantity of the source information that supports the assessment."
 		Value:			CodeableConcept from EvidenceQualityVS
 		
-		Element:		Assertion
+		Element:		AssessmentResult
 		Concept:		TBD
 		Description:	"A statement of judgment or opinion, often the outcome, finding, or conclusion of the investigation or analysis."
 		Value:			CodeableConcept

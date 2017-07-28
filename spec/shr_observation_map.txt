@@ -1,4 +1,4 @@
-Grammar:	Map 4.1
+Grammar:	Map 5.0
 Namespace:	shr.observation
 Target:		FHIR_STU_3
 
@@ -6,7 +6,7 @@ Observation maps to Observation:
 	Entry.FocalSubject maps to subject
 	Entry.AssociatedEncounter maps to context
 	Entry.OriginalCreationDate maps to issued
-	ObservationResult maps to value[x]
+	Value maps to value[x]
 	SpecificType maps to code
 	Category maps to category
 	BodySite maps to bodySite
@@ -25,16 +25,17 @@ Observation maps to Observation:
 
 // Temporary
 // Cannot do short-cut because Observation.Value has a boolean, but component.value[x] does not (sigh)
-//Components.Observation.ObservationResult maps to component.value[x]
-	Components.Observation.ObservationResult[Quantity] maps to component.value[x]
-	Components.Observation.ObservationResult[CodeableConcept] maps to component.value[x]
-	Components.Observation.ObservationResult[string] maps to component.value[x]
-	// Components.Observation.ObservationResult[boolean] maps to component.value[x]
-	Components.Observation.ObservationResult[Range] maps to component.value[x]
-	Components.Observation.ObservationResult[Ratio] maps to component.value[x]
-	Components.Observation.ObservationResult[time] maps to component.value[x]
-	Components.Observation.ObservationResult[dateTime] maps to component.value[x]
-	Components.Observation.ObservationResult[TimePeriod] maps to component.value[x]
+// FHIR issue filed #13703 on 7/28/2017
+//Components.Observation.Value maps to component.value[x]
+	Components.Observation.Quantity maps to component.value[x]
+	Components.Observation.CodeableConcept maps to component.value[x]
+	Components.Observation.string maps to component.value[x]
+	// Components.Observation.boolean maps to component.value[x]
+	Components.Observation.Range maps to component.value[x]
+	Components.Observation.Ratio maps to component.value[x]
+	Components.Observation.time maps to component.value[x]
+	Components.Observation.dateTime maps to component.value[x]
+	Components.Observation.TimePeriod maps to component.value[x]
 // end Temporary
 	Components.Observation.SpecificType maps to component.code
 	Components.Observation.DataAbsentReason maps to component.dataAbsentReason
@@ -43,6 +44,8 @@ Observation maps to Observation:
 	// TODO: Participant includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
 	Participant maps to performer  
 
-	
-
-	
+ComponentObservation maps to Observation:
+	constrain meta to 0..0
+	constrain related to 0..0
+	constrain component to 0..0
+	constrain related to 0..0

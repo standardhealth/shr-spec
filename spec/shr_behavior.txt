@@ -1,4 +1,4 @@
-Grammar:	DataElement 4.1
+Grammar:	DataElement 5.0
 Namespace:	shr.behavior
 Description:		"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
 Uses:		shr.core, shr.base, shr.medication, shr.encounter, shr.allergy, shr.observation, shr.environment, shr.procedure
@@ -85,27 +85,39 @@ Value:			CodeableConcept from TBD "AlcoholUseVS"  // e.g. former heavy drinker, 
 
 EntryElement:	ReligiousPractice
 Concept:		MTH#C0035039
-Based on:		Observation
+Based on:		Panel
 Description:	"The religion practiced by the focal subject."
-Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
-				SpecificType is LNC#81364-2
-0..1			ReligiousPracticeStatus  // Status refers to the status of the observation. This is a different status.
+//0..0			Value   TODO: No can do. This causes CLI crash with message
+//  if (typeof element.value !== 'undefined') {
+// TypeError: Cannot read property 'value' of undefined
+// Panel Members
+1..1			Religion
+0..1			ReligiousPracticeStatus
 0..*			ReligiousRestriction
 0..1			ReligiousCongregation
 0..1			TBD "ReligiousRepresentative"
 
+		Element:		Religion
+		Concept:		TBD
+		Based on:		Observation
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
+						SpecificType is LNC#81364-2
+
 		Element:		ReligiousPracticeStatus
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"The extent to which the religious practice is actively followed."
 		Value:			CodeableConcept from ReligiousPracticeStatusVS
 
 		Element:		ReligiousRestriction
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
 		Value:			CodeableConcept from ReligiousRestrictionVS
 
 		Element:		ReligiousCongregation
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"A group of place of religious practice."
 		Value:			string
 
@@ -181,47 +193,49 @@ Concept:			MTH#C0026606
 Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288."
 Value:				CodeableConcept from QualitativeValueScaleVS
 					SpecificType is LNC#28323-4
-/*					PanelMembers.Value
-includes 0..1				ExerciseHoursPerWeek
-includes 0..*				PhysicalActivityLimitation
-includes 0..1				TBD "MetabolicEquivalent" */
+//	PanelMembers.Value
+0..1				ExerciseHoursPerWeek
+0..*				PhysicalActivityLimitation
+0..1				TBD "MetabolicEquivalent" 
 
 		Element:		ExerciseHoursPerWeek
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"Hours of moderate or vigorous activity per week."
-		Value:			unsignedInt   // TODO: change to ratio with Units hours per one week
+		Value:			Quantity   // TODO: potentially change to ratio with Units hours per one week
 
 		Element:		PhysicalActivityLimitation
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions."
 		Value:			CodeableConcept from PhysicalActivityLimitationVS
 
 
+EntryElement:		SubstanceAbuseTreatment
+Concept: 			TBD
+Based on:			Procedure
+Description:		"The treatment program used to address a substance abuse problem."
+Value:				CodeableConcept from SubstanceAbuseTreatmentTypeVS
 
-EntryElement:	SubstanceAbuseTreatment
-Concept: 		TBD
-Based on:		Procedure
-Description:	"The treatment program used to address a substance abuse problem."
-Value:			CodeableConcept from SubstanceAbuseTreatmentTypeVS
 
 EntryElement:		ViolentBehaviorRisk
 Concept:			TBD
-Based on:			TBD "Risk"
+Based on:			Panel
 Description:		"Risk or danger posed by the focal subject to others and/or his or herself due to violent behavior."
 1..1				ViolentRiskToOthers
 1..1				ViolentRiskToSelf
 
 		Element:		ViolentRiskToOthers
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"Risk or danger posed by the focal subject to others."
 		Value:			CodeableConcept from QualitativeValueScaleVS
-		0..1			Explanation
 
 		Element:		ViolentRiskToSelf
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"Risk or danger posed by the focal subject to his or herself."
 		Value:			CodeableConcept from QualitativeValueScaleVS
-		0..1			Explanation
 
 /*
 EntryElement:	Mood
