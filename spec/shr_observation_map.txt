@@ -12,6 +12,7 @@ Observation maps to Observation:
 	BodySite maps to bodySite
 	Status maps to status
 	Method maps to method
+	Participant maps to performer 	// TODO Participant includes any type of participation (not limited to performent (the code PRF)). It's unclear how to limit the mapping to performer only.
 	TBD "Specimen" maps to specimen
 	DataAbsentReason maps to dataAbsentReason
 	// TODO: What happens to other types in GeneralizedTemporalContext?
@@ -19,33 +20,8 @@ Observation maps to Observation:
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
 	Interpretation maps to interpretation
 	Comment maps to comment
-	PanelMembers.Value maps to related.target  //both are observation types
-// (slice on = code)  TODO: Do we need to specify slicing?
-// IMPORTANT TODO: Constrain/fix the value of related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
-
-// Temporary
-// Cannot do short-cut because Observation.Value has a boolean, but component.value[x] does not (sigh)
-// FHIR issue filed #13703 on 7/28/2017
-//Components.Observation.Value maps to component.value[x]
-	Components.Observation.Quantity maps to component.value[x]
-	Components.Observation.CodeableConcept maps to component.value[x]
-	Components.Observation.string maps to component.value[x]
-	// Components.Observation.boolean maps to component.value[x]
-	Components.Observation.Range maps to component.value[x]
-	Components.Observation.Ratio maps to component.value[x]
-	Components.Observation.time maps to component.value[x]
-	Components.Observation.dateTime maps to component.value[x]
-	Components.Observation.TimePeriod maps to component.value[x]
-// end Temporary
-	Components.Observation.SpecificType maps to component.code
-	Components.Observation.DataAbsentReason maps to component.dataAbsentReason
-	Components.Observation.Interpretation maps to component.interpretation
 	// TODO: map reference range (set in labs, test, not here)
-	// TODO: Participant includes any type of participation (not limited to PRF code). It's unclear how to limit the mapping to performer only.
-	Participant maps to performer  
+	constrain component to 0..0 // use extensions instead
+ 
+	PanelMembers.Value maps to related.target  // IMPORTANT TODO - Constrain/fix the value of related.type to http://hl7.org/fhir/ValueSet/observation-relationshiptypes#has-member
 
-ComponentObservation maps to Observation:
-	constrain meta to 0..0
-	constrain related to 0..0
-	constrain component to 0..0
-	constrain related to 0..0

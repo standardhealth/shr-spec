@@ -28,11 +28,11 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 0..*			ObservationQualifier
 0..1			DataAbsentReason
 0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
+0..*			ReferenceRange
 0..1			Interpretation
 0..1			Comment
 //----------- Related and Sub-Observations
 0..1			PanelMembers  // separate observations occurring in a panel
-0..1			Components  // if inseparable
 		
 		Element:		AssociatedStudy
 		Concept:		TBD
@@ -59,40 +59,35 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept
 		
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			TBD "Range"   // TODO: align this with FHIR
+		
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
 		Value:			0..* 			Observation
 		
+		/* TODO: remove. It isn't possible to populate Components with generic mapping statements. Instead, the plan is to add ObservationComponent as extensions.
 		Element:		Components
 		Concept:		TBD
 		Description:	"Components are sub-parts of an observation that are always treated a part of a single observation; they are not separable. However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
-		Value:			0..* 			Observation   // TODO: Can't change this to ComponentObservation... why not?
+		Value:			0..* 			Observation   // TODO: Can't change this to ObservationComponent... why not?
+		*/
+
 
 		
-Element:		ComponentObservation
-Based on:		Observation
+		
+Element:		ObservationComponent
 Description:	"A simplified observation consisting of a type code, value (or data absent reason), reference range, and interpretation. Can be used in place of an observation when a full observation cannot be mapped, for example, in the components of an observation. Note that although Status is required, the value is not mapped to FHIR and is essentially ignored."
-//----------- Define the observation to be made
-0..0			Category from ObservationCategoryVS if covered
-0..0			BodySite
-//----------- Why this observation is taking place
-0..0			Reason
-0..0			AssociatedStudy
-//----------- Execution of the observation action
-0..0			NonOccurrenceModifier
-0..0			Method
-0..0			ObservationQualifier
-//----------- Capture the result and its significance
-//				(the Value)
+Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
+0..1			SpecificType
 0..1			DataAbsentReason
-0..0			ClinicallyRelevantTime
 0..1			Interpretation
-0..0			Comment
-//----------- Related and Sub-Observations
-// TODO The following 0..0 cardinality constraints cause error:  "ERROR shr: Cannot constrain cardinality to 0..0 because cardinality placement is ambiguous. Explicitly constrain parent elements in target path. (module=shr-fhir-export, shrId=shr.observation.ComponentObservation, target=Observation). This constraint is not a "must have" but it would be good to make sure components don't have panel members or other sub-components."
-//0..0			PanelMembers
-//0..0			Components
+0..*			ReferenceRange
+
+
 
 			
 EntryElement:	Panel

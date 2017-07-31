@@ -6,7 +6,7 @@ Uses:		shr.core, shr.base, shr.medication, shr.encounter, shr.allergy, shr.obser
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://ncimeta.nci.nih.gov
-
+CodeSystem:     UCUM = http://unitsofmeasure.org
 
 Element:		BehavioralObservation
 Concept:		MTH#C0004927
@@ -119,7 +119,7 @@ Description:	"The religion practiced by the focal subject."
 		Concept:		TBD
 		Based on:		Observation
 		Description:	"A group of place of religious practice."
-		Value:			string
+		Value:			string  //TODO: This is generating a warning, not sure why
 
 EntryElement:		DietAndNutrition
 Concept:			MTH#C0012155
@@ -127,25 +127,28 @@ Based on:			Panel
 Description:		"The usual food and drink consumed by an individual."
 Value:				CodeableConcept from TBD "DietAndNutritionVS"  // summary values for overall nutrition healthiness
 					SpecificType is MTH#C0012155
-/*PanelMembers.Value
-includes 0..*				SpecialDietFollowed
-includes 0..1				HasSufficientFood
-includes 0..*				DietNutritionConcern
-includes 0..*				FoodAllergy*/
+//PanelMembers.Value
+0..*				SpecialDietFollowed
+0..1				HasSufficientFood
+0..*				DietNutritionConcern
+0..*				FoodAllergy
 
 		Element:		SpecialDietFollowed
 		Concept:		TBD
+		Based on:		Observation
 		Description:	"A type of nutritional plan followed by the subject."
 		Value:			CodeableConcept from SpecialDietFollowedVS
 
 		Element:		HasSufficientFood
 		Concept:		TBD
-		Description:	""
+		Description:	"Frequency that the person of record unable to obtain food to stay hunger."
+		Based on:		Observation
 		Value:			CodeableConcept from QualitativeFrequencyVS
 
 		Element:		DietNutritionConcern
 		Concept:		TBD
 		Description:	"An anxiety or worry about the diet or nutritional intake of the subject."
+		Based on:		Observation
 		Value:			CodeableConcept from DietNutritionConcernVS
 
 
@@ -155,36 +158,41 @@ Based on:			Panel
 Description:		"Self-reported sleep quality."
 Value:				CodeableConcept from PerformanceGradingScaleVS
 					SpecificType is LNC#28323-4
-/*					PanelMembers.Value
-includes 0..1				TroubleFallingAsleep
-includes 0..1				TroubleStayingAsleep
-includes 0..1				WakeFeelingRested
-includes 0..1				HoursSleepPerNight
-includes 0..*				SleepQualityReason */
+//					PanelMembers.Value
+0..1				TroubleFallingAsleep
+0..1				TroubleStayingAsleep
+0..1				WakeFeelingRested
+0..1				HoursSleepPerNight
+0..*				SleepQualityReason
 
 		Element:		TroubleFallingAsleep
 		Concept:		TBD
 		Description:	"How often the subject has trouble falling asleep."
+		Based on:		Observation
 		Value:			CodeableConcept from QualitativeFrequencyVS
 
 		Element:		TroubleStayingAsleep
 		Concept:		TBD
 		Description:	"How often the subject has trouble staying asleep."
+		Based on:		Observation
 		Value:			CodeableConcept from QualitativeFrequencyVS
 
 		Element:		WakeFeelingRested
 		Concept:		TBD
 		Description:	"How often the subject feels rested when they wake up."
+		Based on:		Observation
 		Value:			CodeableConcept from QualitativeFrequencyVS
 
 		Element:		HoursSleepPerNight
 		Concept:		LNC#65968-0
 		Description:	"Typical hours spent sleeping per night."
-		Value:			positiveInt
+		Based on:		Observation
+		Value:			Quantity with units UCUM#1
 
 		Element:		SleepQualityReason
 		Concept:		TBD
 		Description:	"Reason for poor sleep quality."
+		Based on:		Observation
 		Value:			CodeableConcept from SleepQualityReasonVS
 
 EntryElement:		PhysicalActivityLevel
