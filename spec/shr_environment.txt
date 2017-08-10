@@ -3,6 +3,7 @@ Namespace:			shr.environment
 Description:		"The SHR Environment domain contains definitions related to surroundings experienced by the person of record, including both the physical and sociological environments."
 Uses:				shr.core, shr.base, shr.allergy, shr.observation, shr.medication, shr.lab
 
+CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
 //------------ Household Information --------------------------
 
@@ -13,24 +14,24 @@ Description:	"Measures of the ability of the subject to obtain and pay for the n
 Value:			CodeableConcept is MTH#C0516918
 				SpecificType is LNC#83335-0  // Redundant with concept, but in standard code system
 //				PanelMembers.Value
-0..1			AnnualIncome
-0..*			IncomeSource
-0..1			IncomeStability
-0..1			CanAffordFood
-0..1			CanAffordHousing
-0..1			CanAffordClothing
-0..1			CanAffordUtilities
-0..1			CanAffordTransportation
-0..1			CanAffordMedication
-0..1			CanAffordDentalCare
-0..1			CanAffordChildCare
-0..*			NonCashBenefit
+0..1			ref(AnnualIncome)
+0..*			ref(IncomeSource)
+0..1			ref(IncomeStability)
+0..1			ref(CanAffordFood)
+0..1			ref(CanAffordHousing)
+0..1			ref(CanAffordClothing)
+0..1			ref(CanAffordUtilities)
+0..1			ref(CanAffordTransportation)
+0..1			ref(CanAffordMedication)
+0..1			ref(CanAffordDentalCare)
+0..1			ref(CanAffordChildCare)
+0..*			ref(NonCashBenefit)
 
 	EntryElement:	AnnualIncome
 	Concept:		MTH#C0557163
 	Based on:		Observation
 	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
-	Value:			Quantity is type DollarAmount  // TODO: change to dollar units
+	Value:			Quantity with units CURRENCY#USD
 					SpecificType is MTH#C0557163
 
 	EntryElement:	IncomeSource
@@ -116,16 +117,16 @@ Concept:			TBD
 Based on:			Panel
 Description:		"Information about the makeup of the household of the subject."
 					SpecificType is TBD#TBD
-/* PanelMembers.Value
-includes 0..1				HouseholdSize
-includes 0..*				Coinhabitant
-includes 0..1				NumberOfDependents */
+// PanelMembers.Value
+0..1				ref(HouseholdSize)
+0..*				ref(Coinhabitant)
+0..1				ref(NumberOfDependents)
 
 		EntryElement:	HouseholdSize
 		Concept:		MTH#C0000768
 		Based on:		Observation // formerly QuantitativeObservation
 		Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
-		Value:			Quantity  // should be positiveInt but FHIR Observations don't support integers
+		Value:			Quantity with units UCUM#1 // should be positiveInt but FHIR Observations don't support integers
 						SpecificType is MTH#C0000768
 
 		EntryElement:	Coinhabitant
@@ -139,7 +140,7 @@ includes 0..1				NumberOfDependents */
 		Concept:		MTH#C0557509
 		Based on:		Observation // formerly QuantitativeObservation
 		Description:	"The number of dependents supported by the subject."
-		Value:			Quantity  // should be unsignedInt but FHIR Observations don't support integers
+		Value:			Quantity with units UCUM#1 // should be unsignedInt but FHIR Observations don't support integers
 						SpecificType is MTH#C0557509
 
 
@@ -181,7 +182,7 @@ Concept:		TBD
 Based on:		Panel
 				SpecificType is TBD#TBD
 //PanelMembers
-0..*			AnimalExposure
+0..*			ref(AnimalExposure)
 //includes 0..*			TBD "RadiationExposure"
 //includes 0..*			TBD "AllergenExposure"
 //includes 0..*			TBD "AirQuality"
@@ -201,12 +202,12 @@ Based on:		Panel
 Description:	"Factors affecting the health of the subject in their daily living environment."
 				SpecificType is TBD#TBD
 //				PanelMembers.Value
-0..1			TransportationAvailability
-0..1			HousingSecurity
-0..1			PhysicalSafety
-0..1			EmotionalSafety
-0..1			DomesticViolence
-0..*			HomeEnvironmentRisk
+0..1			ref(TransportationAvailability)
+0..1			ref(HousingSecurity)
+0..1			ref(PhysicalSafety)
+0..1			ref(EmotionalSafety)
+0..1			ref(DomesticViolence)
+0..*			ref(HomeEnvironmentRisk)
 
 	EntryElement:	TransportationAvailability
 	Concept:		TBD

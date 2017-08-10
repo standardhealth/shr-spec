@@ -1,7 +1,7 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.medication
 Description:		"The SHR Medication domain contains definitions related to medications taken, or not taken, by the person of record, both currently and in the past."
-Uses:				shr.core, shr.base
+Uses:				shr.core, shr.base, shr.procedure
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 Path:			CORE = http://standardhealthrecord.org/core/vs
@@ -214,13 +214,14 @@ Description:	"A record of a medication NOT prescribed. Recorded only when deviat
 EntryElement:	MedicationChange
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."
+Based on:		Procedure
 1..1			EffectiveDate
-1..1			TypeOfChange
+1..1			MedicationChangeType
 0..*			MedicationBeforeChange   //might be more than one
 0..*			MedicationAfterChange   // null if medication was discontinued
-1..1			TBD "ReasonForMedicationChange"
+1..1			TBD "ReasonForMedicationChange" // could be AdverseReaction
 
-		Element:		TypeOfChange
+		Element:		MedicationChangeType
 		Concept:		TBD
 		Description:	"Whether the change is a dose change, switch to a new medication, or discontinuation."
 		Value:			CodeableConcept from MedicationChangeTypeVS
