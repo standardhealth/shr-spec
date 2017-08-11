@@ -33,12 +33,12 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 0..1			Comment
 //----------- Related and Sub-Observations
 0..1			PanelMembers  // separate observations occurring in a panel
-		
+
 		Element:		AssociatedStudy
 		Concept:		TBD
 		Description:	"The clinical trial or other formal study related to this finding."
 		Value:			ref(Study)
-		
+
 		Element:		ObservationQualifier
 		Concept:		MTH#C1443279
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
@@ -53,27 +53,27 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 		Concept:		TBD
 		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			GeneralizedTemporalContext
-		
+
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept
-		
+
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
 		Value:			TBD "Range"   // TODO: align this with FHIR
-		
+
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* 			Observation
-		
+		Value:			0..* 			ref(Observation)
 
-	
+
+
 Element:		ObservationComponent
 Description:	"A simplified observation consisting of a type code, value (or data absent reason), reference range, and interpretation. Can be used in place of an observation when a full observation cannot be mapped, for example, in the components of an observation. Note that although Status is required, the value is not mapped to FHIR and is essentially ignored."
-Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod) 
+Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
 0..1			SpecificType
 0..1			DataAbsentReason
 0..1			Interpretation
@@ -81,12 +81,12 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 
 
 
-			
+
 EntryElement:	Panel
 Concept:		TBD
 Based on:		Observation
 Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-// 0..0			Value  
+// 0..0			Value
 // TODO: cannot constrain the cardinality of Value
 // 	 ERROR shr: Failed to resolve definition for Value. (module=shr-text-input)
 //   file: C:\Users\mkramer\Documents\GitHub\shr_spec\spec\shr_observation.txt
@@ -119,4 +119,4 @@ Description:	"The external elements and conditions which surround, influence, an
 Element:		Evidence
 Concept:		TBD
 Description:	"An observation that serves as evidence for some type of assessment."
-Value:			CodeableConcept or ref(Observation) 
+Value:			CodeableConcept or ref(Observation)
