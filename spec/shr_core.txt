@@ -60,41 +60,41 @@ Value:			CodeableConcept should be from SpecificTypeVS  // Usually LOINC, but al
 // -------------------  Quantities -----------------
 
 Element:		Quantity
-Description:	"A quantity with units."
+Description:	"A quantity with units, whose value may be bounded from above or below."
 Value:			decimal
 0..1			Units
 
 		Element:		Units
 		Concept:		TBD
-		Description:		"Code for the unit of measure of the quantity."
+		Description:	"Code for the unit of measure of the quantity."
 		Value:			Coding from FHIR/ucum-units   // or Coding from CURRENCY since currency units are not part of UCUM
 
 Element:		UpperBound
 Concept:		TBD
-Based on:		Quantity
-Description:	"A measured or measurable amount with units that is known to be bounded from above by the quantity represented."
-1..1			UpperBoundType
-
-		Element:		UpperBoundType
-		Concept:		TBD
-		Description:	"Indicates the actual value is lt (<) or lte (<=) the given value."
-		Value: 			code from UpperBoundTypeVS
+Description:	"The upper limit on a quantitative value."
+Value:			Quantity
+1..1			BoundType from UpperBoundTypeVS
 
 Element:		LowerBound
 Concept:		TBD
-Based on:		Quantity
-Description:	"A measured or measurable amount with units that is known to be bounded from below by the quantity represented."
-1..1			LowerBoundType
+Description:	"The lower limit on a quantitative value"
+Value:			Quantity
+1..1			BoundType from LowerBoundTypeVS
 
-		Element:		LowerBoundType
+		Element:		BoundType
 		Concept:		TBD
-		Description:	"Indicates the actual value is gt (>) or gte (>=) the given value."
-		Value: 			code from LowerBoundTypeVS
+		Description:	"Indicates the actual value is lt (<) or lte (<=) the given value."
+		Value: 			code
 
-
+Element:		Range
+Concept:		TBD
+Description:	"An interval defined by a quantitative upper and/or lower bound. One of the two bounds must be specified, and the lower bound must be less than the upper bound."
+0..1			LowerBound
+0..1			UpperBound
+		
 Element:		Statistic
+Based on: 		Quantity
 Concept:		MTH#C2828391
-Based on:		Quantity
 Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
 1..1			StatisticType
 
@@ -102,13 +102,6 @@ Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mea
 		Concept:		TBD
 		Description:	"The type of statistic that is represented by the value."
 		Value:			CodeableConcept from StatisticTypeVS
-
-Element:		Range
-Concept:		TBD
-Description:	"An interval defined by an upper and/or lower bound. One of the two bounds must be specified, and the lower bound must be less than the upper bound."
-0..1			LowerBound
-0..1			UpperBound
-
 
 Element: 		Priority
 Concept:		MTH#C0549179
@@ -211,7 +204,7 @@ Value:			CodeableConcept from QualitativeDateTimeVS
 Element:		TimePeriod
 Concept:		MTH#C1948053
 Description:	"A period of time defined by a start and end time, date, or year."
-1..1			TimePeriodStart
+0..1			TimePeriodStart
 0..1			TimePeriodEnd  // lack of end time indicates the period was continuing at the time the entry was created
 
 	Element: 		TimePeriodStart    // synonym "EffectiveDate"
@@ -234,10 +227,10 @@ Description:	"How long something has existed (quantitative)."
 
 Element:		AgeRange
 Concept:		TBD
-Based on:		Range
+//Based on:		Range
 Description:	"A quantitative range of ages. One of the two ages must be specified."
-0..1			LowerBound
-0..1			UpperBound
+0..1			UpperBound value is type Age  // Age is a Quantity and UpperBound.Value is a Quantity
+0..1			LowerBound value is type Age	
 
 Element:		AgeGroup
 Concept:		MTH#C0027362
@@ -246,8 +239,8 @@ Value:			CodeableConcept from AgeGroupVS
 
 Element:		GestationalAge
 Concept:		MTH#C0017504
+Based on:		Age
 Description:	"The age of the embryo or fetus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
-Value:			Age
 
 Element:		GestationalTimePeriod
 Concept:		TBD
