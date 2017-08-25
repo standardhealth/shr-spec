@@ -19,11 +19,11 @@ Value:			CodeableConcept from NeoplasmObservationVS
 0..1			Method from NeoplasmObservationMethodVS
 
 
-EntryElement:	BreastCancer 
+EntryElement:	BreastCancer
 Concept:		MTH#C1446377
 Based on:		Condition
 Description:	"A cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-Value:			CodeableConcept from BreastCancerTypeVS 
+Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 // TODO: In Condition, Stage is a simple attribute, not an observation. TNMStage is an full EntryElement. How do we associate the observation with the Stage attribute?
 0..1			Stage from urn:oid:2.16.840.1.113883.11.20.11.12
@@ -33,51 +33,51 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Based on:		BodySite
 			Concept:		MTH#C0475447
 			Description:	"The location of the primary tumor."
-			
+
 
 EntryElement:	TNMStage
 Concept:		LNC#21908-9
 Based on:		Observation // TODO: or Assessment since it is certainly focused on a Condition (in this case BreastCancer). However, an assessment does not have components (but maybe it should). But if we add components to assessment, the line between assessment and observation blurs even further
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12 
+Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12
 1..1			StagingSystem // e.g. AJCC TODO: this should be captured in Observation.Method, not a new attribute
 0..1			StagingTiming
 // components
 1..1 			T-Stage
-1..1 			N-Stage  
+1..1 			N-Stage
 1..1 			M-Stage
-			
+
 		Element:		StagingSystem
 		Concept:		TBD
 		Description:	"What staging system are used "
 		Value:			string  //TODO: is there a way to code this?
 		0..1			Version
-					
+
 		Element:		StagingTiming  // TODO: this is not a time, but rather an event. The name should reflect that
-		Concept:		TBD	
+		Concept:		TBD
 		Description:	"Indicates when the staging was done, in terms of treatment landmarks, for example, at diagnosis (clinical), at surgery(pathologic), after treatment (post-neoadjuvant), at entry to a clinical trial, or at recurrence."
 		Value:			CodeableConcept from StagingTimeVS
 		// TODO: do we want to have a boolean indicating if this is the initial staging or a restaging?
-					
-		Element:		T-Stage	
-		Concept:		LNC#59528-0 
+
+		Element:		T-Stage
+		Concept:		LNC#59528-0
 		Based on:		ObservationComponent
 		Description:	"The size and extent of the primary tumor (greatest dimension), based on criteria from the American Joint Committee on Cancer. See Table 152 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.13 
-					
-		Element:		N-Stage	
+		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.13
+
+		Element:		N-Stage
 		Concept:		LNC#59525-6
 		Based on:		ObservationComponent
 		Description:	"The presence of metastases in regional lymph nodes. TNM node category for staging derived from the American Joint Committee on Cancer. See Table 147 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.14
-					
+
 		Element:		M-Stage
 		Concept:		LNC#59522-3
 		Based on:		ObservationComponent
 		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body. See Table 144 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.25 
-					
-			
+		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.25
+
+
 EntryElement:	HistologicGrade
 Concept:		MTH#C1511980
 Based on:		Observation
@@ -87,34 +87,34 @@ Value:			CodeableConcept from NottinghamCombinedGradeVS
 0..1			TubuleFormationScore
 0..1			NuclearPleomorphismScore
 0..1			MitoticCountScore
-			
+
 			Element:		TubuleFormationScore
 			Concept:		SCT#371470008
 			Based on:		ObservationComponent
 			Description:	"A comparison between structures formed by the tumor cells as opposed to those formed by normal cells. Scored 1 to 3 with 3 being the most abnormal."
 			Value:			CodeableConcept from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
-								
+
 			Element:		NuclearPleomorphismScore
 			Concept:		TBD
 			Based on:		ObservationComponent
 			Description:	"How large and varied the nuclei of the tumor cells are. Scored 1 to 3, with 3 being the most pleomorphism."
 			Value:			CodeableConcept from NuclearPleomorphismScoreVS
-					
+
 			Element:		MitoticCountScore
 			Concept:		SCT#371472000
 			Based on:		ObservationComponent
 			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells."
 			Value:			Quantity   // 1 to 3
-			
-					
-EntryElement:	ReceptorStatusObservation 
+
+
+EntryElement:	ReceptorStatusObservation
 Concept:		MTH#C0449443
 Based on:		Observation
 Description:	"Refers to the presence or absence of specific receptor molecules on the surface of a cells in a specimen."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			ReceptorType
 // components
-0..1			ReceptorPositivityPercentage  
+0..1			ReceptorPositivityPercentage
 0..1			ReceptorAllredTotalScore
 0..1			ReceptorProportionScore
 0..1			ReceptorIntensityScore
@@ -126,10 +126,10 @@ Value:			CodeableConcept from PositiveNegativeVS
 
 		Element:		ReceptorPositivityPercentage
 		Concept:		TBD
-		Based on:		ObservationComponent  // not an independent observation, since it depends on the receptor identity 
+		Based on:		ObservationComponent  // not an independent observation, since it depends on the receptor identity
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Quantity with units UCUM#%
-		
+
 		Element:		ReceptorProportionScore
 		Concept:		TBD
 		Based on:		ObservationComponent
@@ -141,16 +141,16 @@ Value:			CodeableConcept from PositiveNegativeVS
 		Based on:		ObservationComponent
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			Quantity  // TODO: unsignedInt limit to max of 3
-		
+
 		Element:		ReceptorAllredTotalScore
 		Concept:		TBD
 		Based on:		ObservationComponent
 		Description:	"Part of the Allred scoring, the total of proportion and intensity scores, from 0 to 8."
 		Value:			Quantity // unsignedInt -  limit to max of 8
 
-			
+
 EntryElement:	BreastCancerReceptorStatus
-Based on:		Panel 
+Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
 				SpecificType is TBD#TBD
@@ -159,7 +159,7 @@ Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) a
 0..1 			EstrogenReceptorStatus
 0..1 			ProgesteroneReceptorStatus
 0..1 			HumanEpiduralGrowthFactorReceptor2Status
-			
+
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
 			Concept:		TBD
@@ -173,21 +173,21 @@ Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) a
 			Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 							SpecificType is LNC#16113-3
 							ReceptorType is MTH#C0034833
-			
+
 			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
 			Based on:		ReceptorStatusObservation
 			Concept:		MTH#C3810543
 			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#48676-1 
+							SpecificType is LNC#48676-1
 							ReceptorType is TBD#TBD
 							Method from HER2MethodVS   // this is the grammar for restricting a value to a value set
-				
+
 EntryElement: 	TumorSize
 Description:	"Measurement of the longest diameter of a tumor, in situ or on a excised tumor. See CDISC Table 3.3.2"
 Concept:		MTH#C4086369
 Based on:		Observation // formerly QuantitativeObservation
 Value:			Quantity with units UCUM#mm
-1..1			TBD "Specimen" // or NeoplasmIdentifier? 
+1..1			TBD "Specimen" // or NeoplasmIdentifier?
 //Components.Value
 0..1			TumorSecondaryDimensionSize
 0..1			SizeOfGrossTumorBed
@@ -202,38 +202,38 @@ Value:			Quantity with units UCUM#mm
 		Based on:		ObservationComponent
 		Concept:		TBD
 		Value:			Quantity with units UCUM#mm
-		
+
 		Element:		SizeOfGrossTumorBed
 		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
 		Concept:		TBD
 		Based on:		ObservationComponent
 		Value:			Quantity with units UCUM#mm
-		
+
 		Element: 		TumorMargins
 		Concept:		MTH#C1269830
 		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
 		Based on:		ObservationComponent
 		Value:			CodeableConcept from PositiveNegativeVS
-		
+
 		Element:		TumorMarginDescription
 		Concept:		TBD
 		Based on:		ObservationComponent
-		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist." 
+		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
 		Value:			CodeableConcept from TumorMarginDescriptionVS
-		
+
 		Element:		Cellularity
 		Concept:		MTH#C4055283
 		Based on:		ObservationComponent
 		Description:	"Percentage of cells in a sample that are cancerous"
 		Value:			Quantity with units UCUM#%
-		
+
 		Element:		PercentageInSituCarcinoma
 		Concept:		TBD
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 		Based on:		ObservationComponent
 		Value:			Quantity with units UCUM#%
 
-		
+
 EntryElement:		CancerLymphaticInvolvement
 Concept:			MTH#C0746333
 Based on:			Observation // formerly CodeConceptObservation
@@ -250,19 +250,19 @@ Value:				CodeableConcept from PositiveNegativeVS
 		Concept:		TBD
 		Description:	"A lymph node area or nodal group; a subdivision of the entire lymphatic system. For breast cancer, this includes 5 areas: internal mammary lymph nodes, axillary lymph nodes level I, II, and III, and the supraclavicular lymph nodes."
 		Value:			CodeableConcept from LymphSystemSubdivisionVS
-		
+
 		Element:		LargestLymphNodeSize
 		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
 		Concept:		MTH#C1285847
 		Based on:		ObservationComponent
 		Value: 			Quantity with units UCUM#mm
-		
+
 		Element:		NumberOfLymphNodesInvolved
 		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
 		Concept:		TBD
 		Based on:		ObservationComponent
 		Value:			Quantity with units UCUM#1 "Count"
-		
+
 		Element:		DegreeOfLymphaticInvolvement
 		Description:	"Assessment of how much cancer is in a lymph node."
 		Concept:		TBD
@@ -277,7 +277,7 @@ Value:			CodeableConcept from QualitativeValueScaleVS
 // Components
 0..1			Ki-67LabelingIndex
 0..1			S-PhaseFraction
-		
+
 			Element: 		Ki-67LabelingIndex
 			Concept:		MTH#C4049944
 			Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
@@ -287,8 +287,8 @@ Value:			CodeableConcept from QualitativeValueScaleVS
 			Element:		S-PhaseFraction
 			Concept:		MTH#C0812425
 			Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
-			Based on:		ObservationComponent			
-			Value:			Quantity with units UCUM#%	
+			Based on:		ObservationComponent
+			Value:			Quantity with units UCUM#%
 
 Element:		GeneticVariant
 Concept:		MTH#C0678941
@@ -302,19 +302,19 @@ Value:			CodeableConcept from PositiveNegativeVS
 			Concept:		MTH#C1706509
 			Description:	"A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
 			Value:			CodeableConcept from GeneIdentifierVS
-			
+
 			Element:		Refseq
 			Concept:		TBD
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept
-			
+
 EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
 Based on:		Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-//PanelMembers.Value TODO: use "include"
-1..1			BRCA1Variant
-1..1			BRCA2Variant 
+PanelMembers.Observation
+includes 1..1			ref(BRCA1Variant)
+includes 1..1			ref(BRCA2Variant)
 
 	Element:		BRCA1Variant
 	Concept:		TBD
@@ -329,14 +329,14 @@ Description:	"The status of genes known or suspected to play a role in breast ca
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
 					GeneIdentifier is HGNC#BRCA2
-		
+
 EntryElement:	Progression
 Based on:		Assessment
 Concept:		MTH#C0449258
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
 				Category includes MTH#C0421176 "Progression"
-1..1			AssessmentFocus  // is type BreastCancer? What condition is being evaluated for progression -- 
+1..1			AssessmentFocus  // is type BreastCancer? What condition is being evaluated for progression --
 0..*			Evidence from ProgressionEvidenceTypeVS
 
 
@@ -360,5 +360,5 @@ FHIR Genomics:
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
-https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html	
+https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
 */
