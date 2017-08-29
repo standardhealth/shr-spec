@@ -17,7 +17,7 @@ Concept:		TBD
 Description:	"When true, indicates either that the event or action documented in the entry did not occur. For example, if immunization is not given, the NonOccurrenceModifier=true will indicate this.
 When applied to a recommendation, the modifier indicates the action mentioned in the topic should not take place. For example, a request to NOT elevate the head of a bed using the code for elevating the bed, and setting ProhibitedModifier to true. Other examples include do not ambulate, do not flush NG tube, do not take blood pressure on a certain arm, etc. If the SpecificType contains negation and ProhibitedModifier is true, that will reinforce the prohibition, and should not be interpreted as a double negative that equals a positive."
 Value:			boolean
-0..1			Reason   // The reason that an event or action did not occur
+//0..1			Reason   // The reason that an event or action did not occur
 
 
 Element:		AssertionNegationModifier
@@ -125,73 +125,6 @@ Description:	"A health record used to help populate the current health record."
 	Description:	"Point in time when data was accessed."
 	Value:			dateTime
 
-//-------------  Action, Request, Proposal-----------//
-
-Element:		Action
-Concept:		TBD
-Description:	"A deed or endeavor; an action taken to address a undesired health state, behavior, risk, or goal. An action can have various contexts: definitional, occurred/not occurred, ordered/not ordered, recommended/recommended against."
-0..1			SpecificType
-1..1			Status
-0..*			Category
-0..1			NonOccurrenceModifier  // did not occur (often with the expectation of occurrence)
-0..*			Reason
-0..1			OccurrenceTime  // when the action took place
-0..*			Participant
-
-		
-		Element:		Status
-		Concept:		MTH#C0449438
-		Description:	"The position of affairs at a particular time"
-		Value:			code or Coding or CodeableConcept
-		
-		Element:		Category
-		Concept:		TBD
-		Description:	"A categorization of the action according its type, often a code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This can be used for searching, sorting and display purposes."
-		Value:			CodeableConcept
-
-	
-// Not used yet TODO - refactor to align with topic and context
-Element:		Request 
-Concept:		MTH#C1705178
-Based on:		Action
-Description:	"An order for something to take place."
-1..1			Status from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
-0..1			RequestedPerformanceTime
-0..1			Reason
-0..1 			PriorityOfRequest
-0..1			(RequestedPerformerType or RequestedPerformer)
-0..1			PerformerInstructions
-0..1			PatientInstructions
-		
-		Element:		RequestedPerformanceTime
-		Concept:		TBD
-		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			dateTime or date or TimePeriod or TBD "Timing"
-
-		Element:		PriorityOfRequest
-		Concept:		TBD
-		Description:	"Urgency level for which results must be reported to the requestor or responsible individual."
-		Value:			code from http://hl7.org/fhir/ValueSet/request-priority
-
-		Element:		RequestedPerformerType
-		Concept:		TBD
-		Description:	"What type of actor should carry out the testing."
-		Value:			CodeableConcept // WHAT ValueSet??
-
-		Element:		RequestedPerformer
-		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver."
-		Value:			PersonOfRecord or Practitioner or RelatedPerson or Organization
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
 
 EntryElement:		Study
 Concept:			TBD

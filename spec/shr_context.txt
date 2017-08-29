@@ -1,0 +1,91 @@
+Grammar:			DataElement 5.0
+Namespace:			shr.context
+Description:		"The Context Core Package defines the high-level clinical statement context classes. Three types of contexts are currently defined in CIMI: (1) Finding Contexts, (2) Action Contexts, and (3) Event Contexts. Finding contexts are used to specify whether a finding was observed to be present or absent. Action contexts are used to specify whether a clinical activity was performed, ordered, planned, or perhaps not performed."
+Uses:				shr.core, shr.demographics, shr.actor, shr.encounter, shr.device
+
+
+//-------------  ActionContext and Children -----------//
+
+Element:		ActionContext
+Concept:		TBD
+Description:	"A deed or endeavor; an action taken to address a undesired health state, behavior, risk, or goal. An action can have various contexts: definitional, occurred/not occurred, ordered/not ordered, recommended/recommended against."
+0..1			SpecificType
+1..1			Status
+0..*			Category
+0..*			Reason   // When a class is a mix-in like ActionContext, elements like "reason" have to be explicitly attached to the parent, i.e., by naming it ActionReason or ReasonOfAction, CategoryOfAction, StatusOfAction, SpecificTypeOfAction. However, if the class is used as a subobject, then this is not necessary, because the path will be Foo.Action.Reason, Foo.
+
+
+Element:		Performance
+Based on:		ActionContext
+Concept:		TBD
+Description:	"Context indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
+0..1			OccurrenceTime  // when the action took place
+0..*			Participant
+
+
+Element:		NonPerformance
+BasedOn:		ActionContext
+Concept:		TBD
+Description:	"A record that a clinical act was not performed or never initiated. Do not use this context if the act was initiated or started but aborted or cancelled."
+1..1			NonOccurrenceModifier is true
+0..*			NonPerformanceReason
+
+
+		Element:		Status
+		Concept:		MTH#C0449438
+		Description:	"The position of affairs at a particular time"
+		Value:			code or Coding or CodeableConcept
+		
+		Element:		Category
+		Concept:		TBD
+		Description:	"A categorization of the action according its type, often a code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This can be used for searching, sorting and display purposes."
+		Value:			CodeableConcept
+
+
+Element:		Plan
+Concept:		TBD
+Based on:		ActionContext
+Description:	"Description of action that is planned to be performed. Typically, this would include a time at which the action is scheduled to be performed."
+0..1			PerformanceTime
+0..*			Performer
+// Other elements of plan include resources
+		
+		
+Element:		Request
+Concept:		MTH#C1705178
+Based on:		ActionContext
+Description:	"An order for something to take place."
+1..1			Status from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
+0..1			PerformanceTime
+0..*			Performer
+0..*			PerformerType
+0..1 			Priority from http://hl7.org/fhir/ValueSet/request-priority
+0..1			PerformerInstructions
+0..1			PatientInstructions	
+		
+		Element:		PerformanceTime
+		Concept:		TBD
+		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			dateTime or date or TimePeriod or TBD "Timing"
+
+		Element:		PerformerType
+		Concept:		TBD
+		Description:	"What type of actor should carry out the testing."
+		Value:			CodeableConcept // WHAT ValueSet??
+
+		Element:		Performer
+		Concept:		TBD
+		Description:	"Who should carry out the tests. For example, the patient or caregiver."
+		Value:			PersonOfRecord or Practitioner or RelatedPerson or Organization
+
+		Element:		PerformerInstructions
+		Concept:		TBD
+		Description:	"Information for the performer of the test, if needed."
+		Value:			string
+
+		Element:		PatientInstructions
+		Concept:		TBD
+		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
+		Value:			string
+		
+Element:		Order
