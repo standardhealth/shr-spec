@@ -1,58 +1,49 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.observation
 Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure
+Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure, shr.context
 
 
 EntryElement: 	Observation
 Concept:		MTH#C1554188
-Based on:		ActionContext
-Description:	"An Observation represents evidence, both subjective and objective. Observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures to substances, etc. An Observation contains information about the act of observing or measuring, and the result of the observation. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+Description:	"An observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
 Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
-// TODO: Support additional value types: SampledData or Attachment
-//----------- Define the observation to be made
-1..1			SpecificType   // inherited from ActionContext, here required
-0..*			Category from ObservationCategoryVS if covered
-0..1			BodySite  // TODO: this should be 0..* but that doesn't map to FHIR -- This should be part of the 'Focus' of the observation
-// TODO: 0..* AdditionalBodySite - observations can involve multiple body sites
-//----------- Why this observation is taking place
-0..1			Reason
-0..1			AssociatedStudy
-//----------- Execution of the observation action
-1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
-				NonOccurrenceModifier.Reason from ObservationNotMadeReasonVS
-0..1			Method
-//----------- Capture the result and its significance
-//				The Value
-0..1			AssertionNegationModifier
-0..*			ObservationQualifier
 0..1			DataAbsentReason
-0..1			ClinicallyRelevantTime  // may not be the same as the OccurrenceTime
+0..1			AssertionNegationModifier  // only applies to CodeableConcept
+1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
+// TODO: Support additional value types: SampledData or Attachment
+//----------- The observation made
+1..1			SpecificType  // The Question
+0..*			Category from ObservationCategoryVS if covered
+0..1			BodySite
+// TODO: this should be 0..* but that doesn't map to FHIR
+0..1			Method  // Physical Exam 
+0..1			ref(Specimen)
+0..1			ref(ProcedurePerformed) // e.g. the imaging procedure
+0..*			ObservationQualifier
+0..1			ClinicallyRelevantTime
 0..*			ReferenceRange
 0..1			Interpretation
+0..1			ChangeFlag
 0..1			Comment
-//----------- Related and Sub-Observations
-0..1			PanelMembers  // separate observations occurring in a panel
-0..1			ClinicallyRelevantTime
-0..*			Participant 	// TODO: add to metadata?
-0..*			Setting
-0..*			Location
+//0..*			Component -- Should components be included by slicing, or extended?
 
-		Element:		AssociatedStudy
-		Concept:		TBD
-		Description:	"The clinical trial or other formal study related to this finding."
-		Value:			ref(Study)
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a measurement."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation 
+
+		Element:		ChangeFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			CodeableConcept from ChangeFlagVS
 
 		Element:		ObservationQualifier
 		Concept:		MTH#C1443279
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
 
-		Element:		Method
-		Concept:		TBD
-		Description:	"The method of the observation, for example, the specific imaging technical or assessment vehicle."
-		Value:			CodeableConcept
-
+		
 		Element:		ClinicallyRelevantTime
 		Concept:		TBD
 		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
@@ -68,10 +59,6 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 		Description:	"The usual or acceptable range for a test result."
 		Value:			TBD "Range"   // TODO: align this with FHIR
 
-		Element:		PanelMembers
-		Concept:		TBD
-		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* 			ref(Observation)
 
 
 Element:		ObservationComponent
@@ -103,7 +90,11 @@ Description:	"A grouped set of related observations, frequently captured at the 
 //   file: C:\Users\mkramer\Documents\GitHub\shr_spec\spec\shr_observation.txt
 0..0			DataAbsentReason
 1..1			PanelMembers
-//0..0			Components  TODO - Uncommenting this causes a "cardinality placement is ambiguous" error
+
+		Element:		PanelMembers
+		Concept:		TBD
+		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
+		Value:			0..* ref(Observation)
 
 
 EntryElement:	BodyStructureObservation

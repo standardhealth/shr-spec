@@ -10,37 +10,16 @@ Concept:		TBD
 Description:	"The reason a required element, complex type, or primitive value is missing. Missing value reason can be substituted for any value. By convention in SHR, any required element or value can be substituted with a missing value reason."
 Value: 			CodeableConcept from MissingValueReasonVS
 
-// ------------   Modifiers  -----------------------
-
-Element:		NonOccurrenceModifier 
-Concept:		TBD
-Description:	"When true, indicates either that the event or action documented in the entry did not occur. For example, if immunization is not given, the NonOccurrenceModifier=true will indicate this.
-When applied to a recommendation, the modifier indicates the action mentioned in the topic should not take place. For example, a request to NOT elevate the head of a bed using the code for elevating the bed, and setting ProhibitedModifier to true. Other examples include do not ambulate, do not flush NG tube, do not take blood pressure on a certain arm, etc. If the SpecificType contains negation and ProhibitedModifier is true, that will reinforce the prohibition, and should not be interpreted as a double negative that equals a positive."
-Value:			boolean
-//0..1			Reason   // The reason that an event or action did not occur
-
-
-Element:		AssertionNegationModifier
-Concept:		TBD
-Description:	"When true, this modifier indicates that the associated observation, assessment, or finding is false, the condition is absent. For example, if the assessment is 'allergy to peanuts' and the AssertionNegationModifier is true, it means the subject does not have an allergy to peanuts."
-Value:			boolean
-
 
 //----------------  Entry -------------------
 
-Element:		Entry   // TO DO: align with CIMI ClinicalStatement
+Element:		Entry 
 Concept:		MTH#C1705654
-Description:	"An item inserted in an electronic record."
+Description:	"An item inserted in an electronic record, not necessarily associated with a single patient."
 1..1			ShrId
 1..1			EntryId
 0..1			Version
 1..*			EntryType
-1..1			FocalSubject
-0..1			SubjectIsThirdPartyFlag
-0..1			Narrative
-0..1    		Informant
-0..1			Author
-0..1			AssociatedEncounter // TODO: Consider 0..* here and constraining to 0..1 in subclasses (currently not supported)
 1..1    		OriginalCreationDate
 1..1			LastUpdateDate
 0..1			Language
@@ -112,9 +91,33 @@ Description:	"An item inserted in an electronic record."
 	Concept:		MTH#C0023008
 	Description: 	"A human language, spoken or written."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages
+		
+	
+EntryElement:	ClinicalStatement
+Concept:		TBD
+Description:	"The documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
+1..1			Topic
+1..1			Context
+1..1			PersonOfRecord
+1..1			FocalSubject
+0..1			SubjectIsThirdPartyFlag
+0..1			Narrative
+0..1    		Informant
+0..1			Author
+0..1			AssociatedEncounter
+
+Element:			Topic
+Concept:			MTH#C1706203 "Subject - topic"
+Description:		"What the statement is about, e.g., the kind of finding or procedure asserted. Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model attributes 'Associated finding (attribute)' (SCTID: 246090004) and 'Associated procedure (attribute)' (SCTID: 363589002). The range of this attribute is a structure (StatementTopic) rather than a value set. The topic of the clinical statement must align with the range specified by the SWEC Concept Model. For instance, if the 'topic' attribute's meaning is bound to 'Associated finding', then the topic may not be a specialization of the Act statement topic."
 
 
+Element:			Context
+Concept:			MTH#C0449255
+Description:		"The ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc. Attribute aligns with the SNOMED CT Situation with Explicit Context Concept Model context attributes 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range of this attribute is a structure (StatementContext) rather than a value set. The context of the clinical statement must align with the range specified by the SWEC Concept Model. For instance, if the 'context' attribute's meaning is bound to 'Finding context', then the context may not be a specialization of the ActionContext statement context. Instead, it should be a specialization of the FindingContext statement context."
+	
+	
 Element:		ExternalHealthRecord
+Based on:		Entry
 Concept: 		TBD
 Description:	"A health record used to help populate the current health record."
 1..1			OrganizationalIdentifier
@@ -131,3 +134,5 @@ Concept:			TBD
 Description:		"A clinical trial or other formal study."
 0..1				Title
 0..1				Identifier
+
+

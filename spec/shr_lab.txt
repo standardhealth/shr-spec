@@ -1,65 +1,164 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.lab
 Description:		"The SHR Lab domain contains definitions for elements related to laboratory measurements."
-Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device
+Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device, shr.context, shr.procedure
 
 CodeSystem:     LNC = http://loinc.org
 
+//Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
+//0..1 			BodyPosition
 
-Element:		Test
+Element:		LaboratoryProcedureTopic
+Based on:		ProcedureTopic
 Concept:		MTH#C0456984
-Based on:		Observation
-Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
+Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
+0..1			Specimen
+0..1			SpecimenType
 1..1 			SpecificType from http://hl7.org/fhir/ValueSet/observation-codes
-0..1			Method is type TestMethod
-0..1 			BodyPosition
 0..1 			Device
-0..1			TBD "Specimen"
-0..1			ReferenceRange
-0..1			ChangeFlag
-0..1			TestRequest  // optional reference to the request for this test
+
 
 		Element:		SpecimenType
 		Concept:		TBD
 		Description:	"Kind of material that forms the specimen."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v2-0487
 
-		Element:		TestMethod
-		Concept:		MTH#C1299991
-		Based on:		Method
-		Description:	"The technique used to carry out a procedure, if not implicit in the test code."
-		Value:			CodeableConcept
-
-		Element:		Interpretation
-		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a measurement."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation 
-
-		Element:		ChangeFlag
-		Concept:		MTH#C1705241
-		Description:	"Indicator of significant change (delta) from the last or previous measurement."
-		Value:			CodeableConcept from ChangeFlagVS
 
 
-EntryElement:	TestRequest   // TODO: how to request something NOT be done? (as opposed something not requested)
-Concept:		MTH#C1273874
-Based on:		Request
-Description:	"A record of a request (order) for a test to be performed."
-1..1 			SpecificType
-0..1 			BodySite
-0..1 			TBD "Specimen" or SpecimenType
+// Specimen
+
+EntryElement:	Specimen
+//Based on:		Entity
+Description:	"Sample for analysis"
+1..1			SpecimenCode
+0..1			SpecimenType
+0..1			AccessionIdentifier
+0..1			Status
+0..1			SourceSpecimen
+0..1			ref(SpecimenCollectionPerformed)
+0..1			ref(SpecimenContainer)
+0..*			SpecimenTreatment
+0..*			HandlingRisk
+0..*			SpecialHandling
+
+Element:		SpecimenCode
+Concept:		TBD
+Description:	"The concept that represents this specimen."
+Value:			CodeableConcept
+
+Element:		AccessionIdentifier
+Concept:		TBD
+Description:	"Identifier assigned by the lab"
+Value:			Identifier
+
+Element:		SourceSpecimen
+Concept:		TBD
+Description:	"Identifier for the source specimen from which this specimen was derived."
+Value:			ref(Specimen)
+
+Element:		SpecimenType
+Concept:		TBD
+Description:	"Kind of material that forms the specimen"
+Value:			CodeableConcept
+
+Element:		HandlingRisk
+Concept:		TBD
+Description:	"Cautions on the handling of this specimen."
+Value:			CodeableConcept
+
+Element:		SpecialHandling
+Concept:		TBD
+Description:	"Information about the proper handling of the specimen."
+Value:			CodeableConcept
+
+
+EntryElement:	SpecimenContainer
+Concept:		TBD
+Description:	"Direct container of specimen (tube&#47;slide, etc.)"
+0..1			Identifier
+0..1			Description
+0..1			ContainerType
+0..1			Capacity
+0..1			SpecimenQuantity
+0..*			Additive
+0..1			AdditiveCode
+0..1			SequenceNumber
+// BALLOT: SpecimenContainer should inherit from Entity. It is a physical object, and not only that, but if it inherited from Entity, it wouldn't have to define identifier and description again.		
+// BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
+// BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollection breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
+
+Element:		ContainerType
+Concept:		TBD
+Description:	"Kind of container holding the specimen - e.g. a vial or well."
+Value:			CodeableConcept
+
+Element:		Capacity
+Concept:		TBD
+Description:	"Container volume or size."
+Value:			Quantity
+
+Element:		SpecimenQuantity
+Concept:		TBD
+Description:	"Quantity of specimen within container."
+Value:			Quantity
+
+Element:		Additive
+Concept:		TBD
+Description:	"Additive associated with container."
+Value:			Substance
+
+Element:		AdditiveCode
+Concept:		TBD
+Description:	"Additive associated with container."
+Value:			CodeableConcept
+// BALLOT: SpecimenContainer.Additive and SpecimenContainer.AdditiveCode have exactly the same description. The descriptions must distinguish them.
+// BALLOT: SpecimenContainer.AdditiveCode should be a CodeableConcept (currently a CodeableConcept). The name says code, so it should be a code.
+
+Element:		SequenceNumber
+Concept:		TBD
+Description:	"The sequence number for this specimen in a collection of specimens."
+Value:			CodeableConcept
+// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
+
+
+EntryElement:	SpecimenTreatment
+//Based on:		ProcedurePerformed
+Concept:		TBD
+Description:	"Treatment performed on the specimen."
+0..1			Description
+0..1			ProcedureCode
+0..*			Additive
+
+
+Element:		ProcedureCode  // DELTA: renamed ProcedureCode to reflect the datatype
+Concept:		TBD
+Description:	"A coded value specifying the procedure used to process the specimen."
+Value:			CodeableConcept
+
+
+
+//   Statements
+
+EntryElement:	LaboratoryProcedurePerformed
+Based on:		ProcedurePerformed
+				Topic is type LaboratoryProcedureTopic
+
+EntryElement:	LaboratoryProcedureRequested
+Based on:		ProcedureRequested
+				Topic is type LaboratoryProcedureTopic
+
 
 
 // Examples of lab tests and results
 
 EntryElement:	HIVScreeningTest
-Based on:		Test
+Based on:		LaboratoryProcedurePerformed
 Description:	"The result of an HIV Screening Test."
 Value:			CodeableConcept from HIVScreeningTestResultVS
 1..1			SpecificType from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
 
 EntryElement:	HIVSupplementalTest
-Based on:		Test
+Based on:		LaboratoryProcedurePerformed
 Concept:		TBD
 Description:	"The result of a supplement HIV test, following up an initial screening."
 Value:			CodeableConcept from HIVSupplementalTestResultVS
@@ -67,12 +166,12 @@ Value:			CodeableConcept from HIVSupplementalTestResultVS
 
 EntryElement:	HIVScreeningTestRequest
 Description:	"A request for a rapid HIV screening test."
-Based on:		TestRequest
+Based on:		LaboratoryProcedureRequested
 1..1			SpecificType from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
 Description:	"A request for a confirmatory or additional test for HIV infection."
-Based on:		TestRequest
+Based on:		LaboratoryProcedureRequested
 1..1			SpecificType from HIVSupplementalTestCodeVS
 
 

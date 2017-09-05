@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.encounter
 Description:		"The SHR Encounter domain contains definitions that capture interactions between the person of record and healthcare providers, including inpatient, ambulatory care, and telecare."
-Uses:			shr.core, shr.base, shr.demographics, shr.actor
+Uses:			shr.core, shr.base, shr.demographics, shr.actor, shr.context
 
 Element:		EpisodeOfCareCompletion
 Concept:		TBD
@@ -48,7 +48,8 @@ Description:	"A statement about a planned or actual interaction between a patien
 0..1			ReferralSourceType
 0..1			EncounterClass   // TODO: We should be using SpecificType here, but FHIR mapping is to Coding, not CodeableConcept. 
 0..*			ServiceGiven
-0..1			EncounterNonOccurrenceModifier
+0..1			NonOccurrenceModifier
+				NonOccurrenceModifier.Reason from TBD "ReasonEncounterDidNotHappenVS"
 0..*			Participant
 1..1			ProviderOrganization
 0..1			Facility  // location
@@ -76,12 +77,6 @@ Description:	"A statement about a planned or actual interaction between a patien
 	Concept:		TBD
 	Description:	"The mode of interaction, whether inpatient, outpatient, or telecare."
 	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode
-	
-	Element:		EncounterNonOccurrenceModifier
-	Concept:		TBD
-	Based on:		NonOccurrenceModifier
-	Description:	"True if the encounter did not occur."
-					Reason from TBD "ReasonEncounterDidNotHappenVS"
 					
 	Element:		EncounterClass
 	Concept:		TBD
