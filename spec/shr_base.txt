@@ -13,9 +13,14 @@ Value: 			CodeableConcept from MissingValueReasonVS
 
 //----------------  Entry -------------------
 
-Element:		Entry 
+Element:		Entry
+Concept:		TBD
+Description:	"Root class for all entries."
+
+
+Element:		InformationEntry
 Concept:		MTH#C1705654
-Description:	"An item inserted in an electronic record, not necessarily associated with a single patient."
+Description:	"An item inserted in an electronic record, not necessarily associated with a single patient, and distinct from a clinical statement. May be an administrative record."
 1..1			ShrId
 1..1			EntryId
 0..1			Version
@@ -23,6 +28,7 @@ Description:	"An item inserted in an electronic record, not necessarily associat
 1..1    		OriginalCreationDate
 1..1			LastUpdateDate
 0..1			Language
+0..1			Author
 0..*			TBD "SecurityLabel"
 0..*			TBD "Tag"
 
@@ -40,33 +46,18 @@ Description:	"An item inserted in an electronic record, not necessarily associat
 	Concept:		TBD
 	Description:	"The SHR data element identifier, for example, http://standardhealthrecord.org/allergy/SubstanceRisk. The EntryType array includes the entire 'based on' hierarchy to enable searching for classes of things, for example, searching for all vital signs, or all types of behavioral observations."
 	Value:			uri
+	
+Element:		ExternalHealthRecord
+Concept: 		TBD
+Description:	"A health record used to help populate the current health record."
+1..1			OrganizationalIdentifier
+1..1			AccessTime
 
-	Element:		FocalSubject
+	Element:		AccessTime
 	Concept:		TBD
-	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)."
-	Value:			ref(PersonOfRecord) or ref(Practitioner) or ref(RelatedPerson)
-
-	Element:		SubjectIsThirdPartyFlag
-	Concept:		TBD
-	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
-	Value:			boolean
-
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	Value:			xhtml
-	1..1			NarrativeQualifier
-
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
-
-	Element:		AssociatedEncounter
-	Concept:		TBD
-	Description:	"The encounter or episode of care that led to creation of this entry."
-	Value:			ref(Encounter)
-
+	Description:	"Point in time when data was accessed."
+	Value:			dateTime
+	
 	Element:   	 	OriginalCreationDate
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the information was recorded in the system of record."
@@ -91,20 +82,54 @@ Description:	"An item inserted in an electronic record, not necessarily associat
 	Concept:		MTH#C0023008
 	Description: 	"A human language, spoken or written."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages
-		
+
 	
-EntryElement:	ClinicalStatement
+EntryElement:	PatientSpecificEntry
+Based on:		InformationEntry
 Concept:		TBD
-Description:	"The documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
-1..1			Topic
-1..1			Context
+Description:	"Base class for any patient-related information entered in the SHR."
 1..1			PersonOfRecord
 1..1			FocalSubject
 0..1			SubjectIsThirdPartyFlag
 0..1			Narrative
 0..1    		Informant
-0..1			Author
 0..1			AssociatedEncounter
+
+
+	Element:		FocalSubject
+	Concept:		TBD
+	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries refer to the Person of Record. The entry could refer to a fetus, care giver, or relative (living or dead)."
+	Value:			ref(Person)
+
+	Element:		SubjectIsThirdPartyFlag
+	Concept:		TBD
+	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
+	Value:			boolean
+
+	Element:		Narrative
+	Concept:		TBD
+	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Value:			xhtml
+	1..1			NarrativeQualifier
+
+			Element:		NarrativeQualifier
+			Concept:		TBD
+			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
+
+	Element:		AssociatedEncounter
+	Concept:		TBD
+	Description:	"The encounter or episode of care that led to creation of this entry."
+	Value:			ref(Encounter)
+
+
+	
+EntryElement:	ClinicalStatement
+Based on:		PatientSpecificEntry
+Concept:		TBD
+Description:	"Documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
+1..1			Topic
+1..1			Context
 
 Element:			Topic
 Concept:			MTH#C1706203 "Subject - topic"
@@ -114,20 +139,9 @@ Description:		"What the statement is about, e.g., the kind of finding or procedu
 Element:			Context
 Concept:			MTH#C0449255
 Description:		"The ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc. Attribute aligns with the SNOMED CT Situation with Explicit Context Concept Model context attributes 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range of this attribute is a structure (StatementContext) rather than a value set. The context of the clinical statement must align with the range specified by the SWEC Concept Model. For instance, if the 'context' attribute's meaning is bound to 'Finding context', then the context may not be a specialization of the ActionContext statement context. Instead, it should be a specialization of the FindingContext statement context."
-	
-	
-Element:		ExternalHealthRecord
-Based on:		Entry
-Concept: 		TBD
-Description:	"A health record used to help populate the current health record."
-1..1			OrganizationalIdentifier
-1..1			AccessTime
 
-	Element:		AccessTime
-	Concept:		TBD
-	Description:	"Point in time when data was accessed."
-	Value:			dateTime
 
+// TODO: Study doesn't belong in shr.base
 
 EntryElement:		Study
 Concept:			TBD

@@ -8,7 +8,8 @@ Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 // ------------- Person ---------------------
 
-Element:		Person
+EntryElement:	Person
+Based on:		InformationEntry
 Concept:		MTH#C0027361
 Description:	"A person. In practical terms, people relevant to the health or social situation of the subject (including the person of record)."
 0..* 			HumanName
@@ -81,13 +82,6 @@ Description:	"A person. In practical terms, people relevant to the health or soc
 		Value:			GeneralizedAge
 
 
-
-Element:		RelatedPerson
-Based on:		Person
-Concept:		TBD
-Description:	"A person, other than a practitioner or the patient (the person of record) who is relevant to the health or social situation of the subject."
-
-
 Element:		Practitioner
 Based on:		Person
 Concept:		MTH#C2220264
@@ -114,7 +108,8 @@ Description:	"A person who practices a healing art."
 
 
 
-Element:		Organization
+EntryElement:	Organization
+Based on:		InformationEntry
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings."
 Value:			OrganizationName
@@ -147,6 +142,7 @@ Value:			OrganizationName
 
 
 EntryElement:	ProviderRelationship	  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc.
+Based on:		ClinicalEntry
 Concept:		MTH#C1314939
 Description:	"A person or organization responsible for providing a service to the person of record. Such a relationship can exist without a specific encounter or services being rendered; for example, an emergency contact relationship can exist without ever calling upon that person. The entry can also be used to state that a provider relationship does not exist, e.g., patient does not have a primary care provider."
 0..1 			Provider
@@ -163,7 +159,7 @@ Description:	"A person or organization responsible for providing a service to th
 	Element:		Provider
 	Concept:		MTH#C1138603
 	Description:	"A person or organization who provides services. This includes healthcare and relevant non-healthcare services, including personal services such as transportation."
-	Value:			RelatedPerson or Practitioner or Organization
+	Value:			Person or Organization
 
 EntryElement:	EmergencyContact   // relationship assertion
 Concept:		MTH#C1552023
@@ -192,7 +188,7 @@ Description:	"The medical professional responsible for first-line care of an ind
 Element:		Participant
 Concept:		MTH#C1550369
 Description:	"A statement about an actor who did (or did not) participate in a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the participant is associated with doing or not doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
-Value:			PersonOfRecord or Practitioner or RelatedPerson
+Value:			Person
 0..1 			ParticipationType
 0..1			NonOccurrenceModifier
 0..1			Reason
