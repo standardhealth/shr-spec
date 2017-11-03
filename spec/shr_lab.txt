@@ -1,22 +1,21 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.lab
 Description:		"The SHR Lab domain contains definitions for elements related to laboratory measurements."
-Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device, shr.context, shr.procedure
+Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device, shr.procedure
 
 CodeSystem:     LNC = http://loinc.org
 
 //Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
-//0..1 			BodyPosition
 
-Element:		LaboratoryProcedureTopic
-Based on:		ProcedureTopic
+
+Element:		LaboratoryProcedureAction
+Based on:		ProcedureAction
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
+1..1			ProcedureCode from http://hl7.org/fhir/ValueSet/observation-codes
 0..1			Specimen
 0..1			SpecimenType
-1..1 			SpecificType from http://hl7.org/fhir/ValueSet/observation-codes
 0..1 			Device
-
 
 		Element:		SpecimenType
 		Concept:		TBD
@@ -24,9 +23,16 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v2-0487
 
 
+EntryElement:	LaboratoryProcedurePerformed
+Based on:		LaboratoryProcedureAction
+				Context is type PerformedContext
 
-// Specimen
+EntryElement:	LaboratoryProcedureRequested
+Based on:		LaboratoryProcedureAction
+				Context is type RequestedContext
 
+		
+		
 EntryElement:	Specimen
 //Based on:		Entity
 Description:	"Sample for analysis"
@@ -73,6 +79,7 @@ Value:			CodeableConcept
 
 
 EntryElement:	SpecimenContainer
+Based on:		Entity
 Concept:		TBD
 Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			Identifier
@@ -126,52 +133,41 @@ EntryElement:	SpecimenTreatment
 Concept:		TBD
 Description:	"Treatment performed on the specimen."
 0..1			Description
-0..1			ProcedureCode
+0..1			ProcessingProcedure
 0..*			Additive
 
 
-Element:		ProcedureCode  // DELTA: renamed ProcedureCode to reflect the datatype
+Element:		ProcessingProcedure  
 Concept:		TBD
 Description:	"A coded value specifying the procedure used to process the specimen."
 Value:			CodeableConcept
 
 
 
-//   Statements
-
-EntryElement:	LaboratoryProcedurePerformed
-Based on:		ProcedurePerformed
-				Topic is type LaboratoryProcedureTopic
-
-EntryElement:	LaboratoryProcedureRequested
-Based on:		ProcedureRequested
-				Topic is type LaboratoryProcedureTopic
-
-
-
 // Examples of lab tests and results
 
-EntryElement:	HIVScreeningTest
-Based on:		LaboratoryProcedurePerformed
-Description:	"The result of an HIV Screening Test."
-Value:			CodeableConcept from HIVScreeningTestResultVS
-1..1			SpecificType from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
-
-EntryElement:	HIVSupplementalTest
+EntryElement:	HIVScreeningTestPerformed
 Based on:		LaboratoryProcedurePerformed
 Concept:		TBD
-Description:	"The result of a supplement HIV test, following up an initial screening."
-Value:			CodeableConcept from HIVSupplementalTestResultVS
-1..1			SpecificType from HIVSupplementalTestCodeVS
+Description:	"The performance of a HIV Screening Test. Results will be in an accompanying observation."
+1..1			ProcedureCode from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+
+EntryElement:	HIVSupplementalTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
+1..1			ProcedureCode from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVScreeningTestRequest
-Description:	"A request for a rapid HIV screening test."
 Based on:		LaboratoryProcedureRequested
-1..1			SpecificType from HIVScreeningTestCodeVS
+Concept:		TBD
+Description:	"A request for a rapid HIV screening test."
+1..1			ProcedureCode from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
-Description:	"A request for a confirmatory or additional test for HIV infection."
 Based on:		LaboratoryProcedureRequested
-1..1			SpecificType from HIVSupplementalTestCodeVS
+Concept:		TBD
+Description:	"A request for a confirmatory or additional test for HIV infection."
+1..1			ProcedureCode from HIVSupplementalTestCodeVS
 
 

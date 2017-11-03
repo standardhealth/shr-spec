@@ -1,17 +1,35 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.condition
 Description:	"The SHR Condition domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
-Uses:			shr.core, shr.base, shr.actor, shr.allergy, shr.observation
+Uses:			shr.core, shr.base, shr.actor
 
 CodeSystem:     SCT = http://snomed.info/sct
 
+
+EntryElement:	ConditionAbsentFinding
+Based on:		Finding
+Concept:		TBD
+Description:	"A finding that a condition not present in the subject."
+Value:			CodeableConcept from ConditionVS
+				ObservedAttribute is #ConditionAbsent
+0..*			BodySite
+
+EntryElement:	ConditionPresentFinding 
+Based on:		Finding
+Concept:		TBD // MTH#C0348080
+Description:	"A finding that an entity has a disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
+Value:			CodeableConcept from ConditionVS or ref(Condition)
+				ObservedAttribute is #ConditionPresent
+		
+//------------- Representation of Condition as an Entity --------------
+		
 EntryElement:	Condition
-Concept:		MTH#C0348080
-Description:	"A representation of a disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. Condition can be used to track a problem or a risk over a period of time. By virtue of its continuity over time, Condition is different from an Observation or Assessment; Observations represents evidence, and an Assessment is a judgment based on evidence and rendered at a point in time. Diagnosis is a type of Assessment that can lead to creation of a Condition (as can an assessment of risk). The two relate because observations can lead to conclusion that a Condition exists. A statement that a certain condition does not exist should be an assessment. Not all conditions are problems, but all problems are (in some sense) conditions."
-1..1			SpecificType
+Based on:		Entity 	
+Concept:		TBD	
+Description:	" A representation of a disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A condition is an entity that exists over a period of time, but an observation does not. Not all conditions are problems, but all problems are conditions. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
+1..1			Type from ConditionVS
 0..*			Category from ConditionCategoryVS
 1..1			ClinicalStatus
-0..1			IncludeOnProblemList
 0..1			Onset
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
@@ -20,17 +38,20 @@ Description:	"A representation of a disorder, abnormality, problem, injury, comp
 0..1			Severity
 0..1			Criticality
 0..1			Stage
-0..*			Observation  // any observations related to this condition, including lab tests, manifestations, etc.
+0..*			RelatedFinding  // any finding related to this condition, including lab tests, manifestations, etc.
+
+/* 
+TODO:
+Need to add Cause or Precursor (another condition that leads to the current condition) - relate to Wound cause, for example
+Associate the condition with Evidence, such as Observations, Tests, Imaging Results
+Provide for Progress Notes (complex type with text, date, author)
+Link to Related Medications
+*/
 
 			Element:		ClinicalStatus
 			Concept:		TBD
 			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
 			Value:			code from http://hl7.org/fhir/ValueSet/condition-clinical
-
-			Element:		IncludeOnProblemList
-			Concept:		TBD
-			Description:	"Whether or not to include this condition on the subject's current problem list."
-			Value:			boolean
 
 			Element:		Onset
 			Concept:		MTH#C0277793
@@ -66,26 +87,20 @@ Description:	"A representation of a disorder, abnormality, problem, injury, comp
 			Concept:		MTH#C0699749
 			Description:	"The relative advancement in the course of a disease."
 			Value:			CodeableConcept
-			0..1			Evidence
 
-
-			
-			
-/*
-TO DO:
-Associate the condition with Evidence, such as Observations, Tests, Imaging Results
-Provide for Progress Notes (complex type with text, date, author)
-Link to Related Medications
-*/
-
+			Element:		RelatedFinding
+			Concept:		TBD
+			Description:	"Findings supporting or related to this condition." 
+			Value:			ref(Finding)
 
 // Examples of how to specialize Condition
+
 
 EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
 Based on:			Condition
 Description:		"A problem with learning or behavior in a learning environment."
-					SpecificType from TBD "AcademicProblemVS"
+Value:				CodeableConcept from TBD "AcademicProblemVS"
 0..0				BodySite
 
 EntryElement:		Injury
@@ -95,19 +110,15 @@ Description:		"Damage inflicted on the body by an external force."
 0..1				Setting   // where injury happened (work, home, school)
 0..1				Location  // where (on earth) did the injury happen
 
-
 EntryElement:		MentalHealthCondition
+Based on:			Condition
 Concept:			MTH#C1446377
-Based on:			Condition
 Description:		"A condition relating to a person’s psychological and emotional well-being."
-					SpecificType from DSMVS
+Value:				CodeableConcept from DSMVS
 
-EntryElement:	 	Asplenia
-Concept:			MTH#C0600031
-Based on:			Condition
-Description:		"Congenital absence of spleen."
-					SpecificType is SCT#93030006
 
+					
+					
 /*
 EntryElement:		Concern
 Concept:			TBD

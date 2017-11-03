@@ -1,11 +1,12 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.adverse
 Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
-Uses:				shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation, shr.context
+Uses:				shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
 
 EntryElement:	AdverseEvent
+Based on:		Finding
 Concept:		MTH#C0877248
-Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): death, back pain, headache, pulmonary embolism, heart attack."
+Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death."
 Value:			CodeableConcept from MedDRAVS
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
@@ -36,16 +37,20 @@ Value:			CodeableConcept from MedDRAVS
 	
 	
 EntryElement:	AdverseReaction
+Based on:		Finding
 Concept:		TBD
 Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This entry could be used to record the occurrence or non-occurrence of an adverse reaction."
 1..1			ref(AdverseEvent)
-0..*			AdverseReactionAttribution
-0..1			TBD "ActionTakenWithMedication"
-0..1			TBD "OtherActionTaken"
+0..*			AdverseEventAttribution
+0..*			ActionTaken
 
-	EntryElement:	AdverseReactionAttribution
+	Element:		AdverseEventAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
-	Description:	"If an adverse reaction to treatment, a possible cause of the adverse reaction (either known or theorized). There can be more than one possible cause."
-	Value:			ref(MedicationAdministered) or ref(MedicationStatement) or ref(ProcedurePerformed) or ref(Medication) or ref(Device)  // TODO: could be medication code
+	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
+	Value:			ref(Action)  // some intervention, should be restricted to PerformedContext, but there's no way to do that
 	1..1			Certainty
 	
+	Element:		ActionTaken
+	Concept:		TBD
+	Description:	"Action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
+	Value:			ref(MedicationChanged)

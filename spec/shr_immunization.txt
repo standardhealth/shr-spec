@@ -1,22 +1,20 @@
 Grammar:			DataElement 5.0
 Namespace:			shr.immunization
 Description:		"The SHR Immunization domain contains definitions related to vaccinations, whether they are received, recommended, missing, or refused."
-Uses:				shr.core, shr.medication, shr.base, shr.actor, shr.context
+Uses:				shr.core, shr.medication, shr.base, shr.actor, shr.adverse
 
-CodeSystem:		CVX = http://hl7.org/fhir/sid/cvx
-
-Element:		Vaccine
-Concept:		MTH#C1543322
+Element:		Vaccine   // Why not line up with Medication?
+Based on:		Entity
+Concept:		MTH#C1543322 "Vaccine"
 Description:	"A specific type or manufactured instance of a vaccine, a prophylactic or therapeutic preparation given to produce immune response to pathogenic organisms or substances."
-1..1			SpecificType from http://hl7.org/fhir/ValueSet/vaccine-code
-0..1			VaccineManufacturer
+1..1			Type from http://hl7.org/fhir/ValueSet/vaccine-code
+0..1			Manufacturer
 0..1			LotNumber
 
-	Element:		VaccineManufacturer
+	Element:		Manufacturer
 	Concept:		MTH#C1114744
-	Description:	"The organization that produces the vaccine."
-	Value:			Organization  // or identifer??
-	// The identifier is given by a CodeableConcept from urn:oid:2.16.840.1.114222.4.11.826 (vaccine manufacturer value set in phin-vads)
+	Description:	"The organization producing the product."
+	Value:			ref(Organization)  // Following FHIR; could alternatively be a code from urn:oid:2.16.840.1.114222.4.11.826 (vaccine manufacturer value set in phin-vads)
 
 	Element:		LotNumber
 	Concept:		MTH#C1115660
@@ -24,42 +22,44 @@ Description:	"A specific type or manufactured instance of a vaccine, a prophylac
 	Value:			string
 
 
-EntryElement:	Immunization
-Concept:		MTH#C0020971
-Description:	"A statement relating to a vaccination that was or was not administered to the subject."
-Based on:		ActionContext
-1..1 			Vaccine // in the case of immunication not given, the vaccine will have a SpecificType, but not a lot or manufacturer. 
-1..1			NonOccurrenceModifier
-				NonOccurrenceModifier.Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
-0..1			BodySite   // from core
-0..1			RouteIntoBody  // from medication
-0..1			AmountOfMedication  // from medication
-0..1			TBD "DoseSequenceNumber"
+Abstract Element: 	ImmunizationAction
+Based on:			Action   // Why not MedicationAction?
+Concept:			TBD
+Description:		"Describes the event of a patient being administered a vaccination or a record of a vaccination as reported by a patient, a clinician or another party and may include vaccine reaction information and what vaccination protocol was followed."
+1..1 				Vaccine // in the case of immunization not given, the vaccine will have a Type, but not a lot or manufacturer. 
+0..1				BodySite   // from core
+0..1				RouteIntoBody  // from medication
+0..1				AmountOfMedication  // from medication
+0..1				TBD "DoseSequenceNumber"
+0..*				Outcome
 
-
-EntryElement:	ImmunizationAdministered
+	
+EntryElement:	ImmunizationGiven
+Based on:		ImmunizationAction 
 Concept:		MTH#C0580520
-Based on:		Immunization
-Description:	"Represents an immunization that was administered to the subject."
-1..1			Vaccine.VaccineManufacturer  // required
-1..1			Vaccine.LotNumber   // required
-				NonOccurrenceModifier is false
-0..1			BodySite   // from core
-0..1			RouteIntoBody  // from medication
-0..1			AmountOfMedication  // from medication
-0..1			TBD "DoseSequenceNumber"
-
-
+Description:	"A vaccination that was administered to the subject."
+				Context is type PerformedContext
+//				Outcome is type ref(AdverseReaction) // causes CLI error
 
 EntryElement:	ImmunizationNotGiven
-Concept:		MTH#C0580520
-Based on:		Immunization
-Description:	"Represents an immunization that was not given."
-				NonOccurrenceModifier is true
-0..0			BodySite
-0..0			RouteIntoBody
-0..0			AmountOfMedication
-0..1			TBD "DoseSequenceNumber"
+Concept:		TBD
+Based on:		ImmunizationAction
+Description:	"An immunization that was not given to the subject."
+				Context is type NotPerformedContext 
+				Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
+
+EntryElement:	ImmunizationProposed
+Concept:		TBD
+Based on:		ImmunizationAction
+Description:	"An immunization that is proposed or planned for the subject."
+				Context is type ProposedContext
+
+EntryElement:	ImmunizationProposedAgainst
+Concept:		TBD
+Based on:		ImmunizationAction
+Description:	"An immunization that is specifically not recommended, perhaps contraindicated for the individual."
+				Context is type ProposedAgainstContext
+
 
 
 /* Example of detailed profile - Comment out for now
@@ -77,27 +77,5 @@ Based on:		ImmunizationAdministered
 
 */
 
-/*  Not ready yet
 
-EntryElement:	ImmunizationRecommended
-Concept:		TBD
-Based on:		TBD "Recommendation"
-Description:	""
-1..1			Vaccine
-0..1			TBD "DoseNumber"
-1..1			TargetDateRange
 
-	Element:		TargetDateRange
-	Concept:		TBD
-	Description:	"Dates between which when a future event should occur."
-	Value:			TimePeriod
-
-EntryElement:	ImmunizationRecommendedAgainst
-Concept:		TBD
-Based on:		ImmunizationRecommended
-Description:	""
-1..1			Vaccine
-0..1			(RouteIntoBody or TBD "Protocol")
-1..1			TBD "ReasonMedicationNotGiven"  // From shr_medication_vs
-
-*/

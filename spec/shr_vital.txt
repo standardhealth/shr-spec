@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.vital
 Description:	"The SHR Vital domain contains definitions for basic physiological measurements categorized as vital signs."
-Uses:			shr.core, shr.base, shr.observation, shr.lab, shr.context
+Uses:			shr.core, shr.base, shr.observation, shr.lab
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		UCUM = http://unitsofmeasure.org
@@ -14,7 +14,6 @@ Based on:		Observation
 Concept:		LNC#8716-3 "Vital Sign"
 Value:			Quantity  // TODO: this generates a warning because no units are specified
 				Category is #vital-signs
-0..0			TBD "Specimen"  // no specimen used in vital sign measurements
 
 
 //-------------------  Specific Vital Sign Tests -----------------------------
@@ -25,7 +24,7 @@ Concept:		LNC#9279-1
 Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."
 Value:			Quantity with units UCUM#/min "/min"
 				ObservationQualifier from RespiratoryRateQualifierVS
-0..1			Method from RespiratoryRateMethodVS
+0..1			FindingMethod from RespiratoryRateMethodVS
 
 EntryElement:	HeartRate
 Based on:		VitalSign
@@ -33,7 +32,7 @@ Concept:		LNC#8867-4
 Description:	"The number of times the heart ventricles contract per unit of time, usually per minute."
 Value:			Quantity with units UCUM#/min "/min"
 				ObservationQualifier from HeartRateQualifierVS
-0..1			Method from HeartRateMethodVS
+0..1			FindingMethod from HeartRateMethodVS
 
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
@@ -91,7 +90,7 @@ Based on:		VitalSign
 Concept:		LNC#55284-4
 Description:	"The force of circulating blood on the walls of the arteries."
 				BodySite from BloodPressureBodySiteVS
-				Method from BloodPressureMethodVS
+				FindingMethod from BloodPressureMethodVS
 				ObservationQualifier from BloodPressureQualifierVS
 1..1 			SystolicPressure 
 1..1 			DiastolicPressure
@@ -102,14 +101,12 @@ Description:	"The force of circulating blood on the walls of the arteries."
 	Based on:		ObservationComponent
 	Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest."
 	Value:			Quantity with units UCUM#mm[Hg] "mmHg"
-					SpecificType is LNC#8480-6
 
 	Element:		DiastolicPressure
 	Concept:		LNC#8462-4
 	Based on:		ObservationComponent
 	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
 	Value:			Quantity with units UCUM#mm[Hg] "mmHg"
-					SpecificType is LNC#8462-4
 
 	Element: 		HeadTiltAngle // This qualifier is only used during a tilt table test.
 	Concept: 		LNC#8360-0

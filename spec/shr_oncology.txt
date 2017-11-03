@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.condition, shr.lab, shr.observation, shr.procedure, shr.adverse, shr.medication, shr.assessment, shr.context
+Uses:  			shr.core, shr.base, shr.condition, shr.lab, shr.observation, shr.procedure, shr.adverse, shr.medication, shr.assessment
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -23,7 +23,7 @@ EntryElement:	BreastCancer
 Concept:		MTH#C1446377
 Based on:		Condition
 Description:	"A cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				SpecificType from BreastCancerTypeVS
+Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 // TODO: In Condition, Stage is a simple attribute, not an observation. TNMStage is an full EntryElement. How do we associate the observation with the Stage attribute?
 0..1			Stage from urn:oid:2.16.840.1.113883.11.20.11.12
@@ -153,9 +153,8 @@ EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
-				SpecificType is TBD#TBD
-1..1			TBD "Specimen" // TODO: change to NeoplasmObservation?  the link to source of tissue
-// Panel members TODO: use "include"
+				ObservedAttribute is TBD#TBD
+1..1			Specimen
 0..1 			EstrogenReceptorStatus
 0..1 			ProgesteroneReceptorStatus
 0..1 			HumanEpiduralGrowthFactorReceptor2Status
@@ -164,23 +163,24 @@ Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) a
 			Based on:		ReceptorStatusObservation
 			Concept:		TBD
 			Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#16112-5
+							ObservedAttribute is LNC#16112-5
 							ReceptorType is SCT#23307004
 
 			EntryElement:	ProgesteroneReceptorStatus
 			Based on:		ReceptorStatusObservation
 			Concept:		MTH#C1514471
-			Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#16113-3
+			Description:	"Progesterone receptor is expressed in 65% 
+of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+							ObservedAttribute is LNC#16113-3
 							ReceptorType is MTH#C0034833
 
 			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
 			Based on:		ReceptorStatusObservation
 			Concept:		MTH#C3810543
 			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#48676-1
+							ObservedAttribute is LNC#48676-1
 							ReceptorType is TBD#TBD
-							Method from HER2MethodVS   // this is the grammar for restricting a value to a value set
+							FindingMethod from HER2MethodVS   // this is the grammar for restricting a value to a value set
 
 EntryElement: 	TumorSize
 Description:	"Measurement of the longest diameter of a tumor, in situ or on a excised tumor. See CDISC Table 3.3.2"
@@ -279,20 +279,20 @@ Value:			CodeableConcept from QualitativeValueScaleVS
 0..1			S-PhaseFraction
 
 			Element: 		Ki-67LabelingIndex
+			Based on:		ObservationComponent		
 			Concept:		MTH#C4049944
 			Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
-			Based on:		ObservationComponent
 			Value:		 	Quantity with units UCUM#%
 
 			Element:		S-PhaseFraction
+			Based on:		ObservationComponent
 			Concept:		MTH#C0812425
 			Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
-			Based on:		ObservationComponent
 			Value:			Quantity with units UCUM#%
 
 Element:		GeneticVariant
+Based on:		Finding
 Concept:		MTH#C0678941
-Based on:		Observation // formerly CodeConceptObservation
 Description:	"Whether the patient carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			GeneIdentifier
@@ -312,7 +312,7 @@ EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
 Based on:		Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-PanelMembers.Observation
+PanelMembers.Finding
 includes 1..1			ref(BRCA1Variant)
 includes 1..1			ref(BRCA2Variant)
 
@@ -331,27 +331,26 @@ includes 1..1			ref(BRCA2Variant)
 					GeneIdentifier is HGNC#BRCA2
 
 EntryElement:	Progression
-Based on:		Assessment
+Based on:		Finding
 Concept:		MTH#C0449258
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
-				Category includes MTH#C0421176 "Progression"
-1..1			AssessmentFocus  // is type BreastCancer? What condition is being evaluated for progression --
+				Category includes MTH#C0421176 "Efficacy"
+1..1			ObservedAttribute is MTH#C0421176 "Progression"
 0..*			Evidence from ProgressionEvidenceTypeVS
 
+	Element:		Evidence
+	Concept:		TBD
+	Description:	"An observation that serves as evidence for some type of assessment."
+	Value:			CodeableConcept or ref(Observation)
 
-EntryElement:	ToxicReactionToTreatment
+	
+EntryElement:	ToxicReaction
 Based on:		AdverseReaction
 Concept:		TBD
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
 1..1			AdverseEvent.AdverseEventGrade from ToxicReactionVS  // only contains codes for grade 3 and above
 1..1			AdverseEvent.CauseCategory is #treatment
-
-
-
-//EntryElement:	TreatmentResponse
-//Based on:		Assessment
-
 
 
 

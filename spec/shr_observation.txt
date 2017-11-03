@@ -1,32 +1,27 @@
-Grammar:	DataElement 5.0
-Namespace:	shr.observation
-Description:		"The SHR Observation domain contains basic definitions used to capture information about measurements, lab tests, and assessments."
-Uses:		shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure, shr.context
-
+Grammar:		DataElement 5.0
+Namespace:		shr.observation
+Description:	"The SHR Observation domain contains basic definitions used to capture subjective and objective information about the subject."
+Uses:			shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure, shr.device
 
 EntryElement: 	Observation
+Based on:		Finding
 Concept:		MTH#C1554188
-Description:	"An observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The focus of an observation can include the subject's behavior, physiological state, health state, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
-Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
-0..1			DataAbsentReason
-0..1			AssertionNegationModifier  // only applies to CodeableConcept
-1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
-// TODO: Support additional value types: SampledData or Attachment
-//----------- The observation made
-1..1			SpecificType  // The Question
-0..*			Category from ObservationCategoryVS if covered
+Description:	"An observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The topic of an observation can include the subject's identity, behavior, physiological state, health state, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+// TODO: Support additional value types: SampledData or Attachment 
+1..1			ResultStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			BodySite
-// TODO: this should be 0..* but that doesn't map to FHIR
-0..1			Method  // Physical Exam 
 0..1			ref(Specimen)
-0..1			ref(ProcedurePerformed) // e.g. the imaging procedure
-0..*			ObservationQualifier
-0..1			ClinicallyRelevantTime
-0..*			ReferenceRange
-0..1			Interpretation
+0..1			ref(Device) 
+0..*			ObservationQualifier   //  = CIMI's Precondition
+0..*			ReferenceRange  // quantitative measurement only
+0..1			Interpretation   // might move up to Finding itself
 0..1			ChangeFlag
-0..1			Comment
-//0..*			Component -- Should components be included by slicing, or extended?
+0..1			Components
+
+		Element:		ResultStatus
+		Concept:		TBD
+		Description:	"Labels the result as preliminary, amended, final, etc."
+		Value:			CodeableConcept from ObservationCategoryVS if covered
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -43,47 +38,36 @@ Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or 
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
 
-		
-		Element:		ClinicallyRelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the observation addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			GeneralizedTemporalContext
 
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
-		Value:			CodeableConcept
+		Value:			CodeableConcept from DataAbsentReasonVS
 
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
-		Value:			TBD "Range"   // TODO: align this with FHIR
+		Value:			Range   // TODO: align this with FHIR
 
-
+		Element:		Components
+		Concept:		TBD
+		Description:	"Observation Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
+		Value:			0..* ObservationComponent
+		
 
 Element:		ObservationComponent
-Description:	"A simplified observation consisting of a type code, value (or data absent reason), reference range, and interpretation. Can be used in place of an observation when a full observation cannot be mapped, for example, in the components of an observation. Note that although Status is required, the value is not mapped to FHIR and is essentially ignored."
-Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
-0..1			SpecificType
+Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+1..1			ObservedAttribute
 0..1			DataAbsentReason
 0..1			Interpretation
 0..*			ReferenceRange
 
-		Element:		ServiceCategory
-		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept
-
-		Element:		ReportStatus
-		Concept:		TBD
-		Description:	"The status of the report associated with this panel."
-		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-
 
 EntryElement:	Panel
 Concept:		TBD
-Based on:		Observation
-Description:	"A grouped set of related observations, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual observations that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
+Based on:		Finding
+Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
 // 0..0			Value
 // TODO: cannot constrain the cardinality of Value
 // 	 ERROR shr: Failed to resolve definition for Value. (module=shr-text-input)
@@ -94,7 +78,7 @@ Description:	"A grouped set of related observations, frequently captured at the 
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* ref(Observation)
+		Value:			0..* ref(Finding)
 
 
 EntryElement:	BodyStructureObservation
@@ -103,22 +87,24 @@ Description:	"Observation of the existence (or non-existence) distinct anatomica
 Based on:		Observation
 Value:			CodeableConcept from BodyStructureVS
 
-Element:   		Manifestation  // TODO: Relate to AdverseEvent, or is that something different?
-Concept:		MTH#C1457887
-Based on:		Observation
-Description:	"A complaint or observed indication that a person has a condition or disease. Some examples of symptoms are headache, fever, fatigue, nausea, vomiting, and pain."
-Value:			CodeableConcept from ManifestationVS
-				Category is #symptom
-0..1			Severity  // TODO: Grade?
-
 Element:		SocialHistory
 Concept:		MTH#C3714536
 Based on:		Observation
 Description:	"The external elements and conditions which surround, influence, and affect the life and development of the subject. Includes social conditions such as poverty, violence, bullying."
-1..1			Status from NonLabObservationStatusVS
+1..1			FindingStatus from FindingStatusVS
 				Category is #social-history "social history"
 
-Element:		Evidence
-Concept:		TBD
-Description:	"An observation that serves as evidence for some type of assessment."
-Value:			CodeableConcept or ref(Observation)
+
+/* Orphans
+
+		Element:		ServiceCategory
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept
+
+		Element:		ReportStatus
+		Concept:		TBD
+		Description:	"The status of the report associated with this panel."
+		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
+		
+*/

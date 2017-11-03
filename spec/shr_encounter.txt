@@ -1,12 +1,11 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.encounter
 Description:		"The SHR Encounter domain contains definitions that capture interactions between the person of record and healthcare providers, including inpatient, ambulatory care, and telecare."
-Uses:			shr.core, shr.base, shr.demographics, shr.actor, shr.context
+Uses:			shr.core, shr.base, shr.demographics, shr.actor
 
 
 
 EntryElement:	Facility
-Based on:		InformationEntry
 Concept:		MTH#C1547538
 Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
 1..1			FacilityName
@@ -37,19 +36,15 @@ Description:	"Services and space and equipment provided for a particular purpose
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
 
 
-EntryElement:	EncounterTopic
-Based on:		Topic
+EntryElement:	EncounterAction
+Based on:		Action
 Concept:		TBD
 Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
-//0..1			OccurrenceTime  // start-end
-//0..1			ReferralDate
-//1..1			Status from http://hl7.org/fhir/ValueSet/encounter-status
-//0..1			ReferralSourceType
-0..1			EncounterClass   // TODO: We should be using SpecificType here, but FHIR mapping is to Coding, not CodeableConcept. 
+0..1			ReferralDate
+0..1			ReferralSourceType
+0..1			EncounterClass 
 0..*			ServiceGiven
-//0..1			NonOccurrenceModifier
-//				NonOccurrenceModifier.Reason from TBD "ReasonEncounterDidNotHappenVS"
-0..*			Participant
+0..*			Participation
 1..1			ProviderOrganization
 0..1			Facility
 0..1			TreatmentCooperation
@@ -115,29 +110,25 @@ Description:	"A description of an interaction between a patient and healthcare p
 	Value:			CodeableConcept from EpisodeOfCareCompletionVS
 */
 
-EntryElement:	EncounterStatement
-Based on:		ClinicalStatement
-				Topic is type EncounterTopic
-				
 				
 EntryElement:	EncounterRequested
-Based on:		EncounterStatement
+Based on:		EncounterAction
 				Context is type RequestedContext
 				
 EntryElement:	EncounterPerformed
-Based on:		EncounterStatement
+Based on:		EncounterAction
 				Context is type PerformedContext
 				
 EntryElement:	EncounterNotPerformed
-Based on:		EncounterStatement
+Based on:		EncounterAction
 				Context is type NotPerformedContext
 
 EntryElement:	EncounterPlanned
-Based on:		EncounterStatement
+Based on:		EncounterAction
 				Context is type PlannedContext
 /*
-EntryElement:	Hospitalization
-Based on:		EncounterTopic
+EntryElement:	HospitalizationAction
+Based on:		EncounterAction
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
@@ -151,8 +142,8 @@ Based on:		EncounterTopic
 	Discharge or Transfer Destination	?
 	Discharge Summary	Document
 
-EntryElement:	EmergencyEncounterTopic
-Based on:		EncounterTopic
+EntryElement:	EmergencyEncounterAction
+Based on:		EncounterAction
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference

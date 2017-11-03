@@ -1,31 +1,37 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.careplan
 
-Uses:			shr.base, shr.core, shr.condition, shr.observation, shr.context
+Uses:			shr.base, shr.core, shr.condition, shr.observation
+
+
+EntryElement:	Goal
+Based on:		Entity
+Concept:		MTH#C0018017
+Description:	"A broad statement about what should be accomplished. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities. Not patient-specific."
+1..1			Title
+1..1			Description
+0..*			Category from http://hl7.org/fhir/ValueSet/goal-category if covered
 
 	
-EntryElement:	GoalTopic
-Based on:		Topic
+EntryElement:	GoalPursuit
+Based on:		Action
 Concept:		MTH#C0018017
-Description:	"A broad statement about what should be accomplished and the progress towards that goal. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities."
-0..1			Title
-1..1			SpecificType
-0..*			Category from http://hl7.org/fhir/ValueSet/goal-category if covered
+Description:	"Attaches an action context with respect to a goal: proposed, performed, not performed, etc."
+1..1			Goal
 0..*			Objective
 
-	
 Element:		Objective
+Based on:		Entity
 Concept:		TBD
 Description:	"Describes the  of an expected or desired achievement that is well-defined, specific, measurable, and derived from one or more goals. The context is inherited from the context of the parent goal, i.e., if the goal is #proposed, then the objective is also #proposed"
-1..1			SpecificType // most likely an observation code
+Value:			CodeableConcept
 1..1			Status from http://hl7.org/fhir/ValueSet/goal-status // note this is different from observation status
 0..*			Category from ObservationCategoryVS if covered  // objective is an observable
 0..1			AssociatedGoal  // TODO: not sure this is necessary (bidirectional pointers are unusual in FHIR)
-//0..1			ExpectedPerformanceTime
 1..1			ResultTargeted
 0..*			ResultAchieved
 0..*			Annotation
-0..*			Evidence
+0..*			RelatedFinding
 
 		Element:		ResultTargeted
 		Concept:		TBD
@@ -40,7 +46,7 @@ Description:	"Describes the  of an expected or desired achievement that is well-
 		Element:		AssociatedGoal
 		Concept:		TBD
 		Description:	"The goal  associated with this objective."
-		Value:			ref(GoalStatement)
+		Value:			ref(GoalPursuit)
 
 		
 EntryElement:	CarePlan
@@ -50,28 +56,30 @@ Description:	"Describes how one or more practitioners intend to deliver care for
 0..1			Description   // string
 1..1			Status from http://hl7.org/fhir/ValueSet/care-plan-status 
 0..*			Category from http://hl7.org/fhir/ValueSet/care-plan-category if covered
-1..*			GoalStatement  // Any clinical statement whose topic is a goal - may be proposed, rejected, in progress, etc.
-0..*			PerformedStatement
+1..*			Goal
+//0..*			PerformedStatement  ???
 
-Abstract Element:	GoalStatement
-Based on:		ClinicalStatement
-				Topic is type GoalTopic
 
-EntryElement:	GoalPursued
-Based on:		GoalStatement
+// In FHIR, these are represented in a status attribute. 
+
+EntryElement:	GoalPursuitPerformed
+Based on:		GoalPursuit
 				Context is type PerformedContext
-				Context.Status from http://hl7.org/fhir/ValueSet/goal-status		
-					
-EntryElement:	GoalRequested
-Based on:		GoalStatement
+		
+EntryElement:	GoalPursuitNotPerformed
+Based on:		GoalPursuit
+				Context is type NotPerformedContext
+		
+EntryElement:	GoalPursuitRequested
+Based on:		GoalPursuit
 				Context is type RequestedContext
 				
-EntryElement:	GoalProposed
-Based on:		GoalStatement
+EntryElement:	GoalPursuitProposed
+Based on:		GoalPursuit
 				Context is type ProposedContext		
 
 EntryElement:	GoalProposedAgainst
-Based on:		GoalStatement
+Based on:		GoalPursuit
 				Context is type ProposedAgainstContext		
 
 				

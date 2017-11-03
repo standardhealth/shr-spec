@@ -9,58 +9,70 @@ EntryElement:	PrenatalExposure
 Based on:		ExposureToSubstance  // brings the temporal context into the picture
 Concept:		MTH#C0871747
 Description:	"Fetal contact with a dangerous substance via the mother."
-1..1			SpecificType from TeratogenVS
+Value:			CodeableConcept from  TeratogenVS
+//1..1			ObservedAttribute is #prenatal_exposure
 0..1			GeneralizedTemporalContext value is type GestationalTemporalContext
 
 EntryElement:	CongenitalAbnormality
 Concept:		MTH#C0000768
-Based on:		Observation // formerly CodeConceptObservation
+Based on:		Finding // formerly CodeConceptObservation
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
-1..1			SpecificType from CongenitalAbnormalitiesVS
+Value:			CodeableConcept from CongenitalAbnormalitiesVS
+//1..1			ObservedAttribute is #congenital_abnormality
 
 EntryElement:	EducationalAttainment
 Concept:		MTH#C0013658
-Based on:		Observation // formerly CodeConceptObservation
+Based on:		Finding // formerly CodeConceptObservation
 Description:	"Educational attainment or level of education of individuals."
 Value:			CodeableConcept from EducationalAttainmentVS
-				SpecificType is LNC#63504-5
+				ObservedAttribute is LNC#63504-5
 
 EntryElement:	Occupation
 Concept:		MTH#C0028811
-Based on:		Observation // formerly CodeConceptObservation
+Based on:		Finding // formerly CodeConceptObservation
 Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
 Value:			CodeableConcept from http://www.bls.gov/soc/
-				SpecificType is LNC#74287-4
+				ObservedAttribute is LNC#74287-4
 
-
+/*
 EntryElement:	Employment // TODO: Change to EmploymentHistory?
 Concept:		LNC#74165-2
-Based on:		Observation
+Based on:		Panel
 Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
-				SpecificType from EmploymentTypeVS
-1..1			EmploymentStatus
-0..1			Employer
-0..1			OccurrenceTime
+Panel.Finding
+includes 0..1	EmploymentType
+includes 1..1	EmploymentStatus
+includes 0..1	Employer
+*/
+
+	Element:		EmploymentType
+	Based on:		Finding
+	Concept:		MTH#C0242271
+	Description:	"The sector of as recognized by US Dept of Labor"
+	Value:			CodeableConcept from EmploymentTypeVS
 
 	Element:		EmploymentStatus
+	Based on:		Finding
 	Concept:		MTH#C0242271
 	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
 	Value:			CodeableConcept from EmploymentStatusVS
 
 	Element:		Employer
+	Based on:		Finding
 	Concept:		MTH#C1274022
 	Description:	"A person or entity which hires the services of another."
-	Value:			Person or Organization
+	Value:			ref(Person) or ref(Organization)
+
 
 
 // TODO:  EntryElement:	Disability
 
-
+/*
 EntryElement:	MilitaryService
 Concept:		MTH#C3714797
 Based on:		Panel
 Description:	"History of service in the US military."
-				SpecificType is MTH#C3714797  // ??? Specific type of military service, not specific type of panel
+				ObservedAttribute is MTH#C3714797  // ??? Specific type of military service, not specific type of panel
 				PanelMembers.Observation
 				includes 1..1			ref(MilitaryStatus)
 				//includes 0..1			TBD "MilitaryRank"
@@ -68,43 +80,44 @@ Description:	"History of service in the US military."
 				includes 0..1			ref(MilitaryBranch)
 				includes 0..*			ref(MilitaryServiceEra)
 				includes 0..1			ref(ServiceConnectedDisability)
+*/
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Based on:		Observation // formerly CodeConceptObservation
+	Based on:		Finding // formerly CodeConceptObservation
 	Description:	"The current connection to the US military."
 	Value:			CodeableConcept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
 	Concept:		TBD
-	Based on:		Observation
+	Based on:		Finding
 	Description:	"How the subject was formally discharged from the US Military."
 	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Based on:		Observation
+	Based on:		Finding
 	Description:	"The branch of the US military that the subject has served."
 	Value:			CodeableConcept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
 	Concept:		TBD
-	Based on:		Observation
+	Based on:		Finding
 	Description:	"The time period of US military service."
 	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
 	Concept:		TBD
-	Based on:		Observation
+	Based on:		Finding
 	Description:	"Percentage disability resulting from US Military Service."
 	Value:			Quantity with units UCUM#%
 
 
 EntryElement:	Travel
 Concept:		MTH#C0040802
-Based on:		Observation
+Based on:		Finding
 Description:	"Trip to a foreign country or an area, particularly when a health risk is involved."
 Value:			string // TODO - this generates a warning (it should not) - bug reported - I want to have the value be a Location, but that won't map to FHIR
-				SpecificType is MTH#C0040802
+				ObservedAttribute is MTH#C0040802
 
 
