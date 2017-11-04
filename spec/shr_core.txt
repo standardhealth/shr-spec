@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:			shr.actor, shr.base, shr.condition
+Uses:			shr.actor, shr.base
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 
@@ -12,7 +12,67 @@ CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-//---------------- Coding ----------------------------------------
+// Basic data types
+
+
+Element:		PlainText
+Concept:		TBD
+Description:	"A text written in a human language."
+Value:			string
+0..1			Language
+
+Element:		EmbeddedContent
+Concept:		TBD
+Description:	"Abstract class defining the common metadata of all types of encapsulated data, such as images."
+
+Element:		ParsableContent
+Based on:		EmbeddedContent
+Concept:		TBD
+Description:	"A string that follows a formal syntax and can be analyzed and broken into meaningful parts."
+Value:			string
+1..1			Formalism
+
+Element:		Formalism
+Concept:		TBD
+Description:	"The system of formal syntax or interpretation associated with parsable content."
+Value:			CodeableConcept
+
+Element:		Media  // FHIR Attachment
+Based on:		EmbeddedContent
+Concept:		TBD
+Description:	"A file that contains audio, video, image, or similar content."
+Value:			base64Binary
+0..1			ContentType
+0..1			Language
+0..1			ResourceLocation
+0..1			ResourceSize
+0..1			Title
+0..1			OriginalCreationDate
+
+Element:		ContentType
+Concept:		TBD
+Description:	"Mime type of the content, with charset etc."
+Value:			string
+
+Element:		ResourceLocation
+Concept:		TBD
+Description:	"URI where data can be found."
+Value:			uri
+
+Element:		ResourceSize
+Concept:		TBD
+Description:	"Number of bytes of content in the resource (if url provided)"
+Value:			unsignedInt
+
+Element:		Hash
+Concept:		TBD
+Description:	"A hash code of the data (sha-1, base64ed)"
+Value:			base64Binary
+
+
+
+
+//---- Coding departs from CIMI to align with FHIR
 
 Element:		Coding
 Concept:		MTH#C0805701
@@ -21,22 +81,23 @@ Value:			0..1 code
 0..1			CodeSystem
 0..1 			CodeSystemVersion
 0..1			DisplayText
-//0..*			CodingQualifier
+/*
+0..*			CodingQualifier
+	
+// TODO: Suggest changing FHIR's Coding.userSelected to Coding.qualifier 
+	Element:		CodingQualifier
+	Concept:		TBD
+	Description:	"A description of the purpose or origin of the code that assists in understanding the code."
+	Value:			code from CodingQualifierVS
+*/
 
 	Element:		CodeSystem
 	Concept:		TBD
 	Description:	"A formal terminology system."
 	Value:			uri
-	
-// TODO: Suggest changing FHIR's Coding.userSelected to Coding.qualifier 
-//	Element:		CodingQualifier
-//	Concept:		TBD
-//	Description:	"A description of the purpose or origin of the code that assists in understanding the code."
-//	Value:			code from CodingQualifierVS
 
 	Element:		CodeSystemVersion
 	Concept:		TBD
-	//Based on:		Version 
 	Description:	"The version of the vocabulary being used, if applicable."
 	Value:			string // Should be id type in FHIR, but it is a string (no issue recorded yet)
 	
@@ -195,7 +256,9 @@ Concept:		TBD
 Description:	"A point in time, described qualitatively."
 Value:			CodeableConcept from QualitativeDateTimeVS
 
+
 Element:		TimePeriod
+// Based on:	 IntervalValue from CIMI, but useless
 Concept:		MTH#C1948053
 Description:	"A period of time defined by a start and end time, date, or year."
 0..1			TimePeriodStart
@@ -581,7 +644,7 @@ Value:			string
 Element:		Reason
 Concept:		MTH#C0566251
 Description:	"The justification for an action or non-action, conclusion, opinion, etc."
-Value:			string or CodeableConcept or ref(Condition)  // added Condition since a Condition might be a reason for a Goal
+Value:			string or CodeableConcept or ref(Item)
 
 Element:		Title
 Concept:		TBD
