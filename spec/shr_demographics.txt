@@ -11,6 +11,7 @@ EntryElement:	PersonOfRecord
 Based on:		Person
 Concept:		MTH#C1299487, LNC#54125-0
 Description:	"Extended demographic information about the subject of this SHR."
+1..*			HumanName
 1..1			DateOfBirth
 1..1			PlaceOfBirth
 0..1			MultipleBirth
@@ -38,7 +39,7 @@ Description:	"Extended demographic information about the subject of this SHR."
 	Element:		MultipleBirth
 	Concept:		MTH#C0026753
 	Description:	"Indication if the person was part of a multiple birth event."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoUnknownVS
 	0..1			MultipleBirthOrder
 
 		Element:		MultipleBirthOrder
@@ -137,8 +138,7 @@ Description:	"Extended demographic information about the subject of this SHR."
 	Concept:		MTH#C2986441
 	Description:	"An electronic means of contacting an organization or individual."
 	Value:			TelecomNumberOrAddress
-	1..1			TelecomType
-	0..1			TelecomTypeOther
+	1..1			Type from http://hl7.org/fhir/ValueSet/contact-point-system if covered
 	0..1			TelecomQualifier
 	0..1			EffectiveTimePeriod
 
@@ -147,44 +147,15 @@ Description:	"Extended demographic information about the subject of this SHR."
 		Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID."
 		Value:			string
 
-		Element:		TelecomType
-		Concept:		TBD
-		Description:	"The type or channel of the communication, such as email or telephone. If an messaging app, such as Skype, specify other."
-		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-system
-
-		Element:		TelecomTypeOther
-		Concept:		TBD
-		Description:	"Specification of the type of telecom channel, if the TelecomType is other."
-		Value:			string
-
 		Element:  		TelecomQualifier
 		Concept:		TBD
 		Description:	"Provides more information about the type and uses of the telecom address."
 		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-use
 
-	Element:		TelephoneNumber
-	Concept:		MTH#C1515258
-	Based on:		Telecom
-	Description:	"A sequence of decimal digits (0-9) that is used for identifying a destination telephone line or other device in a telephone network."
-					TelecomType from http://hl7.org/fhir/ValueSet/contact-point-system
-
-	Element:		HomeTelephoneNumber
-	Based on:		TelephoneNumber
-	Concept:		TBD // MTH lacks the generic concept of a home phone number
-	Description:	"A telephone number associated with a person's residence."
-					TelecomQualifier is #home
-
-
-	Element:		WorkTelephoneNumber
-	Based on:		TelephoneNumber
-	Concept:		TBD // MTH lacks the generic concept of a home phone number
-	Description:	"A telephone number associated with a person's residence."
-					TelecomQualifier is #work
-
 	Element: 		MedicalInterpreterNeeded
 	Concept:		MTH#C1442531
 	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoUnknownVS
 	1..1			Language
 
 	EntryElement:	FamilialRelationship
@@ -205,7 +176,7 @@ Description:	"Extended demographic information about the subject of this SHR."
 EntryElement:	HealthInsurance
 Concept:		MTH#C0021682 "HealthInsurance"
 Description:	"Health insurance coverage available (even if not used for payment for a given encounter)."
-Value: 			CodeableConcept from InsuranceProviderTypeVS
+1..1 			Type from InsuranceProviderTypeVS
 0..1			InsuranceMemberId
 0..1			EffectiveTimePeriod
 

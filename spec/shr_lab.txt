@@ -1,27 +1,18 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.lab
-Description:		"The SHR Lab domain contains definitions for elements related to laboratory measurements."
+Description:		"The SHR Lab domain contains definitions related to laboratory measurements involving specimens."
 Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device, shr.procedure
 
-CodeSystem:     LNC = http://loinc.org
-
-//Description:	"A laboratory, radiologic, or other clinical test or measurement used to determine the presence, absence, or degree of a condition, or assess the function or health of an individual. This includes patient-generated data, such as pedometer readings."
-
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 Element:		LaboratoryProcedureAction
 Based on:		ProcedureAction
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
-1..1			ProcedureCode from http://hl7.org/fhir/ValueSet/observation-codes
+1..1			Type from http://hl7.org/fhir/ValueSet/observation-codes
+1..*			Category includes OBSCAT#laboratory
 0..1			Specimen
-0..1			SpecimenType
 0..1 			Device
-
-		Element:		SpecimenType
-		Concept:		TBD
-		Description:	"Kind of material that forms the specimen."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v2-0487
-
 
 EntryElement:	LaboratoryProcedurePerformed
 Based on:		LaboratoryProcedureAction
@@ -30,14 +21,12 @@ Based on:		LaboratoryProcedureAction
 EntryElement:	LaboratoryProcedureRequested
 Based on:		LaboratoryProcedureAction
 				Context is type RequestedContext
-
 		
 		
 EntryElement:	Specimen
-//Based on:		Entity
+Based on:		Entity
 Description:	"Sample for analysis"
-1..1			SpecimenCode
-0..1			SpecimenType
+1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
 0..1			AccessionIdentifier
 0..1			Status
 0..1			SourceSpecimen
@@ -47,10 +36,7 @@ Description:	"Sample for analysis"
 0..*			HandlingRisk
 0..*			SpecialHandling
 
-Element:		SpecimenCode
-Concept:		TBD
-Description:	"The concept that represents this specimen."
-Value:			CodeableConcept
+
 
 Element:		AccessionIdentifier
 Concept:		TBD
@@ -82,9 +68,9 @@ EntryElement:	SpecimenContainer
 Based on:		Entity
 Concept:		TBD
 Description:	"Direct container of specimen (tube&#47;slide, etc.)"
+0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
 0..1			Identifier
 0..1			Description
-0..1			ContainerType
 0..1			Capacity
 0..1			SpecimenQuantity
 0..*			Additive
@@ -94,10 +80,6 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
 // BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollection breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
 
-Element:		ContainerType
-Concept:		TBD
-Description:	"Kind of container holding the specimen - e.g. a vial or well."
-Value:			CodeableConcept
 
 Element:		Capacity
 Concept:		TBD
@@ -150,24 +132,24 @@ EntryElement:	HIVScreeningTestPerformed
 Based on:		LaboratoryProcedurePerformed
 Concept:		TBD
 Description:	"The performance of a HIV Screening Test. Results will be in an accompanying observation."
-1..1			ProcedureCode from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+1..1			Type from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
 
 EntryElement:	HIVSupplementalTestPerformed
 Based on:		LaboratoryProcedurePerformed
 Concept:		TBD
 Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
-1..1			ProcedureCode from HIVSupplementalTestCodeVS
+1..1			Type from HIVSupplementalTestCodeVS
 
 EntryElement:	HIVScreeningTestRequest
 Based on:		LaboratoryProcedureRequested
 Concept:		TBD
 Description:	"A request for a rapid HIV screening test."
-1..1			ProcedureCode from HIVScreeningTestCodeVS
+1..1			Type from HIVScreeningTestCodeVS
 
 EntryElement:	HIVSupplementalTestRequest
 Based on:		LaboratoryProcedureRequested
 Concept:		TBD
 Description:	"A request for a confirmatory or additional test for HIV infection."
-1..1			ProcedureCode from HIVSupplementalTestCodeVS
+1..1			Type from HIVSupplementalTestCodeVS
 
 

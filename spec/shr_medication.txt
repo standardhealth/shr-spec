@@ -42,12 +42,12 @@ Value: 			Type from MedicationVS
 			Element:		IsActiveIngredient
 			Concept:		TBD
 			Description:	"True if the ingredient is an active ingredient in the medication."
-			Value:			boolean
+			Value:			CodeableConcept from YesNoVS
 
 		Element:		Brand
 		Concept:		TBD
 		Description:	"If the product is branded, and if so, the brand name of a product."
-		Value: 			boolean
+		Value: 			CodeableConcept from YesNoVS
 		0..1			BrandName
 
 			Element: 		BrandName
@@ -58,7 +58,7 @@ Value: 			Type from MedicationVS
 		Element:		OverTheCounter
 		Concept:		TBD
 		Description:	"True if the medication is available to consumers without a prescription."
-		Value:			boolean
+		Value:			CodeableConcept from YesNoVS
 
 /*
 EntryElement:	MedicationRegimen
@@ -100,7 +100,7 @@ Description:	"A course or dose of medication for a patient, independent of conte
 		Element:		DoseAsNeededIndicator
 		Concept:		MTH#C1883728
 		Description:	"Indicates that a drug or therapy should be used as often as the patient decides it is necessary."
-		Value:			boolean
+		Value:			CodeableConcept from YesNoVS
 
 		Element:		DoseInstructionsText
 		Concept:		TBD
@@ -110,7 +110,7 @@ Description:	"A course or dose of medication for a patient, independent of conte
 		Element:		AdditionalDoseInstruction
 		Concept:		MTH#C1644714
 		Description:	"Supplemental instructions - e.g. 'with meals'."
-		Value:			CodeableConcept from FHIR/additional-instructions-codes
+		Value:			CodeableConcept from FHIR/additional-instruction-codes
 
 		Element:		RouteIntoBody
 		Concept:		MTH#C0013153
@@ -194,7 +194,6 @@ Description:	"An order for a medication to be dispensed and instructions for use
 				Context.Status from http://hl7.org/fhir/ValueSet/medication-request-status
 				Context.Priority from http://hl7.org/fhir/ValueSet/medication-request-priority
 				
-				
 EntryElement:	MedicationNotRequested
 Based on:		MedicationIntervention
 Concept:		TBD
@@ -222,20 +221,16 @@ Description:	"Indicates that a medication product has NOT been dispensed for a n
 
 
 // TODO: Not yet mapped to FHIR
-EntryElement:	MedicationChanged
+EntryElement:	MedicationChange
 Based on:		Action
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."
 				Context is type PerformedContext
-1..1			MedicationChangeType
+1..1			Type from MedicationChangeTypeVS  //"Whether the change is a dose change, switch to a new medication, or discontinuation."
 0..*			MedicationBeforeChange   //might be more than one
 0..*			MedicationAfterChange
 				Reason from MedicationChangeReasonVS
 
-		Element:		MedicationChangeType
-		Concept:		TBD
-		Description:	"Whether the change is a dose change, switch to a new medication, or discontinuation."
-		Value:			CodeableConcept from MedicationChangeTypeVS
 
 		Element:		MedicationBeforeChange
 		Concept:		TBD

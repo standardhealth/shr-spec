@@ -102,7 +102,7 @@ Description:		"A description of a physical or conceptual thing, other than an in
 
 	Element:		Type
 	Concept:		TBD
-	Description:	"The most specific code (lowest level term) describing the type of entity." 
+	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
 	Value:			CodeableConcept
 
 	
@@ -111,6 +111,7 @@ Based on:			Item
 Concept:			TBD
 Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions. "
 //Value:			DataValue or ref(Any)
+0..1			DataAbsentReason
 1..1			ObservedEntity
 1..1			ObservedAttribute
 1..1			ClinicallyRelevantTime
@@ -119,10 +120,15 @@ Description:		"Base class for assertions and observations about a patient. The o
 1..1			FindingStatus
 0..1			Comment
 
+		Element:		DataAbsentReason
+		Concept:		TBD
+		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
+		Value:			CodeableConcept from DataAbsentReasonVS
+		
 		Element:		ObservedEntity
 		Concept:		TBD
-		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, condition, or intervention"
-		Value:			ref(Entity)  // or CodeableConcept
+		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, condition, or intervention."
+		Value:			ref(Item)  // or CodeableConcept
 		
 		Element:		ObservedAttribute
 		Concept:		MTH#C1706203
@@ -152,14 +158,10 @@ Abstract Element:	Action
 Based on:			Item
 Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
-0..1 				ActionType
+0..1 				Type
+0..*				Category
 1..1				Context
 0..*				Reason
-
-	Element:		ActionType
-	Concept:		TBD
-	Description:	"The most specific concept code (lowest level term) describing the type of action." 
-	Value:			CodeableConcept
 
 	Abstract Element:	Context
 	Concept:			MTH#C0449255
@@ -332,7 +334,7 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Element:		SubjectIsThirdPartyFlag
 	Concept:		TBD
 	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoVS
 
 	Element:    	Informant
 	Concept:        MTH#C0449416
@@ -344,19 +346,6 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
 	Value:			ref(Person) or ref(Organization) or ref(Device) // TODO: Does Person imply references to Practitioner are allowed (intended), or does it need to be explicit?
 
-	
-Abstract Element:	TopicalFinding
-Based on:			Finding
-Concept:			TBD
-Description:		"A finding that pertains to a specific topic, aspect, or property of a patient, such as the height or blood pressure of the patient, or the result of a measurement or test on a patient."
-Value:			0..1 (Quantity or CodeableConcept could be from ObservationResultVS or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
-0..1			DataAbsentReason
-1..1			Topic
-
-	Element:		Topic
-	Concept:		MTH#C1706203
-	Description:	"What finding is about, e.g., a lab test, condition, a behavior, an immunization, a tumor, a wound, a drug regimen."
-	Value:			CodeableConcept or ref(PatientInformation)
 	
 	
 */
