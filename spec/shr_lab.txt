@@ -1,6 +1,6 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.lab
-Description:		"The SHR Lab domain contains definitions related to laboratory measurements involving specimens."
+Description:		"The SHR Lab domain contains definitions related to laboratory measurements, specifically measurements involving specimens."
 Uses:				shr.core, shr.base, shr.observation, shr.actor, shr.device, shr.procedure
 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
@@ -9,7 +9,7 @@ Element:		LaboratoryProcedureAction
 Based on:		ProcedureAction
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
-1..1			Type from http://hl7.org/fhir/ValueSet/observation-codes
+1..1			ObservedAttribute from http://hl7.org/fhir/ValueSet/observation-codes
 1..*			Category includes OBSCAT#laboratory
 0..1			Specimen
 0..1 			Device
@@ -74,9 +74,9 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			Capacity
 0..1			SpecimenQuantity
 0..*			Additive
-0..1			AdditiveCode
+0..*			AdditiveCode
 0..1			SequenceNumber
-// BALLOT: SpecimenContainer should inherit from Entity. It is a physical object, and not only that, but if it inherited from Entity, it wouldn't have to define identifier and description again.		
+	
 // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
 // BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollection breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
 
@@ -123,8 +123,6 @@ Element:		ProcessingProcedure
 Concept:		TBD
 Description:	"A coded value specifying the procedure used to process the specimen."
 Value:			CodeableConcept
-
-
 
 // Examples of lab tests and results
 

@@ -10,14 +10,6 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
 
-EntryElement:	NeoplasmObservation
-Description:	"Observation of a unusual growth, for example, a tumor. The body site allows the abnormality to be located and identified. The abnormality identifier allows the tumor to be tracked over time."
-Based on:		BodyStructureObservation
-Concept:		TBD
-Value:			CodeableConcept from NeoplasmObservationVS
-0..1			Identifier  // extension
-0..1			Method from NeoplasmObservationMethodVS
-
 
 EntryElement:	BreastCancerPresentFinding
 Concept:		MTH#C1446377
@@ -25,27 +17,21 @@ Based on:		ConditionPresentFinding
 Description:	"Finding or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
-// TODO: In Condition, Stage is a simple attribute, not an observation. TNMStage is an full EntryElement. How do we associate the observation with the Stage attribute?
 0..1			Stage from urn:oid:2.16.840.1.113883.11.20.11.12
-0..1			BodySite is type PrimaryTumorSite
-
-			Element: 		PrimaryTumorSite
-			Based on:		BodySite
-			Concept:		MTH#C0475447
-			Description:	"The location of the primary tumor."
 
 
 EntryElement:	TNMStage
+Based on:		Observation
 Concept:		LNC#21908-9
-Based on:		Observation // TODO: or Assessment since it is certainly focused on a Condition (in this case BreastCancer). However, an assessment does not have components (but maybe it should). But if we add components to assessment, the line between assessment and observation blurs even further
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12
+				ObservedAttribute is LNC#21908-9
 1..1			StagingSystem // e.g. AJCC TODO: this should be captured in Observation.Method, not a new attribute
 0..1			StagingTiming
-// components
-1..1 			T-Stage
-1..1 			N-Stage
-1..1 			M-Stage
+Components.ObservationComponent
+includes 1..1 	T-Stage
+includes 1..1 	N-Stage
+includes 1..1 	M-Stage
 
 		Element:		StagingSystem
 		Concept:		TBD
@@ -185,7 +171,7 @@ of breast carcinomas. PR status (positive=present or overexpressed; negative=abs
 EntryElement: 	TumorSize
 Description:	"Measurement of the longest diameter of a tumor, in situ or on a excised tumor. See CDISC Table 3.3.2"
 Concept:		MTH#C4086369
-Based on:		Observation // formerly QuantitativeObservation
+Based on:		Observation
 Value:			Quantity with units UCUM#mm
 1..1			TBD "Specimen" // or NeoplasmIdentifier?
 //Components.Value
@@ -272,7 +258,7 @@ Value:				CodeableConcept from PositiveNegativeVS
 EntryElement:	CancerGrowthPotential
 Description:	"Information relating to rate of cell growth or proportion of cancer cells within the tumor that are growing and dividing to form new cancer cells."
 Concept:		MTH#C1516170 "Cancer Cell Growth"
-Based on:		Observation // formerly CodeConceptObservation
+Based on:		Observation
 Value:			CodeableConcept from QualitativeValueScaleVS
 // Components
 0..1			Ki-67LabelingIndex
@@ -336,7 +322,7 @@ Concept:		MTH#C0449258
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
 				Category includes MTH#C0421176 "Efficacy"
-				ObservedEntity
+				ObservedItem
 1..1			ObservedAttribute is MTH#C0421176 "Progression"
 0..*			Evidence from ProgressionEvidenceTypeVS
 

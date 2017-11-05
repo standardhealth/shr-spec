@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
-Description:	"The SHR Base domain contains definitions for elements that are widely shared in SHR, including the base Entry and associated metadata."
+Description:	"The SHR Base domain contains definitions for elements that are widely shared in SHR, including the base Entry and Item."
 Uses:			shr.core, shr.demographics, shr.actor, shr.encounter, shr.device
 
 
@@ -86,9 +86,6 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 
 // The top level classes are Finding, Action, and Entity
 
-// We could also do something like "reusable data element" to root Element (but the declaration is really in the name slot)
-// I still don't like EntryElement!
-// Should we include a hierarchy of data values?
 
 Abstract Element:	Item  // could be Entry?
 Concept:			TBD
@@ -110,9 +107,9 @@ Abstract Element:	Finding
 Based on:			Item
 Concept:			TBD
 Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions. "
-//Value:			DataValue or ref(Any)
+//Value:			DataValue or ref(Item)
 0..1			DataAbsentReason
-1..1			ObservedEntity
+1..1			ObservedItem
 1..1			ObservedAttribute
 1..1			ClinicallyRelevantTime
 0..*			Category from ObservationCategoryVS if covered
@@ -125,7 +122,7 @@ Description:		"Base class for assertions and observations about a patient. The o
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from DataAbsentReasonVS
 		
-		Element:		ObservedEntity
+		Element:		ObservedItem
 		Concept:		TBD
 		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, condition, or intervention."
 		Value:			ref(Item)  // or CodeableConcept
@@ -149,7 +146,7 @@ Description:		"Base class for assertions and observations about a patient. The o
 		Element:		FindingStatus
 		Concept:		TBD
 		Description:	"Indicates whether the finding is complete and definite."
-		Value:			CodeableConcept from FindingStatusVS
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
 
 	
 //------------ Actions and Interventions -------------
