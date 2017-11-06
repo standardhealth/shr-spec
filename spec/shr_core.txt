@@ -10,11 +10,36 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
-CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:     UCUM = http://unitsofmeasure.org 
 
-// In SHR, everything is a datatype. There's no reason to inherit from datatype. 
+//---------- Data Values ---------------- 
+/* This isn't necessary in SHR since value choices can be expressed with "or"
+Abstract Element:	DataValue
+Concept:			TBD
+Description:		"Abstract element defining any data value."
 
+Abstract Element:	OrderedValue
+Based on:			DataValue
+Description:		"Values that admit the concepts greater/lesser or sooner /later, which includes ordinals, times, as well as true quantities."
 
+Abstract Element:	TemporalValue
+Based on:			OrderedValue
+Description:		"Any value that describes time."
+Value:				date or dateTime or time or instant
+
+Abstract Element:	NumericalValue
+Based on:			OrderedValue
+Description:		"A value expressed by a number."
+Value:				decimal or integer or unsignedInt or positiveInt
+	
+Abstract Element:	UnorderedValue
+Based on:			DataValue
+Description:		"Abstract class defining data values that do not express the concept of greater or lesser amounts or temporal ordering."
+Value:				string or boolean or Range or Ratio or EmbeddedContent or TimePeriod or CodeableConcept // in some cases, concepts can be ordered, low, medium, high, so this isn't really valid
+*/
+	
+//------------ Data Types ----------------
+	
 Element:		PlainText
 Concept:		TBD
 Description:	"A text written in a human language."
@@ -37,7 +62,7 @@ Concept:		TBD
 Description:	"The system of formal syntax or interpretation associated with parsable content."
 Value:			CodeableConcept
 
-Element:		Media  // FHIR Attachment
+Element:		Media  // aka FHIR Attachment
 Based on:		EmbeddedContent
 Concept:		TBD
 Description:	"A file that contains audio, video, image, or similar content."
@@ -112,6 +137,7 @@ Concept:		MTH#C0600091
 Description:	"A unique string that identifies a specific person or thing."
 Value:			string  // or id or code or CodeableConcept?
 
+
 // -------------------  Quantities -----------------
 
 Element:		Quantity
@@ -166,7 +192,7 @@ Value:			positiveInt or CodeableConcept
 Element:		Count
 Concept:		MTH#C0750480
 Description:	"The number of non-null items in a referenced set of items or values."
-Value:			positiveInt
+Value:			unsignedInt
 
 Element:		Ratio
 Concept:		MTH#C0456603
@@ -251,6 +277,8 @@ Value:			CodeableConcept from ClockDirectionVS
 
 
 // --------------- Times and Time TimePeriods ----------------
+
+
 
 Element:		QualitativeDateTime
 Concept:		TBD

@@ -24,9 +24,9 @@ EntryElement:	TNMStage
 Based on:		Observation
 Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12
-				ObservedAttribute is LNC#21908-9
-1..1			StagingSystem // e.g. AJCC TODO: this should be captured in Observation.Method, not a new attribute
+Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12  // or normative answer group LNC#LL240-3
+				ObservedAttribute is LNC#21908-9 "Stage group.clinical Cancer"
+1..1			FindingMethod from StagingMethodVS
 0..1			StagingTiming
 Components.ObservationComponent
 includes 1..1 	T-Stage
@@ -69,10 +69,10 @@ Concept:		MTH#C1511980
 Based on:		Observation
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 Value:			CodeableConcept from NottinghamCombinedGradeVS
-// components
-0..1			TubuleFormationScore
-0..1			NuclearPleomorphismScore
-0..1			MitoticCountScore
+Components.ObservationComponent
+includes 0..1 TubuleFormationScore
+includes 0..1 NuclearPleomorphismScore
+includes 0..1 MitoticCountScore
 
 			Element:		TubuleFormationScore
 			Concept:		SCT#371470008
@@ -220,39 +220,42 @@ Value:			Quantity with units UCUM#mm
 		Value:			Quantity with units UCUM#%
 
 
-EntryElement:		CancerLymphaticInvolvement
+EntryElement:		NoLymphaticInvolvement		
+Based on:			ConditionAbsentFinding
+Concept:			TBD
+Description:		"Lymph nodes in all, or certain part, of the lymphatic system do not contain cancer cells."
+Value:				CodeableConcept is MTH#C0746333
+1..1				BodySite from LymphSystemSubdivisionVS
+		
+EntryElement:		LymphaticInvolvement
+Based on:			Observation
 Concept:			MTH#C0746333
-Based on:			Observation // formerly CodeConceptObservation
-Description:		"Whether or not lymph nodes contain cancer cells."
+Description:		"Description of lymph nodes contain cancer cells."
 Value:				CodeableConcept from PositiveNegativeVS
-1..1				LymphaticSystemSubdivision  // Introduce body site in Observation level?
-// Components
-0..1				LargestLymphNodeSize
-0..1				NumberOfLymphNodesInvolved
-0..1				DegreeOfLymphaticInvolvement
+1..1				BodySite from LymphSystemSubdivisionVS 
+Components.ObservationComponent
+	includes 0..1 LargestLymphNodeSize
+	includes 0..1 NumberOfLymphNodesInvolved
+	includes 0..1 DegreeOfLymphaticInvolvement
 
-		Element:		LymphaticSystemSubdivision
-		Based on:		BodySite
-		Concept:		TBD
-		Description:	"A lymph node area or nodal group; a subdivision of the entire lymphatic system. For breast cancer, this includes 5 areas: internal mammary lymph nodes, axillary lymph nodes level I, II, and III, and the supraclavicular lymph nodes."
-		Value:			CodeableConcept from LymphSystemSubdivisionVS
 
 		Element:		LargestLymphNodeSize
-		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
-		Concept:		MTH#C1285847
 		Based on:		ObservationComponent
+		Concept:		MTH#C1285847
+		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
 		Value: 			Quantity with units UCUM#mm
+						
 
 		Element:		NumberOfLymphNodesInvolved
-		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
-		Concept:		TBD
 		Based on:		ObservationComponent
+		Concept:		TBD
+		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
 		Value:			Quantity with units UCUM#1 "Count"
 
 		Element:		DegreeOfLymphaticInvolvement
-		Description:	"Assessment of how much cancer is in a lymph node."
-		Concept:		TBD
 		Based on:		ObservationComponent
+		Concept:		TBD
+		Description:	"Assessment of how much cancer is in a lymph node."
 		Value:			CodeableConcept from DegreeOfLymphaticInvolvementVS
 
 EntryElement:	CancerGrowthPotential
@@ -322,16 +325,11 @@ Concept:		MTH#C0449258
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
 				Category includes MTH#C0421176 "Efficacy"
-				ObservedItem
+				ObservedItem value is type BreastCancerPresentFinding
 1..1			ObservedAttribute is MTH#C0421176 "Progression"
 0..*			Evidence from ProgressionEvidenceTypeVS
 
-	Element:		Evidence
-	Concept:		TBD
-	Description:	"An observation that serves as evidence for some type of assessment."
-	Value:			CodeableConcept or ref(Observation)
 
-	
 EntryElement:	ToxicReaction
 Based on:		AdverseReaction
 Concept:		TBD

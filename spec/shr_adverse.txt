@@ -1,10 +1,17 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.adverse
 Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
-Uses:				shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
+Uses:				shr.actor, shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
+
+Abstract Element:	AdverseFinding
+Based on:			Finding
+Concept:			TBD
+Description:		"Abstract Class for all adverse event and adverse reaction-related findings."
+					ObservedItem value is type Person
+
 
 EntryElement:	AdverseEvent
-Based on:		Finding
+Based on:		AdverseFinding
 Concept:		MTH#C0877248
 Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death."
 Value:			CodeableConcept from MedDRAVS
@@ -37,7 +44,7 @@ Value:			CodeableConcept from MedDRAVS
 	
 	
 EntryElement:	AdverseReaction
-Based on:		Finding
+Based on:		AdverseFinding
 Concept:		TBD
 Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This entry could be used to record the occurrence or non-occurrence of an adverse reaction."
 1..1			ref(AdverseEvent)
@@ -53,4 +60,4 @@ Description:	"Any noxious and unintended response to a medical product, procedur
 	Element:		ActionTaken
 	Concept:		TBD
 	Description:	"Action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
-	Value:			ref(MedicationChange)
+	Value:			ref(MedicationChangeAction)

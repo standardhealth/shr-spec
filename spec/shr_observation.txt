@@ -3,20 +3,21 @@ Namespace:		shr.observation
 Description:	"The SHR Observation domain contains basic definitions used to capture subjective and objective information about the subject."
 Uses:			shr.base, shr.core, shr.demographics, shr.actor, shr.lab, shr.medication, shr.condition, shr.procedure, shr.device
 
+
 EntryElement: 	Observation
 Based on:		Finding
 Concept:		MTH#C1554188
-Description:	"An observation includes any information about a subject that results from an act of observing, measuring, or evaluation. The topic of an observation can include the subject's identity, behavior, physiological state, health state, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+Description:	"An observation includes direct results of observing, measuring, or evaluation. The topic of an observation can include the subject's behavior, relationships, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
 // TODO: Support additional value types: SampledData or Attachment 
-1..1			ResultStatus from http://hl7.org/fhir/ValueSet/observation-status
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)  // Limited by FHIR
 0..1			BodySite
 0..1			ref(Specimen)
-0..1			ref(Device) 
-0..*			ObservationQualifier   //  = CIMI's Precondition
+0..1			ref(Device)
 0..*			ReferenceRange  // quantitative measurement only
 0..1			Interpretation   // might move up to Finding itself
 0..1			ChangeFlag
 0..1			Components
+0..*			ObservationQualifier   //  = CIMI's Precondition
 
 		Element:		ResultStatus
 		Concept:		TBD
@@ -38,7 +39,6 @@ Description:	"An observation includes any information about a subject that resul
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
 
-
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
@@ -51,13 +51,15 @@ Description:	"An observation includes any information about a subject that resul
 		
 
 Element:		ObservationComponent
-Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation."
-Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
 1..1			ObservedAttribute
 0..1			DataAbsentReason
 0..1			Interpretation
 0..*			ReferenceRange
+		
 
+				
 
 EntryElement:	Panel
 Concept:		TBD
@@ -73,29 +75,7 @@ Description:	"A grouped set of related findings, frequently captured at the same
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* ref(Finding)
-
-
-EntryElement:	BodyStructurePresentFinding
-Based on:		Finding
-Concept:		MTH#C1268086
-Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
-Value:			CodeableConcept from BodyStructureVS
-				ObservedAttribute is #ConditionPresent
-
-EntryElement:	BodyStructureAbsentFinding
-Based on:		Finding
-Concept:		MTH#C1268086
-Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
-Value:			CodeableConcept from BodyStructureVS
-				ObservedAttribute is #ConditionAbsent		
-
-Element:		SocialHistory
-Concept:		MTH#C3714536
-Based on:		Finding
-Description:	"The external elements and conditions which surround, influence, and affect the life and development of the subject. Includes social conditions such as poverty, violence, bullying."
-				Category includes #social-history "social history"
-
+		Value:			0..* ref(Finding)				
 
 /* Orphans
 

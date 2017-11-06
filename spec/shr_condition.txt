@@ -5,20 +5,27 @@ Uses:			shr.core, shr.base, shr.actor
 
 CodeSystem:     SCT = http://snomed.info/sct
 
-
+Abstract Element:	ConditionFinding
+Based on:			Finding
+Concept:			TBD
+Description:		"Abstract Class for all condition-related findings."
+					ObservedItem value is type Person
+	
 EntryElement:	ConditionAbsentFinding
-Based on:		Finding
+Based on:		ConditionFinding
 Concept:		TBD
 Description:	"A finding that a condition not present in the subject."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 				ObservedAttribute is #ConditionAbsent
 0..*			BodySite
 
+
 EntryElement:	ConditionPresentFinding 
-Based on:		Finding
+Based on:		ConditionFinding
 Concept:		TBD // MTH#C0348080
-Description:	"A finding of the presence of a disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A condition present finding implies the existence of a condition as an entity and is treated as if the finding of the condition, and the entity of the condition are the same. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
+Description:	"A finding of the presence of a disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A condition present finding implies the existence of a condition as an entity and is treated as if the finding and the condition entity are the same. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+				ObservedItem value is type Person
 				ObservedAttribute is #ConditionPresent
 1..*			Category from ConditionCategoryVS
 1..1			ClinicalStatus
@@ -31,7 +38,6 @@ Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-probl
 0..1			Severity
 0..1			Criticality
 0..1			Stage
-0..*			RelatedFinding  // any finding related to this condition, including lab tests, manifestations, etc.
 
 /* 
 TODO:
@@ -81,30 +87,39 @@ Link to Related Medications
 			Description:	"The relative advancement in the course of a disease."
 			Value:			CodeableConcept
 
-			Element:		RelatedFinding
-			Concept:		TBD
-			Description:	"Findings supporting or related to this condition." 
-			Value:			ref(Finding)
-
 // Examples of how to specialize ConditionPresentFinding
 
-EntryElement:		AcademicProblem
+EntryElement:		AcademicProblemPresentFinding
 Concept:			MTH#C0000873
 Based on:			ConditionPresentFinding
 Description:		"A problem with learning or behavior in a learning environment."
 Value:				CodeableConcept from TBD "AcademicProblemVS"
 0..0				BodySite
 
-EntryElement:		Injury
+EntryElement:		InjuryPresentFinding
 Concept:			MTH#C3263722
 Based on:			ConditionPresentFinding
 Description:		"Damage inflicted on the body by an external force."
 0..1				Setting   // where injury happened (work, home, school)
 0..1				Location  // where (on earth) did the injury happen
 
-EntryElement:		MentalHealthCondition
+EntryElement:		MentalHealthConditionPresentFinding
 Based on:			ConditionPresentFinding
 Concept:			MTH#C1446377
 Description:		"A condition relating to a person’s psychological and emotional well-being."
 Value:				CodeableConcept from DSMVS
 
+
+EntryElement:	BodyStructurePresentFinding
+Based on:		Finding
+Concept:		MTH#C1268086
+Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
+Value:			CodeableConcept from BodyStructureVS
+				ObservedAttribute is #ConditionPresent
+
+EntryElement:	BodyStructureAbsentFinding
+Based on:		Finding
+Concept:		MTH#C1268086
+Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
+Value:			CodeableConcept from BodyStructureVS
+				ObservedAttribute is #ConditionAbsent
