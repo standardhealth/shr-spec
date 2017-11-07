@@ -53,32 +53,27 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 Element:		ObservationComponent
 Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
-1..1			ObservedAttribute
+1..1			ObservedAttributeOfSubject
 0..1			DataAbsentReason
 0..1			Interpretation
 0..*			ReferenceRange
 		
-
-				
+			
 
 EntryElement:	Panel
 Concept:		TBD
-Based on:		Finding
+Based on:		Observation  // inherit from Observation because a Panel might share the same specimen
 Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-// 0..0			Value
-// TODO: cannot constrain the cardinality of Value
-// 	 ERROR shr: Failed to resolve definition for Value. (module=shr-text-input)
-//   file: C:\Users\mkramer\Documents\GitHub\shr_spec\spec\shr_observation.txt
+0..0			Value
+1..1			Members
 
-1..1			PanelMembers
-
-		Element:		PanelMembers
+		Element:		Members
 		Concept:		TBD
-		Description:	"PanelMembers represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
+		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
 		Value:			0..* ref(Finding)				
 
-/* Orphans
-
+		
+		/* Orphans
 		Element:		ServiceCategory
 		Concept:		TBD
 		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
@@ -88,5 +83,4 @@ Description:	"A grouped set of related findings, frequently captured at the same
 		Concept:		TBD
 		Description:	"The status of the report associated with this panel."
 		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-		
-*/
+		*/

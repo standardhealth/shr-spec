@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
-Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Item. The classes below Item are are Finding, Action, and Entity."
+Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Any. The classes below Any are are Finding, Action, and Entity."
 Uses:			shr.core, shr.demographics, shr.actor, shr.encounter, shr.device, shr.procedure
 
 
@@ -82,12 +82,12 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	
 //--------------------------------------
 
-Abstract Element:	Item  // could be Entry?
+Abstract Element:	Any 
 Concept:			TBD
 Description:		"The top level class in the hierarchy"
 
 Abstract Element:	Entity
-Based on:			Item
+Based on:			Any
 Concept:			TBD
 Description:		"A description of a physical or conceptual thing, other than an information item, and distinct from a finding or action. Location, body part, condition, or organization are examples."
 0..1				Type
@@ -101,13 +101,13 @@ Description:		"A description of a physical or conceptual thing, other than an in
 	
 
 Abstract Element:	Finding
-Based on:			Item
+Based on:			Any
 Concept:			TBD
 Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions. "
-//Value:		0..1	Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Item)
+//Value:		0..1	Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Any)
 0..1			DataAbsentReason
-1..1			ObservedItem
-1..1			ObservedAttribute
+1..1			Subject
+1..1			ObservedAttributeOfSubject
 1..1			ClinicallyRelevantTime
 0..*			Category from ObservationCategoryVS if covered
 0..1			FindingMethod
@@ -121,12 +121,12 @@ Description:		"Base class for assertions and observations about a patient. The o
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from DataAbsentReasonVS
 		
-		Element:		ObservedItem
+		Element:		Subject
 		Concept:		TBD
-		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, condition, or intervention."
-		Value:			ref(Item)  // or CodeableConcept?
+		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
+		Value:			ref(Any)  // or CodeableConcept?
 		
-		Element:		ObservedAttribute
+		Element:		ObservedAttributeOfSubject
 		Concept:		MTH#C1706203
 		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, or a test code."
 		Value:			CodeableConcept 
@@ -150,24 +150,17 @@ Description:		"Base class for assertions and observations about a patient. The o
 		Element:		Evidence
 		Concept:		TBD
 		Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
-		Value:			CodeableConcept or ref(Item)
+		Value:			CodeableConcept or ref(Any)
 
-		
-Abstract Element:	SimpleQuestionAnswer
-Based on:			Finding
-Concept:			TBD
-Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
-					ObservedItem is type PersonOfRecord
-					FindingStatus is #final
-0..0				FindingMethod
-0..0				Evidence					
-0..0				Comment
+
+//Abstract Element:	MultipleAnswerQA
+// In FHIR, chat.fhir.org see stream:implementers topic:Select+all+that+apply+observations,+multiple+value
 
 		
 //------------ Actions and Interventions -------------
 
 Abstract Element:	Action
-Based on:			Item
+Based on:			Any
 Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
 0..1 				Type
@@ -185,7 +178,7 @@ Based on:		Context
 Concept:		TBD
 Description:	"Context indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
 0..1			OccurrenceTime  // when the action took place
-0..*			Participation
+0..*			Participant
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
 0..*			Annotation
@@ -193,8 +186,8 @@ Description:	"Context indicating actual performance or execution of a healthcare
 0..1			RelatedPlan
 0..*			Outcome  // e.g., AdverseReaction
 
-		Element:		Participation
-		Based on:		Entity
+		Element:		Participant
+		Based on:		Entity  // Relationship?
 		Concept:		MTH#C1550369
 		Description:	"An actor who participates in a task or activity. Unlike a HealthcareInvolvement which continues over period of time, the participant is associated with doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
 		0..1			Actor
