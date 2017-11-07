@@ -6,11 +6,15 @@ Uses:			shr.core, shr.demographics, shr.base
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 
-// ------------- Person ---------------------
+Element:		Actor
+Concept:		TBD
+Description:	"An actor in a healthcare action. May be human or non-human."
+Value:			ref(Person) or ref(Organization)
 
-Element:		Person
+EntryElement:	Person
+Based on:		Entity
 Concept:		MTH#C0027361
-Description:	"A person. In practical terms, people relevant to the health or social situation of the subject (including the person of record)."
+Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
 0..* 			HumanName
 0..1			AnonymizedFlag
 0..1			FictionalPersonFlag
@@ -24,12 +28,12 @@ Description:	"A person. In practical terms, people relevant to the health or soc
 	Element:		AnonymizedFlag
 	Concept:		MTH#C3858751
 	Description:	"Flag indicating if personally identifiable information has been withheld or disguised."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoVS
 
 	Element:		FictionalPersonFlag
 	Concept:		MTH#C0887933
 	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoVS
 
 	Element:   		DateOfBirth
 	Concept:        MTH#C2919018, LNC#21112-8
@@ -39,9 +43,9 @@ Description:	"A person. In practical terms, people relevant to the health or soc
 	Element:		AdministrativeGender
 	Concept:		MTH#C1550327
 	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
-	Value:          code from FHIR/administrative-gender
+	Value:          code from http://hl7.org/fhir/ValueSet/administrative-gender
 
-	Element:		LanguageUsed
+	Element:		LanguageUsed  // needs to be aligned with CCDA 2.1
 	Concept:		TBD
 	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
 	Value:			Language
@@ -66,7 +70,7 @@ Description:	"A person. In practical terms, people relevant to the health or soc
 	Element:		Deceased
 	Concept:		MTH#C0011065
 	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoUnknownVS
 	0..1			DateOfDeath
 	0..1			AgeAtDeath
 
@@ -81,20 +85,13 @@ Description:	"A person. In practical terms, people relevant to the health or soc
 		Value:			GeneralizedAge
 
 
-
-Element:		RelatedPerson
-Based on:		Person
-Concept:		TBD
-Description:	"A person, other than a practitioner or the patient (the person of record) who is relevant to the health or social situation of the subject."
-
-
 Element:		Practitioner
 Based on:		Person
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-0..*			HumanName   // only one (limitation imposed by us-core)
+1..1			HumanName   // only one (limitation imposed by us-core)
 0..*			Affiliation
-0..1    		NationalProviderIdentifier
+1..1    		NationalProviderIdentifier
 0..*    		MedicalSpecialty
 
 	Element:    	Affiliation
@@ -110,20 +107,20 @@ Description:	"A person who practices a healing art."
 	Element:		MedicalSpecialty
 	Concept:		MTH#C0037778
 	Description:	"A branch of medicine practiced by the provider."
-	Value:			CodeableConcept from FHIR/c80-practice-codes    // possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/c80-practice-codes    // possibly http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
 
-
-Element:		Organization
+EntryElement:	Organization
+Based on:		Entity
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings."
 Value:			OrganizationName
 0..*			OrganizationAlias
-1..1			SpecificType from FHIR/organization-type
-0..*			OrganizationIdentifyingCode
-0..*			AddressUsed
-0..*			Telecom
-0..1			ActiveFlag
+1..1			Type from http://hl7.org/fhir/ValueSet/organization-type
+1..*			OrganizationIdentifyingCode
+1..*			AddressUsed
+1..*			Telecom
+1..1			ActiveFlag
 
 	Element:		OrganizationName
 	Concept:		TBD
@@ -143,62 +140,21 @@ Value:			OrganizationName
 	Element:		ActiveFlag
 	Concept:		TBD
 	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoVS
 
 
 EntryElement:	ProviderRelationship	  // The subject's PCP, emergency contact, neurologist, dietician, massage therapist, etc.
+Based on:		Entity
 Concept:		MTH#C1314939
-Description:	"A person or organization responsible for providing a service to the person of record. Such a relationship can exist without a specific encounter or services being rendered; for example, an emergency contact relationship can exist without ever calling upon that person. The entry can also be used to state that a provider relationship does not exist, e.g., patient does not have a primary care provider."
-0..1 			Provider
-1..1			HealthcareRole
-0..1			NonOccurrenceModifier
+Description:	"A person or organization responsible for providing a service to the person of record. Such a relationship can exist without a specific encounter or services being rendered; for example, an emergency contact relationship can exist without ever calling upon that person."
+0..1 			Actor
+1..1			ServiceType
 0..1			GeneralizedTemporalContext
 0..1			Priority  //  If there are multiple actors in a role, this priority indicates which is primary, secondary, etc. An example is a prioritized list of emergency contacts.
 
-	Element:		HealthcareRole
+	Element:		ServiceType
 	Concept:		TBD
 	Description:	"A type of service provided to the subject."
 	Value:			CodeableConcept from HealthcareRoleVS /* or CodeableConcept from http://hl7.org/fhir/ValueSet/c80-practice-codes */
 
-	Element:		Provider
-	Concept:		MTH#C1138603
-	Description:	"A person or organization who provides services. This includes healthcare and relevant non-healthcare services, including personal services such as transportation."
-	Value:			RelatedPerson or Practitioner or Organization
 
-EntryElement:	EmergencyContact   // relationship assertion
-Concept:		MTH#C1552023
-Based on:		ProviderRelationship
-Description:	"A personal contact specifically designated to be used for emergencies."
-				HealthcareRole is MTH#C1552023
-1..1			Provider
-
-EntryElement:	PrimaryCareProvider
-Concept:		MTH#C2735026
-Based on:		ProviderRelationship
-Description:	"The medical professional responsible for first-line care of an individual."
-				HealthcareRole is MTH#C2735026
-0..0			NonOccurrenceModifier
-1..1			Provider
-
-EntryElement:	NoPrimaryCareProvider
-Concept:		TBD
-Based on:		ProviderRelationship
-Description:	"The medical professional responsible for first-line care of an individual."
-				HealthcareRole is MTH#C2735026
-				NonOccurrenceModifier is true
-0..0			Provider
-
-
-Element:		Participant
-Concept:		MTH#C1550369
-Description:	"A statement about an actor who did (or did not) participate in a certain task or activity. Unlike a HealthcareInvolvement which continues over period of time, the participant is associated with doing or not doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
-Value:			PersonOfRecord or Practitioner or RelatedPerson
-0..1 			ParticipationType
-0..1			NonOccurrenceModifier
-0..1			Reason
-0..1			OccurrenceTime
-
-	Element:		ParticipationType
-	Concept:		MTH#C1553854
-	Description:	"The detail of how the performer engaged in the task, for example, as the attending physician, surgical assistant, etc."
-	Value:			CodeableConcept from FHIR/v3-ParticipationType

@@ -1,11 +1,19 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.adverse
 Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
-Uses:				shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
+Uses:				shr.actor, shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
+
+Abstract Element:	AdverseFinding
+Based on:			Finding
+Concept:			TBD
+Description:		"Abstract Class for all adverse event and adverse reaction-related findings."
+					Subject value is type Person
+
 
 EntryElement:	AdverseEvent
+Based on:		AdverseFinding
 Concept:		MTH#C0877248
-Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): death, back pain, headache, pulmonary embolism, heart attack."
+Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death."
 Value:			CodeableConcept from MedDRAVS
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
@@ -17,7 +25,7 @@ Value:			CodeableConcept from MedDRAVS
 	Element:		SeriousAdverseEvent
 	Concept:		MTH#C1710056
 	Description:	"Clinical significance of adverse event defined based on the patient and event outcome or action criteria usually associated with events that pose a threat to a patient's life or functioning. Seriousness of adverse event serves as a primary guide for defining regulatory reporting obligations and changes in medicinal product development and usage."
-	Value:			CodeableConcept from ThreeValueLogicVS
+	Value:			CodeableConcept from YesNoUnknownVS
 
 	Element:		AdverseEventGrade   // aka seriousness
 	Concept:		MTH#C2985911
@@ -36,16 +44,20 @@ Value:			CodeableConcept from MedDRAVS
 	
 	
 EntryElement:	AdverseReaction
+Based on:		AdverseFinding
 Concept:		TBD
 Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This entry could be used to record the occurrence or non-occurrence of an adverse reaction."
 1..1			ref(AdverseEvent)
-0..*			AdverseReactionAttribution
-0..1			TBD "ActionTakenWithMedication"
-0..1			TBD "OtherActionTaken"
+0..*			AdverseEventAttribution
+0..*			ActionTaken
 
-	EntryElement:	AdverseReactionAttribution
-	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or Procedure"
-	Description:	"If an adverse reaction to treatment, a possible cause of the adverse reaction (either known or theorized). There can be more than one possible cause."
-	Value:			ref(MedicationUse) or ref(Procedure) or ref(Medication) or ref(Device)  // TODO: could be medication code
+	Element:		AdverseEventAttribution
+	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
+	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
+	Value:			ref(Action)  // some intervention, should be restricted to PerformedContext, but there's no way to do that
 	1..1			Certainty
 	
+	Element:		ActionTaken
+	Concept:		TBD
+	Description:	"Action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
+	Value:			ref(MedicationChangeAction)

@@ -1,16 +1,16 @@
-Grammar:	DataElement 5.0
-Namespace:	shr.behavior
-Description:		"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
-Uses:		shr.core, shr.base, shr.medication, shr.encounter, shr.allergy, shr.observation, shr.environment, shr.procedure
+Grammar:		DataElement 5.0
+Namespace:		shr.behavior
+Description:	"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
+Uses:			shr.core, shr.base, shr.medication, shr.encounter, shr.allergy, shr.observation, shr.environment, shr.procedure
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-Element:		BehavioralObservation
+Element:		BehavioralFinding
 Concept:		MTH#C0004927
-Based on:		Observation
+Based on:		Finding
 Description:	"A statement about observable responses, actions, or activities of the subject. Can be used to assert or deny behaviors."
 				Category includes LNC#54511-1 "Behavior"
 0..*			TBD "Impact" // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
@@ -41,27 +41,24 @@ EntryElement:   IntravenousDrugUse
 Based on:       SubstanceUse
 Concept:        MTH#C0242566
 Description:    "Records whether the subject injects recreational drugs."
-Value:			CodeableConcept from ThreeValueLogicVS
-				SpecificType is MTH#C0242566
+Value:			CodeableConcept from YesNoUnknownVS
 1..1            RouteIntoBody is MTH#C1522726 "Intravenous route"
 1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
 
 // It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUse so there is an explicit substance.
 EntryElement:	ONCSmokingStatus
-Based on:		Observation
-Concept:		LNC#11367-0
+Based on:		BehavioralFinding
+Concept:		LNC#72166-2
 Description:	"Records the subject's use of tobacco."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
-				SpecificType is LNC#11367-0
 
 EntryElement:	NicotineUse
 Based on:		SubstanceUse
-Concept:		MTH#C2363943
+Concept:		LNC#11367-0
 Description:	"Records the history of a subject's use of nicotine."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
 				Substance is MTH#C2363943
-				SpecificType is LNC#11367-0
 				RouteIntoBody from TBD "NicotineRouteVS"
 				ExposureMethod from TBD "NicotineExposureMethodVS"
 
@@ -72,7 +69,6 @@ Based on:		SubstanceUse
 Concept:		MTH#C0001948
 Description:	"The history of the subject's use of alcohol."
 Value:			CodeableConcept from TBD "AlcoholUseVS"  // e.g. former heavy drinker, non-drinker, light drinker, moderate drinker, heavy drinker, binge drinker
-				SpecificType is MTH#C0001948
 				Substance is SCT#398624005 "alcohol"
 0..1			AssessmentTool from AlcoholUseScreeningToolVS
 0..1			AlcoholBingeFrequency
@@ -81,169 +77,137 @@ Value:			CodeableConcept from TBD "AlcoholUseVS"  // e.g. former heavy drinker, 
 	Concept:		MTH#C0556346
 	Description:	"How often have you had 6 or more Units if female, or 8 or more if male, on a single occasion in the last year?."
 	Value:			CodeableConcept from SemiquantitativeFrequencyVS
-	1..1			SpecificType is MTH#C0556346
 
-EntryElement:	ReligiousPractice
-Concept:		MTH#C0035039
+
+Element:		Religion
+Concept:		LNC#81364-2
+Based on:		BehavioralFinding
+Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
+				Category includes #religion
+
+Element:		ReligiousPracticeStatus
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"The extent to which the religious practice is actively followed."
+Value:			CodeableConcept from ReligiousPracticeStatusVS
+				Category includes #religion
+
+Element:		ReligiousRestriction
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
+Value:			CodeableConcept from ReligiousRestrictionVS
+				Category includes #religion
+
+Element:		ReligiousCongregation
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"A group of place of religious practice."
+Value:			string  
+				Category includes #religion
+
+				
+EntryElement:	DietFollowed
+Concept:		TBD
+Based on:		Finding
+Description:	"A type of nutritional plan followed by the subject."
+Value:			CodeableConcept from DietFollowedVS if covered
+				Category includes #nutrition
+
+EntryElement:	HasSufficientFood
+Concept:		TBD
+Description:	"Frequency that the person of record unable to obtain food to stay hunger."
+Based on:		Finding
+Value:			CodeableConcept from QualitativeFrequencyVS
+				Category includes #nutrition
+
+EntryElement:	DietNutritionConcern
+Concept:		TBD
+Description:	"An anxiety or worry about the diet or nutritional intake of the subject."
+Based on:		Finding
+Value:			CodeableConcept from DietNutritionConcernVS
+				Category includes #nutrition
+
+EntryElement:	OverallSleepQuality
+Based on:		Finding
+Concept:		LNC#28323-4
+Description:	"Self-reported sleep quality."
+Value:			CodeableConcept from PerformanceGradingScaleVS
+				Category includes #sleep
+
+Element:		SleepQualityCause
+Based on:		Finding
+Concept:		TBD
+Description:	"Reason for poor sleep quality."
+Value:			CodeableConcept from SleepQualityCauseVS
+				Category includes #sleep
+
+Element:		TroubleFallingAsleep
+Concept:		TBD
+Description:	"How often the subject has trouble falling asleep."
+Based on:		Finding
+Value:			CodeableConcept from QualitativeFrequencyVS
+				Category includes #sleep
+	
+Element:		TroubleStayingAsleep
+Concept:		TBD
+Description:	"How often the subject has trouble staying asleep."
+Based on:		Finding
+Value:			CodeableConcept from QualitativeFrequencyVS
+				Category includes #sleep
+
+Element:		WakeFeelingRested
+Concept:		TBD
+Description:	"How often the subject feels rested when they wake up."
+Based on:		Finding
+Value:			CodeableConcept from QualitativeFrequencyVS
+				Category includes #sleep
+
+Element:		HoursSleepPerNight
+Concept:		LNC#65968-0
+Description:	"Typical hours spent sleeping per night."
+Based on:		Finding
+Value:			Quantity with units UCUM#1
+				Category includes #sleep
+
+EntryElement:	PhysicalActivityLevel
 Based on:		Panel
-Description:	"The religion practiced by the focal subject."
-//0..0			Value   TODO: No can do. This causes CLI crash with message
-//  if (typeof element.value !== 'undefined') {
-// TypeError: Cannot read property 'value' of undefined
-// Panel Members
-1..1			ref(Religion)
-0..1			ref(ReligiousPracticeStatus)
-0..*			ref(ReligiousRestriction)
-0..1			ref(ReligiousCongregation)
-0..1			TBD "ReligiousRepresentative"
+Concept:		LNC#28323-4
+Description:	"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288."
+Value:			CodeableConcept from QualitativeValueScaleVS
+				Category includes #exercise 
 
-		Element:		Religion
-		Concept:		TBD
-		Based on:		Observation
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
-						SpecificType is LNC#81364-2
+Element:		ExerciseHoursPerWeek
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"Hours of moderate or vigorous activity per week."
+Value:			Quantity with units UCUM#1  // TODO: potentially change to ratio with Units hours per one week
+				Category includes #exercise 
 
-		Element:		ReligiousPracticeStatus
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"The extent to which the religious practice is actively followed."
-		Value:			CodeableConcept from ReligiousPracticeStatusVS
+Element:		PhysicalActivityLimitation
+Concept:		TBD
+Based on:		Finding
+Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions."
+Value:			CodeableConcept from PhysicalActivityLimitationVS
+				Category includes #exercise 
 
-		Element:		ReligiousRestriction
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
-		Value:			CodeableConcept from ReligiousRestrictionVS
+EntryElement:	SubstanceAbuseTreatment
+Concept: 		TBD
+Based on:		ProcedurePerformed
+Description:	"The treatment program used to address a substance abuse problem."
+Value:			CodeableConcept from SubstanceAbuseTreatmentTypeVS
 
-		Element:		ReligiousCongregation
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"A group of place of religious practice."
-		Value:			string  //TODO: This is generating a warning, not sure why
+Element:		ViolentRiskToOthers
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"Risk or danger posed by the focal subject to others."
+Value:			CodeableConcept from QualitativeValueScaleVS
 
-EntryElement:		DietAndNutrition
-Concept:			MTH#C0012155
-Based on:			Panel
-Description:		"The usual food and drink consumed by an individual."
-Value:				CodeableConcept from TBD "DietAndNutritionVS"  // summary values for overall nutrition healthiness
-					SpecificType is MTH#C0012155
-//PanelMembers.Value
-0..*				ref(SpecialDietFollowed)
-0..1				ref(HasSufficientFood)
-0..*				ref(DietNutritionConcern)
-0..*				ref(FoodAllergy)
-
-		Element:		SpecialDietFollowed
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"A type of nutritional plan followed by the subject."
-		Value:			CodeableConcept from SpecialDietFollowedVS
-
-		Element:		HasSufficientFood
-		Concept:		TBD
-		Description:	"Frequency that the person of record unable to obtain food to stay hunger."
-		Based on:		Observation
-		Value:			CodeableConcept from QualitativeFrequencyVS
-
-		Element:		DietNutritionConcern
-		Concept:		TBD
-		Description:	"An anxiety or worry about the diet or nutritional intake of the subject."
-		Based on:		Observation
-		Value:			CodeableConcept from DietNutritionConcernVS
-
-
-EntryElement:		SleepQuality
-Concept:			MTH#C0424563
-Based on:			Panel
-Description:		"Self-reported sleep quality."
-Value:				CodeableConcept from PerformanceGradingScaleVS
-					SpecificType is LNC#28323-4
-//					PanelMembers.Value
-0..1				ref(TroubleFallingAsleep)
-0..1				ref(TroubleStayingAsleep)
-0..1				ref(WakeFeelingRested)
-0..1				ref(HoursSleepPerNight)
-0..*				ref(SleepQualityReason)
-
-		Element:		TroubleFallingAsleep
-		Concept:		TBD
-		Description:	"How often the subject has trouble falling asleep."
-		Based on:		Observation
-		Value:			CodeableConcept from QualitativeFrequencyVS
-
-		Element:		TroubleStayingAsleep
-		Concept:		TBD
-		Description:	"How often the subject has trouble staying asleep."
-		Based on:		Observation
-		Value:			CodeableConcept from QualitativeFrequencyVS
-
-		Element:		WakeFeelingRested
-		Concept:		TBD
-		Description:	"How often the subject feels rested when they wake up."
-		Based on:		Observation
-		Value:			CodeableConcept from QualitativeFrequencyVS
-
-		Element:		HoursSleepPerNight
-		Concept:		LNC#65968-0
-		Description:	"Typical hours spent sleeping per night."
-		Based on:		Observation
-		Value:			Quantity with units UCUM#1
-
-		Element:		SleepQualityReason
-		Concept:		TBD
-		Description:	"Reason for poor sleep quality."
-		Based on:		Observation
-		Value:			CodeableConcept from SleepQualityReasonVS
-
-EntryElement:		PhysicalActivityLevel
-Based on:			Panel
-Concept:			MTH#C0026606
-Description:		"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288."
-Value:				CodeableConcept from QualitativeValueScaleVS
-					SpecificType is LNC#28323-4
-//	PanelMembers.Value
-0..1				ref(ExerciseHoursPerWeek)
-0..*				ref(PhysicalActivityLimitation)
-0..1				TBD "MetabolicEquivalent" 
-
-		Element:		ExerciseHoursPerWeek
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"Hours of moderate or vigorous activity per week."
-		Value:			Quantity with units UCUM#1  // TODO: potentially change to ratio with Units hours per one week
-
-		Element:		PhysicalActivityLimitation
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions."
-		Value:			CodeableConcept from PhysicalActivityLimitationVS
-
-
-EntryElement:		SubstanceAbuseTreatment
-Concept: 			TBD
-Based on:			Procedure
-Description:		"The treatment program used to address a substance abuse problem."
-Value:				CodeableConcept from SubstanceAbuseTreatmentTypeVS
-
-
-EntryElement:		ViolentBehaviorRisk
-Concept:			TBD
-Based on:			Panel
-Description:		"Risk or danger posed by the focal subject to others and/or his or herself due to violent behavior."
-1..1				ViolentRiskToOthers
-1..1				ViolentRiskToSelf
-
-		Element:		ViolentRiskToOthers
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"Risk or danger posed by the focal subject to others."
-		Value:			CodeableConcept from QualitativeValueScaleVS
-
-		Element:		ViolentRiskToSelf
-		Concept:		TBD
-		Based on:		Observation
-		Description:	"Risk or danger posed by the focal subject to his or herself."
-		Value:			CodeableConcept from QualitativeValueScaleVS
+Element:		ViolentRiskToSelf
+Concept:		TBD
+Based on:		BehavioralFinding
+Description:	"Risk or danger posed by the focal subject to his or herself."
+Value:			CodeableConcept from QualitativeValueScaleVS
 
 /*
 EntryElement:	Mood

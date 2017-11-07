@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.demographics
 Description:		"The SHR Demographics domain contains definitions that describe basic characteristics of the person of record, such as name, address, and date of birth. Elements in the demographics domains are used for unique identification and patient matching."
-Uses:				shr.core, shr.actor, shr.base, shr.observation
+Uses:				shr.core, shr.actor, shr.base, shr.observation, shr.procedure
 
 Path:			  FHIR = http://hl7.org/fhir/ValueSet
 
@@ -11,6 +11,7 @@ EntryElement:	PersonOfRecord
 Based on:		Person
 Concept:		MTH#C1299487, LNC#54125-0
 Description:	"Extended demographic information about the subject of this SHR."
+1..*			HumanName
 1..1			DateOfBirth
 1..1			PlaceOfBirth
 0..1			MultipleBirth
@@ -28,7 +29,6 @@ Description:	"Extended demographic information about the subject of this SHR."
 1..*			Telecom
 1..*			LanguageUsed
 0..1			MedicalInterpreterNeeded
-0..*			FamilialRelationship
 
 	Element:   		PlaceOfBirth
 	Concept:        MTH#C0032040
@@ -38,7 +38,7 @@ Description:	"Extended demographic information about the subject of this SHR."
 	Element:		MultipleBirth
 	Concept:		MTH#C0026753
 	Description:	"Indication if the person was part of a multiple birth event."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoUnknownVS
 	0..1			MultipleBirthOrder
 
 		Element:		MultipleBirthOrder
@@ -137,8 +137,7 @@ Description:	"Extended demographic information about the subject of this SHR."
 	Concept:		MTH#C2986441
 	Description:	"An electronic means of contacting an organization or individual."
 	Value:			TelecomNumberOrAddress
-	1..1			TelecomType
-	0..1			TelecomTypeOther
+	1..1			Type from http://hl7.org/fhir/ValueSet/contact-point-system if covered
 	0..1			TelecomQualifier
 	0..1			EffectiveTimePeriod
 
@@ -147,60 +146,24 @@ Description:	"Extended demographic information about the subject of this SHR."
 		Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID."
 		Value:			string
 
-		Element:		TelecomType
-		Concept:		TBD
-		Description:	"The type or channel of the communication, such as email or telephone. If an messaging app, such as Skype, specify other."
-		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-system
-
-		Element:		TelecomTypeOther
-		Concept:		TBD
-		Description:	"Specification of the type of telecom channel, if the TelecomType is other."
-		Value:			string
-
 		Element:  		TelecomQualifier
 		Concept:		TBD
 		Description:	"Provides more information about the type and uses of the telecom address."
 		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-use
 
-	Element:		TelephoneNumber
-	Concept:		MTH#C1515258
-	Based on:		Telecom
-	Description:	"A sequence of decimal digits (0-9) that is used for identifying a destination telephone line or other device in a telephone network."
-					TelecomType from http://hl7.org/fhir/ValueSet/contact-point-system
-
-	Element:		HomeTelephoneNumber
-	Based on:		TelephoneNumber
-	Concept:		TBD // MTH lacks the generic concept of a home phone number
-	Description:	"A telephone number associated with a person's residence."
-					TelecomQualifier is #home
-
-
-	Element:		WorkTelephoneNumber
-	Based on:		TelephoneNumber
-	Concept:		TBD // MTH lacks the generic concept of a home phone number
-	Description:	"A telephone number associated with a person's residence."
-					TelecomQualifier is #work
-
 	Element: 		MedicalInterpreterNeeded
 	Concept:		MTH#C1442531
 	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-	Value:			boolean
+	Value:			CodeableConcept from YesNoUnknownVS
 	1..1			Language
-
-	Element:		FamilialRelationship
-	Concept:		MTH#C0015608
-	Description:	"The relationship of the subject to another person in the same (extended) family. May or may not be a blood relative (determined by value). Can be used to indicate there is no relation of the given type (e.g., no siblings), using the NonOccurrenceModifier."
-	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
-	0..1			(RelatedPerson or Practitioner)
-	0..1			NonOccurrenceModifier   // Allows you to say that the person of record does not have a family member, e.g. "no siblings" (in which case the person is omitted)
-
+	
 
 // ------------ TODO: move to Payment domain ------------
 
-EntryElement:	HealthInsurance
+EntryElement:	Coverage
 Concept:		MTH#C0021682 "HealthInsurance"
 Description:	"Health insurance coverage available (even if not used for payment for a given encounter)."
-Value: 			CodeableConcept from InsuranceProviderTypeVS
+1..1 			Type from InsuranceProviderTypeVS
 0..1			InsuranceMemberId
 0..1			EffectiveTimePeriod
 

@@ -6,15 +6,20 @@ Uses:			shr.core, shr.base, shr.observation, shr.lab
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		UCUM = http://unitsofmeasure.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
 
 //------------------ Vital Sign ---------------------------
 
 Element:		VitalSign
-Based on:		Test
+Based on:		Observation
 Concept:		LNC#8716-3 "Vital Sign"
-Value:			Quantity  // TODO: this generates a warning because no units are specified
-				Category is #vital-signs
-0..0			TBD "Specimen"  // no specimen used in vital sign measurements
+Value:			0..1 Quantity  // TODO: this generates a warning because no units are specified
+				Quantity.Units from http://hl7.org/fhir/ValueSet/ucum-vitals-common
+				DataAbsentReason from http://hl7.org/fhir/ValueSet/observation-valueabsentreason if covered
+				ObservedAttributeOfSubject from http://hl7.org/fhir/ValueSet/observation-vitalsignresult if covered
+1..*			Category includes OBSCAT#vital-signs
+1..1			ClinicallyRelevantTime
+//				Members.Finding is type VitalSign
 
 
 //-------------------  Specific Vital Sign Tests -----------------------------
@@ -24,22 +29,25 @@ Based on:		VitalSign
 Concept:		LNC#9279-1
 Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."
 Value:			Quantity with units UCUM#/min "/min"
+				ObservedAttributeOfSubject is LNC#9279-1
 				ObservationQualifier from RespiratoryRateQualifierVS
-0..1			TestMethod from RespiratoryRateMethodVS
+0..1			FindingMethod from RespiratoryRateMethodVS
 
 EntryElement:	HeartRate
 Based on:		VitalSign
 Concept:		LNC#8867-4
 Description:	"The number of times the heart ventricles contract per unit of time, usually per minute."
 Value:			Quantity with units UCUM#/min "/min"
+				ObservedAttributeOfSubject is LNC#8867-4
 				ObservationQualifier from HeartRateQualifierVS
-0..1			TestMethod from HeartRateMethodVS
+0..1			FindingMethod from HeartRateMethodVS
 
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
 Concept:		LNC#59408-5
 Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
 Value:			Quantity with units UCUM#% "%"
+				ObservedAttributeOfSubject is LNC#59408-5
 0..1			BodySite from OxygenSaturationBodySiteVS
 
 EntryElement:	BodyTemperature
@@ -47,6 +55,7 @@ Based on:		VitalSign
 Concept:		LNC#8310-5
 Description:	"The measure of the level of heat in a human or animal."
 Value:			Quantity with units UCUM#Cel "C"
+				ObservedAttributeOfSubject is LNC#8310-5
 				BodySite from BodyTemperatureBodySiteVS
 				ObservationQualifier from BodyTemperatureQualifierVS
 
@@ -55,6 +64,7 @@ Based on:		VitalSign
 Concept:		LNC#8302-2
 Description:	"The distance from the sole to the crown of the head."
 Value:			Quantity with units UCUM#cm "cm"
+				ObservedAttributeOfSubject is LNC#8302-2
 				ObservationQualifier from BodyHeightQualifierVS
 
 EntryElement:	BodyLength
@@ -62,12 +72,14 @@ Based on:		BodyHeight
 Concept:		LNC#8306-3
 Description:	"The distance from the sole of the foot to the crown of the head, lying down (typically 0-2 years)."
 Value:			Quantity with units UCUM#cm "cm"
+				ObservedAttributeOfSubject is LNC#8306-3
 
 EntryElement:	BodyWeight
 Based on:		VitalSign
 Concept:		LNC#29463-7
 Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
 Value:			Quantity with units UCUM#kg "kg"
+				ObservedAttributeOfSubject is LNC#29463-7
 				ObservationQualifier from BodyWeightQualifierVS
 
 EntryElement:	HeadCircumference
@@ -75,15 +87,13 @@ Based on:		VitalSign
 Concept:		LNC#8287-5
 Description:	"Circumference of the head (typically 0-2 years)."
 Value:			Quantity with units UCUM#cm "cm"
+				ObservedAttributeOfSubject is LNC#8287-5
 
 EntryElement:	BodyMassIndex
 Based on:		VitalSign
 Concept:		LNC#39156-5
 Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
 Value:			Quantity with units UCUM#kg/m2  "kg/m2"
-// Panel.members include:
-0..1			ref(BodyWeight)
-0..1			ref(BodyHeight)
 
 
 EntryElement:	BloodPressure  // Observation with components
@@ -91,25 +101,31 @@ Based on:		VitalSign
 Concept:		LNC#55284-4
 Description:	"The force of circulating blood on the walls of the arteries."
 				BodySite from BloodPressureBodySiteVS
-				TestMethod from BloodPressureMethodVS
+				FindingMethod from BloodPressureMethodVS
 				ObservationQualifier from BloodPressureQualifierVS
-1..1 			SystolicPressure 
-1..1 			DiastolicPressure
+				ObservedAttributeOfSubject is LNC#55284-4
+0..0			Value
 0..1			HeadTiltAngle
+Components.ObservationComponent
+includes 1..1 	SystolicPressure 
+includes 1..1 	DiastolicPressure
+		
 
-	Element:		SystolicPressure 
+	Element:		SystolicPressure
 	Concept:		LNC#8480-6
 	Based on:		ObservationComponent
 	Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest."
 	Value:			Quantity with units UCUM#mm[Hg] "mmHg"
-					SpecificType is LNC#8480-6
+					ObservedAttributeOfSubject from http://hl7.org/fhir/ValueSet/observation-vitalsignresult if covered
+					ObservedAttributeOfSubject is LNC#8480-6
 
 	Element:		DiastolicPressure
 	Concept:		LNC#8462-4
 	Based on:		ObservationComponent
 	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
 	Value:			Quantity with units UCUM#mm[Hg] "mmHg"
-					SpecificType is LNC#8462-4
+					ObservedAttributeOfSubject from http://hl7.org/fhir/ValueSet/observation-vitalsignresult if covered
+					ObservedAttributeOfSubject is LNC#8462-4	
 
 	Element: 		HeadTiltAngle // This qualifier is only used during a tilt table test.
 	Concept: 		LNC#8360-0

@@ -3,20 +3,17 @@ Namespace:		shr.encounter
 Description:		"The SHR Encounter domain contains definitions that capture interactions between the person of record and healthcare providers, including inpatient, ambulatory care, and telecare."
 Uses:			shr.core, shr.base, shr.demographics, shr.actor
 
-Element:		EpisodeOfCareCompletion
-Concept:		TBD
-Description:	"Denotes how and why an episode of care ended."
-Value:			CodeableConcept from EpisodeOfCareCompletionVS
 
-Element:		Facility
+
+EntryElement:	Facility
 Concept:		MTH#C1547538
 Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
-Value:			FacilityName
+1..1			FacilityName
+1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
 1..1			Location
 0..1			MobileFacility
 0..1			Telecom
 1..1			ManagingOrganization
-1..1			FacilityType
 
 	Element:		FacilityName
 	Concept:		MTH#C3261404
@@ -31,28 +28,22 @@ Value:			FacilityName
 	Element:		ManagingOrganization
 	Concept:		MTH#C0677351
 	Description:	"The organization that manages the operation of an activity, facility, or service provision."
-	Value:			Organization
-
-	Element:		FacilityType
-	Concept:		MTH#C1547726
-	Description:	"The type of function performed at the facility."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
+	Value:			ref(Organization)
 
 
-EntryElement:	Encounter
+EntryElement:	EncounterAction
+Based on:		Action
 Concept:		TBD
-Description:	"A statement about a planned or actual interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
-0..1			OccurrenceTime  // start-end
+Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
 0..1			ReferralDate
-1..1			Status from http://hl7.org/fhir/ValueSet/encounter-status
 0..1			ReferralSourceType
-0..1			EncounterClass   // TODO: We should be using SpecificType here, but FHIR mapping is to Coding, not CodeableConcept. 
+0..1			EncounterClass 
 0..*			ServiceGiven
-0..1			EncounterNonOccurrenceModifier
 0..*			Participant
 1..1			ProviderOrganization
-0..1			Facility  // location
+0..1			Facility
 0..1			TreatmentCooperation
+0..1			PaymentSource
 0..1			TBD "HealthConcern"
 0..*			TBD "PertinentFindings"
 0..*			TBD "Diagnosis"
@@ -60,28 +51,17 @@ Description:	"A statement about a planned or actual interaction between a patien
 1..1			TBD "ClinicalSummary"
 1..*			TBD "TreatmentServiceRendered"
 0..1			TBD "CompletionStatus"
-0..1			PaymentSource
+
 
 	Element:		ReferralDate
 	Concept:		MTH#C2735614
-	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client�s behalf."
+	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client's behalf."
 	Value:			date
 
 	Element:		ReferralSourceType
 	Concept:		TBD
 	Description:	"The type of person or entity that instigated the encounter."
 	Value:			CodeableConcept from ReferralSourceTypeVS
-
-	Element:		EncounterType
-	Concept:		TBD
-	Description:	"The mode of interaction, whether inpatient, outpatient, or telecare."
-	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode
-	
-	Element:		EncounterNonOccurrenceModifier
-	Concept:		TBD
-	Based on:		NonOccurrenceModifier
-	Description:	"True if the encounter did not occur."
-					Reason from TBD "ReasonEncounterDidNotHappenVS"
 					
 	Element:		EncounterClass
 	Concept:		TBD
@@ -113,11 +93,32 @@ Description:	"A statement about a planned or actual interaction between a patien
 	Concept:		MTH#C0680269
 	Description:	"The source of payment for the current encounter."
 	Value:			TBD "PaymentSourceVS"
-
-
-
 /*
-Hospitalization
+	Element:		EpisodeOfCareCompletion
+	Concept:		TBD
+	Description:	"Denotes how and why an episode of care ended."
+	Value:			CodeableConcept from EpisodeOfCareCompletionVS
+*/
+
+				
+EntryElement:	EncounterRequested
+Based on:		EncounterAction
+				Context is type RequestedContext
+				
+EntryElement:	EncounterPerformed
+Based on:		EncounterAction
+				Context is type PerformedContext
+				
+EntryElement:	EncounterNotPerformed
+Based on:		EncounterAction
+				Context is type NotPerformedContext
+
+EntryElement:	EncounterPlanned
+Based on:		EncounterAction
+				Context is type PlannedContext
+/*
+EntryElement:	HospitalizationAction
+Based on:		EncounterAction
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
@@ -131,11 +132,12 @@ Hospitalization
 	Discharge or Transfer Destination	?
 	Discharge Summary	Document
 
-Emergency Encounter
+EntryElement:	EmergencyEncounterAction
+Based on:		EncounterAction
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
-	AdmitSource	Enum?
+	AdmitSource	
 	Transferred	Boolean
 	Attending Physician-Admission	Provider
 	Admitting Finding/Complaint/Diagnosis (-es)	Reference(s)

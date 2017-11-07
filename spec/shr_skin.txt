@@ -31,12 +31,12 @@ Value:			CodeableConcept from SupportSurfaceVS
 		Description:	"A physical material, structure, or system used alone or in combination with other components to fashion a support surface."
 		Value:			CodeableConcept from SupportSurfaceComponentVS
 
-Element:		SupportSurfaceEmployed
+Element:		SupportSurfaceUsed
 Concept:		TBD
-Based on:		DeviceUse
+Based on:		DeviceUsed
 Description:	"A paricular instance of the use of a support surface in patient care."
 Value: 			Device is type SupportSurface
-				Implanted is false
+				Implanted is #no
 0..1			ImmersionDepth
 
 		Element:		ImmersionDepth
@@ -45,67 +45,50 @@ Value: 			Device is type SupportSurface
 		Value:			Quantity with units UCUM#cm "cm"
 
 
-EntryElement:		PressureUlcer
-Concept:			MTH#C0011127
-Based on:			Condition
-Description:		"A single pressure ulcer, tracked over a period of time. Multiple PressureUlcerAssessments (at different times) may be associated with a single PressureUlcer."
-					SpecificType is TBD#TBD
-0..*				BodySite from PressureUlcerBodySiteVS if covered
-0..*				Manifestation is type PressureUlcerManifestation  // observations
-0..*				CausativeFactor
-0..*				TBD "PressureUlcerIntervention"    // pointer could go in the other direction
+EntryElement:	WoundPresentFinding   // CIMI Assert
+Based on:		ConditionPresentFinding
+Concept:		TBD
+Description:	"A determination that a wound that exists at a particular body site, implicitly, the wound itself. Multiple wound assessments can be associated with a single wound."
+1..1			BodySite from WoundBodySiteVS if covered 
 
+/*
+0..*				CausativeFactor  // part of Condition?
+0..*				TBD "WoundIntervention"    // pointer could go in the other direction
 
 		Element:		CausativeFactor
 		Concept:		TBD
 		Description:	"The cause the irritation or inflammation."
-		Value:			CodeableConcept from TBD "PressureUlcerCausationVS" or Device
-
-/* This has to be an Assessment, not a Condition 
-EntryElement:		PressureUlcerNotPresent
-Concept:			TBD
-Based on:			PressureUlcer
-Description:		"A statement that there is no pressure ulcer at a given body site. If body site is omitted, or if the body site is a coding representing the entire body, then the inference is that no pressure ulcers is present anywhere on the body."
-					AssertionNegationModifier is true
-0..1				Certainty
-1..1				ClinicalStatus
-0..0				IncludeOnProblemList
-0..0				Onset
-0..0				WhenClinicallyRecognized
-0..0				Preexisting
-0..0				Abatement
-0..0				Severity
-0..0				Criticality
-0..0				Manifestation
-0..0				Stage
+		Value:			CodeableConcept from TBD "WoundCausationVS" or Device
 */
 
-EntryElement:		PressureUlcerManifestation // Observation
-Concept:			LNC#54574-9
-Based on:			Manifestation
-Description:		"Observation regarding the properties and severity of a single pressure ulcer."
-					SpecificType is LNC#54574-9
-					Status from NonLabObservationStatusVS
-//0..1				ClinicallyRelevantTime
-1..1				BodySite
-0..*				VisibleInternalStructure
-0..1				WoundSize
-0..1				WoundTunnelling
-0..1				WoundUndermining
-0..1				WoundBedAndEdge
-0..1				WoundExudate
-0..1				ChangeFlag
+EntryElement:		WoundAbsentFinding
+Based on:			ConditionAbsentFinding
+Concept:			TBD
+Description:		"Documents the absence of wounds at a given body site."
+1..1				BodySite from WoundBodySiteVS if covered 	
 
+
+EntryElement:		WoundAssessment
+Based on:			Panel
+Concept:			LNC#54574-9
+Description:		"Group of observations regarding the properties and severity of a wound."
+					Members.Finding 
+					includes 0..1	VisibleInternalStructure
+					includes 0..1	WoundSize
 
 		Element:		VisibleInternalStructure
+		Based on:		Finding
 		Concept:		TBD
 		Description:	"An internal body structure visible from outside the body, for example, due to injury."
 		Value:			CodeableConcept from VisibleInternalStructureVS
+						Subject value is type ref(WoundPresentFinding)
 
 		Element:		WoundSize
-		Based on:		ObservationComponent
+		Based on:		Finding
 		Concept:		MTH#C3496620
 		Description:	"The estimated or measured dimensions of a wound."
+						Subject value is type ref(WoundPresentFinding)
+		// TODO: Each of the following are components of the woundsize observation
 		0..1			Area
 		0..1			Circumference
 		0..1			Volume
@@ -113,24 +96,24 @@ Description:		"Observation regarding the properties and severity of a single pre
 		1..1			Depth
 		1..1			Length
 
-		Element:		WoundTunnelling
-		Based on:		ObservationComponent
+		Element:		WoundTunnelling  // condition!
+		Based on:		Finding
 		Concept:		MTH#C0406830
 		Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
-		Value:			boolean
+		Value:			CodeableConcept from YesNoUnknownVS
 		1..1			ClockDirection
 		1..1			Length
 
 		Element:		WoundUndermining
-		Based on:		ObservationComponent
+		Based on:		Finding
 		Concept:		TBD
 		Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Tunneling is just under the skin surface and doesn't involve deep tissue, and sinus tracts are a narrow tract that are away from the wound margins and go downward into the wound."
-		Value:			boolean
+		Value:			CodeableConcept from YesNoUnknownVS
 		1..1			ClockDirection
 		1..1			TBD "WoundUnderminingLength"
 
 		Element:		WoundBedAndEdge
-		Based on:		ObservationComponent
+		Based on:		Finding
 		Concept:		TBD
 		Description:	""
 		1..1			TBD "WoundBaseAppearance"
@@ -140,15 +123,16 @@ Description:		"Observation regarding the properties and severity of a single pre
 		0..1			TBD "WoundClosureType"
 
 			Element:		WoundEdgeAppearance
+			Based on:		Finding
 			Concept:		LNC#723204-9
 			Description:	"Evaluation of the state of the tissue at the edge of the wound."
 			Value:			CodeableConcept from WoundEdgeAppearanceVS
 
 		Element:		WoundExudate
-		Based on:		ObservationComponent
+		Based on:		Finding
 		Concept:		TBD
 		Description:	"A mass of cells and fluid that has seeped out of a wound."
-		Value:			boolean
+		//Value:			CodeableConcept from YesNoUnknownVS
 		1..1			TBD "WoundExudateOdor"
 		1..1			TBD "WoundExudateColor"
 		1..1			TBD "DrainageAmount"

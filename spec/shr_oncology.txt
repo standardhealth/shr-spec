@@ -10,42 +10,28 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
 
-EntryElement:	NeoplasmObservation
-Description:	"Observation of a unusual growth, for example, a tumor. The body site allows the abnormality to be located and identified. The abnormality identifier allows the tumor to be tracked over time."
-Based on:		BodyStructureObservation
-Concept:		TBD
-Value:			CodeableConcept from NeoplasmObservationVS
-0..1			Identifier  // extension
-0..1			Method from NeoplasmObservationMethodVS
 
-
-EntryElement:	BreastCancer
+EntryElement:	BreastCancerPresentFinding
 Concept:		MTH#C1446377
-Based on:		Condition
-Description:	"A cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				SpecificType from BreastCancerTypeVS
+Based on:		ConditionPresentFinding
+Description:	"Finding or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
+Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
-// TODO: In Condition, Stage is a simple attribute, not an observation. TNMStage is an full EntryElement. How do we associate the observation with the Stage attribute?
 0..1			Stage from urn:oid:2.16.840.1.113883.11.20.11.12
-0..1			BodySite is type PrimaryTumorSite
-
-			Element: 		PrimaryTumorSite
-			Based on:		BodySite
-			Concept:		MTH#C0475447
-			Description:	"The location of the primary tumor."
 
 
 EntryElement:	TNMStage
+Based on:		Observation
 Concept:		LNC#21908-9
-Based on:		Observation // TODO: or Assessment since it is certainly focused on a Condition (in this case BreastCancer). However, an assessment does not have components (but maybe it should). But if we add components to assessment, the line between assessment and observation blurs even further
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12
-1..1			StagingSystem // e.g. AJCC TODO: this should be captured in Observation.Method, not a new attribute
+Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12  // or normative answer group LNC#LL240-3
+				ObservedAttributeOfSubject is LNC#21908-9 "Stage group.clinical Cancer"
+1..1			FindingMethod from StagingMethodVS
 0..1			StagingTiming
-// components
-1..1 			T-Stage
-1..1 			N-Stage
-1..1 			M-Stage
+Components.ObservationComponent
+includes 1..1 	T-Stage
+includes 1..1 	N-Stage
+includes 1..1 	M-Stage
 
 		Element:		StagingSystem
 		Concept:		TBD
@@ -83,10 +69,10 @@ Concept:		MTH#C1511980
 Based on:		Observation
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 Value:			CodeableConcept from NottinghamCombinedGradeVS
-// components
-0..1			TubuleFormationScore
-0..1			NuclearPleomorphismScore
-0..1			MitoticCountScore
+Components.ObservationComponent
+includes 0..1 TubuleFormationScore
+includes 0..1 NuclearPleomorphismScore
+includes 0..1 MitoticCountScore
 
 			Element:		TubuleFormationScore
 			Concept:		SCT#371470008
@@ -153,39 +139,39 @@ EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
-				SpecificType is TBD#TBD
-1..1			TBD "Specimen" // TODO: change to NeoplasmObservation?  the link to source of tissue
-// Panel members TODO: use "include"
-0..1 			EstrogenReceptorStatus
-0..1 			ProgesteroneReceptorStatus
-0..1 			HumanEpiduralGrowthFactorReceptor2Status
+				ObservedAttributeOfSubject is TBD#TBD
+Members.Finding
+includes 0..1 EstrogenReceptorStatus
+includes 0..1 ProgesteroneReceptorStatus
+includes 0..1 HumanEpiduralGrowthFactorReceptor2Status
 
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
 			Concept:		TBD
 			Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#16112-5
+							ObservedAttributeOfSubject is LNC#16112-5
 							ReceptorType is SCT#23307004
 
 			EntryElement:	ProgesteroneReceptorStatus
 			Based on:		ReceptorStatusObservation
 			Concept:		MTH#C1514471
-			Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#16113-3
+			Description:	"Progesterone receptor is expressed in 65% 
+of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+							ObservedAttributeOfSubject is LNC#16113-3
 							ReceptorType is MTH#C0034833
 
 			EntryElement:	HumanEpiduralGrowthFactorReceptor2Status
 			Based on:		ReceptorStatusObservation
 			Concept:		MTH#C3810543
 			Description:	"HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-							SpecificType is LNC#48676-1
+							ObservedAttributeOfSubject is LNC#48676-1
 							ReceptorType is TBD#TBD
-							Method from HER2MethodVS   // this is the grammar for restricting a value to a value set
+							FindingMethod from HER2MethodVS   // this is the grammar for restricting a value to a value set
 
 EntryElement: 	TumorSize
 Description:	"Measurement of the longest diameter of a tumor, in situ or on a excised tumor. See CDISC Table 3.3.2"
 Concept:		MTH#C4086369
-Based on:		Observation // formerly QuantitativeObservation
+Based on:		Observation
 Value:			Quantity with units UCUM#mm
 1..1			TBD "Specimen" // or NeoplasmIdentifier?
 //Components.Value
@@ -234,65 +220,68 @@ Value:			Quantity with units UCUM#mm
 		Value:			Quantity with units UCUM#%
 
 
-EntryElement:		CancerLymphaticInvolvement
+EntryElement:		NoLymphaticInvolvement		
+Based on:			ConditionAbsentFinding
+Concept:			TBD
+Description:		"Lymph nodes in all, or certain part, of the lymphatic system do not contain cancer cells."
+Value:				CodeableConcept is MTH#C0746333
+1..1				BodySite from LymphSystemSubdivisionVS
+		
+EntryElement:		LymphaticInvolvement
+Based on:			Observation
 Concept:			MTH#C0746333
-Based on:			Observation // formerly CodeConceptObservation
-Description:		"Whether or not lymph nodes contain cancer cells."
+Description:		"Description of lymph nodes contain cancer cells."
 Value:				CodeableConcept from PositiveNegativeVS
-1..1				LymphaticSystemSubdivision  // Introduce body site in Observation level?
-// Components
-0..1				LargestLymphNodeSize
-0..1				NumberOfLymphNodesInvolved
-0..1				DegreeOfLymphaticInvolvement
+1..1				BodySite from LymphSystemSubdivisionVS 
+Components.ObservationComponent
+	includes 0..1 LargestLymphNodeSize
+	includes 0..1 NumberOfLymphNodesInvolved
+	includes 0..1 DegreeOfLymphaticInvolvement
 
-		Element:		LymphaticSystemSubdivision
-		Based on:		BodySite
-		Concept:		TBD
-		Description:	"A lymph node area or nodal group; a subdivision of the entire lymphatic system. For breast cancer, this includes 5 areas: internal mammary lymph nodes, axillary lymph nodes level I, II, and III, and the supraclavicular lymph nodes."
-		Value:			CodeableConcept from LymphSystemSubdivisionVS
 
 		Element:		LargestLymphNodeSize
-		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
-		Concept:		MTH#C1285847
 		Based on:		ObservationComponent
+		Concept:		MTH#C1285847
+		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
 		Value: 			Quantity with units UCUM#mm
+						
 
 		Element:		NumberOfLymphNodesInvolved
-		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
-		Concept:		TBD
 		Based on:		ObservationComponent
+		Concept:		TBD
+		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
 		Value:			Quantity with units UCUM#1 "Count"
 
 		Element:		DegreeOfLymphaticInvolvement
-		Description:	"Assessment of how much cancer is in a lymph node."
-		Concept:		TBD
 		Based on:		ObservationComponent
+		Concept:		TBD
+		Description:	"Assessment of how much cancer is in a lymph node."
 		Value:			CodeableConcept from DegreeOfLymphaticInvolvementVS
 
 EntryElement:	CancerGrowthPotential
 Description:	"Information relating to rate of cell growth or proportion of cancer cells within the tumor that are growing and dividing to form new cancer cells."
 Concept:		MTH#C1516170 "Cancer Cell Growth"
-Based on:		Observation // formerly CodeConceptObservation
+Based on:		Observation
 Value:			CodeableConcept from QualitativeValueScaleVS
 // Components
 0..1			Ki-67LabelingIndex
 0..1			S-PhaseFraction
 
 			Element: 		Ki-67LabelingIndex
+			Based on:		ObservationComponent		
 			Concept:		MTH#C4049944
 			Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
-			Based on:		ObservationComponent
 			Value:		 	Quantity with units UCUM#%
 
 			Element:		S-PhaseFraction
+			Based on:		ObservationComponent
 			Concept:		MTH#C0812425
 			Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
-			Based on:		ObservationComponent
 			Value:			Quantity with units UCUM#%
 
 Element:		GeneticVariant
+Based on:		Finding
 Concept:		MTH#C0678941
-Based on:		Observation // formerly CodeConceptObservation
 Description:	"Whether the patient carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			GeneIdentifier
@@ -312,7 +301,7 @@ EntryElement:	BreastCancerGeneticAnalysis
 Concept:		TBD
 Based on:		Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-PanelMembers.Observation
+Members.Finding
 includes 1..1			ref(BRCA1Variant)
 includes 1..1			ref(BRCA2Variant)
 
@@ -331,27 +320,22 @@ includes 1..1			ref(BRCA2Variant)
 					GeneIdentifier is HGNC#BRCA2
 
 EntryElement:	Progression
-Based on:		Assessment
+Based on:		Finding
 Concept:		MTH#C0449258
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
-				Category includes MTH#C0421176 "Progression"
-1..1			AssessmentFocus  // is type BreastCancer? What condition is being evaluated for progression --
+				Category includes MTH#C0421176 "Efficacy"
+				Subject value is type ref(BreastCancerPresentFinding)
+1..1			ObservedAttributeOfSubject is MTH#C0421176 "Progression"
 0..*			Evidence from ProgressionEvidenceTypeVS
 
 
-EntryElement:	ToxicReactionToTreatment
+EntryElement:	ToxicReaction
 Based on:		AdverseReaction
 Concept:		TBD
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
 1..1			AdverseEvent.AdverseEventGrade from ToxicReactionVS  // only contains codes for grade 3 and above
 1..1			AdverseEvent.CauseCategory is #treatment
-
-
-
-//EntryElement:	TreatmentResponse
-//Based on:		Assessment
-
 
 
 

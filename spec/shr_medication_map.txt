@@ -2,12 +2,14 @@ Grammar:	Map 5.0
 Namespace:	shr.medication
 Target:		FHIR_STU_3
 
+/*
 MaximumDosePerTimePeriod maps to Ratio:
 	AmountOfMedication maps to numerator
 	Duration maps to denominator
+*/
 
-Medication maps to Medication:
-	SpecificType maps to code
+Medication maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication:
+//	Type maps to code
 	DoseForm maps to form
 	Ingredient maps to ingredient.item[x].CodeableConcept
 	Ingredient.IngredientAmount maps to ingredient.amount.numerator
@@ -16,8 +18,8 @@ Medication maps to Medication:
 	Brand maps to isBrand
 	OverTheCounter maps to isOverTheCounter
 
-
-MedicationUse maps to MedicationStatement:
+/*
+MedicationUsed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
 	Medication maps to medication[x].Reference
 	PeriodOfUse maps to effective[x].Period
 	Reason maps to reasonCode
@@ -35,13 +37,13 @@ MedicationUse maps to MedicationStatement:
 	Dosage.AdministrationBodySite maps to dosage.site
 	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod
 
-MedicationPrescription maps to MedicationRequest:
+MedicationPrescription maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
 	Medication maps to medication[x].Reference
 	Reason maps to reasonCode
 	Status maps to status
-	RequestedPerformanceTime maps to dispenseRequest.validityPeriod
-	PriorityOfRequest maps to priority
-	RequestedPerformer[Organization] maps to dispenseRequest.performer
+	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
+	Priority maps to priority
+	ExpectedPerformer[Organization] maps to dispenseRequest.performer
 	constrain note to 0..1
 	PerformerInstructions maps to note.text
 	NumberOfRepeatsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
@@ -58,3 +60,4 @@ MedicationPrescription maps to MedicationRequest:
 	Dosage.AdministrationMethod maps to dosageInstruction.method
 	Dosage.AdministrationBodySite maps to dosageInstruction.site
 	Dosage.MaximumDosePerTimePeriod maps to dosageInstruction.maxDosePerPeriod
+*/
