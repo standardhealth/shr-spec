@@ -103,7 +103,7 @@ Description:		"A description of a physical or conceptual thing, other than an in
 Abstract Element:	Finding
 Based on:			Any
 Concept:			TBD
-Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions. "
+Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
 //Value:		0..1	Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Any)
 0..1			DataAbsentReason
 1..1			Subject
@@ -165,18 +165,18 @@ Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
 0..1 				Type
 0..*				Category
-1..1				Context
+1..1				ActionContext
 0..*				Reason
 
-	Abstract Element:	Context
+	Abstract Element:	ActionContext
 	Concept:			MTH#C0449255
 	Description:		"The ontological status of the intervention, e.g., performed/not performed, requested/not requested, recommended/not recommended."
 
 
 Element:		PerformedContext
-Based on:		Context
+Based on:		ActionContext
 Concept:		TBD
-Description:	"Context indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
+Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
 0..1			OccurrenceTime  // when the action took place
 0..*			Participant
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
@@ -233,7 +233,7 @@ Description:	"Context indicating actual performance or execution of a healthcare
 
 		
 Element:		NotPerformedContext
-Based on:		Context
+Based on:		ActionContext
 Concept:		TBD
 Description:	"A record that a clinical act was not performed or never initiated, particularly when there might be an expectation of performing such an act, for example, if a vaccination is not given because of parental objection. Do not use this context if the act was initiated or started but aborted or cancelled."
 0..*			Reason
@@ -241,9 +241,9 @@ Description:	"A record that a clinical act was not performed or never initiated,
 0..1			RelatedPlan
 
 Element:		PlannedContext
-Based on:		Context
+Based on:		ActionContext
 Concept:		TBD
-Description:	"Context indicating intended future performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine to be administered three months hence."
+Description:	"ActionContext indicating intended future performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine to be administered three months hence."
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformer
 0..1			ExpectedPerformerType
@@ -252,7 +252,7 @@ Description:	"Context indicating intended future performance or execution of a h
 			
 Element:		RequestedContext
 Concept:		MTH#C1705178
-Based on:		Context
+Based on:		ActionContext
 Description:	"An order for something to take place."
 1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
 0..1			ExpectedPerformanceTime
@@ -301,12 +301,12 @@ Description:	"An order for something to take place."
 
 Element:		NotRequestedContext
 Concept:		TBD
-Based on:		Context
+Based on:		ActionContext
 
 
 Element:		ProposedContext
 Concept:		TBD
-Based on:		Context
+Based on:		ActionContext
 Description:	"An offer or a suggestion to perform a healthcare act. A recommendation to a provider is an example of proposal made by a CDS system. A proposal must be accepted by an entity in order for it to be performed."
 1..1			Status from ProposedStatusVS
 0..1			ExpectedPerformanceTime
@@ -319,7 +319,7 @@ Description:	"An offer or a suggestion to perform a healthcare act. A recommenda
 
 Element:		ProposedAgainstContext
 Concept:		TBD
-Based on:		Context
+Based on:		ActionContext
 Description:	"Concept represents a recommendation from a clinical decision support system or advice from a consultation to NOT perform an act."	
 
 /*

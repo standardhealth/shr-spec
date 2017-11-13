@@ -8,7 +8,6 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
-CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
 
 
 EntryElement:	BreastCancerPresentFinding
@@ -68,11 +67,11 @@ EntryElement:	HistologicGrade
 Concept:		MTH#C1511980
 Based on:		Observation
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
-Value:			CodeableConcept from NottinghamCombinedGradeVS
-Components.ObservationComponent
-includes 0..1 TubuleFormationScore
-includes 0..1 NuclearPleomorphismScore
-includes 0..1 MitoticCountScore
+Value:		CodeableConcept from NottinghamCombinedGradeVS
+			Components.ObservationComponent
+			includes 0..1 TubuleFormationScore
+			includes 0..1 NuclearPleomorphismScore
+			includes 0..1 MitoticCountScore
 
 			Element:		TubuleFormationScore
 			Concept:		SCT#371470008
@@ -99,11 +98,11 @@ Based on:		Observation
 Description:	"Refers to the presence or absence of specific receptor molecules on the surface of a cells in a specimen."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			ReceptorType
-// components
-0..1			ReceptorPositivityPercentage
-0..1			ReceptorAllredTotalScore
-0..1			ReceptorProportionScore
-0..1			ReceptorIntensityScore
+				Components.ObservationComponent
+				includes 0..1			ReceptorPositivityPercentage
+				includes 0..1			ReceptorAllredTotalScore
+				includes 0..1			ReceptorProportionScore
+				includes 0..1			ReceptorIntensityScore
 
 		Element:		ReceptorType
 		Concept:		MTH#C0597357 //or SCT#116647005
@@ -111,8 +110,8 @@ Value:			CodeableConcept from PositiveNegativeVS
 		Value:			CodeableConcept from ReceptorVS
 
 		Element:		ReceptorPositivityPercentage
+		Based on:		ObservationComponent
 		Concept:		TBD
-		Based on:		ObservationComponent  // not an independent observation, since it depends on the receptor identity
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Quantity with units UCUM#%
 
@@ -139,11 +138,11 @@ EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
-				ObservedAttributeOfSubject is TBD#TBD
-Members.Finding
-includes 0..1 EstrogenReceptorStatus
-includes 0..1 ProgesteroneReceptorStatus
-includes 0..1 HumanEpiduralGrowthFactorReceptor2Status
+			ObservedAttributeOfSubject is TBD#TBD
+			Members.Finding
+			includes 0..1 EstrogenReceptorStatus
+			includes 0..1 ProgesteroneReceptorStatus
+			includes 0..1 HumanEpiduralGrowthFactorReceptor2Status
 
 			EntryElement:	EstrogenReceptorStatus
 			Based on:		ReceptorStatusObservation
@@ -168,21 +167,27 @@ of breast carcinomas. PR status (positive=present or overexpressed; negative=abs
 							ReceptorType is TBD#TBD
 							FindingMethod from HER2MethodVS   // this is the grammar for restricting a value to a value set
 
-EntryElement: 	TumorSize
+EntryElement: 	TumorProperties
 Description:	"Measurement of the longest diameter of a tumor, in situ or on a excised tumor. See CDISC Table 3.3.2"
-Concept:		MTH#C4086369
-Based on:		Observation
-Value:			Quantity with units UCUM#mm
-1..1			TBD "Specimen" // or NeoplasmIdentifier?
-//Components.Value
-0..1			TumorSecondaryDimensionSize
-0..1			SizeOfGrossTumorBed
-0..1			TumorMargins
-0..1			Cellularity   // not sure this belongs here
-0..1			PercentageInSituCarcinoma   // not sure this belongs here
-// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?
+Concept:	MTH#C4086369
+Based on:	Observation
+Value:		Quantity with units UCUM#mm
+1..1		Specimen
+			Components.ObservationComponent
+			includes 0..1	TumorPrimaryDimensionSize
+			includes 0..1	TumorSecondaryDimensionSize
+			includes 0..1	SizeOfGrossTumorBed
+			includes 0..1	TumorMargins
+			includes 0..1	Cellularity   // not sure this belongs here
+			includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
+			// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?
 
-
+		Element:		TumorPrimaryDimensionSize
+		Description:	"The longest diameter of the primary tumor."
+		Based on:		ObservationComponent
+		Concept:		TBD
+		Value:			Quantity with units UCUM#mm		
+		
 		Element:		TumorSecondaryDimensionSize
 		Description:	"The longest perpendicular diameter of the primary tumor."
 		Based on:		ObservationComponent
@@ -190,15 +195,15 @@ Value:			Quantity with units UCUM#mm
 		Value:			Quantity with units UCUM#mm
 
 		Element:		SizeOfGrossTumorBed
-		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
-		Concept:		TBD
 		Based on:		ObservationComponent
+		Concept:		TBD
+		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
 		Value:			Quantity with units UCUM#mm
 
 		Element: 		TumorMargins
-		Concept:		MTH#C1269830
-		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+		Concept:		MTH#C126983
 		Based on:		ObservationComponent
+		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
 		Value:			CodeableConcept from PositiveNegativeVS
 
 		Element:		TumorMarginDescription
@@ -214,9 +219,9 @@ Value:			Quantity with units UCUM#mm
 		Value:			Quantity with units UCUM#%
 
 		Element:		PercentageInSituCarcinoma
+		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
-		Based on:		ObservationComponent
 		Value:			Quantity with units UCUM#%
 
 
@@ -226,18 +231,17 @@ Concept:			TBD
 Description:		"Lymph nodes in all, or certain part, of the lymphatic system do not contain cancer cells."
 Value:				CodeableConcept is MTH#C0746333
 1..1				BodySite from LymphSystemSubdivisionVS
-		
+	
 EntryElement:		LymphaticInvolvement
 Based on:			Observation
 Concept:			MTH#C0746333
 Description:		"Description of lymph nodes contain cancer cells."
 Value:				CodeableConcept from PositiveNegativeVS
 1..1				BodySite from LymphSystemSubdivisionVS 
-Components.ObservationComponent
-	includes 0..1 LargestLymphNodeSize
-	includes 0..1 NumberOfLymphNodesInvolved
-	includes 0..1 DegreeOfLymphaticInvolvement
-
+					Components.ObservationComponent
+					includes 0..1 LargestLymphNodeSize
+					includes 0..1 NumberOfLymphNodesInvolved
+					includes 0..1 DegreeOfLymphaticInvolvement
 
 		Element:		LargestLymphNodeSize
 		Based on:		ObservationComponent
@@ -263,9 +267,9 @@ Description:	"Information relating to rate of cell growth or proportion of cance
 Concept:		MTH#C1516170 "Cancer Cell Growth"
 Based on:		Observation
 Value:			CodeableConcept from QualitativeValueScaleVS
-// Components
-0..1			Ki-67LabelingIndex
-0..1			S-PhaseFraction
+				Components.ObservationComponent
+				includes 0..1	Ki-67LabelingIndex
+				includes 0..1	S-PhaseFraction
 
 			Element: 		Ki-67LabelingIndex
 			Based on:		ObservationComponent		
@@ -295,15 +299,15 @@ Value:			CodeableConcept from PositiveNegativeVS
 			Element:		Refseq
 			Concept:		TBD
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
-			Value: 			CodeableConcept
+			Value: 			CodeableConcept from RefseqVS
 
 EntryElement:	BreastCancerGeneticAnalysis
-Concept:		TBD
-Based on:		Panel  // just a grouping of results
+Concept:	TBD
+Based on:	Panel  // just a grouping of results
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-Members.Finding
-includes 1..1			ref(BRCA1Variant)
-includes 1..1			ref(BRCA2Variant)
+			Members.Finding
+			includes 1..1			ref(BRCA1Variant)
+			includes 1..1			ref(BRCA2Variant)
 
 	Element:		BRCA1Variant
 	Concept:		TBD
@@ -328,15 +332,6 @@ Value:			CodeableConcept from SubjectiveProgressionVS
 				Subject value is type ref(BreastCancerPresentFinding)
 1..1			ObservedAttributeOfSubject is MTH#C0421176 "Progression"
 0..*			Evidence from ProgressionEvidenceTypeVS
-
-
-EntryElement:	ToxicReaction
-Based on:		AdverseReaction
-Concept:		TBD
-Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
-1..1			AdverseEvent.AdverseEventGrade from ToxicReactionVS  // only contains codes for grade 3 and above
-1..1			AdverseEvent.CauseCategory is #treatment
-
 
 
 /*
