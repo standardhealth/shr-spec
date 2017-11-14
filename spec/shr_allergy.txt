@@ -5,34 +5,24 @@ Uses:			shr.actor, shr.core, shr.base, shr.adverse, shr.condition, shr.observati
 
 CodeSystem:     SCT = http://snomed.info/sct
 
-//--- Statement about a adverse reaction risk
 
-Abstract Element:	AllergyFinding
-Based on:			Finding
-Concept:			TBD
-Description:		"Abstract Class for all allergy-related findings."
-					Subject value is type Person
-
-EntryElement:	AllergyIntoleranceAbsentFinding
-Based on:		AllergyFinding
+EntryElement:	AllergyIntoleranceAbsent
+Based on:		HealthStateAbsentOrNotSuspected
 Concept:		TBD
-Description:	"Used to record that a substance or class of substances does not pose a known elevated risk to the subject."
+Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
 Value:			CodeableConcept from AllergenIrritantVS
-				ObservedAttributeOfSubject is #AllergyIntoleranceAbsent
 	
-EntryElement:	NoKnownAllergyFinding
-Based on:		AllergyFinding
+EntryElement:	NoKnownAllergy
+Based on:		HealthStateAbsentOrNotSuspected
 Concept:		MTH#C0262580
-Description:	"Express no known allergies to drugs, foods, biologics, or environmental factors."
+Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors."
 Value:			CodeableConcept from NoKnownAllergyVS
-				ObservedAttributeOfSubject is #AllergyIntolerancePresentFinding // Not #AllergyIntoleranceAbsent because the clinician is observing AllergiesPresent and concluding, 'none present'.
-	
-EntryElement:	AllergyIntolerancePresentFinding
-Based on:		AllergyFinding
+				
+EntryElement:	AllergyIntolerance
+Based on:		HealthState
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
 Value:			CodeableConcept from AllergenIrritantVS
-				ObservedAttributeOfSubject is #AllergyIntolerancePresent
 0..*			SubstanceCategory
 1..1			VerificationStatus
 0..1			AdverseReactionType 
@@ -63,8 +53,8 @@ Value:			CodeableConcept from AllergenIrritantVS
 		Value:			OccurrenceTime
 
 // Example of type-specific allergy finding
-EntryElement:	FoodAllergyPresentFinding
-Based on:		AllergyIntolerancePresentFinding
+EntryElement:	FoodAllergy
+Based on:		AllergyIntolerance
 Description:	"Allergy to food substance"
 Value:			CodeableConcept from FoodSubstanceVS
 				SubstanceCategory includes #food
