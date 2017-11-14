@@ -4,9 +4,12 @@ Description:	"The SHR Base domain contains definitions for basic classes in SHR,
 Uses:			shr.core, shr.demographics, shr.actor, shr.encounter, shr.device, shr.procedure
 
 
-//----------------  Entry -------------------
+Abstract Element:	Any 
+Concept:			TBD
+Description:		"The top level class in the hierarchy"
 
 Element: 		Entry
+Based on:		Any
 Concept:		MTH#C1705654
 Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could record entities that surface in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
 1..1			EntryId
@@ -80,83 +83,128 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			Coding
 	
-//--------------------------------------
 
-Abstract Element:	Any 
-Concept:			TBD
-Description:		"The top level class in the hierarchy"
-
-Abstract Element:	Entity
+Abstract Element:	Content
 Based on:			Any
 Concept:			TBD
-Description:		"A description of a physical or conceptual thing, other than an information item, and distinct from a finding or action. Location, body part, condition, or organization are examples."
+Description:		"A item that can constitute the payload of an Entry, aka an EntryElement."
+
+Abstract Element:	Continuant
+Based on:			Content
+Concept:			TBD
+Description:		"An item that exists through time, exists in full at a given time, and preserves its identity from one moment to the next."
+
+
+Abstract Element:	Entity
+Based on:			Continuant
+Concept:			TBD
+Description:		"A description of a particular thing, such as a person, location, medication, body part, or organization."
 0..1				Type
 
 	Element:		Type
 	Concept:		TBD
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
 	Value:			CodeableConcept
-
 	
-	
-
-Abstract Element:	Finding
-Based on:			Any
+Abstract Element:	Relationship
+Based on:			Continuant
 Concept:			TBD
-Description:		"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
-//Value:		0..1	Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Any)
-0..1			DataAbsentReason
-1..1			Subject
-1..1			ObservedAttributeOfSubject
-1..1			ClinicallyRelevantTime
-0..*			Category from ObservationCategoryVS if covered
-0..1			FindingMethod
-1..1			FindingStatus
-0..1			Comment
-0..*			Evidence
+Description:		"Parent class for findings whose answer is an existing object. This is generally the assertion of a relationship between the objects, for example, between a patient and an organization."
+1..1				Subject
+1..1				EffectiveTimePeriod
+1..1				RelationshipType
 
+		Element:		RelationshipType
+		Concept:		TBD
+		Description:	"The type of relationship that is the topic of this finding."
+		Value:			CodeableConcept
+
+
+Abstract Element:	HealthState
+Based on:			Continuant
+Concept:			TBD
+Description:		"A instance of a presence of state of being or health-related situation, such as a condition, allergy, wound, tumor, or other "
+1..1				Subject
+		
+//-------------- FINDING Base Class ------------------------	
+
+Abstract Element: Finding
+Based on:		Content
+Concept:		TBD
+Description:	"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
+1..1			Subject
+0..*			Category from ObservationCategoryVS if covered
+0..1			Comment
+0..1			FindingMethod
+0..1			FindingStatus
+0..*			Evidence
+		
+	Element:		Subject
+	Concept:		TBD
+	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
+	Value:			ref(Continuant)
+
+
+	Element:		FindingMethod
+	Concept:		TBD
+	Description:	"The technique used to create the finding, for example, the specific imaging technical or assessment vehicle."
+	Value:			string or CodeableConcept or ref(ProcedurePerformed)
+
+	Element:		FindingStatus
+	Concept:		TBD
+	Description:	"Indicates whether the finding is complete and definite."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
+
+	Element:		Evidence
+	Concept:		TBD
+	Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
+	Value:			CodeableConcept or ref(Finding)
+
+EntryElement:		PresentOrSuspected
+Based on:			Finding
+Concept:			TBD
+Description:		"A finding that establishes the existence of a health state."
+1..1				ref(HealthState)
+
+	
+EntryElement:		HealthStateAbsentOrNotSuspected
+Based on:			Finding
+Concept:			TBD
+Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
+Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+1..1				ClinicallyRelevantTime	
+		
+Abstract Element:	EvaluationResult
+Based on:			Finding
+Concept:			TBD
+Description:		"Abstract parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
+Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
+0..1				DataAbsentReason from DataAbsentReasonVS
+1..1				Question
+1..1				ClinicallyRelevantTime
 
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from DataAbsentReasonVS
 		
-		Element:		Subject
-		Concept:		TBD
-		Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-		Value:			ref(Any)  // or CodeableConcept?
-		
-		Element:		ObservedAttributeOfSubject
+		Element:		Question
 		Concept:		MTH#C1706203
-		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, or a test code."
+		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, a property, or a test code."
 		Value:			CodeableConcept 
-
-
+		
 		Element:		ClinicallyRelevantTime
 		Concept:		TBD
 		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			GeneralizedTemporalContext
+					
 
-		Element:		FindingMethod
-		Concept:		TBD
-		Description:	"The technique used to create the finding, for example, the specific imaging technical or assessment vehicle."
-		Value:			string or CodeableConcept or ref(ProcedurePerformed)
-
-		Element:		FindingStatus
-		Concept:		TBD
-		Description:	"Indicates whether the finding is complete and definite."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
-
-		Element:		Evidence
-		Concept:		TBD
-		Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
-		Value:			CodeableConcept or ref(Any)
-
-
-//Abstract Element:	MultipleAnswerQA
-// In FHIR, chat.fhir.org see stream:implementers topic:Select+all+that+apply+observations,+multiple+value
-
-		
+					
+Element:		RelatedFinding
+Concept:		TBD
+Description:	"Findings associated with this item." 
+Value:			ref(Finding)
+					
 //------------ Actions and Interventions -------------
 
 Abstract Element:	Action
@@ -349,8 +397,6 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
 	Value:			ref(Person) or ref(Organization) or ref(Device) // TODO: Does Person imply references to Practitioner are allowed (intended), or does it need to be explicit?
 
-	
-	
 */
 
 
