@@ -13,7 +13,7 @@ Based on:		Any
 Concept:		MTH#C1705654
 Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could record entities that surface in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
 1..1			EntryId
-0..1			ref(PersonOfRecord)
+0..1			ref(Patient)
 0..1			RelatedEncounter
 0..1			Version
 1..*			EntryType
@@ -69,7 +69,7 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Element:		Attribution
 	Concept:		TBD
 	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..*			ref(Actor)
+	1..*			ref(Person) or ref(Organization)
 	1..1			ParticipationType
 		
 	
@@ -89,42 +89,45 @@ Based on:			Any
 Concept:			TBD
 Description:		"A item that can constitute the payload of an Entry, aka an EntryElement."
 
-Abstract Element:	Continuant
+Abstract Element:	Entity
 Based on:			Content
 Concept:			TBD
-Description:		"An item that exists through time, exists in full at a given time, and preserves its identity from one moment to the next."
-
-
-Abstract Element:	Entity
-Based on:			Continuant
-Concept:			TBD
-Description:		"A description of a particular thing, such as a person, location, medication, body part, or organization."
+Description:		"Something that has separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
 0..1				Type
+
+Abstract Element:	Object
+Based on:			Entity
+Concept:			TBD
+Description:		"A material thing that can be seen and touched."
+
+Abstract Element:	InfoItem
+Based on:			Entity
+Concept:			TBD
+Description:		"A non-material thing that contains information relevant to health care, such as an image, consent form, or report."
+
 
 	Element:		Type
 	Concept:		TBD
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
 	Value:			CodeableConcept
 	
-Abstract Element:	Relationship
-Based on:			Continuant
+Abstract Element:	Party
+Based on:			Object
 Concept:			TBD
-Description:		"Parent class for findings whose answer is an existing object. This is generally the assertion of a relationship between the objects, for example, between a patient and an organization."
-1..1				Subject
-1..1				EffectiveTimePeriod
-1..1				RelationshipType
-
-		Element:		RelationshipType
-		Concept:		TBD
-		Description:	"The type of relationship that is the topic of this finding."
-		Value:			CodeableConcept
-
+Description:		"An entity when it plays a role, for example, a person playing the role of patient."
 
 Abstract Element:	HealthState
-Based on:			Continuant
+Based on:			Entity
 Concept:			TBD
-Description:		"A instance of a presence of state of being or health-related situation, such as a condition, allergy, wound, tumor, or other "
-1..1				Subject
+Description:		"A instance of a health-related situation in a person, such as a condition, allergy, wound, tumor."
+1..1				AffectedPerson
+// TODO: move attributes common to health states, such as onset and abatement, here
+
+	Element:		AffectedPerson
+	Concept:		TBD
+	Description:	"The person who has the health state, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus or family member."
+	Value:			ref(Person) // or ref(Party) ?
+		
 		
 //-------------- FINDING Base Class ------------------------	
 
@@ -132,19 +135,18 @@ Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
 Description:	"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
-1..1			Subject
+1..1			Topic
 0..*			Category from ObservationCategoryVS if covered
 0..1			Comment
 0..1			FindingMethod
 0..1			FindingStatus
-0..*			Evidence
-		
-	Element:		Subject
+//0..*			Evidence
+
+	Element:		Topic
 	Concept:		TBD
 	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-	Value:			ref(Continuant)
-
-
+	Value:			ref(Content)
+		
 	Element:		FindingMethod
 	Concept:		TBD
 	Description:	"The technique used to create the finding, for example, the specific imaging technical or assessment vehicle."
@@ -164,7 +166,7 @@ EntryElement:		PresentOrSuspected
 Based on:			Finding
 Concept:			TBD
 Description:		"A finding that establishes the existence of a health state."
-1..1				ref(HealthState)
+Value:				ref(HealthState)
 
 	
 EntryElement:		HealthStateAbsentOrNotSuspected
@@ -178,7 +180,7 @@ Abstract Element:	EvaluationResult
 Based on:			Finding
 Concept:			TBD
 Description:		"Abstract parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
-Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
+Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Content))
 0..1				DataAbsentReason from DataAbsentReasonVS
 1..1				Question
 1..1				ClinicallyRelevantTime
@@ -199,7 +201,7 @@ Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 		Value:			GeneralizedTemporalContext
 					
 
-					
+	
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
@@ -208,7 +210,7 @@ Value:			ref(Finding)
 //------------ Actions and Interventions -------------
 
 Abstract Element:	Action
-Based on:			Any
+Based on:			Content
 Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
 0..1 				Type
@@ -235,13 +237,11 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 0..*			Outcome  // e.g., AdverseReaction
 
 		Element:		Participant
-		Based on:		Entity  // Relationship?
 		Concept:		MTH#C1550369
-		Description:	"An actor who participates in a task or activity. Unlike a HealthcareInvolvement which continues over period of time, the participant is associated with doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
-		0..1			Actor
+		Description:	"An actor who participates in a task or activity."
+		Value:			0..1 ref(Person) or ref(Organization)
 		0..1 			ParticipationType  // role
-		1..1			ParticipationPeriod
-
+		0..1			ParticipationPeriod
 		
 			Element:		ParticipationType
 			Concept:		MTH#C1553854
@@ -325,7 +325,7 @@ Description:	"An order for something to take place."
 		Element:		ExpectedPerformer
 		Concept:		TBD
 		Description:	"Who should carry out the tests. For example, the patient or caregiver."
-		Value:			ref(Actor)
+		Value:			ref(Person) or ref(Organization)
 		
 		Element:		ExpectedMethod
 		Concept:		TBD

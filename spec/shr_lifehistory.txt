@@ -26,42 +26,38 @@ Description:	"Educational attainment or level of education of individuals."
 Value:			CodeableConcept from EducationalAttainmentVS
 				Question is LNC#63504-5
 
-EntryElement:	Occupation
-Concept:		MTH#C0028811
-Based on:		EvaluationResult
-Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
-Value:			CodeableConcept from http://www.bls.gov/soc/
-				Question is LNC#74287-4
 
 /*
-EntryElement:	Employment // TODO: Change to EmploymentHistory?
+EntryElement:	Employment
 Concept:		LNC#74165-2
 Based on:		Panel
 Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
 Panel.Finding
-includes 0..1	EmploymentType
+includes 0..1	Occupation
 includes 1..1	EmploymentStatus
 includes 0..1	Employer
 */
 
-	Element:		EmploymentType
-	Based on:		Finding
-	Concept:		MTH#C0242271
-	Description:	"The sector of as recognized by US Dept of Labor"
-	Value:			CodeableConcept from EmploymentTypeVS
+	EntryElement:	Occupation
+	Concept:		MTH#C0028811
+	Based on:		EvaluationResult
+	Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
+	Value:			CodeableConcept from http://www.bls.gov/soc/
+					Question is LNC#74287-4
 
-	Element:		EmploymentStatus
-	Based on:		Finding
+	EntryElement:	EmploymentStatus
+	Based on:		EvaluationResult
 	Concept:		MTH#C0242271
 	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
 	Value:			CodeableConcept from EmploymentStatusVS
+					Question is MTH#C0242271
 
-	Element:		Employer
-	Based on:		Finding
+	EntryElement:	Employer
+	Based on:		EvaluationResult
 	Concept:		MTH#C1274022
 	Description:	"A person or entity which hires the services of another."
-	Value:			ref(Actor)
-
+	1..1			Value is type ref(Person) or ref(Organization)
+					Question is MTH#C0242272
 
 
 // TODO:  EntryElement:	Disability

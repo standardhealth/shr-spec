@@ -3,32 +3,71 @@ Namespace:	shr.actor
 Target:		FHIR_STU_3
 
 
-/*
-Practitioner maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner:
-	HumanName maps to name
-	DateOfBirth maps to birthDate
-	AdministrativeGender maps to gender
-	AddressUsed maps to address
-	//Telecom maps to telecom
-	LanguageUsed maps to communication
-	// Affiliation maps to role.organization  // 3.0.0 - role removed (use PractitionerRole)
-	NationalProviderIdentifier maps to identifier
-	// MedicalSpecialty maps to role.specialty // 3.0.0 - role removed (use PractitionerRole)
 
+
+Patient maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient:
+	Value.ActiveFlag maps to active
+	Value.HumanName maps to name
+	Value.AdministrativeGender maps to gender
+	Value.Headshot maps to photo
+	Value.AddressUsed maps to address
+	Value.Telecom maps to telecom
+	Value.LanguageUsed maps to communication
+	Value.DateOfBirth maps to birthDate
+	PlaceOfBirth maps to http://hl7.org/fhir/StructureDefinition/birthPlace
+	MultipleBirth maps to multipleBirth[x].boolean
+	MultipleBirth.MultipleBirthOrder maps to multipleBirth[x].integer
+	BirthSex maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
+	Race maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-race
+	Ethnicity maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity
+	MaritalStatus maps to maritalStatus
+	MothersMaidenName maps to http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName
+	MedicalInterpreterNeeded maps to http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired
+	Deceased maps to deceased[x].boolean
+	Deceased.DateOfDeath maps to deceased[x]
+
+Practitioner maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner:
+	Value.ActiveFlag maps to active
+	Value.HumanName maps to name
+	Value.AdministrativeGender maps to gender
+	Value.Headshot maps to photo
+	Value.AddressUsed maps to address
+	Value.Telecom maps to telecom
+	Value.LanguageUsed maps to communication
+	NationalProviderIdentifier maps to identifier
+	Qualification maps to qualification
+	Qualification.Type maps to qualification.code
+	Qualification.EffectiveTimePeriod maps to qualification.period
+	Qualification.Issuer maps to qualification.issuer
+	
+RelatedPerson maps to RelatedPerson:
+	Value.ActiveFlag maps to active
+	Value.HumanName maps to name
+	Value.DateOfBirth maps to birthDate
+	Value.AdministrativeGender maps to gender
+	Value.AddressUsed maps to address
+	Value.Headshot maps to photo
+	Value.Telecom maps to telecom
+	RelationshipType maps to relationship
+	EffectiveTimePeriod maps to period
+
+Telecom maps to ContactPoint:
+	TelecomNumberOrAddress maps to value
+	Type maps to system
+	TelecomQualifier maps to use
+	EffectiveTimePeriod maps to period
+	
 Organization maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization:
 	OrganizationName maps to name
 	OrganizationAlias maps to alias  // I wish FHIR allowed multiple names, but it doesn't
 	Type maps to type
 	OrganizationIdentifyingCode maps to identifier
 	AddressUsed maps to address
-	//Telecom maps to telecom
+	Telecom maps to telecom
 	ActiveFlag maps to active
 
-ProviderRelationship maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-careteam:    // no way in FHIR to capture a provider as a single entity
-	constrain participant to 1..1
-	Provider maps to participant.member
-	HealthcareRole maps to participant.role
-	GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to participant.period
+CareTeam maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-careteam: 
+	Participant maps to participant.member
+	Participant.ParticipationType maps to participant.role
+	Participant.ParticipationPeriod maps to participant.period
 
-	
-*/
