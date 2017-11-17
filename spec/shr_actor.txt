@@ -5,10 +5,14 @@ Uses:			shr.core, shr.demographics, shr.base
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
-
-
-Abstract Element:	Person  // Not the same as FHIR person, which is a linkage element only
+Abstract Element:	Person
 Based on:		Object
+Concept:		TBD
+Description:	"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons."
+
+
+EntryElement:	CorePerson  // Not the same as FHIR person, which is a linkage element only
+Based on:		Person
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
 0..* 			HumanName
@@ -95,14 +99,14 @@ Description:	"A person relevant to the health or social situation of the subject
 
 EntryElement:	ProviderOrganization
 Based on:		Party
-Value:			ref(Organization)
+				Value is type ref(Organization)
 1..1    		NationalProviderIdentifier
 
 EntryElement:	Patient
-Based on:		Party
+Based on:		Person
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
-Value:			ref(Person)
+Value:			ref(CorePerson)
 1..1			PlaceOfBirth
 0..1			MultipleBirth
 1..1			BirthSex
@@ -246,10 +250,10 @@ Value:			ref(Person)
 
 
 Element:		Practitioner
-Based on:		Party
+Based on:		Person
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-Value:			ref(Person)
+Value:			ref(CorePerson)
 //1..1			HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..1    		NationalProviderIdentifier
@@ -280,9 +284,9 @@ Value:			ref(Person)
 
 
 EntryElement:	RelatedPerson
-Based on:		Party
+Based on:		Person
 Description:	"A person in a role defined in relationship to a patient"
-Value:			ref(Person)
+Value:			ref(CorePerson)
 0..1			RelationshipType
 0..1			EffectiveTimePeriod
 

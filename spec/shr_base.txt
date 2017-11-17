@@ -69,7 +69,7 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Element:		Attribution
 	Concept:		TBD
 	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..*			ref(Person) or ref(Organization)
+	1..*			ref(Object)
 	1..1			ParticipationType
 		
 	
@@ -114,7 +114,9 @@ Description:		"A non-material thing that contains information relevant to health
 Abstract Element:	Party
 Based on:			Object
 Concept:			TBD
-Description:		"An entity when it plays a role, for example, a person playing the role of patient."
+Description:		"An object when it plays a role, for example, a person playing the role of patient or a room playing the role of operating theater."
+Value:				ref(Object)
+
 
 Abstract Element:	HealthState
 Based on:			Entity
@@ -126,7 +128,7 @@ Description:		"A instance of a health-related situation in a person, such as a c
 	Element:		AffectedPerson
 	Concept:		TBD
 	Description:	"The person who has the health state, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus or family member."
-	Value:			ref(Person) // or ref(Party) ?
+	Value:			ref(Person)
 		
 		
 //-------------- FINDING Base Class ------------------------	
@@ -140,7 +142,7 @@ Description:	"Base class for assertions and observations about a patient. The ob
 0..1			Comment
 0..1			FindingMethod
 0..1			FindingStatus
-//0..*			Evidence
+0..*			Evidence
 
 	Element:		Topic
 	Concept:		TBD
@@ -160,27 +162,37 @@ Description:	"Base class for assertions and observations about a patient. The ob
 	Element:		Evidence
 	Concept:		TBD
 	Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
-	Value:			CodeableConcept or ref(Finding)
-
-EntryElement:		PresentOrSuspected
-Based on:			Finding
-Concept:			TBD
-Description:		"A finding that establishes the existence of a health state."
-Value:				ref(HealthState)
+	Value:			CodeableConcept or ref(Content)
 
 	
-EntryElement:		HealthStateAbsentOrNotSuspected
+Abstract Element:	HealthStateFinding
 Based on:			Finding
 Concept:			TBD
-Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
+Description:		"A finding that establishes the presence or absense of a health state."
 Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+	
+EntryElement:		HealthStatePresentOrSuspected
+Based on:			HealthStateFinding
+Concept:			TBD
+Description:		"A finding that establishes the existence of a health state."
+0..1				HealthStateDetails
+
+		Element:		HealthStateDetails
+		Concept:		TBD
+		Description:	"The details of the diagnosis, in the form of a health state that may be created as a persistent, independent entity."
+		Value:			ref(HealthState)
+
+EntryElement:		HealthStateAbsentOrNotSuspected
+Based on:			HealthStateFinding
+Concept:			TBD
+Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
 1..1				ClinicallyRelevantTime	
 		
 Abstract Element:	EvaluationResult
 Based on:			Finding
 Concept:			TBD
 Description:		"Abstract parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
-Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod or ref(Content))
+Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
 0..1				DataAbsentReason from DataAbsentReasonVS
 1..1				Question
 1..1				ClinicallyRelevantTime
@@ -238,8 +250,8 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 
 		Element:		Participant
 		Concept:		MTH#C1550369
-		Description:	"An actor who participates in a task or activity."
-		Value:			0..1 ref(Person) or ref(Organization)
+		Description:	"An object (usually a Person, Party, or Organization but potentially a device or other Object) that participates in a task or activity."
+		Value:			0..1 ref(Object)
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
 		
@@ -395,7 +407,7 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Element:		Author
 	Concept:		TBD
 	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
-	Value:			ref(Person) or ref(Organization) or ref(Device) // TODO: Does Person imply references to Practitioner are allowed (intended), or does it need to be explicit?
+	Value:			ref(Object) // could be Person, Party, or Device
 
 */
 

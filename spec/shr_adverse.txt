@@ -3,12 +3,19 @@ Namespace:	shr.adverse
 Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
 Uses:				shr.actor, shr.base, shr.core, shr.allergy, shr.medication, shr.device, shr.procedure, shr.observation
 
-Abstract Element:	AdverseFinding
-Based on:			Finding
-Concept:			TBD
-Description:		"Abstract Class for all adverse event and adverse reaction-related findings."
-					Topic value is type Person
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
+Abstract Element:	AdverseFinding
+Based on:		HealthStatePresentOrSuspected
+Concept:		TBD
+Description:	"Abstract parent for adverse events and adverse reaction findings."
+
+EntryElement:	NoAdverseEvent
+Based on:		HealthStateAbsentOrNotSuspected
+Concept:		TBD
+Description:	"Documentation of a situation where no adverse event has been detected or is known."
+				Value is MTH#C1963761
+				Topic value is type Person
 
 EntryElement:	AdverseEvent
 Based on:		AdverseFinding
@@ -47,7 +54,7 @@ EntryElement:	AdverseReaction
 Based on:		AdverseFinding
 Concept:		TBD
 Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This entry could be used to record the occurrence or non-occurrence of an adverse reaction."
-1..1			ref(AdverseEvent)
+				Topic value is type ref(AdverseEvent)
 0..*			AdverseEventAttribution
 0..*			ActionTaken
 
@@ -68,5 +75,5 @@ EntryElement:	ToxicReaction // this should be a filter on AdverseReaction, not a
 Based on:		AdverseReaction
 Concept:		TBD
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
-1..1			AdverseEvent.AdverseEventGrade from ToxicReactionVS  // only grade 3 and above
-1..1			AdverseEvent.CauseCategory is #treatment
+1..1			Topic.AdverseEventGrade from ToxicReactionVS  // only grade 3 and above
+1..1			Topic.CauseCategory is #treatment
