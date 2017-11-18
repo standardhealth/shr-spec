@@ -5,14 +5,9 @@ Uses:			shr.core, shr.demographics, shr.base
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
-Abstract Element:	Person
+
+EntryElement:	Person  // Not the same as FHIR person, which is a linkage element only
 Based on:		Object
-Concept:		TBD
-Description:	"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons."
-
-
-EntryElement:	CorePerson  // Not the same as FHIR person, which is a linkage element only
-Based on:		Person
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
 0..* 			HumanName
@@ -95,18 +90,17 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			boolean
 
-	
 
 EntryElement:	ProviderOrganization
-Based on:		Party
-				Value is type ref(Organization)
+Based on:		Role
+Value:			ref(Organization)
 1..1    		NationalProviderIdentifier
 
 EntryElement:	Patient
-Based on:		Person
+Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
-Value:			ref(CorePerson)
+Value:			ref(Person)
 1..1			PlaceOfBirth
 0..1			MultipleBirth
 1..1			BirthSex
@@ -250,10 +244,10 @@ Value:			ref(CorePerson)
 
 
 Element:		Practitioner
-Based on:		Person
+Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-Value:			ref(CorePerson)
+Value:			ref(Person)
 //1..1			HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..1    		NationalProviderIdentifier
@@ -284,9 +278,9 @@ Value:			ref(CorePerson)
 
 
 EntryElement:	RelatedPerson
-Based on:		Person
+Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
-Value:			ref(CorePerson)
+Value:			ref(Person)
 0..1			RelationshipType
 0..1			EffectiveTimePeriod
 
@@ -296,7 +290,6 @@ Value:			ref(CorePerson)
 	Value:		CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
 
 
-	
 EntryElement:	Organization
 Based on:		Object
 Concept:        MTH#C1561598

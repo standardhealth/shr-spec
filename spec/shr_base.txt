@@ -11,17 +11,15 @@ Description:		"The top level class in the hierarchy"
 Element: 		Entry
 Based on:		Any
 Concept:		MTH#C1705654
-Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could record entities that surface in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
+Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
 1..1			EntryId
-0..1			ref(Patient)
-0..1			RelatedEncounter
+0..1			PersonOfRecord
 0..1			Version
 1..*			EntryType
 1..1    		OriginalCreationDate
 1..1			LastUpdateDate
-0..1			Language
 0..1			Narrative
-0..*			Attribution
+0..1			Language
 0..*			SecurityLabel
 0..*			Tag
 
@@ -29,6 +27,12 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:        MTH#C0600091
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record."
 	Value:          id
+	
+	Element:		PersonOfRecord
+	Concept:		TBD
+	Description:	"The person this record belongs to."
+	Value:			ref(Patient)
+	
 	
 	Element:		RelatedEncounter
 	Concept:		TBD
@@ -55,21 +59,11 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description: 	"A human language, spoken or written."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages
 	
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	Value:			xhtml
-	1..1			NarrativeQualifier
 
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
-	
 	Element:		Attribution
 	Concept:		TBD
 	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..*			ref(Object)
+	1..1			ref(Role)
 	1..1			ParticipationType
 		
 	
@@ -85,9 +79,35 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	
 
 Abstract Element:	Content
-Based on:			Any
-Concept:			TBD
-Description:		"A item that can constitute the payload of an Entry, aka an EntryElement."
+Based on:		Any
+Concept:		TBD
+Description:	"A item that can constitute the payload of an Entry, aka an EntryElement."
+0..1			RelatedEncounter
+//0..*			Attribution
+0..1			Informant
+0..1			Author
+
+
+	Element:		Narrative
+	Concept:		TBD
+	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Value:			xhtml
+	1..1			NarrativeQualifier
+
+			Element:		NarrativeQualifier
+			Concept:		TBD
+			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
+	
+	Element:    	Informant
+	Concept:        MTH#C0449416
+	Description:    "The person or entity that provided the information in the entry, as distinct from who created the entry, e.g. the subject (patient), medical professional, family member, device or software program."
+	Value:	        string or ref(Role) or ref(Device) // TODO: ComputerProgram or Organization or ContributingRecord
+	
+	Element:		Author
+	Concept:		TBD
+	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
+	Value:			string or ref(Role)
 
 Abstract Element:	Entity
 Based on:			Content
@@ -95,8 +115,13 @@ Concept:			TBD
 Description:		"Something that has separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
 0..1				Type
 
-Abstract Element:	Object
+Abstract Element:	Party
 Based on:			Entity
+Concept:			TBD
+Description:		"A person, organization, or object that can participate in a healthcare activity."
+
+Abstract Element:	Object
+Based on:			Party
 Concept:			TBD
 Description:		"A material thing that can be seen and touched."
 
@@ -111,12 +136,10 @@ Description:		"A non-material thing that contains information relevant to health
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
 	Value:			CodeableConcept
 	
-Abstract Element:	Party
-Based on:			Object
+Abstract Element:	Role
+Based on:			Party
 Concept:			TBD
-Description:		"An object when it plays a role, for example, a person playing the role of patient or a room playing the role of operating theater."
-Value:				ref(Object)
-
+Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Also can represent an object when it plays a role, for example, a room playing the role of operating theater."
 
 Abstract Element:	HealthState
 Based on:			Entity
@@ -128,7 +151,7 @@ Description:		"A instance of a health-related situation in a person, such as a c
 	Element:		AffectedPerson
 	Concept:		TBD
 	Description:	"The person who has the health state, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus or family member."
-	Value:			ref(Person)
+	Value:			ref(Role)
 		
 		
 //-------------- FINDING Base Class ------------------------	
@@ -137,14 +160,14 @@ Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
 Description:	"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
-1..1			Topic
+1..1			Subject
 0..*			Category from ObservationCategoryVS if covered
 0..1			Comment
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
 
-	Element:		Topic
+	Element:		Subject
 	Concept:		TBD
 	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
 	Value:			ref(Content)
@@ -186,7 +209,7 @@ EntryElement:		HealthStateAbsentOrNotSuspected
 Based on:			HealthStateFinding
 Concept:			TBD
 Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
-1..1				ClinicallyRelevantTime	
+1..1				ClinicallyRelevantTime
 		
 Abstract Element:	EvaluationResult
 Based on:			Finding
@@ -239,7 +262,7 @@ Element:		PerformedContext
 Based on:		ActionContext
 Concept:		TBD
 Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
-0..1			OccurrenceTime  // when the action took place
+0..1			OccurrenceTimeOrPeriod  // when the action took place
 0..*			Participant
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
@@ -251,7 +274,7 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 		Element:		Participant
 		Concept:		MTH#C1550369
 		Description:	"An object (usually a Person, Party, or Organization but potentially a device or other Object) that participates in a task or activity."
-		Value:			0..1 ref(Object)
+		Value:			0..1 ref(Party)
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
 		
@@ -337,7 +360,7 @@ Description:	"An order for something to take place."
 		Element:		ExpectedPerformer
 		Concept:		TBD
 		Description:	"Who should carry out the tests. For example, the patient or caregiver."
-		Value:			ref(Person) or ref(Organization)
+		Value:			ref(Role) or ref(Organization)
 		
 		Element:		ExpectedMethod
 		Concept:		TBD
@@ -392,22 +415,15 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Element:		FocalSubject
 	Concept:		TBD
 	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, an intervention, care giver, or relative (living or dead)."
-	Value:			ref(Person)
+	Value:			ref(Role)
 
 	Element:		SubjectIsThirdPartyFlag
 	Concept:		TBD
 	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
 	Value:			CodeableConcept from YesNoVS
 
-	Element:    	Informant
-	Concept:        MTH#C0449416
-	Description:    "The person or entity that provided the information in the entry, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
-	Value:	        Patient or Practitioner or RelatedPerson // TODO: ComputerProgram or Device or Organization or ContributingRecord
 
-	Element:		Author
-	Concept:		TBD
-	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
-	Value:			ref(Object) // could be Person, Party, or Device
+
 
 */
 
