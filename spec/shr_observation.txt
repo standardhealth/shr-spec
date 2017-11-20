@@ -13,20 +13,13 @@ Description:	"An observation includes direct results of observing, measuring, or
 0..1			ref(Specimen)
 0..1			ref(Device)
 0..*			ReferenceRange  // quantitative measurement only
-0..1			Interpretation   // might move up to Finding itself
 0..1			ChangeFlag
-0..1			Components  // should this be at the level of EvaluationResult?
 0..*			ObservationQualifier   //  = CIMI's Precondition
 
 		Element:		ResultStatus
 		Concept:		TBD
 		Description:	"Labels the result as preliminary, amended, final, etc."
 		Value:			CodeableConcept from ObservationCategoryVS if covered
-
-		Element:		Interpretation
-		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a measurement."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 
 		Element:		ChangeFlag
 		Concept:		MTH#C1705241
@@ -42,20 +35,6 @@ Description:	"An observation includes direct results of observing, measuring, or
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
 		Value:			Range   // TODO: align this with FHIR
-
-		Element:		Components
-		Concept:		TBD
-		Description:	"Observation Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
-		Value:			0..* ObservationComponent
-		
-
-Element:		ObservationComponent   // not Content (cannot stand alone)! 
-Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
-Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
-1..1			Question
-0..1			DataAbsentReason
-0..1			Interpretation
-0..*			ReferenceRange
 		
 			
 

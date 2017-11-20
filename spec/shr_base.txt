@@ -139,10 +139,12 @@ Description:		"A non-material thing that contains information relevant to health
 Abstract Element:	Role
 Based on:			Party
 Concept:			TBD
-Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Also can represent an object when it plays a role, for example, a room playing the role of operating theater."
+Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater."
+Value:				ref(Party)  
+// Note: Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
 
 
-Abstract Element:	HealthState
+Abstract Element:	TrackedConcern
 Based on:			Entity
 Concept:			TBD
 Description:		"An instance of a health-related situation in a person, such as a condition, allergy, wound, tumor."
@@ -160,18 +162,28 @@ Description:		"An instance of a health-related situation in a person, such as a 
 Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
-Description:	"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
+Description:	"Base class for assertions and observations about a patient. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
 1..1			Subject
 0..*			Category from ObservationCategoryVS if covered
-0..1			Comment
+0..1			ClinicallyRelevantTime
+0..1			Interpretation
 0..1			FindingMethod
 0..1			FindingStatus
-0..*			Evidence
 
 	Element:		Subject
 	Concept:		TBD
 	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-	Value:			ref(Content)
+	Value:			ref(Entity)
+	
+	Element:		ClinicallyRelevantTime
+	Concept:		TBD
+	Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+	Value:			GeneralizedTemporalContext
+	
+	Element:		Interpretation
+	Concept:		MTH#C0420833
+	Description:	"A clinical interpretation of a measurement."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 		
 	Element:		FindingMethod
 	Concept:		TBD
@@ -189,52 +201,64 @@ Description:	"Base class for assertions and observations about a patient. The ob
 	Value:			CodeableConcept or ref(Content)
 
 	
-Abstract Element:	HealthStateFinding
+Abstract Element:	SituationFinding
 Based on:			Finding
 Concept:			TBD
-Description:		"A finding that establishes the presence or absense of a health state."
+Description:		"A finding that establishes the presence or absence of a health state."
 Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+0..*				Evidence
+
 	
-EntryElement:		HealthStatePresentOrSuspected
-Based on:			HealthStateFinding
+EntryElement:		SituationPresentOrSuspected
+Based on:			SituationFinding
 Concept:			TBD
 Description:		"A finding that establishes the existence of a health state."
-0..1				HealthStateDetails
+0..1				Details
 
-		Element:		HealthStateDetails
+		Element:		Details
 		Concept:		TBD
 		Description:	"The details of the diagnosis, in the form of a health state that may be created as a persistent, independent entity."
-		Value:			ref(HealthState)
+		Value:			ref(TrackedConcern)
 
-EntryElement:		HealthStateAbsentOrNotSuspected
-Based on:			HealthStateFinding
+EntryElement:		SituationAbsentOrNotSuspected
+Based on:			SituationFinding
 Concept:			TBD
 Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
-1..1				ClinicallyRelevantTime
+
 		
-Abstract Element:	EvaluationResult
+EntryElement:		EvaluationResult
 Based on:			Finding
 Concept:			TBD
 Description:		"Abstract parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
 Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
 0..1				DataAbsentReason from DataAbsentReasonVS
-1..1				Question
-1..1				ClinicallyRelevantTime
+1..1				QuestionCode
+0..1				Components 
+
 
 		Element:		DataAbsentReason
 		Concept:		TBD
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from DataAbsentReasonVS
 		
-		Element:		Question
+		Element:		QuestionCode
 		Concept:		MTH#C1706203
 		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, a property, or a test code."
 		Value:			CodeableConcept 
 		
-		Element:		ClinicallyRelevantTime
+		Element:		Components
 		Concept:		TBD
-		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			GeneralizedTemporalContext
+		Description:	"Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
+		Value:			0..* ObservationComponent
+		
+
+Element:		ObservationComponent   // not Content (cannot stand alone)! 
+Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
+1..1			QuestionCode
+0..1			DataAbsentReason
+0..1			Interpretation
+0..*			ReferenceRange
 					
 
 	
