@@ -7,23 +7,17 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 //
 
-Abstract Element:	AdverseEventFinding
-Based on:		SituationPresentOrSuspected
-Concept:		TBD
-Description:	"Abstract parent for adverse events and adverse reaction findings."
-				Details is type AdverseEvent
-
-				
+/*			
 EntryElement:	NoAdverseReaction
 Based on:		SituationAbsentOrNotSuspected
 Concept:		TBD
 Description:	"Documentation of a situation where no adverse event has been detected or is known."
-
+*/
 
 EntryElement:	AdverseEvent
-Based on:		TrackedConcern
+Based on:		SituationPresentOrSuspected
 Concept:		MTH#C0877248
-Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death."
+Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. The AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
 Value:			CodeableConcept from MedDRAVS
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
@@ -31,6 +25,9 @@ Value:			CodeableConcept from MedDRAVS
 0..1			AdverseEventOutcome
 0..1			AssociatedStudy
 1..1			CauseCategory 
+0..*			AdverseEventAttribution
+0..*			ActionTaken
+
 
 	Element:		SeriousAdverseEvent
 	Concept:		MTH#C1710056
@@ -52,15 +49,6 @@ Value:			CodeableConcept from MedDRAVS
 	Description:	"Whether the adverse event is attributed to a treatment, course of the disease, unrelated to either, or unknown. "
 	Value:			CodeableConcept from AttributionCategoryVS
 	
-	
-EntryElement:	AdverseReaction
-Based on:		AdverseFinding
-Concept:		TBD
-Description:	"Any noxious and unintended response to a medical product, procedure, or other intervention, for which a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out. It is not necessarily associated with a previously-recorded SubstanceRisk. This entry could be used to record the occurrence or non-occurrence of an adverse reaction."
-				Subject value is type ref(AdverseEvent)
-0..*			AdverseEventAttribution
-0..*			ActionTaken
-
 	Element:		AdverseEventAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
@@ -72,10 +60,10 @@ Description:	"Any noxious and unintended response to a medical product, procedur
 	Description:	"Action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
 	1..1			Description   // any other way to approach this??
 	0..1			ref(MedicationChangeAction)
+
 	
-	
-EntryElement:	ToxicReaction // this should be a filter on AdverseReaction, not a separate class
-Based on:		AdverseReaction
+EntryElement:	ToxicReaction // In truth, this should be a filter on AdverseEvent, not a separate class
+Based on:		AdverseEvent
 Concept:		TBD
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
 1..1			Subject.AdverseEventGrade from ToxicReactionVS  // only grade 3 and above

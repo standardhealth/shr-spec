@@ -143,18 +143,6 @@ Description:		"Abstract parent class for human parties, such as practitioners, p
 Value:				ref(Party)  
 // Note: Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
 
-
-Abstract Element:	TrackedConcern
-Based on:			Entity
-Concept:			TBD
-Description:		"An instance of a health-related situation in a person, such as a condition, allergy, wound, tumor."
-1..1				AffectedPerson
-// TODO: move attributes common to health states, such as onset and abatement, here
-
-	Element:		AffectedPerson
-	Concept:		TBD
-	Description:	"The person who has the health state, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus or family member."
-	Value:			ref(Role)
 		
 		
 //-------------- FINDING Base Class ------------------------	
@@ -173,7 +161,7 @@ Description:	"Base class for assertions and observations about a patient. The su
 	Element:		Subject
 	Concept:		TBD
 	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-	Value:			ref(Entity)
+	Value:			ref(Content)
 	
 	Element:		ClinicallyRelevantTime
 	Concept:		TBD
@@ -213,12 +201,7 @@ EntryElement:		SituationPresentOrSuspected
 Based on:			SituationFinding
 Concept:			TBD
 Description:		"A finding that establishes the existence of a health state."
-0..1				Details
 
-		Element:		Details
-		Concept:		TBD
-		Description:	"The details of the diagnosis, in the form of a health state that may be created as a persistent, independent entity."
-		Value:			ref(TrackedConcern)
 
 EntryElement:		SituationAbsentOrNotSuspected
 Based on:			SituationFinding
@@ -234,7 +217,6 @@ Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 0..1				DataAbsentReason from DataAbsentReasonVS
 1..1				QuestionCode
 0..1				Components 
-
 
 		Element:		DataAbsentReason
 		Concept:		TBD
@@ -260,13 +242,18 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..1			Interpretation
 0..*			ReferenceRange
 					
-
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			Range   // TODO: align this with FHIR
 	
+
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
 Value:			ref(Finding)
-					
+
+	
 //------------ Actions and Interventions -------------
 
 Abstract Element:	Action
@@ -294,7 +281,7 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 0..*			Annotation
 0..1			RelatedRequest
 0..1			RelatedPlan
-0..*			Outcome  // e.g., AdverseReaction
+0..*			Outcome  // e.g., AdverseEvent
 
 		Element:		Participant
 		Concept:		MTH#C1550369
