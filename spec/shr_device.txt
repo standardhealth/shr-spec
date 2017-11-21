@@ -1,11 +1,10 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.device
 Description:	"The SHR Device domain contains definitions relating to devices used to treat the person of record, either in measurements and observations, durable medical equipment used by the patient, and device implants."
-Uses:			shr.core, shr.actor, shr.base
-
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 Element:		Device
-Based on:		Entity
+Based on:		Object
 Concept:		TBD
 Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients."
 1..1			Type from DeviceVS
@@ -27,8 +26,10 @@ Element:		DeviceAction
 Based on:		Action
 Concept:		TBD
 Description:	"A medical device or implanted device of a patient, independent of context of being recommended, used, or not used. Device use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, and other patient-reported information."
+1..1			Subject
 1..1			Device
 0..1			Implanted
+0..1			BodySite
 
 	Element:		Implanted
 	Concept:		TBD
@@ -47,6 +48,9 @@ Based on:		DeviceAction
 Concept:		TBD
 Description:	"A record of the use of a device by a patient."
 				ActionContext is type PerformedContext
+0..0			ActionContext.Participant
+1..1			ActionContext.Status from http://hl7.org/fhir/ValueSet/device-statement-status
+
 
 EntryElement:	DeviceNotUsed
 Based on:		DeviceAction

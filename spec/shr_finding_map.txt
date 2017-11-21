@@ -1,10 +1,19 @@
 Grammar:	Map 5.0
-Namespace:	shr.observation
+Namespace:	shr.finding
 Target:		FHIR_STU_3
+
+Finding maps to Observation:
+	Subject maps to subject
+	Category maps to category
+	Interpretation maps to interpretation
+	FindingMethod maps to method
+	FindingStatus maps to status
+
+
 
 /*
 Observation maps to Observation:
-	Entry.FocalSubject maps to subject
+	Subject maps to subject
 	Entry.AssociatedEncounter maps to context
 	Entry.OriginalCreationDate maps to issued
 	Value maps to value[x]
@@ -19,9 +28,26 @@ Observation maps to Observation:
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
 	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
 	Interpretation maps to interpretation
-	Comment maps to comment
 	// TODO: map reference range (set in labs, test, not here)
 	//constrain component to 0..0 // use extensions instead
 	fix related.type to #has-member
 	Members.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	
+
+Assessment maps to ClinicalImpression:
+	Subject.Value maps to subject
+	Entry.AssociatedEncounter maps to context 
+	Informant maps to assessor
+	Entry.OriginalCreationDate maps to date
+	Status maps to status
+	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
+	ClinicallyRelevantTime.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime
+	Summary maps to summary
+	AssessmentResult.Value maps to finding.item[x].CodeableConcept
+	Evidence maps to investigation.item 
+
+// TODO - FHIR is ambiguous about where the 0..* is applied, either to investigation or to investigation.item. This might cause a mapping problem
+
+	
+	
 */

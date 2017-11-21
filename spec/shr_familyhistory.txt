@@ -1,33 +1,23 @@
 Grammar:	DataElement 5.0
 Namespace:			shr.familyhistory
 Description:		"The SHR Family History domain contains definitions related to the life, health, and genetics of persons related to the person of record."
-Uses:               shr.actor, shr.core, shr.base, shr.demographics, shr.condition
+Uses:               shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.condition
 
-
-EntryElement:	FamilyMember  // related person?
-Based on:		Person
-1..1			FamilialRelationship
-
-	EntryElement:	FamilialRelationship
-	Concept:		MTH#C0015608
-	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
-	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype  // mother, father, sibling, etc.
-	
 
 EntryElement:	FamilyMemberCondition
 Based on:		Condition
 Description:	"A condition of a person related to the person of record."
-1..1			Subject value is type ref(FamilyMember)
+1..1			Subject value is type ref(RelatedPerson)
 0..*    		ref(ExternalHealthRecord)  // evidence? or extension?
 
 EntryElement:	FamilyMemberConditionAbsent
 Based on:		ConditionAbsent
 Description:	"A condition of a person related to the person of record."
-1..1			Subject value is type ref(FamilyMember)
+1..1			Subject value is type ref(RelatedPerson)
 
 
 Element:		ExternalHealthRecord
-Based on:		Entity
+Based on:		InfoItem
 Concept: 		TBD
 Description:	"A health record other than the current health record; may have been used to help populate the current record."
 1..1			OrganizationalIdentifier
@@ -37,3 +27,4 @@ Description:	"A health record other than the current health record; may have bee
 	Concept:		TBD
 	Description:	"Point in time when data was accessed."
 	Value:			dateTime
+	

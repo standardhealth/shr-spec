@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
 Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Any. The classes below Any are are Finding, Action, and Entity."
-Uses:			shr.core, shr.demographics, shr.actor, shr.encounter, shr.device, shr.procedure
+Uses:			shr.core, shr.finding, shr.action, shr.entity, shr.encounter, shr.device
 
 
 Abstract Element:	Any 
@@ -11,17 +11,15 @@ Description:		"The top level class in the hierarchy"
 Element: 		Entry
 Based on:		Any
 Concept:		MTH#C1705654
-Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could record entities that surface in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
+Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
 1..1			EntryId
-0..1			ref(PersonOfRecord)
-0..1			RelatedEncounter
+0..1			PersonOfRecord
 0..1			Version
 1..*			EntryType
 1..1    		OriginalCreationDate
 1..1			LastUpdateDate
-0..1			Language
 0..1			Narrative
-0..*			Attribution
+0..1			Language
 0..*			SecurityLabel
 0..*			Tag
 
@@ -29,6 +27,12 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:        MTH#C0600091
 	Description:    "A unique, persistent, permanent identifier for an entry in a health record."
 	Value:          id
+	
+	Element:		PersonOfRecord
+	Concept:		TBD
+	Description:	"The person this record belongs to."
+	Value:			ref(Patient)
+	
 	
 	Element:		RelatedEncounter
 	Concept:		TBD
@@ -55,21 +59,11 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description: 	"A human language, spoken or written."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages
 	
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	Value:			xhtml
-	1..1			NarrativeQualifier
 
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
-	
 	Element:		Attribution
 	Concept:		TBD
 	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..*			ref(Actor)
+	1..1			ref(Role)
 	1..1			ParticipationType
 		
 	
@@ -85,290 +79,36 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	
 
 Abstract Element:	Content
-Based on:			Any
-Concept:			TBD
-Description:		"A item that can constitute the payload of an Entry, aka an EntryElement."
-
-Abstract Element:	Continuant
-Based on:			Content
-Concept:			TBD
-Description:		"An item that exists through time, exists in full at a given time, and preserves its identity from one moment to the next."
-
-
-Abstract Element:	Entity
-Based on:			Continuant
-Concept:			TBD
-Description:		"A description of a particular thing, such as a person, location, medication, body part, or organization."
-0..1				Type
-
-	Element:		Type
-	Concept:		TBD
-	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
-	Value:			CodeableConcept
-	
-Abstract Element:	Relationship
-Based on:			Continuant
-Concept:			TBD
-Description:		"Parent class for findings whose answer is an existing object. This is generally the assertion of a relationship between the objects, for example, between a patient and an organization."
-1..1				Subject
-1..1				EffectiveTimePeriod
-1..1				RelationshipType
-
-		Element:		RelationshipType
-		Concept:		TBD
-		Description:	"The type of relationship that is the topic of this finding."
-		Value:			CodeableConcept
-
-
-Abstract Element:	HealthState
-Based on:			Continuant
-Concept:			TBD
-Description:		"A instance of a presence of state of being or health-related situation, such as a condition, allergy, wound, tumor, or other "
-1..1				Subject
-		
-//-------------- FINDING Base Class ------------------------	
-
-Abstract Element: Finding
-Based on:		Content
+Based on:		Any
 Concept:		TBD
-Description:	"Base class for assertions and observations about a patient. The object of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Attributes including demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
-1..1			Subject
-0..*			Category from ObservationCategoryVS if covered
-0..1			Comment
-0..1			FindingMethod
-0..1			FindingStatus
-0..*			Evidence
-		
-	Element:		Subject
+Description:	"A item that can constitute the payload of an Entry, aka an EntryElement."
+0..1			RelatedEncounter
+//0..*			Attribution
+0..1			Informant
+0..1			Author
+
+
+	Element:		Narrative
 	Concept:		TBD
-	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-	Value:			ref(Continuant)
+	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Value:			xhtml
+	1..1			NarrativeQualifier
 
-
-	Element:		FindingMethod
-	Concept:		TBD
-	Description:	"The technique used to create the finding, for example, the specific imaging technical or assessment vehicle."
-	Value:			string or CodeableConcept or ref(ProcedurePerformed)
-
-	Element:		FindingStatus
-	Concept:		TBD
-	Description:	"Indicates whether the finding is complete and definite."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
-
-	Element:		Evidence
-	Concept:		TBD
-	Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
-	Value:			CodeableConcept or ref(Finding)
-
-EntryElement:		PresentOrSuspected
-Based on:			Finding
-Concept:			TBD
-Description:		"A finding that establishes the existence of a health state."
-1..1				ref(HealthState)
-
-	
-EntryElement:		HealthStateAbsentOrNotSuspected
-Based on:			Finding
-Concept:			TBD
-Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
-Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-1..1				ClinicallyRelevantTime	
-		
-Abstract Element:	EvaluationResult
-Based on:			Finding
-Concept:			TBD
-Description:		"Abstract parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
-Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
-0..1				DataAbsentReason from DataAbsentReasonVS
-1..1				Question
-1..1				ClinicallyRelevantTime
-
-		Element:		DataAbsentReason
-		Concept:		TBD
-		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
-		Value:			CodeableConcept from DataAbsentReasonVS
-		
-		Element:		Question
-		Concept:		MTH#C1706203
-		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, a property, or a test code."
-		Value:			CodeableConcept 
-		
-		Element:		ClinicallyRelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			GeneralizedTemporalContext
-					
-
-					
-Element:		RelatedFinding
-Concept:		TBD
-Description:	"Findings associated with this item." 
-Value:			ref(Finding)
-					
-//------------ Actions and Interventions -------------
-
-Abstract Element:	Action
-Based on:			Any
-Concept:			TBD
-Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
-0..1 				Type
-0..*				Category
-1..1				ActionContext
-0..*				Reason
-
-	Abstract Element:	ActionContext
-	Concept:			MTH#C0449255
-	Description:		"The ontological status of the intervention, e.g., performed/not performed, requested/not requested, recommended/not recommended."
-
-
-Element:		PerformedContext
-Based on:		ActionContext
-Concept:		TBD
-Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
-0..1			OccurrenceTime  // when the action took place
-0..*			Participant
-1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
-0..1			Method
-0..*			Annotation
-0..1			RelatedRequest
-0..1			RelatedPlan
-0..*			Outcome  // e.g., AdverseReaction
-
-		Element:		Participant
-		Based on:		Entity  // Relationship?
-		Concept:		MTH#C1550369
-		Description:	"An actor who participates in a task or activity. Unlike a HealthcareInvolvement which continues over period of time, the participant is associated with doing a specific task, such admitting a patient, performing a procedure, or taking a measurement."
-		0..1			Actor
-		0..1 			ParticipationType  // role
-		1..1			ParticipationPeriod
-
-		
-			Element:		ParticipationType
-			Concept:		MTH#C1553854
-			Description:	"The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
-			Value:			CodeableConcept from FHIR/v3-ParticipationType
-			
-			Element:		ParticipationPeriod
+			Element:		NarrativeQualifier
 			Concept:		TBD
-			Description:	"The point in time or span of time the participant is involved."
-			Value:			TimePeriod
-
-
-		Element:		Status
-		Concept:		MTH#C0449438
-		Description:	"Position in workflow."
-		Value:			code or Coding or CodeableConcept
+			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
 	
-		Element:		Method
-		Concept:		TBD
-		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
-		Value:			CodeableConcept  // TODO: limit to a procedure code
+	Element:    	Informant
+	Concept:        MTH#C0449416
+	Description:    "The person or entity that provided the information in the entry, as distinct from who created the entry, e.g. the subject (patient), medical professional, family member, device or software program."
+	Value:	        string or ref(Role) or ref(Device) // TODO: ComputerProgram or Organization or ContributingRecord
+	
+	Element:		Author
+	Concept:		TBD
+	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
+	Value:			string or ref(Role)
 
-		Element:		RelatedRequest
-		Concept:		TBD
-		Description:	"The request that this action fulfills"
-		Value:			ref(Action)   // TODO: We can't narrow this to ActionRequested under single inheritance
-
-		Element:		RelatedPlan
-		Concept:		TBD
-		Description:	"The plan that this action fulfills"
-		Value:			ref(Action)   //ActionPlanned
-		
-		Element:		Outcome
-		Concept:		TBD
-		Description:	"The result of performing this action, for example, an adverse reaction or new finding."
-		Value:			ref(Finding)		
-
-		
-Element:		NotPerformedContext
-Based on:		ActionContext
-Concept:		TBD
-Description:	"A record that a clinical act was not performed or never initiated, particularly when there might be an expectation of performing such an act, for example, if a vaccination is not given because of parental objection. Do not use this context if the act was initiated or started but aborted or cancelled."
-0..*			Reason
-0..1			RelatedRequest
-0..1			RelatedPlan
-
-Element:		PlannedContext
-Based on:		ActionContext
-Concept:		TBD
-Description:	"ActionContext indicating intended future performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine to be administered three months hence."
-0..1			ExpectedPerformanceTime
-0..1			ExpectedPerformer
-0..1			ExpectedPerformerType
-0..1			ExpectedMethod 
-0..*			Annotation
-			
-Element:		RequestedContext
-Concept:		MTH#C1705178
-Based on:		ActionContext
-Description:	"An order for something to take place."
-1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
-0..1			ExpectedPerformanceTime
-0..1			ExpectedPerformerType
-0..1			ExpectedPerformer
-0..1			ExpectedMethod 
-0..1 			Priority should be from http://hl7.org/fhir/ValueSet/request-priority
-0..1			PerformerInstructions
-0..1			PatientInstructions	
-0..1			CommunicationMethod
-		
-		Element:		ExpectedPerformanceTime
-		Concept:		TBD
-		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			dateTime or date or TimePeriod or TBD "Timing"
-
-		Element:		ExpectedPerformerType
-		Concept:		TBD
-		Description:	"What type of actor should carry out the testing."
-		Value:			CodeableConcept // what ValueSet??
-
-		Element:		ExpectedPerformer
-		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver."
-		Value:			ref(Actor)
-		
-		Element:		ExpectedMethod
-		Concept:		TBD
-		Description:	"The method that should be used to carry out the action."
-		Value:			ref(Method)
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
-		
-		Element:		CommunicationMethod
-		Concept:		TBD
-		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
-		Value:			CodeableConcept
-
-Element:		NotRequestedContext
-Concept:		TBD
-Based on:		ActionContext
-
-
-Element:		ProposedContext
-Concept:		TBD
-Based on:		ActionContext
-Description:	"An offer or a suggestion to perform a healthcare act. A recommendation to a provider is an example of proposal made by a CDS system. A proposal must be accepted by an entity in order for it to be performed."
-1..1			Status from ProposedStatusVS
-0..1			ExpectedPerformanceTime
-0..1			ExpectedPerformer
-0..1			ExpectedPerformerType
-0..1 			Priority from http://hl7.org/fhir/ValueSet/request-priority
-0..1			PerformerInstructions
-0..1			PatientInstructions	
-
-
-Element:		ProposedAgainstContext
-Concept:		TBD
-Based on:		ActionContext
-Description:	"Concept represents a recommendation from a clinical decision support system or advice from a consultation to NOT perform an act."	
 
 /*
 
@@ -380,22 +120,15 @@ Description:	"Concept represents a recommendation from a clinical decision suppo
 	Element:		FocalSubject
 	Concept:		TBD
 	Description:	"The person or thing that this entry refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, an intervention, care giver, or relative (living or dead)."
-	Value:			ref(Person)
+	Value:			ref(Role)
 
 	Element:		SubjectIsThirdPartyFlag
 	Concept:		TBD
 	Description:	"If true, the subject of this entry is someone other than the Person of Record, for example, a family member."
 	Value:			CodeableConcept from YesNoVS
 
-	Element:    	Informant
-	Concept:        MTH#C0449416
-	Description:    "The person or entity that provided the information in the entry, as distinct from the actor creating the entry, e.g. the subject (patient), medical professional, family member, device or software program."
-	Value:	        Patient or Practitioner or RelatedPerson // TODO: ComputerProgram or Device or Organization or ContributingRecord
 
-	Element:		Author
-	Concept:		TBD
-	Description:	"The person or organization who created the entry and is responsible for (and may certify) its content."
-	Value:			ref(Person) or ref(Organization) or ref(Device) // TODO: Does Person imply references to Practitioner are allowed (intended), or does it need to be explicit?
+
 
 */
 

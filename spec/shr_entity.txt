@@ -1,0 +1,365 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.entity
+Description:	"The SHR Entity domain contains definitions for objects, people and organizations that are involved with the person of record, in some capacity. Entities are things that have separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
+Uses:			shr.core, shr.base, shr.finding, shr.action 
+
+Path:     	FHIR = http://hl7.org/fhir/ValueSet
+
+
+Abstract Element:	Entity
+Based on:			Content
+Concept:			TBD
+Description:		"Something that has separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
+0..1				Type
+
+	Element:		Type
+	Concept:		TBD
+	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
+	Value:			CodeableConcept
+
+Abstract Element:	Party
+Based on:			Entity
+Concept:			TBD
+Description:		"A person, organization, or object that can participate in a healthcare activity."
+
+Abstract Element:	Object
+Based on:			Party
+Concept:			TBD
+Description:		"A material thing that can be seen and touched."
+
+Abstract Element:	InfoItem
+Based on:			Entity
+Concept:			TBD
+Description:		"A non-material thing that contains information relevant to health care, such as an image, consent form, or report."
+
+	
+Abstract Element:	Role
+Based on:			Party
+Concept:			TBD
+Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater."
+Value:				ref(Party)  
+// Note: Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
+
+
+
+EntryElement:	Person  // Not the same as FHIR person, which is a linkage element only
+Based on:		Object
+Concept:		MTH#C0027361
+Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
+0..* 			HumanName
+0..1			AnonymizedFlag
+0..1			FictionalPersonFlag
+0..1			DateOfBirth
+0..1			AdministrativeGender
+0..*			AddressUsed
+0..1			Headshot
+0..*			Telecom
+0..*			LanguageUsed
+0..1			ActiveFlag
+
+	Element:		AnonymizedFlag
+	Concept:		MTH#C3858751
+	Description:	"Flag indicating if personally identifiable information has been withheld or disguised."
+	Value:			CodeableConcept from YesNoVS
+
+	Element:		FictionalPersonFlag
+	Concept:		MTH#C0887933
+	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
+	Value:			CodeableConcept from YesNoVS
+
+	Element:   		DateOfBirth
+	Concept:        MTH#C2919018, LNC#21112-8
+	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
+	Value: 			date or TimePeriod
+
+	Element:		AdministrativeGender
+	Concept:		MTH#C1550327
+	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
+	Value:          code from http://hl7.org/fhir/ValueSet/administrative-gender
+
+	Element:		Headshot
+	Concept:		TBD
+	Description:	"A photograph showing a person's face."
+	Value:			Media
+	
+	Element:		LanguageUsed  // needs to be aligned with CCDA 2.1
+	Concept:		TBD
+	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
+	Value:			Language
+	0..1 			SpokenLanguageProficiency
+	0..1 			WrittenLanguageProficiency
+	0..*			LanguageQualifier
+
+			Element:		SpokenLanguageProficiency
+			Concept:		MTH#C0678997
+			Description:	"Accuracy and fluency in spoken communication in a language."
+			Value:			CodeableConcept from PerformanceGradingScaleVS
+
+			Element:		WrittenLanguageProficiency
+			Concept:		MTH#C0586739
+			Description:	"Accuracy and fluency of reading and writing in a language."
+			Value:			CodeableConcept from PerformanceGradingScaleVS
+
+			Element:		LanguageQualifier
+			Description:	"Additional information about a person's use of language."
+			Value:			CodeableConcept from LanguageQualifierVS
+
+	Element:		Deceased
+	Concept:		MTH#C0011065
+	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
+	Value:			CodeableConcept from YesNoUnknownVS
+	0..1			DateOfDeath
+	0..1			AgeAtDeath
+
+		Element:		DateOfDeath
+		Concept:		MTH#C1148348
+		Description:	"The calendar date of subject's death."
+		Value:			GeneralizedDateTime
+
+		Element:		AgeAtDeath
+		Concept:		MTH#C1546180
+		Description:	"The age, age range, or age group when the cessation of life happens."
+		Value:			GeneralizedAge
+		
+	Element:		ActiveFlag
+	Concept:		TBD
+	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
+	Value:			boolean
+
+
+EntryElement:	ProviderOrganization
+Based on:		Role
+				Value is type ref(Organization)
+1..1    		NationalProviderIdentifier
+
+EntryElement:	Patient
+Based on:		Role
+Concept: 		MTH#C1299487
+Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
+				Value is type ref(Person)
+1..1			PlaceOfBirth
+0..1			MultipleBirth
+1..1			BirthSex
+1..1		 	Race
+1..1		 	Ethnicity
+1..1		 	MaritalStatus
+1..1			MothersMaidenName
+1..1			FathersName
+0..1			SocialSecurityNumber
+0..1			DriversLicenseNumber
+0..*			PassportNumber
+0..1			MedicalInterpreterNeeded
+0..1			Deceased
+
+	Element:   		PlaceOfBirth
+	Concept:        MTH#C0032040
+	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+	Value:          GeopoliticalLocation
+
+	Element:		MultipleBirth
+	Concept:		MTH#C0026753
+	Description:	"Indication if the person was part of a multiple birth event."
+	Value:			CodeableConcept from YesNoUnknownVS
+	0..1			MultipleBirthOrder
+
+		Element:		MultipleBirthOrder
+		Concept:		LNC#73771-8
+		Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)."
+		Value:			integer 
+		// should be positiveInt, but it is an integer in FHIR (no issue yet logged)
+
+	Element:		BirthSex
+	Concept:		MTH#C4086849
+	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
+	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
+
+	Element:		Race
+	Concept:		MTH#C0034510
+	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
+	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+	0..*			RaceDetail
+
+		Element:		RaceDetail
+		Concept:		TBD
+		Description:	"Additional description of race or heritage."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-race or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+
+	Element:		Ethnicity
+	Concept:		MTH#C0015031
+	Description:    "Indicator of Hispanic or Latino origin."
+	Value:          CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+	0..*			EthnicityDetail
+
+		Element:		EthnicityDetail
+		Concept:		TBD
+		Description:	"Additional description of ethnicity."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity
+
+
+	Element:   		MaritalStatus
+	Concept:		MTH#C0024819
+	Description:	"The most recent marital status of a person."
+	Value:			CodeableConcept from FHIR/marital-status
+
+	Element:   		MothersMaidenName
+	Concept:		MTH#C0806887
+	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+	Value:			HumanName
+
+	Element:		FathersName
+	Concept:		TBD
+	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
+	Value:			HumanName
+
+	Element: 		SocialSecurityNumber
+	Concept:		MTH#C1301821
+	Description:	"A US social security number (SSN)."
+	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
+
+	Element:		DriversLicenseNumber
+	Concept:		TBD
+	Description:	"Identifying information from a drivers license."
+	Value:			string
+	0..1			StateOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element: 		StateOfIssue
+		Concept:		TBD
+		Description:	"A state or country acting as an assuing authority for a document."
+		Value:			State
+	
+	Element:		PassportNumber
+	Concept:		MTH#C1549737
+	Description:	"Credential indicating citizenship."
+	Value:			string
+	1..1			CountryOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element: 		CountryOfIssue
+		Concept:		TBD
+		Description:	"A country acting as an assuing authority for a document."
+		Value:			Country
+		
+	Element:   		AddressUsed
+	Concept:		MTH#C0682130
+	Description:	"An address used by for dwelling, work, or other purposes. May be a physical location or an address used only for deliveries, such as a PO box."
+	Value:			Address
+	1..*    		AddressUse
+	0..*			Setting
+	0..1			EffectiveTimePeriod
+
+		Element:		AddressUse
+		Concept:		TBD
+		Description:	"Describes how the address is used, in particular, as a dwelling (primary, secondary, temporary), a former address, mailing address, etc."
+		Value:			CodeableConcept from AddressUseVS
+
+
+	Element:   		Telecom
+	Concept:		MTH#C2986441
+	Description:	"An electronic means of contacting an organization or individual."
+	1..1			TelecomNumberOrAddress
+	1..1			Type from http://hl7.org/fhir/ValueSet/contact-point-system if covered
+	0..1			TelecomQualifier
+	0..1			EffectiveTimePeriod
+
+		Element:		TelecomNumberOrAddress
+		Concept:		TBD
+		Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID."
+		Value:			string
+
+		Element:  		TelecomQualifier
+		Concept:		TBD
+		Description:	"Provides more information about the type and uses of the telecom address."
+		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-use
+
+	Element: 		MedicalInterpreterNeeded
+	Concept:		MTH#C1442531
+	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
+	Value:			CodeableConcept from YesNoUnknownVS
+	1..1			Language
+
+
+Element:		Practitioner
+Based on:		Role
+Concept:		MTH#C2220264
+Description:	"A person who practices a healing art."
+				Value is type ref(Person)
+//1..1			HumanName   // only one (limitation imposed by us-core)
+// 0..*			Affiliation // handled by ProviderRelationship in FHIR
+1..1    		NationalProviderIdentifier
+0..*    		Qualification
+
+	Element:    	Affiliation
+	Concept:        MTH#C0932026
+	Description:    "Membership, association, or connection to an organization."
+	Value:			Organization
+
+	Element: 		NationalProviderIdentifier
+	Concept:		MTH#C1549728
+	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry."
+	Value:			OrganizationalIdentifier
+
+	Element:		Qualification
+	Concept:		MTH#C0037778
+	Description:	"A right to practice medicine obtained by training and certification."
+	1..1			Type from http://hl7.org/fhir/ValueSet/c80-practice-codes
+	0..1			EffectiveTimePeriod
+	0..1			Issuer
+// or http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
+
+			Element:	Issuer
+			Concept:	TBD
+			Description:"An organization who issues a qualification or license."
+			Value:		ref(Organization)
+
+
+EntryElement:	RelatedPerson
+Based on:		Role
+Description:	"A person in a role defined in relationship to a patient"
+				Value is type ref(Person)
+0..1			RelationshipType
+0..1			EffectiveTimePeriod
+
+	EntryElement:	RelationshipType
+	Concept:	MTH#C0015608
+	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
+	Value:		CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
+
+
+EntryElement:	Organization
+Based on:		Object
+Concept:        MTH#C1561598
+Description:    "A social or legal structure formed by human beings."
+0..1			OrganizationName
+0..*			OrganizationAlias
+1..1			Type from http://hl7.org/fhir/ValueSet/organization-type
+1..*			OrganizationIdentifyingCode
+1..*			AddressUsed
+1..*			Telecom
+1..1			ActiveFlag
+
+	Element:		OrganizationName
+	Concept:		TBD
+	Description:	"The name of the organization."
+	Value:			string
+
+	Element:		OrganizationAlias
+	Concept:		TBD
+	Description:	"A list of alternate names that the organization is known as, or was known as in the past."
+	Value:			string
+
+	Element:		OrganizationIdentifyingCode
+	Concept:		TBD
+	Description:	"A code identifying a specific organization. The NPI should be provided, if available. Other business identifiers, such employer tax ID, or MVX code for vaccine manufacturers, should also be provided."
+	Value:			OrganizationalIdentifier
+	
+EntryElement:	CareTeam
+Based on:	Object  // very similar to organization (could be info item)
+Concept:	TBD
+Description: "Planned participants in the coordination and delivery of care for a patient or group."
+0..*		Participant
+//0..*		Participant.ParticipationType from HealthcareRoleVS /* or CodeableConcept from http://hl7.org/fhir/ValueSet/c80-practice-codes
+		
+
+
+	

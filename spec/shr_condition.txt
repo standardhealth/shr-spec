@@ -1,23 +1,22 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.condition
 Description:	"The SHR Condition domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
-Uses:			shr.core, shr.base, shr.actor
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
 
 	
 EntryElement:	ConditionAbsent
-Based on:		HealthStateAbsentOrNotSuspected
+Based on:		SituationAbsentOrNotSuspected
 Concept:		TBD
 Description:	"A finding that a condition not present in the subject."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 0..*			BodySite
 
-
 EntryElement:	Condition
-Based on:		HealthState
+Based on:		SituationPresentOrSuspected
 Concept:		TBD // MTH#C0348080
-Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A condition present finding implies the existence of a condition as an entity and is treated as if the finding and the condition entity are the same. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
+Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 1..1			ClinicalStatus
@@ -103,14 +102,14 @@ Value:				CodeableConcept from DSMVS
 
 
 EntryElement:	BodyStructure
-Based on:		HealthState
+Based on:		SituationPresentOrSuspected
 Concept:		TBD // MTH#C1268086
-Description:	"Observation of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
 Value:			CodeableConcept from BodyStructureVS
 
 
-EntryElement:	BodyStructureAbsentFinding
-Based on:		HealthStateAbsentOrNotSuspected
+EntryElement:	BodyStructureAbsent
+Based on:		SituationAbsentOrNotSuspected
 Concept:		TBD //MTH#C1268086
 Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
 Value:			CodeableConcept from BodyStructureVS

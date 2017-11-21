@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.lifehistory
 Description:	"The SHR Lifehistory domain contains definitions related to the course of events in the life of the person of record that might impact health, health risks, or future treatment."
-Uses:			shr.core, shr.base, shr.actor, shr.observation, shr.environment, shr.demographics
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.environment
 
 CodeSystem:		UCUM = http://unitsofmeasure.org
 
@@ -10,58 +10,54 @@ Based on:		ExposureToSubstance  // brings the temporal context into the picture
 Concept:		MTH#C0871747
 Description:	"Fetal contact with a dangerous substance via the mother."
 Value:			CodeableConcept from  TeratogenVS
-//1..1			Question is #prenatal_exposure
+//1..1			QuestionCode is #prenatal_exposure
 0..1			GeneralizedTemporalContext value is type GestationalTemporalContext
 
 EntryElement:	CongenitalAbnormality
 Concept:		MTH#C0000768
-Based on:		HealthState
+Based on:		SituationPresentOrSuspected
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
 Value:			CodeableConcept from CongenitalAbnormalitiesVS
 
 EntryElement:	EducationalAttainment
 Concept:		MTH#C0013658
-Based on:		EvaluationResult
+Based on:		QuestionAnswer
 Description:	"Educational attainment or level of education of individuals."
 Value:			CodeableConcept from EducationalAttainmentVS
-				Question is LNC#63504-5
+				QuestionCode is LNC#63504-5
 
-EntryElement:	Occupation
-Concept:		MTH#C0028811
-Based on:		EvaluationResult
-Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
-Value:			CodeableConcept from http://www.bls.gov/soc/
-				Question is LNC#74287-4
 
 /*
-EntryElement:	Employment // TODO: Change to EmploymentHistory?
+EntryElement:	Employment
 Concept:		LNC#74165-2
 Based on:		Panel
 Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
 Panel.Finding
-includes 0..1	EmploymentType
+includes 0..1	Occupation
 includes 1..1	EmploymentStatus
 includes 0..1	Employer
 */
 
-	Element:		EmploymentType
-	Based on:		Finding
-	Concept:		MTH#C0242271
-	Description:	"The sector of as recognized by US Dept of Labor"
-	Value:			CodeableConcept from EmploymentTypeVS
+	EntryElement:	Occupation
+	Concept:		MTH#C0028811
+	Based on:		QuestionAnswer
+	Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
+	Value:			CodeableConcept from http://www.bls.gov/soc/
+					QuestionCode is LNC#74287-4
 
-	Element:		EmploymentStatus
-	Based on:		Finding
+	EntryElement:	EmploymentStatus
+	Based on:		QuestionAnswer
 	Concept:		MTH#C0242271
 	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
 	Value:			CodeableConcept from EmploymentStatusVS
+					QuestionCode is MTH#C0242271
 
-	Element:		Employer
-	Based on:		Finding
+	EntryElement:	Employer
+	Based on:		QuestionAnswer
 	Concept:		MTH#C1274022
 	Description:	"A person or entity which hires the services of another."
-	Value:			ref(Actor)
-
+	1..1			Value is type ref(Role) or ref(Organization)
+					QuestionCode is MTH#C0242272
 
 
 // TODO:  EntryElement:	Disability
@@ -71,7 +67,7 @@ EntryElement:	MilitaryService
 Concept:		MTH#C3714797
 Based on:		Panel
 Description:	"History of service in the US military."
-				Question is MTH#C3714797  // ??? Specific type of military service, not specific type of panel
+				QuestionCode is MTH#C3714797  // ??? Specific type of military service, not specific type of panel
 				Members.Observation
 				includes 1..1			ref(MilitaryStatus)
 				//includes 0..1			TBD "MilitaryRank"
@@ -114,9 +110,9 @@ Description:	"History of service in the US military."
 
 EntryElement:	Travel
 Concept:		MTH#C0040802
-Based on:		EvaluationResult
+Based on:		QuestionAnswer
 Description:	"Trip to a foreign country or an area, particularly when a health risk is involved."
 Value:			string // TODO - this generates a warning (it should not) - bug reported - I want to have the value be a Location, but that won't map to FHIR
-				Question is MTH#C0040802
+				QuestionCode is MTH#C0040802
 
 

@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.sex
 Description:	"The SHR Sex domain contains definitions related to the sexual health and behavior of the person of record."
-Uses:			shr.core, shr.base, shr.observation
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 CodeSystem: 	LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
@@ -10,41 +10,41 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 
 EntryElement:	PregnancyIntention
 Concept:		TBD
-Based on:		EvaluationResult
+Based on:		Evaluation
 Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
 Value:			CodeableConcept from YesNoUnknownVS
-				Question is LNC#64631-5
+				QuestionCode is LNC#64631-5
 
 
 EntryElement:	SexualIdentity
 Concept:		TBD
 Based on:		Panel
 Description:	"Information on gender identity and sexual orientation."
-				Question is TBD#TBD
+				QuestionCode is TBD#TBD
 				Members.Finding
-				includes 0..1			ref(GenderIdentity)
-				includes 0..1			ref(SexualOrientation)
+				includes 0..1 ref(GenderIdentity)
+				includes 0..1 ref(SexualOrientation)
 
 	EntryElement:	GenderIdentity
 	Concept:		MTH#C0017249
-	Based on:		EvaluationResult
+	Based on:		QuestionAnswer
 	Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
 	Value:			CodeableConcept from GenderIdentityVS  // Do not use Snomed; it stupidly refers to atypical gender identities as "disorders"
-					Question is MTH#C0017249
+					QuestionCode is MTH#C0017249
 
 	EntryElement:	SexualOrientation
 	Concept:		MTH#C0205949
-	Based on:		EvaluationResult
+	Based on:		QuestionAnswer
 	Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
 	Value:			CodeableConcept from SexualOrientationVS
-					Question is MTH#C0205949
+					QuestionCode is MTH#C0205949
 
 
 EntryElement:	SexualBehavior
 Concept:		MTH#C1314687
 Based on:		Panel
 Description:	"Experience with sexual intercourse."
-				Question is MTH#C1314687
+				QuestionCode is MTH#C1314687
 //				Members.Value
 1..*			ref(SexualActivity)
 0..1			ref(NumberOfSexualPartnersPastYear)
@@ -55,7 +55,7 @@ Description:	"Experience with sexual intercourse."
 	Based on:		Finding
 	Description:	"Characterization of the sexual activity of the subject."
 	Value:			CodeableConcept from SexualActivityVS
-	1..1			Question is TBD#TBD
+	1..1			QuestionCode is TBD#TBD
 
 	EntryElement:	NumberOfSexualPartnersPastYear
 	Concept:		MTH#C0556468
@@ -75,7 +75,7 @@ Concept:		MTH#C0700589
 Description:	"Whether the subject uses contaceptives, and the method or methods of contraception used."
 Based on:		Panel
 Value:			CodeableConcept from QualitativeFrequencyVS
-1..1			Question is MTH#C0700589
+1..1			QuestionCode is MTH#C0700589
 0..*			ContraceptiveNotUsedReason
 // TODO PanelMember.Value includes
 0..* 			ContraceptiveMethodUsed
@@ -116,7 +116,7 @@ EntryElement:	PregnancyHistory
 Concept:		MTH#C0032967
 Based on:		Panel
 Description:	"Information about current and past pregnancies."
-				Question is LNC#10163-4
+				QuestionCode is LNC#10163-4
 //  Members.Value
 0..1			CurrentPregnancyStatus
 0..1			NumberOfPreviousPregnancies
@@ -124,22 +124,22 @@ Description:	"Information about current and past pregnancies."
 
 	EntryElement:	CurrentPregnancyStatus
 	Concept:		MTH#C0552579
-	Based on:		EvaluationResult
+	Based on:		QuestionAnswer
 	Description:	"Whether or not the subject is currently pregnant."
 	Value:			CodeableConcept from YesNoUnknownVS
-					Question is LNC#82810-3
+					QuestionCode is LNC#82810-3
 
 	EntryElement:	NumberOfPreviousPregnancies
 	Concept:		MTH#C0422807
-	Based on:		EvaluationResult
+	Based on:		QuestionAnswer
 	Description:	"Number of previous pregnancies."
-					Question is LNC#75201-4
+					QuestionCode is LNC#75201-4
 
 	EntryElement:	NumberOfLivingChildren
 	Concept:		MTH#C2229975
-	Based on:		EvaluationResult
+	Based on:		QuestionAnswer
 	Description:	"Number of living children."
-					Question is LNC#11638-4
+					QuestionCode is LNC#11638-4
 /*
 
 Postmenopausal Status:
