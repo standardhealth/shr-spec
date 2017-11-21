@@ -48,27 +48,27 @@ Description:	"Base class for assertions and observations about a patient. The su
 	Value:			CodeableConcept or ref(Content)
 
 	
-Abstract Element:	SituationFinding
+Abstract Element:	Assessment
 Based on:			Finding
-Concept:			TBD
-Description:		"A finding that establishes the presence or absence of a health state."
+Concept:			MTH#C0220825
+Description:		"A finding (preliminary or final) that establishes the presence or absence of a health state, resulting from synthesis of evidence (one or more observations)."
 Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 0..*				Evidence
 
 	
 EntryElement:		SituationPresentOrSuspected
-Based on:			SituationFinding
+Based on:			Assessment
 Concept:			TBD
 Description:		"A finding that establishes the existence of a health state."
 
 
 EntryElement:		SituationAbsentOrNotSuspected
-Based on:			SituationFinding
+Based on:			Assessment
 Concept:			TBD
 Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
 
 		
-EntryElement:		EvaluationResult
+EntryElement:		Evaluation
 Based on:			Finding
 Concept:			TBD
 Description:		"Parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
@@ -90,10 +90,10 @@ Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Rat
 		Element:		Components
 		Concept:		TBD
 		Description:	"Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
-		Value:			0..* ObservationComponent
+		Value:			0..* EvaluationComponent
 		
 
-Element:		ObservationComponent   // not Content (cannot stand alone)! 
+Element:		EvaluationComponent   // not Content (cannot stand alone)! 
 Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
 1..1			QuestionCode
@@ -107,6 +107,11 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Value:			Range   // TODO: align this with FHIR
 	
 
+EntryElement:	QuestionAnswer
+Based on:		Evaluation
+Description:	"A simple question answer pair."
+
+	
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
@@ -114,9 +119,9 @@ Value:			ref(Finding)
 
 
 EntryElement: 	Observation
-Based on:		EvaluationResult
+Based on:		Evaluation
 Concept:		MTH#C1554188
-Description:	"An observation includes direct results of observing, measuring, or evaluation. The topic of an observation can include the subject's behavior, relationships, functional status, environment, exposures, etc. The method of observing can vary widely, from questioning, physical examination, formal assessment vehicles, laboratory tests, imaging procedures, etc. Patient-reported information is also considered an observation, where subject and observer are the same individual."
+Description:	"An observation includes direct results of observing, measuring, or evaluation. The method of observing can vary widely, from questioning, physical examination, laboratory tests, imaging procedures, etc. Patient-generated data is also considered an observation, where subject and observer are the same individual."
 // TODO: Support additional value types: SampledData or Attachment 
 0..1			BodySite
 0..1			ref(Specimen)
@@ -164,4 +169,35 @@ Description:	"A grouped set of related findings, frequently captured at the same
 		Concept:		TBD
 		Description:	"The status of the report associated with this panel."
 		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
+		*/
+		
+		
+		
+		/*
+EntryElement:	Assessment
+Based on:		Finding
+Concept:		MTH#C0220825
+Description:	"A conclusion (tentative or final) resulting from synthesis of evidence (one or more observations). An Assessment is a judgment rendered at a point in time. A diagnosis is a type of Assessment that can lead to creation of a Condition."
+0..*			Category from AssessmentTypeVS if covered
+1..1			Status from http://hl7.org/fhir/ValueSet/clinical-impression-status
+0..*			Subject  // Tumor or Wound???
+0..* 			AssessmentResult  // the result of the assessment as a text or code
+0..1			Method
+0..1			ClinicallyRelevantTime
+0..1			EvidenceQuality 
+0..*			RelatedFinding
+0..1			Summary   // is this necessary?
+
+
+		Element:		EvidenceQuality
+		Concept:		TBD
+		Description:	"An estimate of the quality and/or quantity of the source information that supports the assessment."
+		Value:			CodeableConcept from EvidenceQualityVS
+
+		Element:		AssessmentResult
+		Concept:		TBD
+		Description:	"A statement of judgment or opinion, often the outcome, finding, or conclusion of the investigation or analysis."
+		Value:			CodeableConcept
+		0..1			Certainty
+		
 		*/
