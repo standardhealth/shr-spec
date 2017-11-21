@@ -5,17 +5,28 @@ Target:		FHIR_STU_3
 // TODO: Below is commented out because it's not currently supported
 // CodeSystem:	ICS = http://hl7.org/fhir/ValueSet/immunization-status
 
-/*
-Immunization maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization:
-	Vaccine.Value maps to vaccineCode
+
+ImmunizationGiven maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization:
+	Vaccine.Type maps to vaccineCode
 	Vaccine.Manufacturer maps to manufacturer
-	NonOccurrenceModifier maps to notGiven
 	constrain explanation to 0..1
-	NonOccurrenceModifier.Reason maps to explanation.reasonNotGiven
+	fix notGiven to false
+	Reason maps to explanation.reason
 	BodySite maps to site
 	RouteIntoBody maps to route
 	AmountOfMedication maps to doseQuantity
 	TBD "DoseSequenceNumber" maps to vaccinationProtocol.doseSequence
 	// TODO: Below is commented out because it's not currently supported
 	// status is ICS#completed  // FHIR bug: if "wasNotGiven" is true, there is no reasonable choice for status
-*/
+	
+ImmunizationNotGiven maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization:
+	Vaccine.Type maps to vaccineCode
+	constrain explanation to 0..1
+	fix notGiven to true
+	Reason maps to explanation.reasonNotGiven
+	constrain site to 0..0
+	constrain route to 0..0
+	constrain doseQuantity to 0..0
+	TBD "DoseSequenceNumber" maps to vaccinationProtocol.doseSequence
+	// TODO: Below is commented out because it's not currently supported
+	// status is ICS#completed  // FHIR bug: if "wasNotGiven" is true, there is no reasonable choice for status	
