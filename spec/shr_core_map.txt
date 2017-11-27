@@ -3,25 +3,7 @@ Namespace:	shr.core
 Target:		FHIR_STU_3
 
 
-Address maps to Address:
-	AddressLine maps to line
-	City maps to city
-	County maps to district
-	State maps to state
-	PostalCode maps to postalCode
-	Country maps to country
-	constrain use to 0..0
-	constrain type to 0..0
-
-HumanName maps to HumanName:
-	Value maps to text
-	HumanNamePrefix maps to prefix
-	GivenName maps to given
-	FamilyName maps to family
-	HumanNameSuffix maps to suffix
-	HumanNameUse maps to use
-	EffectiveTimePeriod maps to period
-
+// Code types map direction to FHIR
 Coding maps to Coding:
 	Value maps to code
 	CodeSystem maps to system
@@ -38,20 +20,35 @@ Quantity maps to Quantity:
 	Units.Coding.CodeSystem maps to system
 	Units.Coding.DisplayText maps to unit
 
+// The following are profiles on Quantity; no additional attributes are defined in SHR
+	Age maps to Age:
+	Count maps to Count:
+	Distance maps to Distance:
+	Duration maps to Duration:
+	Money maps to Money:
 
-UpperBound maps to Quantity:
-	Value.Value maps to value
-	Value.Units.Coding.code maps to code
-	Value.Units.Coding.CodeSystem maps to system
-	Value.Units.Coding.DisplayText maps to unit
-	BoundType maps to comparator
 
-LowerBound maps to Quantity:
-	Value.Value maps to value
-	Value.Units.Coding.code maps to code
-	Value.Units.Coding.CodeSystem maps to system
-	Value.Units.Coding.DisplayText maps to unit
-	BoundType maps to comparator
+Address maps to Address:
+	Purpose maps to use
+	Type maps to type
+	DisplayText maps to text
+	AddressLine maps to line
+	City maps to city
+	District maps to district
+	State maps to state
+	PostalCode maps to postalCode
+	Country maps to country
+	EffectiveTimePeriod maps to period
+
+HumanName maps to HumanName:
+	Value maps to text
+	HumanNamePrefix maps to prefix
+	GivenName maps to given
+	FamilyName maps to family
+	HumanNameSuffix maps to suffix
+	HumanNameUse maps to use
+	EffectiveTimePeriod maps to period
+
 
 TimePeriod maps to Period:
 	TimePeriodStart maps to start
@@ -63,18 +60,13 @@ Geoposition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-loca
 	Longitude maps to position.longitude
 	Altitude maps to position.altitude
 
-
 Annotation maps to Annotation:
 	Value maps to text
-	Author[Role] maps to author[x].Reference
-	Author[string] maps to author[x].String
+	Author[Practitioner] maps to author[x]
+	Author[Patient] maps to author[x]
+	Author[RelatedPerson] maps to author[x]
+	Author[string] maps to author[x].string
 	OccurrenceTime maps to time
-
-Duration maps to Duration:
-// no additional attributes to map; in FHIR, Duration is a profile on Quantity
-
-Age maps to Age:
-// no additional attributes to map; in FHIR, Age is a profile on Quantity
 
 BodySite maps to BodySite:
 	Value maps to code
@@ -82,25 +74,58 @@ BodySite maps to BodySite:
 	Directionality maps to qualifier
 	PortionTotality	maps to qualifier
 	Description maps to description
-
-OrganizationalIdentifier maps to Identifier:
+	
+Identifier maps to Identifier:
 	Value maps to value
-	TimePeriod maps to period
-	//Organization maps to assigner
+	Purpose maps to use
+	Type maps to type
+	CodeSystem maps to system 
+	EffectiveTimePeriod maps to period
+	Issuer maps to assigner
+	
+ContactPoint maps to ContactPoint:
+	TelecomNumberOrAddress maps to value
+	Type maps to system
+	Purpose maps to use
+	Priority maps to rank
+	EffectiveTimePeriod maps to period	
 
 Range maps to Range:
  	LowerBound maps to low
 	UpperBound maps to high
 
-AgeRange maps to Range:
- 	LowerAgeBound maps to low
-	UpperAgeBound maps to high
+//AgeRange maps to Range:
+// 	LowerAgeBound maps to low
+//	UpperAgeBound maps to high
 
 Ratio maps to Ratio:
 	Numerator maps to numerator
 	Denominator maps to denominator
 
-Identifier maps to Identifier:
-	Value maps to value
+Timing maps to Timing:
+	OccurrenceTime maps to event
+	TimingCode maps to code
+	EventDuration.Value.LowerBound maps to repeat.duration
+	EventDuration.Value.UpperBound maps to repeat.durationMax
+	EventDuration.Value.LowerBound.Value.Units.Value.Value maps to repeat.durationUnit
+	RecurrencePattern.RecurrenceInterval.Value maps to repeat.period
+	constrain repeat.periodMax to 0..0
+	RecurrencePattern.RecurrenceInterval.Value.Units.Value.Value maps to repeat.periodUnit
+	RecurrencePattern.DayOfWeek maps to repeat.DayOfWeek
+	RecurrencePattern.TimeOfDay maps to repeat.TimeOfDay
+	RecurrencePattern.LifeEvent maps to repeat.LifeEvent
+	RecurrencePattern.LifeEventOffset maps to repeat.LifeEventOffset
+	RecurrencePattern.FrequencyPerInterval.MinCount maps to repeat.frequency
+	RecurrencePattern.FrequencyPerInterval.MaxCount maps to repeat.frequencyMax
+	
+Attachment maps to Attachment:
+	FileContents maps to data
+	ContentType maps to contentType
+	Language maps to language
+	ResourceLocation maps to url
+	ResourceSize maps to size
+	Hash maps to hash
+	Title maps to title
+	OriginalCreationDate maps to creation
+	
 
-// Count maps to Count  TODO: need to be able to map integer to decimal

@@ -51,9 +51,9 @@ Description:	"A person relevant to the health or social situation of the subject
 0..1			FictionalPersonFlag
 0..1			DateOfBirth
 0..1			AdministrativeGender
-0..*			AddressUsed
+0..*			Address
 0..1			Headshot
-0..*			Telecom
+0..*			ContactPoint
 0..*			LanguageUsed
 0..1			ActiveFlag
 
@@ -80,7 +80,7 @@ Description:	"A person relevant to the health or social situation of the subject
 	Element:		Headshot
 	Concept:		TBD
 	Description:	"A photograph showing a person's face."
-	Value:			Media
+	Value:			Attachment
 	
 	Element:		LanguageUsed  // needs to be aligned with CCDA 2.1
 	Concept:		TBD
@@ -107,14 +107,14 @@ Description:	"A person relevant to the health or social situation of the subject
 	Element:		Deceased
 	Concept:		MTH#C0011065
 	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
-	Value:			CodeableConcept from YesNoUnknownVS
+	Value:			boolean
 	0..1			DateOfDeath
 	0..1			AgeAtDeath
 
 		Element:		DateOfDeath
 		Concept:		MTH#C1148348
 		Description:	"The calendar date of subject's death."
-		Value:			GeneralizedDateTime
+		Value:			dateTime
 
 		Element:		AgeAtDeath
 		Concept:		MTH#C1546180
@@ -126,11 +126,6 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			boolean
 
-
-EntryElement:	ProviderOrganization
-Based on:		Role
-				Value is type ref(Organization)
-1..1    		NationalProviderIdentifier
 
 EntryElement:	Patient
 Based on:		Role
@@ -159,7 +154,7 @@ Description:	"A person in the role of a patient, including extended demographic 
 	Element:		MultipleBirth
 	Concept:		MTH#C0026753
 	Description:	"Indication if the person was part of a multiple birth event."
-	Value:			CodeableConcept from YesNoUnknownVS
+	Value:			boolean
 	0..1			MultipleBirthOrder
 
 		Element:		MultipleBirthOrder
@@ -239,38 +234,12 @@ Description:	"A person in the role of a patient, including extended demographic 
 		Concept:		TBD
 		Description:	"A country acting as an assuing authority for a document."
 		Value:			Country
-		
-	Element:   		AddressUsed
-	Concept:		MTH#C0682130
-	Description:	"An address used by for dwelling, work, or other purposes. May be a physical location or an address used only for deliveries, such as a PO box."
-	Value:			Address
-	1..*    		AddressUse
-	0..*			Setting
-	0..1			EffectiveTimePeriod
 
-		Element:		AddressUse
+		Element:		Purpose
 		Concept:		TBD
-		Description:	"Describes how the address is used, in particular, as a dwelling (primary, secondary, temporary), a former address, mailing address, etc."
-		Value:			CodeableConcept from AddressUseVS
-
-
-	Element:   		Telecom
-	Concept:		MTH#C2986441
-	Description:	"An electronic means of contacting an organization or individual."
-	1..1			TelecomNumberOrAddress
-	1..1			Type from http://hl7.org/fhir/ValueSet/contact-point-system if covered
-	0..1			TelecomQualifier
-	0..1			EffectiveTimePeriod
-
-		Element:		TelecomNumberOrAddress
-		Concept:		TBD
-		Description:	"A user name or other identifier on a telecommunication network, such as a telephone number (including country code and extension, if necessary), email address, or SkypeID."
-		Value:			string
-
-		Element:  		TelecomQualifier
-		Concept:		TBD
-		Description:	"Provides more information about the type and uses of the telecom address."
-		Value:			code from http://hl7.org/fhir/ValueSet/contact-point-use
+		Description:	"Describes how the item is (or was) used or applied."
+		Value:			CodeableConcept
+	
 
 	Element: 		MedicalInterpreterNeeded
 	Concept:		MTH#C1442531
@@ -295,9 +264,9 @@ Description:	"A person who practices a healing art."
 	Value:			Organization
 
 	Element: 		NationalProviderIdentifier
+	Based on:		Identifier
 	Concept:		MTH#C1549728
-	Description:	"A unique 10-digit number to allow providers to identify themselves in a standard way throughout their industry."
-	Value:			OrganizationalIdentifier
+	Description:	"A unique 10-digit number to allow US healthcare providers to identify themselves in a standard way throughout the healthcare industry."
 
 	Element:		Qualification
 	Concept:		MTH#C0037778
@@ -309,7 +278,7 @@ Description:	"A person who practices a healing art."
 
 			Element:	Issuer
 			Concept:	TBD
-			Description:"An organization who issues a qualification or license."
+			Description:"An organization who issues a qualification, identifier, or license."
 			Value:		ref(Organization)
 
 
@@ -321,22 +290,24 @@ Description:	"A person in a role defined in relationship to a patient"
 0..1			EffectiveTimePeriod
 
 	EntryElement:	RelationshipType
-	Concept:	MTH#C0015608
+	Concept:		MTH#C0015608
 	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
-	Value:		CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
+	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
 
 
 EntryElement:	Organization
 Based on:		Object
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings."
-0..1			OrganizationName
+1..1			OrganizationName
 0..*			OrganizationAlias
+1..*			OrganizationIdentifier
 1..1			Type from http://hl7.org/fhir/ValueSet/organization-type
-1..*			OrganizationIdentifyingCode
-1..*			AddressUsed
-1..*			Telecom
+1..*			OrganizationIdentifier
+1..*			Address
+1..*			ContactPoint
 1..1			ActiveFlag
+0..1			PartOf value is type ref(Organization)
 
 	Element:		OrganizationName
 	Concept:		TBD
@@ -347,19 +318,19 @@ Description:    "A social or legal structure formed by human beings."
 	Concept:		TBD
 	Description:	"A list of alternate names that the organization is known as, or was known as in the past."
 	Value:			string
-
-	Element:		OrganizationIdentifyingCode
-	Concept:		TBD
-	Description:	"A code identifying a specific organization. The NPI should be provided, if available. Other business identifiers, such employer tax ID, or MVX code for vaccine manufacturers, should also be provided."
-	Value:			OrganizationalIdentifier
 	
-EntryElement:	CareTeam
-Based on:	Object  // very similar to organization (could be info item)
-Concept:	TBD
-Description: "Planned participants in the coordination and delivery of care for a patient or group."
-0..*		Participant
-//0..*		Participant.ParticipationType from HealthcareRoleVS /* or CodeableConcept from http://hl7.org/fhir/ValueSet/c80-practice-codes
-		
+	Element:		OrganizationIdentifier
+	Based on:		Identifier
+	Concept:		TBD
+	Description:	"An identifier of the organization. An NPI preferred, tax id is allowed, and a local id is allowed in addition to ‘authoritative’ identifier"
+
+	Element:		PartOf
+	Concept:		TBD
+	Description:	"The larger entity that this is a portion of."
+	Value:			ref(Object)
+	
+	
+
 
 
 	
