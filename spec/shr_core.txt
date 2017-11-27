@@ -65,22 +65,22 @@ Description:	"Representation of an amount of currency or monetary value."
 				Units with Coding from CurrencyVS
 
 
-// Complex data types in FHIR	
+//------------- Complex data types in FHIR 3.0 ---------------
 
 Element:		Attachment
 Based on:		EmbeddedContent
 Concept:		TBD
 Description:	"A file that contains audio, video, image, or similar content."
-0..1			FileContents
+0..1			BinaryData
 0..1			ContentType
 0..1			Language
 0..1			ResourceLocation
 0..1			ResourceSize
 0..1			Hash
 0..1			Title
-0..1			OriginalCreationDate
+0..1			Created
 
-	Element:		FileContents
+	Element:		BinaryData
 	Concept:		TBD
 	Description:	"The data itself."
 	Value:			base64Binary
@@ -215,7 +215,6 @@ Description:	"A period of time defined by a start and end time, date, or year. I
 	Description:	"The time at which something is to end or did end. Boundary is considered inclusive."
 	Value:			dateTime   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 
-Element:	SampledData
 
 Element: 	Timing
 Concept:	TBD
@@ -295,8 +294,72 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 		Value:			positiveInt
 
 
-			
-Element:		Signature
+Element:	Signature
+Concept:	TBD
+Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
+1..*		Type from http://hl7.org/fhir/ValueSet/signature-type if covered
+1..1		Created
+1..1		Signatory
+0..1		OnBehalfOf
+0..1		ContentType
+0..1		BinaryData
+
+	Element:   	 	Created
+	Concept:        MTH#C3669169
+	Description:    "The point in time when the information was recorded in the system of record."
+	Value:          instant
+	
+	Element:		Signatory
+	Concept:		TBD
+	Description:	"The party signing."
+	Value:			uri or ref(Party)
+
+	Element:		OnBehalfOf
+	Concept:		TBD
+	Description:	"The party represented by the signatory."
+	Value:			uri or ref(Party)
+
+
+Element:	SampledData
+Concept:	TBD
+Description:	"Data that comes from a series of measurements taken by a device, which may have upper and lower limits. The data type also supports more than one dimension in the data."
+Value:		string
+1..1		Origin
+1..1		MillisecondsBetweenSamples
+0..1		CorrectionFactor
+0..1		LowerLimit
+0..1		UpperLimit
+1..1		Dimensions
+
+	Element:	Origin
+	Description:	"The base quantity that a measured value of zero represents. In addition, this provides the units of the entire measurement series."
+	Value:		SimpleQuantity
+	
+	Element:	MillisecondsBetweenSamples
+	Description: "The length of time between sampling times, measured in milliseconds."
+	Value:		decimal
+	
+	Element:	CorrectionFactor
+	Description: "A correction factor that is applied to the sampled data points before they are added to the origin."
+	Value:		decimal
+	
+	Element:	LowerLimit	
+	Concept:	TBD
+	Description:	"The lower limit of detection of the measured points. This is needed if any of the data points have the value 'L' (lower than detection limit)."
+	Value:		decimal
+	
+	Element:		UpperLimit
+	Concept:		TBD
+	Description:	"The upper limit of detection of the measured points. This is needed if any of the data points have the value 'U' (higher than detection limit)."
+	Value:			decimal
+	 
+	Element:	Dimensions
+	Concept:	TBD
+	Description:	"The number of sample points at each time point. If this value is greater than one, then the dimensions will be interlaced - all the sample points for a point in time will be recorded at once."
+	Value:		positiveInt
+	
+	
+		
 
 Element:   		Address
 Concept:		MTH#C0682130
@@ -665,7 +728,7 @@ Value:			string
 0..*    		GivenName
 0..1    		FamilyName
 0..*    		HumanNameSuffix
-0..1 			HumanNameUse
+0..1 			Purpose from http://hl7.org/fhir/ValueSet/name-use
 0..1 			EffectiveTimePeriod
 
 		Element:    	GivenName
@@ -688,10 +751,6 @@ Value:			string
 		Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
 		Value:          string
 
-		Element:    	HumanNameUse
-		Concept:		TBD
-		Description:	"A qualifier specifying how a human name is used by a person, such as a legal name, alias, or nickname."
-		Value:          code from FHIR/name-use
 
 //--------------------  Substance -------------------------------
 
