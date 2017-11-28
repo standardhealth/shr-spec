@@ -14,7 +14,7 @@ Description:		"Something that has separate and distinct existence and objective 
 
 	Element:		Type
 	Concept:		TBD
-	Description:	"The most specific code (lowest level term) describing the kind or sort of thing thing being represented." 
+	Description:	"The most specific code (lowest level term) describing the kind or sort of thing being represented." 
 	Value:			CodeableConcept
 
 Abstract Element:	Party
@@ -327,9 +327,64 @@ Description:    "A social or legal structure formed by human beings."
 	Element:		PartOf
 	Concept:		TBD
 	Description:	"The larger entity that this is a portion of."
-	Value:			ref(Object)
+	Value:			ref(Content)
+
 	
+EntryElement:	Group
+Based on:		Entity
+Concept:		MTH#C0441833
+Description:	"A set of entities (personnel, material, or places) to be considered together. May be a pool of like-type resources, a team, or combination of personnel, material and places."
+0..1			ActiveFlag
+1..1			Type from http://hl7.org/fhir/ValueSet/group-type
+0..1			Title  // name
+1..1			Definitional
+0..*			MembershipCriterion
+0..*			Member
+0..1			Count
+
+	Element:		MembershipCriterion
+	Concept:		MTH#C0599755
+	Description:	"An inclusion or exclusion criterion as part of defining a cohort. If the criterion is an assertion, then QuestionCode must be SCT#397747003 (Assertion)"
+	Value:			CodeableConcept or boolean or Quantity or Range
+	1..1			QuestionCode
+	1..1			Exclude
+	0..1			TimePeriod
 	
+		Element:		Exclude
+		Concept:		MTH#C0680251
+		Description:	"If true, exclude the subjects that match the criterion."
+		
+	Element:	Member
+	Concept:	MTH#C0682343 "Member of Target Group"
+	Value:		ref(Entity)
+	0..1		ParticipationPeriod
+	1..1		ActiveFlag
+
+EntryElement:	Facility
+Based on:		Entity
+Concept:		MTH#C1547538
+Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
+1..1			FacilityName
+1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
+1..1			Location
+0..1			MobileFacility
+0..1			ContactPoint
+1..1			ManagingOrganization
+
+	Element:		FacilityName
+	Concept:		MTH#C3261404
+	Description:	"The DBA (doing business as) or most commonly-used name for a facility."
+	Value:			string
+
+	Element:		MobileFacility
+	Concept:		MTH#C0231435
+	Description:	"A facility that moves from place to place, such as Meals-On-Wheels."
+	Value:			boolean
+
+	Element:		ManagingOrganization
+	Concept:		MTH#C0677351
+	Description:	"The organization that manages the operation of an activity, facility, or service provision."
+	Value:			ref(Organization)
 
 
 

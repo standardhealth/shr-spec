@@ -15,8 +15,8 @@ Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
 0..1 				Type
 0..*				Category
-1..1				ActionContext
 0..*				Reason
+1..1				ActionContext
 
 	Abstract Element:	ActionContext
 	Concept:			MTH#C0449255
@@ -34,6 +34,7 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 0..*			Annotation
 0..1			RelatedRequest
 0..1			RelatedPlan
+0..1			ref(Facility)
 0..*			Outcome  // e.g., AdverseEvent
 
 		Element:		Participant
@@ -42,6 +43,7 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 		Value:			0..1 ref(Party)
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
+		0..1			OnBehalfOf
 		
 			Element:		ParticipationType
 			Concept:		MTH#C1553854
@@ -77,7 +79,8 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 		Element:		Outcome
 		Concept:		TBD
 		Description:	"The result of performing this action, for example, an adverse reaction or new finding."
-		Value:			ref(Finding)		
+		Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/procedure-outcome
+		0..*			ref(Finding)
 
 		
 Element:		NotPerformedContext
@@ -177,13 +180,11 @@ Based on:		Action
 Concept:		TBD
 Description:	"Description of a healthcare procedure, independent of action context. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
 1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
-0..1			Method
+1..1			Subject
 0..*			BodySite
-0..1			Facility  // where the procedure was carried out
 0..1			AssociatedStudy
-0..1			PartOfProcedure
-//0..*			Setting  ??
-//0..*			Location  ??
+0..1			PartOf
+
 		Element:		AssociatedStudy
 		Concept:		TBD
 		Description:	"The clinical trial or other formal study related to this procedure."
@@ -204,7 +205,6 @@ Description:	"Attribution specific to the collection of a specimen."
 	Concept:		TBD
 	Description:	"The quantity of specimen collected"
 	Value:			Quantity
-
 
 
 Element:		ImagingProcedureAction
