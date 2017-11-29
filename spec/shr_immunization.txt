@@ -4,7 +4,7 @@ Description:		"The SHR Immunization domain contains definitions related to vacci
 Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.medication, shr.adverse
 
 Element:		Vaccine   // Why not line up with Medication?
-Based on:		Entity
+Based on:		Object
 Concept:		MTH#C1543322 "Vaccine"
 Description:	"A specific type or manufactured instance of a vaccine, a prophylactic or therapeutic preparation given to produce immune response to pathogenic organisms or substances."
 1..1			Type from http://hl7.org/fhir/ValueSet/vaccine-code
@@ -22,41 +22,42 @@ Description:	"A specific type or manufactured instance of a vaccine, a prophylac
 	Value:			string
 
 
-Abstract Element: 	ImmunizationAction
-Based on:			Action   // Note -- treating immunizations separately from medications for FHIR consistency
+Abstract Element: 	ImmunizationTopic
+Based on:			ActionTopic   // Note -- treating immunizations separately from medications for FHIR consistency
 Concept:			TBD
 Description:		"Describes the event of a patient being administered a vaccination or a record of a vaccination as reported by a patient, a clinician or another party and may include vaccine reaction information and what vaccination protocol was followed."
 1..1 				Vaccine // in the case of immunization not given, the vaccine will have a Type, but not a lot or manufacturer. 
 0..1				BodySite
-0..1				RouteIntoBody  // from medication
-0..1				AmountOfMedication  // from medication
+0..1				RouteIntoBody 
+0..1				AmountOfMedication 
 0..1				TBD "DoseSequenceNumber"
 0..*				Outcome
 
-	
+
+			
 EntryElement:	ImmunizationGiven
-Based on:		ImmunizationAction 
+Based on:		ImmunizationTopic 
 Concept:		MTH#C0580520
 Description:	"A vaccination that was administered to the subject."
 				ActionContext is type PerformedContext
 
 EntryElement:	ImmunizationNotGiven
 Concept:		TBD
-Based on:		ImmunizationAction
+Based on:		ImmunizationTopic
 Description:	"An immunization that was not given to the subject."
 				ActionContext is type NotPerformedContext 
 				Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
 
 EntryElement:	ImmunizationProposed
 Concept:		TBD
-Based on:		ImmunizationAction
+Based on:		ImmunizationTopic
 Description:	"An immunization that is proposed or planned for the subject."
 				ActionContext is type ProposedContext
 				// Need reason value set
 
 EntryElement:	ImmunizationProposedAgainst
 Concept:		TBD
-Based on:		ImmunizationAction
+Based on:		ImmunizationTopic
 Description:	"An immunization that is specifically not recommended, perhaps contraindicated for the individual."
 				ActionContext is type ProposedAgainstContext
 				// Need reason value set

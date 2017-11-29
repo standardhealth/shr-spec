@@ -4,13 +4,15 @@ Description:		"The SHR Encounter domain contains definitions that capture intera
 Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 
-EntryElement:	EncounterAction
-Based on:		Action
+EntryElement:	EncounterTopic
+Based on:		ActionTopic
 Concept:		TBD
 Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
+0..1			SubjectAsaPatientOrGroup  // would like to just constrain Subject, but this type of constraint isn't supported in SHR (yet)
 0..1			ReferralDate
 0..1			ReferralSourceType
-0..1			EncounterClass 
+// TODO: Should be Type (inherited from ActionTopic), not a new element TypeAsaCoding
+0..1			TypeAsaCoding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..*			ServiceGiven
 0..*			Participant
 0..1			ServiceProvider
@@ -25,7 +27,6 @@ Description:	"A description of an interaction between a patient and healthcare p
 1..*			TBD "TreatmentServiceRendered"
 0..1			TBD "CompletionStatus"
 
-
 	Element:		ReferralDate
 	Concept:		MTH#C2735614
 	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client's behalf."
@@ -35,11 +36,6 @@ Description:	"A description of an interaction between a patient and healthcare p
 	Concept:		TBD
 	Description:	"The type of person or entity that instigated the encounter."
 	Value:			CodeableConcept from ReferralSourceTypeVS
-					
-	Element:		EncounterClass
-	Concept:		TBD
-	Description:	"The type of encounter, e.g., inpatient, outpatient, emergency, etc."
-	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered  // FHIR TODO: should be CodeableConcept
 
 	Element:		ServiceProvider
 	Concept:		TBD
@@ -76,23 +72,25 @@ Description:	"A description of an interaction between a patient and healthcare p
 
 				
 EntryElement:	EncounterRequested
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type RequestedContext
 				
 EntryElement:	EncounterPerformed
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type PerformedContext
+				PerformedContext.Status from http://hl7.org/fhir/ValueSet/encounter-status
+				PerformedContext.OccurrenceTimeOrPeriod is type OccurrencePeriod
 				
 EntryElement:	EncounterNotPerformed
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type NotPerformedContext
 
 EntryElement:	EncounterPlanned
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type PlannedContext
 /*
 EntryElement:	HospitalizationAction
-Based on:		EncounterAction
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
@@ -107,7 +105,7 @@ Based on:		EncounterAction
 	Discharge Summary	Document
 
 EntryElement:	EmergencyEncounterAction
-Based on:		EncounterAction
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference

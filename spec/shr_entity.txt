@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.entity
 Description:	"The SHR Entity domain contains definitions for objects, people and organizations that are involved with the person of record, in some capacity. Entities are things that have separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
-Uses:			shr.core, shr.base, shr.finding, shr.action 
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.procedure, shr.medication, shr.device
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
@@ -13,7 +13,7 @@ Description:		"Something that has separate and distinct existence and objective 
 0..1				Type
 
 	Element:		Type
-	Concept:		TBD
+	Concept:		MTH#C0332307
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing being represented." 
 	Value:			CodeableConcept
 
@@ -25,7 +25,7 @@ Description:		"A person, organization, or object that can participate in a healt
 Abstract Element:	Object
 Based on:			Party
 Concept:			TBD
-Description:		"A material thing that can be seen and touched."
+Description:		"A material thing that can be seen and touched. An object can be found in a specific location."
 
 Abstract Element:	InfoItem
 Based on:			Entity
@@ -123,9 +123,13 @@ Description:	"A person relevant to the health or social situation of the subject
 		
 	Element:		ActiveFlag
 	Concept:		TBD
-	Description:	"If the ActiveFlag is false, it indicates the record is no longer to be used and should generally be hidden for the user in the UI."
+	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			boolean
 
+	Element:		ActiveFlagAsaCodeableConcept
+	Concept:		TBD
+	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
+	Value:			CodeableConcept
 
 EntryElement:	Patient
 Based on:		Role
@@ -353,15 +357,17 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 		Element:		Exclude
 		Concept:		MTH#C0680251
 		Description:	"If true, exclude the subjects that match the criterion."
+		Value:			boolean
 		
 	Element:	Member
 	Concept:	MTH#C0682343 "Member of Target Group"
-	Value:		ref(Entity)
+	// Value:	ref(Entity)
+	Value:		ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance)
 	0..1		ParticipationPeriod
 	1..1		ActiveFlag
 
 EntryElement:	Facility
-Based on:		Entity
+Based on:		Object
 Concept:		MTH#C1547538
 Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
 1..1			FacilityName
@@ -387,5 +393,164 @@ Description:	"Services and space and equipment provided for a particular purpose
 	Value:			ref(Organization)
 
 
+				
+EntryElement:	Specimen
+Based on:		Object
+Description:	"Sample for analysis"
+1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
+0..1			AccessionIdentifier
+0..1			Status
+0..1			SourceSpecimen
+0..1			ref(SpecimenCollectionPerformed)
+0..1			ref(SpecimenContainer)
+0..*			SpecimenTreatment
+0..*			HandlingRisk
+0..*			SpecialHandling
 
+		Element:		AccessionIdentifier
+		Concept:		TBD
+		Description:	"Identifier assigned by the lab"
+		Value:			Identifier
+
+		Element:		SourceSpecimen
+		Concept:		TBD
+		Description:	"Identifier for the source specimen from which this specimen was derived."
+		Value:			ref(Specimen)
+
+		Element:		SpecimenType
+		Concept:		TBD
+		Description:	"Kind of material that forms the specimen"
+		Value:			CodeableConcept
+
+		Element:		HandlingRisk
+		Concept:		TBD
+		Description:	"Cautions on the handling of this specimen."
+		Value:			CodeableConcept
+
+		Element:		SpecialHandling
+		Concept:		TBD
+		Description:	"Information about the proper handling of the specimen."
+		Value:			CodeableConcept
+
+		EntryElement:	SpecimenTreatment
+		Based on:		ProcedurePerformed
+		Concept:		TBD
+		Description:	"Treatment performed on the specimen."
+		0..*			Additive
+		
+
+EntryElement:	SpecimenContainer
+Based on:		Object
+Concept:		TBD
+Description:	"Direct container of specimen (tube&#47;slide, etc.)"
+0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
+0..1			Identifier
+0..1			Description
+0..1			Capacity
+0..1			SpecimenQuantity
+0..*			Additive
+0..*			AdditiveCode
+0..1			SequenceNumber
 	
+// BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
+// BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollection breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
+		Element:		Capacity
+		Concept:		TBD
+		Description:	"Container volume or size."
+		Value:			Quantity
+
+		Element:		SpecimenQuantity
+		Concept:		TBD
+		Description:	"Quantity of specimen within container."
+		Value:			Quantity
+
+		Element:		Additive
+		Concept:		TBD
+		Description:	"Additive associated with container."
+		Value:			Substance   // ref(Substance) ??
+
+		Element:		AdditiveCode
+		Concept:		TBD
+		Description:	"Additive associated with container."
+		Value:			CodeableConcept
+		// BALLOT: SpecimenContainer.Additive and SpecimenContainer.AdditiveCode have exactly the same description. The descriptions must distinguish them.
+		// BALLOT: SpecimenContainer.AdditiveCode should be a CodeableConcept (currently a CodeableConcept). The name says code, so it should be a code.
+
+		Element:		SequenceNumber
+		Concept:		TBD
+		Description:	"The sequence number for this specimen in a collection of specimens."
+		Value:			CodeableConcept
+		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
+
+
+//--------------------  Substance -------------------------------
+
+EntryElement:	Substance
+Based on:		Object  // TODO: Substance is conceptual, not concrete, so is this correct?
+Concept:		MTH#C0439861
+Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
+1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
+0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
+0..1			ActiveFlagAsaCodeableConcept from http://hl7.org/fhir/ValueSet/substance-status
+0..1			Description
+0..*			Ingredient
+
+		Element:		Ingredient
+		Concept:		MTH#C3176062
+		Description:	"Specifies an material component in a non-medication substance."
+		Value:			CodeableConcept or ref(Substance)
+		1..1			IngredientAmount
+		
+			Element:		IsActiveIngredient
+			Concept:		TBD
+			Description:	"True if the ingredient is an active ingredient in the medication."
+			Value:			boolean // forced to use boolean by FHIR mapping 
+		
+			Element:		IngredientAmount
+			Concept:		TBD
+			Description:	"The amount of an ingredient in a mixture, as a ratio. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
+			Value:			Ratio
+
+		
+Element:		Medication
+Based on:		Object
+Concept:		MTH#C0013227
+Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
+1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
+0..1			DoseForm
+0..1			Brand
+0..1			OverTheCounter
+0..*			MedicationIngredient
+
+		Element:		DoseForm
+		Concept:		MTH#C0013058
+		Description:	"The form in which active and/or inert ingredient(s) are physically presented."
+		Value:			CodeableConcept from FHIR/medication-form-codes
+
+		Element:		Brand
+		Concept:		TBD
+		Description:	"If the product is branded, and if so, the brand name of a product."
+		Value: 			boolean
+		0..1			BrandName
+
+			Element: 		BrandName
+			Concept:		TBD
+			Description:	"The marketing name for a brand name product"
+			Value:			string
+
+		Element:		OverTheCounter
+		Concept:		TBD
+		Description:	"True if the medication is available to consumers without a prescription."
+		Value:			boolean
+
+		Element:		MedicationIngredient
+		Concept:		MTH#C3176062
+		Description:	"Specifies an material component in a medication."
+		Value:			CodeableConcept or ref(Substance) or ref(Medication)
+		1..1			IngredientAmount
+		1..1			IsActiveIngredient
+		
+			Element:		IsActiveIngredient
+			Concept:		TBD
+			Description:	"True if the ingredient is an active ingredient in the medication."
+			Value:			boolean // forced to use boolean by FHIR mapping 

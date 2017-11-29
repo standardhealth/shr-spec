@@ -78,7 +78,7 @@ Description:	"A file that contains audio, video, image, or similar content."
 0..1			ResourceSize
 0..1			Hash
 0..1			Title
-0..1			Created
+0..1			CreationTime
 
 	Element:		BinaryData
 	Concept:		TBD
@@ -104,6 +104,11 @@ Description:	"A file that contains audio, video, image, or similar content."
 	Concept:		TBD
 	Description:	"A hash code of the data (sha-1, base64ed)"
 	Value:			base64Binary
+	
+	Element:   	 	CreationTime  
+	Concept:        MTH#C3669169
+	Description:    "The point in time when the information was recorded in the system of record."
+	Value:          dateTime  // we can map to instant from dateTime
 
 
 //---- Coding departs from CIMI to align with FHIR
@@ -240,7 +245,7 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 	0..1		RecurrenceInterval
 	0..*		DayOfWeek
 	0..*		TimeOfDay
-	0..*		LifeEvent
+	0..*		DailyLifeEvent
 	0..1		LifeEventOffset
 	0..1		FrequencyPerInterval
 
@@ -259,7 +264,7 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 		Description:	"Time of day the event should take place on the designated day(s). TimeOfDay should only be specified if the RecurrenceInterval and/or DayOfWeek establishes the day when the event should take place."
 		Value:			time
 		
-		Element:		LifeEvent
+		Element:		DailyLifeEvent
 		Concept:		TBD
 		Description:	"A quotidian landmark, such as rising, mealtime, or bedtime, when an event should take place."
 		Value:			code from http://hl7.org/fhir/ValueSet/event-timing
@@ -277,11 +282,11 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 		
 				Element:	MinCount
 				Description: "Lower bound on a count."
-				Value:		unsignedInt
+				Value:		integer   // FHIR - should be unsignedInt	
 				
 				Element:	MaxCount
 				Description: "Upper bound on a count."
-				Value:		unsignedInt		
+				Value:		integer // FHIR - should be unsignedInt		
 		
 	Element: 		RecurrenceRange
 	Concept:		TBD
@@ -297,18 +302,18 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 Element:	Signature
 Concept:	TBD
 Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
-1..*		Type from http://hl7.org/fhir/ValueSet/signature-type if covered
-1..1		Created
+1..*		TypeAsaCoding from http://hl7.org/fhir/ValueSet/signature-type if covered
+1..1		CreationTime
 1..1		Signatory
 0..1		OnBehalfOf
 0..1		ContentType
 0..1		BinaryData
 
-	Element:   	 	Created
-	Concept:        MTH#C3669169
-	Description:    "The point in time when the information was recorded in the system of record."
-	Value:          instant
-	
+	Element:   	 	TypeAsaCoding 
+	Concept:        MTH#C0332307
+	Description:    ""
+	Value:          Coding
+
 	Element:		Signatory
 	Concept:		TBD
 	Description:	"The party signing."
@@ -644,12 +649,27 @@ Concept:		TBD
 Based on:		TimePeriod
 Description:	"A period of time when a device, medication, or other therapy is used."
 
+Element:		OccurrenceTimeOrPeriod
+Concept:		TBD
+Description:	"The point in time or span of time in which something happens."
+Value:			date or dateTime or TimePeriod
+
 Element:		OccurrenceTime
+Based on:		OccurrenceTimeOrPeriod
 Concept:		TBD
 Description:	"The point in time in which something happens."
 Value:			dateTime
 
+/* Not used
+Element:		OccurrenceDate
+Based on:		OccurrenceTimeOrPeriod
+Concept:		TBD
+Description:	"The date when something happens."
+Value:			date
+*/
+
 Element:		OccurrencePeriod
+Based on:		OccurrenceTimeOrPeriod
 Concept:		TBD
 Description:	"The point in time or span of time in which something happens."
 Value:			TimePeriod
@@ -658,11 +678,6 @@ Element:		OccurrenceDuration
 Concept:		TBD
 Description:	"The length of time in which something happens."
 Value:			Duration
-
-Element:		OccurrenceTimeOrPeriod
-Concept:		TBD
-Description:	"The point in time or span of time in which something happens."
-Value:			dateTime or date or TimePeriod
 
 
 //---------------  Locations and Addresses -----------------
@@ -757,13 +772,7 @@ Value:			string
 		Value:          string
 
 
-//--------------------  Substance -------------------------------
-
-Element:		Substance
-Concept:		MTH#C0439861
-Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
-Value:			CodeableConcept
-
+		
 //---------------------  Body Site and Body Structure ---------------------------------
 
 

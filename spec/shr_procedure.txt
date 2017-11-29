@@ -1,0 +1,238 @@
+Grammar:	DataElement 5.0
+Namespace:	shr.procedure
+Description:		"The SHR Lab domain contains definitions related to laboratory measurements, specifically measurements involving specimens."
+Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.device, shr.research
+
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+//---------- Procedures ----------------
+
+Element:		ProcedureTopic
+Based on:		ActionTopic
+Concept:		TBD
+Description:	"Description of a healthcare procedure, independent of action context. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
+1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
+1..1			Subject value is type ref(Patient)
+0..*			BodySite
+0..1			AssociatedStudy
+0..1			PartOf value is type ref(ProcedurePerformed) 
+// TODO: also map to Observation and MedicationAdministration
+0..1			Category  // this is a constraint on the cardinality of ActionTopic.Category
+
+		Element:		AssociatedStudy
+		Concept:		TBD
+		Description:	"The clinical trial or other formal study related to this procedure."
+		Value:			ref(Study)
+
+		/*
+		Element:		PartOfProcedure
+		Concept:		TBD
+		Description:	"The larger procedure that this procedure is part of (if this procedure is a sub-procedure)."
+		Value:			ref(ProcedureTopic)
+		*/
+		
+Element:		SpecimenCollectionAction
+Based on:		ProcedureTopic
+Concept:		TBD
+Description:	"Attribution specific to the collection of a specimen."
+0..*			AmountOrSize
+
+	Element:		AmountOrSize
+	Concept:		TBD
+	Description:	"The quantity of specimen collected"
+	Value:			Quantity
+
+
+Element:		ImagingProcedureAction
+Based on:		ProcedureTopic
+Concept:		TBD
+Description:	"Experimental class for an imaging procedure. Note that this class is still incomplete at this time."
+0..*			ImagingSubstance
+
+	Element:		ImagingSubstance
+	Concept:		TBD
+	Description:	"Substance used for this imaging procedure such as a contrast agent."
+	Value:			CodeableConcept
+
+Element:		LaboratoryProcedureAction
+Based on:		ProcedureTopic
+Concept:		MTH#C0456984
+Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
+1..1			Type from http://hl7.org/fhir/ValueSet/observation-codes
+				Category is OBSCAT#laboratory
+0..1			ref(Specimen)
+0..1 			ref(Device)
+	
+Element:		SurgicalProcedureAction
+Based on:		ProcedureTopic
+Concept:		TBD
+Description:	"Description of a healthcare action, independent of action context."
+0..*			DirectSite
+0..*			DirectSiteCode
+0..*			IndirectSite
+0..*			IndirectSiteCode
+0..*			SurgicalApproach
+0..*			Access
+0..*			UsingDevice
+0..*			UsingDeviceCode
+0..*			UsingAccessDevice
+0..*			UsingAccessDeviceCode
+0..*			IndirectDevice
+0..*			IndirectDeviceCode
+
+		Element:		DirectSite
+		Concept:		TBD
+		Description:	"The site where the procedure is performed."
+		Value:			BodySite
+
+		Element:		DirectSiteCode
+		Concept:		TBD
+		Description:	"The site where the procedure is performed."
+		Value:			CodeableConcept
+
+		Element:		IndirectSite
+		Concept:		TBD
+		Description:	"The indirect site for this procedure."
+		Value:			BodySite
+
+		Element:		IndirectSiteCode
+		Concept:		TBD
+		Description:	"The indirect site for this procedure."
+		Value:			CodeableConcept
+
+		Element:		SurgicalApproach
+		Concept:		TBD
+		Description:	"The technique used to reach the site of the procedure. Approaches may be through the skin or mucous membrane, through an orifice or external."
+		Value:			CodeableConcept
+
+		Element:		Access
+		Concept:		TBD
+		Description:	"The route used to access the site of a procedure. It is used to distinguish open, closed, and percutaneous procedures."
+		Value:			CodeableConcept
+
+		Element:		UsingDevice
+		Concept:		TBD
+		Description:	"The device used to perform the procedure."
+		Value:			Device
+
+		Element:		UsingDeviceCode
+		Concept:		TBD
+		Description:	"The device used to perform the procedure."
+		Value:			CodeableConcept
+
+		Element:		UsingAccessDevice
+		Concept:		TBD
+		Description:	"The access device used to perform the procedure."
+		Value:			Device
+
+		Element:		UsingAccessDeviceCode
+		Concept:		TBD
+		Description:	"The access device used to perform the procedure."
+		Value:			CodeableConcept
+
+		Element:		IndirectDevice
+		Concept:		TBD
+		Description:	"An indirect device used for this procedure."
+		Value:			Device
+
+		Element:		IndirectDeviceCode
+		Concept:		TBD
+		Description:	"An indirect device used for this procedure."
+		Value:			CodeableConcept
+
+
+
+
+EntryElement:	ProcedurePerformed
+Based on:		ProcedureTopic
+				ActionContext is type PerformedContext
+					
+EntryElement:	ProcedureNotPerformed
+Based on:		ProcedureTopic
+				ActionContext is type NotPerformedContext
+					
+EntryElement:	ProcedureRequested
+Based on:		ProcedureTopic
+				ActionContext is type RequestedContext
+				
+EntryElement:	ProcedureProposed
+Based on:		ProcedureTopic
+				ActionContext is type ProposedContext		
+
+EntryElement:	ProcedureProposedAgainst
+Based on:		ProcedureTopic
+				ActionContext is type ProposedAgainstContext					
+
+EntryElement:	SpecimenCollectionPerformed
+Based on:		SpecimenCollectionAction
+				ActionContext is type PerformedContext
+
+EntryElement:	SpecimenCollectionRequested
+Based on:		SpecimenCollectionAction
+				ActionContext is type RequestedContext
+			
+EntryElement:	ImagingProcedurePerformed
+Based on:		ImagingProcedureAction
+				ActionContext is type PerformedContext
+
+EntryElement:	ImagingProcedureRequested
+Based on:		ImagingProcedureAction
+				ActionContext is type RequestedContext
+
+EntryElement:	SurgicalProcedurePerformed
+Based on:		SurgicalProcedureAction
+				ActionContext is type PerformedContext
+
+EntryElement:	SurgicalProcedureRequested
+Based on:		SurgicalProcedureAction
+				ActionContext is type RequestedContext
+
+EntryElement:	SurgicalProcedureNotPerformed
+Based on:		SurgicalProcedureAction
+				ActionContext is type NotPerformedContext
+
+EntryElement:	SurgicalProcedureProposed
+Based on:		SurgicalProcedureAction
+				ActionContext is type ProposedContext
+
+EntryElement:	SurgicalProcedureProposedAgainst
+Based on:		SurgicalProcedureAction
+				ActionContext is type ProposedAgainstContext
+		
+EntryElement:	LaboratoryProcedurePerformed
+Based on:		LaboratoryProcedureAction
+				ActionContext is type PerformedContext
+
+				
+EntryElement:	LaboratoryProcedureRequested
+Based on:		LaboratoryProcedureAction
+				ActionContext is type RequestedContext
+		
+	
+
+
+EntryElement:	HIVScreeningTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of a HIV Screening Test. Results will be in an accompanying observation."
+1..1			Type from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+
+EntryElement:	HIVSupplementalTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
+1..1			Type from HIVSupplementalTestCodeVS
+
+EntryElement:	HIVScreeningTestRequest
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a rapid HIV screening test."
+1..1			Type from HIVScreeningTestCodeVS
+
+EntryElement:	HIVSupplementalTestRequest
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a confirmatory or additional test for HIV infection."
+1..1			Type from HIVSupplementalTestCodeVS
+
+
