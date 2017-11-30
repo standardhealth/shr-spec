@@ -11,7 +11,7 @@ Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
 Description:	"Base class for assertions and observations about a patient. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-1..1			Subject
+0..1			Subject
 0..*			Category from FindingCategoryVS if covered
 0..1			ClinicallyRelevantTime
 0..1			FindingMethod
@@ -25,7 +25,7 @@ Description:	"Base class for assertions and observations about a patient. The su
 	
 	Element:		Interpretation
 	Concept:		MTH#C0420833
-	Description:	"A clinical interpretation of a measurement."
+	Description:	"A clinical interpretation of a finding."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 		
 	Element:		FindingMethod
@@ -38,19 +38,20 @@ Description:	"Base class for assertions and observations about a patient. The su
 	Description:	"Indicates whether the finding is complete and definite."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
 
-	Element:		Evidence
-	Concept:		TBD
-	Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
-	Value:			CodeableConcept or ref(Content)
 
-	
+
 Abstract Element:	Assessment
 Based on:			Finding
 Concept:			MTH#C0220825
-Description:		"A finding (preliminary or final) that establishes the presence or absence of a health state, resulting from synthesis of evidence (one or more observations)."
+Description:		"A finding (preliminary or final) that establishes the presence or absence of a  health state, resulting from synthesis of evidence (one or more observations)."
 Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 0..*				Evidence
 
+	Element:		Evidence
+	Concept:		TBD
+	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
+	Value:			CodeableConcept or ref(Content)
+	
 	
 EntryElement:	SituationPresentOrSuspected
 Based on:		Assessment
@@ -60,17 +61,18 @@ Description:	"A finding that establishes the existence of a persistent health st
 
 EntryElement:	SituationAbsentOrNotSuspected
 Based on:		Assessment
-Concept:		TBD
+Concept:		MTH#C1276745 "Clinical Finding Absent"
 Description:	"A finding that establishes the non-existence of a persistent health state during a clinically-relevant time period."
 
-		
+
 EntryElement:	Observation
 Based on:		Finding
 Concept:		MTH#C1554188
 Description:	"Parent class for subjective or objective findings about a subject. An observation includes direct results of seeing, measuring, or evaluating. The method of observing can vary widely, and include measurement, direct questioning, physical examination, laboratory tests, and imaging procedures. Patient-generated data are also considered observations."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod)
 0..1			DataAbsentReason
-0..1			QuestionCode
+1..1			FindingStatus  // constrain from 0..1 to 1..1
+1..1			QuestionCode
 0..1			BodySite
 0..1			ref(Specimen)
 0..1			ref(Device)
@@ -81,7 +83,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 
 
 		Element:		ResultStatus
-		Concept:		TBD
+		Concept:		MTH#C1550399
 		Description:	"Labels the result as preliminary, amended, final, etc."
 		Value:			CodeableConcept from FindingCategoryVS if covered
 
@@ -96,7 +98,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Value:			CodeableConcept
 
 		Element:		DataAbsentReason
-		Concept:		TBD
+		Concept:		MTH#C1709044]
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from DataAbsentReasonVS
 		
@@ -114,7 +116,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		0..1			ApplicableAgeRange
 		
 				Element:	ApplicableSubpopulation
-				Concept:	TBD
+				Concept:	MTH#C0039309 "Target Population"
 				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
 				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
 		
@@ -130,13 +132,14 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Value:			0..* ObservationComponent
 		
 
-			Element:		ObservationComponent 
+			Element:		ObservationComponent
 			Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
 			Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod)
 			1..1			QuestionCode   // FHIR requires a code in each ObservationComponent, so it can't be a simple assertion
 			0..1			DataAbsentReason
 			0..1			Interpretation
 			0..*			ReferenceRange
+			0..1			Components
 					
 
 		
@@ -145,18 +148,27 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 EntryElement:	Assertion
 Based on:		Observation
 Concept:		TBD
-Description:	"An Assertion is an observation that takes the form of a single asserted code, without an explicit question. Examples include reported symptoms such as constipation, chest pain, or bleeding (the latter with a body site). Also applies to simple reports such as 'patient's bed in low position for safety' or 'pacemaker present'. The question code is defaulted to 'assertion' since there is no explicit question. Assertions may include a body site."
+Description:	"An Assertion is an observation that takes the form of a single asserted code, without an explicit question. Examples include reported symptoms such as chest pain and simple reports such as 'bed in low position'. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. Assertions may also be negated. "
 Value:			CodeableConcept
 				QuestionCode is SCT#397747003 "Assertion"
+0..0			DataAbsentReason				
+0..0			ref(Specimen)
+0..0			ref(Device)
+0..0			ReferenceRange
+0..1			NegationFlag
 
+		Element:	NegationFlag
+		Concept:	MTH#C1518422
+		Description:	"A flag that indicates the opposite meaning of the current assertion is to be conveyed. The assertion is negated only when the NegationIndicator is true. If absent or false, the assertion is not negated."
+		Value:		boolean
 
 EntryElement:	QuestionAnswer
 Based on:		Observation
-Description:	"A simple question answer pair. A QuestionAnswer does not involve a specimen, device, reference range, or body site."
+Description:	"A simple question answer pair. A QuestionAnswer does not involve a specimen, device, or reference range."
 0..0			BodySite
 0..0			ref(Specimen)
 0..0			ref(Device)
-0..0			ReferenceRange  // quantitative measurement only
+0..0			ReferenceRange
 
 
 
