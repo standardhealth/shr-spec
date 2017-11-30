@@ -31,7 +31,7 @@ Description:	"Description of a healthcare procedure, independent of action conte
 		Value:			ref(ProcedureTopic)
 		*/
 		
-Element:		SpecimenCollectionAction
+Element:		SpecimenCollectionTopic
 Based on:		ProcedureTopic
 Concept:		TBD
 Description:	"Attribution specific to the collection of a specimen."
@@ -40,10 +40,10 @@ Description:	"Attribution specific to the collection of a specimen."
 	Element:		AmountOrSize
 	Concept:		TBD
 	Description:	"The quantity of specimen collected"
-	Value:			Quantity
+	Value:			SimpleQuantity
 
 
-Element:		ImagingProcedureAction
+Element:		ImagingProcedureTopic
 Based on:		ProcedureTopic
 Concept:		TBD
 Description:	"Experimental class for an imaging procedure. Note that this class is still incomplete at this time."
@@ -54,7 +54,7 @@ Description:	"Experimental class for an imaging procedure. Note that this class 
 	Description:	"Substance used for this imaging procedure such as a contrast agent."
 	Value:			CodeableConcept
 
-Element:		LaboratoryProcedureAction
+Element:		LaboratoryProcedureTopic
 Based on:		ProcedureTopic
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
@@ -63,7 +63,7 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 0..1			ref(Specimen)
 0..1 			ref(Device)
 	
-Element:		SurgicalProcedureAction
+Element:		SurgicalProcedureTopic
 Based on:		ProcedureTopic
 Concept:		TBD
 Description:	"Description of a healthcare action, independent of action context."
@@ -164,48 +164,50 @@ Based on:		ProcedureTopic
 				ActionContext is type ProposedAgainstContext					
 
 EntryElement:	SpecimenCollectionPerformed
-Based on:		SpecimenCollectionAction
+Based on:		SpecimenCollectionTopic
 				ActionContext is type PerformedContext
-
+				PerformedContext.Participant value is type ref(Practitioner)
+0..1			BodySite  // FHIR limits Specimen.collection.bodySite to 0..1
+				
 EntryElement:	SpecimenCollectionRequested
-Based on:		SpecimenCollectionAction
+Based on:		SpecimenCollectionTopic
 				ActionContext is type RequestedContext
 			
 EntryElement:	ImagingProcedurePerformed
-Based on:		ImagingProcedureAction
+Based on:		ImagingProcedureTopic
 				ActionContext is type PerformedContext
 
 EntryElement:	ImagingProcedureRequested
-Based on:		ImagingProcedureAction
+Based on:		ImagingProcedureTopic
 				ActionContext is type RequestedContext
 
 EntryElement:	SurgicalProcedurePerformed
-Based on:		SurgicalProcedureAction
+Based on:		SurgicalProcedureTopic
 				ActionContext is type PerformedContext
 
 EntryElement:	SurgicalProcedureRequested
-Based on:		SurgicalProcedureAction
+Based on:		SurgicalProcedureTopic
 				ActionContext is type RequestedContext
 
 EntryElement:	SurgicalProcedureNotPerformed
-Based on:		SurgicalProcedureAction
+Based on:		SurgicalProcedureTopic
 				ActionContext is type NotPerformedContext
 
 EntryElement:	SurgicalProcedureProposed
-Based on:		SurgicalProcedureAction
+Based on:		SurgicalProcedureTopic
 				ActionContext is type ProposedContext
 
 EntryElement:	SurgicalProcedureProposedAgainst
-Based on:		SurgicalProcedureAction
+Based on:		SurgicalProcedureTopic
 				ActionContext is type ProposedAgainstContext
 		
 EntryElement:	LaboratoryProcedurePerformed
-Based on:		LaboratoryProcedureAction
+Based on:		LaboratoryProcedureTopic
 				ActionContext is type PerformedContext
 
 				
 EntryElement:	LaboratoryProcedureRequested
-Based on:		LaboratoryProcedureAction
+Based on:		LaboratoryProcedureTopic
 				ActionContext is type RequestedContext
 		
 	

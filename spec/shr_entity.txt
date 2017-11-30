@@ -397,12 +397,14 @@ Description:	"Services and space and equipment provided for a particular purpose
 EntryElement:	Specimen
 Based on:		Object
 Description:	"Sample for analysis"
-1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
 0..1			AccessionIdentifier
-0..1			Status
+0..1			Status from http://hl7.org/fhir/ValueSet/specimen-status
+1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
+1..1			Subject
 0..1			SourceSpecimen
+0..1			ReceivedTime
 0..1			ref(SpecimenCollectionPerformed)
-0..1			ref(SpecimenContainer)
+0..*			ref(SpecimenContainer)
 0..*			SpecimenTreatment
 0..*			HandlingRisk
 0..*			SpecialHandling
@@ -447,9 +449,8 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			Identifier
 0..1			Description
 0..1			Capacity
-0..1			SpecimenQuantity
+0..1			SpecimenQuantity 
 0..*			Additive
-0..*			AdditiveCode
 0..1			SequenceNumber
 	
 // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
@@ -457,7 +458,7 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 		Element:		Capacity
 		Concept:		TBD
 		Description:	"Container volume or size."
-		Value:			Quantity
+		Value:			SimpleQuantity
 
 		Element:		SpecimenQuantity
 		Concept:		TBD
@@ -467,14 +468,7 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 		Element:		Additive
 		Concept:		TBD
 		Description:	"Additive associated with container."
-		Value:			Substance   // ref(Substance) ??
-
-		Element:		AdditiveCode
-		Concept:		TBD
-		Description:	"Additive associated with container."
-		Value:			CodeableConcept
-		// BALLOT: SpecimenContainer.Additive and SpecimenContainer.AdditiveCode have exactly the same description. The descriptions must distinguish them.
-		// BALLOT: SpecimenContainer.AdditiveCode should be a CodeableConcept (currently a CodeableConcept). The name says code, so it should be a code.
+		Value:			CodeableConcept or ref(Substance)
 
 		Element:		SequenceNumber
 		Concept:		TBD
