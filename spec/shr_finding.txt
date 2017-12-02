@@ -16,7 +16,6 @@ Description:	"Base class for assertions and observations about a patient. The su
 0..1			ClinicallyRelevantTime
 0..1			FindingMethod
 0..1			FindingStatus
-0..1			Interpretation
 0..*			Evidence
 
 	Element:		ClinicallyRelevantTime
@@ -69,7 +68,7 @@ Based on:		Finding
 Concept:		MTH#C1554188
 Description:	"Parent class for subjective or objective findings about a subject. An observation includes direct results of seeing, measuring, or evaluating. The method of observing can vary widely, and include measurement, direct questioning, physical examination, laboratory tests, and imaging procedures. Patient-generated data are also considered observations."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
-1..1			QuestionCode
+1..1			ObservationCode
 0..1			ValueAbsentReason
 1..1			FindingStatus  // constrain from 0..1 to 1..1
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
@@ -78,12 +77,13 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..1			ref(Device)
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..1			ChangeFlag
+0..1			Interpretation
 0..*			ObservationQualifier   //  = CIMI's Precondition
 0..1			Components 
 
-		Element:		QuestionCode
+		Element:		ObservationCode
 		Concept:		MTH#C1706203
-		Description:	"What the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named QuestionCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or a test code. In assertions (observations without an explicit question), the question code is defaulted to a value representing 'assertion'."
+		Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named ObservationCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions (observations without an explicit question), the observation code is defaulted to a value representing 'assertion'."
 		Value:			CodeableConcept 
 		
 		Element:		ValueAbsentReason
@@ -126,10 +126,10 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Value:			0..* ObservationComponent
 		
 			Element:		ObservationComponent
-			Description:	"A simplified, non-separable observation consisting of a question code, answer (or data absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
+			Description:	"A simplified, non-separable observation consisting of a observation code, value (or value absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
 			Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 			0..1			ValueAbsentReason
-			1..1			QuestionCode   // FHIR requires a code in each ObservationComponent, so it can't be a simple assertion
+			1..1			ObservationCode   // FHIR requires a code in each ObservationComponent, so it can't be a simple assertion
 			0..1			Interpretation
 			0..*			ReferenceRange
 			0..1			Components
@@ -141,9 +141,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 EntryElement:	Assertion
 Based on:		Observation
 Concept:		TBD
-Description:	"An Assertion is an observation that takes the form of a single asserted code, without an explicit question. Examples include reported symptoms such as chest pain and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
+Description:	"An Assertion is an observation that takes the form of a single asserted code, without an explicit question or property. Examples include reported symptoms such as chest pain and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
 Value:			CodeableConcept
-				QuestionCode is SCT#397747003 "Assertion"
+				ObservationCode is SCT#397747003 "Assertion"
 0..0			ValueAbsentReason // no sense in allowing an assertion that isn't there			
 0..0			ref(Specimen)
 0..0			ref(Device)
