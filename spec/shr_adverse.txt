@@ -5,8 +5,7 @@ Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, s
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
 
-//
-
+// 			
 /*			
 EntryElement:	NoAdverseReaction
 Based on:		Assertion
@@ -19,6 +18,8 @@ Based on:		Finding
 Concept:		MTH#C0877248
 Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. The AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
 Value:			CodeableConcept from MedDRAVS
+0..1			Description
+0..1			OccurrenceTime
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
 0..1			TBD "PatternOfEvent"  // from STDM
@@ -46,8 +47,9 @@ Value:			CodeableConcept from MedDRAVS
 	Element:		AdverseEventAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
-	Value:			ref(ActionTopic)  // some intervention, should be restricted to PerformedContext (but there's no way to do that)
+	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionTopic)  // some substance or intervention, should be restricted to PerformedContext (but there's no way to do that)
 	1..1			Certainty
+	0..1			RouteIntoBody
 	
 	Element:		ActionTaken
 	Concept:		TBD
