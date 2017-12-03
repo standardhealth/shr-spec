@@ -56,6 +56,7 @@ Description:	"A person relevant to the health or social situation of the subject
 0..*			ContactPoint
 0..*			LanguageUsed
 0..1			ActiveFlag
+0..*    		ref(ExternalHealthRecord)
 
 	Element:		AnonymizedFlag
 	Concept:		MTH#C3858751
@@ -130,6 +131,18 @@ Description:	"A person relevant to the health or social situation of the subject
 	Concept:		TBD
 	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			CodeableConcept
+	
+	Element:		ExternalHealthRecord
+	Based on:		InformationItem
+	Concept: 		TBD
+	Description:	"A health record other than the current health record; may have been used to help populate the current record."
+	1..1			Identifier
+	1..1			AccessTime
+
+	Element:		AccessTime
+	Concept:		TBD
+	Description:	"Point in time when data was accessed."
+	Value:			dateTime
 
 EntryElement:	Patient
 Based on:		Role
@@ -293,6 +306,7 @@ Description:	"A person in a role defined in relationship to a patient"
 0..1			RelationshipType
 0..1			EffectiveTimePeriod
 
+
 	EntryElement:	RelationshipType
 	Concept:		MTH#C0015608
 	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
@@ -348,7 +362,7 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 
 	Element:		MembershipCriterion
 	Concept:		MTH#C0599755
-	Description:	"An inclusion or exclusion criterion as part of defining a cohort. If the criterion is an assertion, then ObservationCode must be SCT#397747003 (Assertion)"
+	Description:	"An inclusion or exclusion criterion as part of defining a cohort. If the criterion is an unary, then ObservationCode must be SCT#385432009 (not applicable)"
 	Value:			CodeableConcept or boolean or Quantity or Range
 	1..1			ObservationCode
 	1..1			ExcludeFlag

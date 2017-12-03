@@ -13,15 +13,9 @@ Concept:		TBD
 Description:	"Base class for assertions and observations about a patient. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			Subject
 0..1			ExtendedSubject
-0..1			ClinicallyRelevantTime
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
-
-	Element:		ClinicallyRelevantTime
-	Concept:		TBD
-	Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-	Value:			GeneralizedTemporalContext
 	
 	Element:		Interpretation
 	Concept:		MTH#C0420833
@@ -43,23 +37,35 @@ Description:	"Base class for assertions and observations about a patient. The su
 	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
 	Value:			CodeableConcept or ref(Content)
 
-Abstract Element:	TrackedHealthState
+
+
+
+		
+	
+/*	
+Abstract Element:	ConditionPresent
 Based on:			Finding
 Concept:			MTH#C0220825
-Description:		"A finding (preliminary or final) that establishes the presence or absence of a  health state, resulting from synthesis of evidence (one or more observations)."
-1..1				Type
-	
-	
+Description:		"A finding (preliminary or final) that establishes the presence of a condition, allergy, risk, or other situation of concern that require additional details. This type of finding typically results from synthesis of evidence in the form of one or more observations. Although similar in structure to a Assertion, the Assertion is typically NOT used to record information about subjective and objective information, but to describe a continuing situation that has risen to a level of concern and needs to be tracked over time."
+Value:				CodeableConcept
+1..1				AssertionContext
+
+		Element:	AssertionContext
+		Concept:	TBD
+		Description:	"Whether the assertion is that the condition is present, absent, or undetermined."
+		Value:		CodeableConcept from AssertionContextVS
+
 EntryElement:	SituationPresentOrSuspected
-Based on:		TrackedHealthState
+Based on:		ConditionAssert
 Concept:		TBD
 Description:	"A finding that establishes the existence of a persistent health state (body structure, condition, allergy, risk, etc.)."
 
 
 EntryElement:	SituationAbsentOrNotSuspected
-Based on:		TrackedHealthState
+Based on:		ConditionAssert
 Concept:		MTH#C1276745 "Clinical Finding Absent"
 Description:	"A finding that establishes the absence of a persistent health state (body structure, condition, allergy, risk, etc.) at a certain time."
+*/
 
 //-----------Other major branch of Finding---------
 
@@ -70,6 +76,7 @@ Description:	"Parent class for subjective or objective findings about a subject.
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 1..1			ObservationCode
 0..1			ValueAbsentReason
+0..1			ClinicallyRelevantTime
 1..1			FindingStatus  // constrain from 0..1 to 1..1
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			BodySite
@@ -90,6 +97,11 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Concept:		MTH#C1709044]
 		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
 		Value:			CodeableConcept from ValueAbsentReasonVS
+		
+		Element:		ClinicallyRelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod or Timing
 		
 		Element:		ChangeFlag
 		Concept:		MTH#C1705241
@@ -141,9 +153,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 EntryElement:	Assertion
 Based on:		Observation
 Concept:		TBD
-Description:	"An Assertion is an observation that takes the form of a single asserted code, without an explicit question or property. Examples include reported symptoms such as chest pain and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
+Description:	"A unary observation, also known as an assertion, is an observation that takes the form of a single code, without an explicit question or property. Examples include reported symptoms such as 'chest pain' and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
 Value:			CodeableConcept
-				ObservationCode is SCT#397747003 "Assertion"
+				ObservationCode is SCT#385432009 "Not applicable"
 0..0			ValueAbsentReason // no sense in allowing an assertion that isn't there			
 0..0			ref(Specimen)
 0..0			ref(Device)

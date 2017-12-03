@@ -7,24 +7,27 @@ CodeSystem:     SCT = http://snomed.info/sct
 
 	
 EntryElement:	ConditionAbsent
-Based on:		SituationAbsentOrNotSuspected
+Based on:		Assertion
 Concept:		TBD
-Description:	"A finding that a condition not present in the subject."
-				Type from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-0..*			BodySite
+Description:	"A finding that a condition not present in the subject at a certain time."
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+1..1			NegationFlag is true
+
 
 EntryElement:	Condition
-Based on:		SituationPresentOrSuspected
+Based on:		Finding
 Concept:		TBD // MTH#C0348080
 Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
-				Type from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
+1..1			Subject // cardinality constraint due to FHIR
+0..1			ExtendedSubject
 1..1			ClinicalStatus
 0..*			BodySite
 0..1			Onset
+0..1			Abatement
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
-0..1			Abatement
 0..1			Severity
 0..1			Criticality
 0..1			Stage
@@ -101,10 +104,10 @@ Value:				CodeableConcept from DSMVS
 
 
 EntryElement:	BodyStructurePresent
-Based on:		SituationPresentOrSuspected
+Based on:		Finding
 Concept:		TBD // MTH#C1268086
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-				Type from BodyStructureVS
+Value:			CodeableConcept from BodyStructureVS
 0..1			Morphology
 
 	Element:		Morphology	
@@ -114,8 +117,8 @@ Description:	"Presence of a distinct anatomical or pathological morphological fe
 
 
 EntryElement:	BodyStructureAbsent
-Based on:		SituationAbsentOrNotSuspected
+Based on:		Assertion
 Concept:		TBD //MTH#C1268086
 Description:	"Absence of distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
-				Type from BodyStructureVS
+Value:			CodeableConcept from BodyStructureVS
 0..1			Morphology
