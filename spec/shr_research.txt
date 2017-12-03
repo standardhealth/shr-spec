@@ -4,13 +4,22 @@ Description:	"The SHR research domain contains definitions related to the clinic
 Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 
-Element:		Study
+EntryElement:	Study
 Based on:		Entity
 Concept:		TBD
 Description:	"A clinical trial or similar research study."
 1..1			Title
 1..1			Identifier
-// TODO: other attributes from FHIR ResearchStudy
+0..*			PartOf value is type Study
+1..1			Status from http://hl7.org/fhir/ValueSet/research-study-status
+0..*			Enrollment
+0..1			EffectiveTimePeriod
+// TODO: other attributes from FHIR ResearchStudy don't seem fully baked
+
+	Element:	Enrollment
+	Concept:	MTH#C4041024
+	Description:	"Description of the group or groups enrolled or qualified to be enrolled in the study."
+	Value:		ref(Group)
 
 
 EntryElement:	ResearchSubject
@@ -20,22 +29,11 @@ Description:	"Record of a subject's enrollment and participation in a research s
 				Value is type ref(Patient)
 1..1			ref(Study)
 1..1 			Status from http://hl7.org/fhir/ValueSet/research-subject-status
-1..1			EnrollmentDate  // Structure this?
-0..1			TerminationDate  // Participantion period??
-0..1			TerminationReason  //TBD
-
-	Element:		EnrollmentDate
-	Concept:		TBD
-	Description:	"When the subject enrolled in the study"
-	Value:			date
-	
-	Element:		TerminationDate
-	Concept:		TBD
-	Description:	"Date the subject left the study."
-	Value:			date
+1..1			ParticipationPeriod
+0..1			TerminationReason
 	
 	Element:		TerminationReason
 	Based on:		Reason
 	Concept:		TBD
 	Description:	"Reason for leaving study, e.g., moved, died, study ended, etc."
-	Value:			CodeableConcept // from ??
+	Value:			CodeableConcept // TODO: Value Set TBD
