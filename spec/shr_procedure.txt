@@ -18,6 +18,7 @@ Description:	"Description of a healthcare procedure, independent of action conte
 0..1			PartOf value is type ref(ProcedurePerformed) 
 // TODO: also map to Observation and MedicationAdministration
 0..1			Category  // this is a constraint on the cardinality of ActionTopic.Category
+0..*			Annotation
 
 		Element:		AssociatedStudy
 		Concept:		TBD
@@ -136,7 +137,6 @@ Description:	"Description of a healthcare action, independent of action context.
 
 
 
-
 EntryElement:	ProcedurePerformed
 Based on:		ProcedureTopic
 				ActionContext is type PerformedContext
@@ -147,15 +147,13 @@ Based on:		ProcedureTopic
 					
 EntryElement:	ProcedureRequested
 Based on:		ProcedureTopic
-				ActionContext is type RequestedContext
-				
-EntryElement:	ProcedureProposed
-Based on:		ProcedureTopic
-				ActionContext is type ProposedContext		
+				ActionContext is type RequestedContext	
+				RequestedContext.Priority must be from http://hl7.org/fhir/ValueSet/request-priority  // required
+0..0			PartOf
 
-EntryElement:	ProcedureProposedAgainst
+EntryElement:	ProcedureRequestedAgainst
 Based on:		ProcedureTopic
-				ActionContext is type ProposedAgainstContext					
+				ActionContext is type RequestedAgainstContext					
 
 EntryElement:	SpecimenCollectionPerformed
 Based on:		SpecimenCollectionTopic
@@ -187,18 +185,14 @@ EntryElement:	SurgicalProcedureNotPerformed
 Based on:		SurgicalProcedureTopic
 				ActionContext is type NotPerformedContext
 
-EntryElement:	SurgicalProcedureProposed
-Based on:		SurgicalProcedureTopic
-				ActionContext is type ProposedContext
 
-EntryElement:	SurgicalProcedureProposedAgainst
+EntryElement:	SurgicalProcedureRequestedAgainst
 Based on:		SurgicalProcedureTopic
-				ActionContext is type ProposedAgainstContext
+				ActionContext is type RequestedAgainstContext
 		
 EntryElement:	LaboratoryProcedurePerformed
 Based on:		LaboratoryProcedureTopic
 				ActionContext is type PerformedContext
-
 				
 EntryElement:	LaboratoryProcedureRequested
 Based on:		LaboratoryProcedureTopic
@@ -219,13 +213,13 @@ Concept:		TBD
 Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
 1..1			Type from HIVSupplementalTestCodeVS
 
-EntryElement:	HIVScreeningTestRequest
+EntryElement:	HIVScreeningTestRequested
 Based on:		LaboratoryProcedureRequested
 Concept:		TBD
 Description:	"A request for a rapid HIV screening test."
 1..1			Type from HIVScreeningTestCodeVS
 
-EntryElement:	HIVSupplementalTestRequest
+EntryElement:	HIVSupplementalTestRequested
 Based on:		LaboratoryProcedureRequested
 Concept:		TBD
 Description:	"A request for a confirmatory or additional test for HIV infection."

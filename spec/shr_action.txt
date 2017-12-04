@@ -31,7 +31,6 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 0..*			Participant
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
-0..*			Annotation
 0..1			RelatedRequest
 0..1			RelatedPlan
 0..1			ref(Facility)
@@ -91,6 +90,7 @@ Description:	"A record that a clinical act was not performed or never initiated,
 0..1			RelatedRequest
 0..1			RelatedPlan
 
+
 Element:		PlannedContext
 Based on:		ActionContext
 Concept:		TBD
@@ -99,13 +99,16 @@ Description:	"ActionContext indicating intended future performance or execution 
 0..1			ExpectedPerformer
 0..1			ExpectedPerformerType
 0..1			ExpectedMethod 
-0..*			Annotation
-			
+	
+	
 Element:		RequestedContext
 Concept:		MTH#C1705178
 Based on:		ActionContext
 Description:	"An order for something to take place."
-1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status // orders with 'draft' or 'entered in error' status do not appear in the SHR
+1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status
+0..0			Informant
+1..1			RequestIntent
+0..1			AsNeededIndicator
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
 0..1			ExpectedPerformer
@@ -114,6 +117,16 @@ Description:	"An order for something to take place."
 0..1			PerformerInstructions
 0..1			PatientInstructions	
 0..1			CommunicationMethod
+		
+		Element:	RequestIntent	
+		Concept:		TBD
+		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
+		Value:		code from http://hl7.org/fhir/ValueSet/request-intent
+		
+		Element:		AsNeededIndicator
+		Concept:		MTH#C1883728
+		Description:	"Indicates the pre-condition under which the drug or intervention should be used."
+		Value:			CodeableConcept could be from YesNoVS
 		
 		Element:		ExpectedPerformanceTime
 		Concept:		TBD
@@ -150,26 +163,10 @@ Description:	"An order for something to take place."
 		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
 		Value:			CodeableConcept
 
-Element:		NotRequestedContext
+Element:		RequestedAgainstContext
 Concept:		TBD
 Based on:		ActionContext
+Description:	"Represents a recommendation or order from a practitioner or clinical decision support system to NOT perform an act."	
 
 
-Element:		ProposedContext
-Concept:		TBD
-Based on:		ActionContext
-Description:	"An offer or a suggestion to perform a healthcare act. A recommendation to a provider is an example of proposal made by a CDS system. A proposal must be accepted by an entity in order for it to be performed."
-1..1			Status from ProposedStatusVS
-0..1			ExpectedPerformanceTime
-0..1			ExpectedPerformer
-0..1			ExpectedPerformerType
-0..1 			Priority from http://hl7.org/fhir/ValueSet/request-priority
-0..1			PerformerInstructions
-0..1			PatientInstructions	
-
-
-Element:		ProposedAgainstContext
-Concept:		TBD
-Based on:		ActionContext
-Description:	"Concept represents a recommendation from a clinical decision support system or advice from a consultation to NOT perform an act."	
 
