@@ -135,12 +135,13 @@ EntryElement:	BreastCancerReceptorStatus
 Based on:		Panel
 Concept:		TBD
 Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
-		PanelCode is TBD#TBD
-		Members.Finding
+		ObservationCode is TBD#TBD
+		Members.Observation
 		includes 0..1 EstrogenReceptorStatus
 		includes 0..1 ProgesteroneReceptorStatus
 		includes 0..1 HumanEpiduralGrowthFactorReceptor2Status
-
+		
+		
 		EntryElement:	EstrogenReceptorStatus
 		Based on:		ReceptorStatus
 		Concept:		TBD
@@ -269,56 +270,44 @@ Components.ObservationComponent
 			Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
 			Value:			Quantity with units UCUM#%
 
-Element:		GeneticVariant
-Based on:		Finding
+EntryElement:	GeneticVariant
+Based on:		Observation
 Concept:		MTH#C0678941
-Description:	"Whether the patient carries a mutation in a particular gene."
+Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
-1..1			GeneIdentifier
-0..1			Refseq
-
-			Element:		GeneIdentifier
-			Concept:		MTH#C1706509
-			Description:	"A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
-			Value:			CodeableConcept from GeneIdentifierVS
+1..1			FocalSubject from GeneIdentifierVS
+Components.ObservationComponent
+includes 0..1			Refseq
 
 			Element:		Refseq
+			Based on:		ObservationComponent
 			Concept:		TBD
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept from RefseqVS
 
 EntryElement:	BreastCancerGeneticAnalysis
 Concept:	TBD
-Based on:	Panel  // just a grouping of results
+Based on:	Panel
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-			Members.Finding
-			includes 1..1			ref(BRCA1Variant)
-			includes 1..1			ref(BRCA2Variant)
+		Members.Observation
+		includes 1..1	BRCA1Variant
+		includes 1..1	BRCA2Variant
 
 	Element:		BRCA1Variant
 	Concept:		TBD
 	Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
-					GeneIdentifier is HGNC#BRCA1
+					FocalSubject is HGNC#BRCA1Gene
 
 	Element:		BRCA2Variant
 	Concept:		TBD
 	Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
-					GeneIdentifier is HGNC#BRCA2
+					FocalSubject is HGNC#BRCA2Gene
 
-EntryElement:	Progression
-Based on:		Observation
-Concept:		MTH#C0449258
-Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
-Value:			CodeableConcept from SubjectiveProgressionVS
-				Category includes MTH#C0421176 "Efficacy"
-// TODO: we will need to introduce FocalSubject because the subject of an observation is limited
-				ExtendedSubject value is type ref(BreastCancer)
-1..1			ObservationCode is MTH#C0421176 "Progression"
-0..*			Evidence from ProgressionEvidenceTypeVS
+
 
 
 /*

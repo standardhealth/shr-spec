@@ -14,16 +14,16 @@ Based on:		QuestionAnswer
 Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
 Value:			CodeableConcept from YesNoUnknownVS
 				ObservationCode is LNC#64631-5
-
+/*
 EntryElement:	SexualIdentity
 Concept:		TBD
-Based on:		Panel
+Based on:		QuestionAnswerPanel
 Description:	"Information on gender identity and sexual orientation."
-				PanelCode is TBD#TBD
-				Members.Finding
+				Type is TBD#TBD
+				Members.Observation
 				includes 0..1 ref(GenderIdentity)
 				includes 0..1 ref(SexualOrientation)
-
+*/
 	EntryElement:	GenderIdentity
 	Concept:		MTH#C0017249
 	Based on:		QuestionAnswer
@@ -38,17 +38,17 @@ Description:	"Information on gender identity and sexual orientation."
 	Value:			CodeableConcept from SexualOrientationVS
 					ObservationCode is MTH#C0205949
 
-
+/*
 EntryElement:	SexualBehavior
 Concept:		MTH#C1314687
-Based on:		Panel
+Based on:		QuestionAnswerPanel
 Description:	"Experience with sexual intercourse."
-				PanelCode is MTH#C1314687
-//				Members.Value includes
-1..*			ref(SexualActivity)
-0..1			ref(NumberOfSexualPartnersPastYear)
-0..*			ref(IntercourseDifficulty)
-
+				Type is MTH#C1314687
+//				Members.Observation includes
+1..*			SexualActivity
+0..1			NumberOfSexualPartnersPastYear
+0..*			IntercourseDifficulty
+*/
 	EntryElement:	SexualActivity
 	Concept:		MTH#C0241028
 	Based on:		QuestionAnswer
@@ -69,29 +69,37 @@ Description:	"Experience with sexual intercourse."
 	Value:			CodeableConcept from IntercourseDifficultyVS
 
 
-EntryElement:	ContraceptiveUse
+EntryElement:	ContraceptiveMethodUsed
 Concept:		MTH#C0700589
 Description:	"Whether the subject uses contaceptives, and the method or methods of contraception used."
-Based on:		Panel
-Value:			CodeableConcept from QualitativeFrequencyVS
-1..1			PanelCode is MTH#C0700589
-0..*			ContraceptiveNotUsedReason
-// TODO PanelMember.Value includes
-0..* 			ContraceptiveMethodUsed
+Based on:		QuestionAnswer
+Value:			CodeableConcept from ContraceptiveMethodVS
+				ObservationCode is MTH#C0700589
+Components.ObservationComponent
+includes 0..1 	ContraceptiveMethodFrequency
+includes 0..*	ContraceptiveMethodReason
+includes 0..*	ContraceptiveNotUsedReason
 
-		Element:		ContraceptiveMethodUsed
+		Element:		ContraceptiveMethodFrequency
+		Based on:		ObservationComponent
 		Concept:		TBD
-		Based on:		Finding
-		Description:	"A contraceptive method used by the subject."
-		Value:			CodeableConcept from ContraceptiveMethodVS  // allow multiple choice
-		0..1			Reason from ContraceptiveMethodReasonVS
+		Description:	"How often the contraceptive method is used by the subject."
+		Value:			CodeableConcept from QualitativeFrequencyVS
+						ObservationCode is TBD#TBD
 
+		Element:		ContraceptiveMethodReason
+		Based on:		ObservationComponent
+		Concept:		TBD
+		Description: 	"Reason for using a particular contraceptive."
+		Value:			CodeableConcept from ContraceptiveMethodReasonVS
+						ObservationCode is TBD#TBD
+						
 		Element:		ContraceptiveNotUsedReason
 		Concept:		TBD
-		Based on:		Reason
+		Based on:		ObservationComponent
 		Description:	"If not using a method of contraception, why."
 		Value:			CodeableConcept from ContraceptiveNotUsedReasonVS
-
+						ObservationCode is TBD#TBD
 
 EntryElement:	ContraceptiveMethodRecommendation
 Concept:		TBD
@@ -110,17 +118,17 @@ Value:			1..* CodeableConcept from ContraceptiveMethodVS
 		Concept:		TBD
 		Description:	"Whether an item, such as a medication or device, was given to a subject."
 		Value:			CodeableConcept from YesNoUnknownVS
-
+/*
 EntryElement:	PregnancyHistory
 Concept:		MTH#C0032967
 Based on:		Panel
 Description:	"Information about current and past pregnancies."
-				PanelCode is LNC#10163-4
-//  Members.Value
+				ObservationCode is LNC#10163-4
+Members.Observation
 0..1			CurrentPregnancyStatus
 0..1			NumberOfPreviousPregnancies
 0..1			NumberOfLivingChildren
-
+*/
 	EntryElement:	CurrentPregnancyStatus
 	Concept:		MTH#C0552579
 	Based on:		QuestionAnswer

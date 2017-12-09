@@ -12,7 +12,7 @@ Based on:		Content
 Concept:		TBD
 Description:	"Base class for assertions and observations. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			Subject
-0..1			ExtendedSubject
+0..1			FocalSubject
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
@@ -146,30 +146,36 @@ Description:	"A question-answer or property-value pair, regarding a subject (aka
 0..0			ReferenceRange
 
 
-
 EntryElement:	Panel
 Concept:		TBD
-Based on:		InformationItem
-Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-0..1			PanelCode
-1..1			Members
-
-		Element:		PanelCode
-		Concept:		TBD
-		Description:	"A code that represents the panel."
-		Value:			CodeableConcept
+Based on:		Observation
+Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
+0..0		Components
+1..1		Members
 
 		Element:		Members
 		Concept:		TBD
 		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* ref(Finding)				
+		Value:			0..* ref(Observation)				
 
-// not sure where this is used
+EntryElement:	QuestionAnswerPanel
+Concept:		TBD
+Based on:		Panel
+Description:	"A panel whose members are QuestionAnswer."
+0..0			ref(Specimen)
+0..0			ref(Device)
+0..0			ReferenceRange
+1..1		Members value is type QuestionAnswer
+
+		
+// Used in Careplan and elsewhere
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
 Value:			ref(Finding)
-	
+
+
+
 		/* Orphans
 		Element:		ServiceCategory
 		Concept:		TBD
