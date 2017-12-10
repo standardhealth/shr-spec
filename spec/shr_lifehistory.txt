@@ -27,20 +27,20 @@ Value:			CodeableConcept from EducationalAttainmentVS
 				ObservationCode is LNC#63504-5
 
 
-/*
 EntryElement:	Employment
 Concept:		LNC#74165-2
 Based on:		QuestionAnswerPanel
 Description:	"Engagement in an activity or service for profit, wages, salary, or as a service to others."
-ObservationCode is LNC#74165-2
-Panel.Members
+0..0			Value
+				ObservationCode is LNC#74165-2
+				Members.Observation
 includes 0..1	Occupation
 includes 1..1	EmploymentStatus
-includes 0..1	Employer
-*/
+//includes 0..1	Employer
+
 	EntryElement:	Occupation
-	Concept:		MTH#C0028811
 	Based on:		QuestionAnswer
+	Concept:		MTH#C0028811
 	Description:	"The principal activity that a person does to earn money, specifying the job performed by the subject, for example, accountant, programmer analyst, patient care associate, staff nurse, etc."
 	Value:			CodeableConcept from http://www.bls.gov/soc/
 					ObservationCode is LNC#74287-4
@@ -51,59 +51,59 @@ includes 0..1	Employer
 	Description:	"Condition of employment including full- or part-time, temporary or permanent, and unemployment."
 	Value:			CodeableConcept from EmploymentStatusVS
 					ObservationCode is MTH#C0242271
-
+/*
 	EntryElement:	Employer
 	Based on:		QuestionAnswer
 	Concept:		MTH#C1274022
 	Description:	"A person or entity which hires the services of another."
 	1..1			Value is type ref(Role) or ref(Organization)
 					ObservationCode is MTH#C0242272
-
+*/
 
 // TODO:  EntryElement:	Disability
 
-/*
+
 EntryElement:	MilitaryService
 Concept:		MTH#C3714797
 Based on:		QuestionAnswerPanel
 Description:	"History of service in the US military."
+0..0			Value
 				ObservationCode is MTH#C3714797
 				Members.Observation
-				includes 1..1			ref(MilitaryStatus)
-				//includes 0..1			TBD "MilitaryRank"
-				includes 0..1 			ref(MilitaryServiceDischargeStatus)
-				includes 0..1			ref(MilitaryBranch)
-				includes 0..*			ref(MilitaryServiceEra)
-				includes 0..1			ref(ServiceConnectedDisability)
-*/
+includes 1..1	MilitaryStatus
+//includes 0..1	TBD "MilitaryRank"
+includes 0..1 	MilitaryServiceDischargeStatus
+includes 0..1	MilitaryBranch
+includes 0..*	MilitaryServiceEra
+includes 0..1	ServiceConnectedDisability
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Based on:		Finding // formerly CodeConceptObservation
+	Based on:		QuestionAnswer
 	Description:	"The current connection to the US military."
 	Value:			CodeableConcept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
 	Concept:		TBD
-	Based on:		Finding
+	Based on:		QuestionAnswer
 	Description:	"How the subject was formally discharged from the US Military."
 	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Based on:		Finding
+	Based on:		QuestionAnswer
 	Description:	"The branch of the US military that the subject has served."
 	Value:			CodeableConcept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
 	Concept:		TBD
-	Based on:		Finding
+	Based on:		QuestionAnswer
 	Description:	"The time period of US military service."
 	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
 	Concept:		TBD
-	Based on:		Finding
+	Based on:		QuestionAnswer
 	Description:	"Percentage disability resulting from US Military Service."
 	Value:			Quantity with units UCUM#%
 

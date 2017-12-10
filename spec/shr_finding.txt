@@ -16,11 +16,6 @@ Description:	"Base class for assertions and observations. The subject of a findi
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
-	
-	Element:		Interpretation
-	Concept:		MTH#C0420833
-	Description:	"A clinical interpretation of a finding."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 		
 	Element:		FindingMethod
 	Concept:		TBD
@@ -55,6 +50,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..1			ref(Device)
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..1			ChangeFlag
+0..1			Details
 0..1			Interpretation
 0..*			ObservationQualifier   //  = CIMI's Precondition
 0..1			Components 
@@ -78,7 +74,12 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from ChangeFlagVS
-
+		
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
+	
 		Element:		ObservationQualifier
 		Concept:		MTH#C1443279
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
@@ -150,8 +151,8 @@ EntryElement:	Panel
 Concept:		TBD
 Based on:		Observation
 Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-0..0		Components
-1..1		Members
+0..0			Components
+1..1			Members
 
 		Element:		Members
 		Concept:		TBD
@@ -165,7 +166,7 @@ Description:	"A panel whose members are QuestionAnswer."
 0..0			ref(Specimen)
 0..0			ref(Device)
 0..0			ReferenceRange
-1..1		Members value is type QuestionAnswer
+1..1			Members value is type QuestionAnswer
 
 		
 // Used in Careplan and elsewhere

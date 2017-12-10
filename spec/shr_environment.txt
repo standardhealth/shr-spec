@@ -7,25 +7,26 @@ CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
 //------------ Household Information --------------------------
 
-/*EntryElement:	FinancialSituation
+EntryElement:	FinancialSituation
 Concept:		LNC#83335-0
 Based on:		QuestionAnswerPanel
 Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life."
+0..0			Value
 				ObservationCode is MTH#C0516918
-//				Members.Observation
-0..1			AnnualIncome
-0..*			IncomeSource
-0..1			IncomeStability
-0..1			CanAffordFood
-0..1			CanAffordHousing
-0..1			CanAffordClothing
-0..1			ref(CanAffordUtilities)
-0..1			ref(CanAffordTransportation)
-0..1			ref(CanAffordMedication)
-0..1			ref(CanAffordDentalCare)
-0..1			ref(CanAffordChildCare)
-0..*			ref(NonCashBenefit)
-*/
+				Members.Observation
+includes 0..1	AnnualIncome
+includes 0..*	IncomeSource
+includes 0..1	IncomeStability
+includes 0..1	CanAffordFood
+includes 0..1	CanAffordHousing
+includes 0..1	CanAffordClothing
+includes 0..1	CanAffordUtilities
+includes 0..1	CanAffordTransportation
+includes 0..1	CanAffordMedication
+includes 0..1	CanAffordDentalCare
+includes 0..1	CanAffordChildCare
+includes 0..*	NonCashBenefit
+
 	EntryElement:	AnnualIncome
 	Concept:		MTH#C0557163
 	Based on:		QuestionAnswer
@@ -102,17 +103,18 @@ Description:	"Measures of the ability of the subject to obtain and pay for the n
 	Description:	"Government benefits received by the focal subject, other than cash benefits."
 	Value:			CodeableConcept from NonCashBenefitVS
 	0..1			EffectiveTimePeriod
-/*
+
 EntryElement:	HouseholdSituation
 Concept:		TBD
 Based on:		QuestionAnswerPanel
 Description:	"Information about the makeup of the household of the subject."
-			ObservationCode is TBD#TBD
-			Members.Observation
-			includes 0..1	ref(HouseholdSize)
-			includes 0..*	ref(Coinhabitant)
-			includes 0..1	ref(NumberOfDependents)
-*/
+0..0			Value
+				ObservationCode is TBD#TBD
+				Members.Observation
+includes 0..1	HouseholdSize
+includes 0..*	Coinhabitant
+includes 0..1	NumberOfDependents
+
 		EntryElement:	HouseholdSize
 		Concept:		MTH#C0000768
 		Based on:		QuestionAnswer
@@ -164,40 +166,43 @@ Description:	"A statement about exposure to a substance, type of substance, or d
 		Element:		ExposureReason
 		Concept:		TBD
 		Based on:		Reason
-		Description:	"Why the exposure occurred."
+		Description:	"Why the exposure occurred."  // TODO: How or why?
 		Value:			CodeableConcept from ExposureReasonVS
 
-/*
-EntryElement:	EnvironmentalExposures   // not yet mapped
+
+EntryElement:	EnvironmentalExposures 
+Based on:		QuestionAnswerPanel 
 Concept:		TBD
-Based on:		QuestionAnswerPanel
-Members.Observation
-includes 0..*			ref(AnimalExposure)
-//includes 0..*			TBD "RadiationExposure"
-//includes 0..*			TBD "AllergenExposure"
-//includes 0..*			TBD "AirQuality"
-//includes 0..*			TBD "WaterQuality"
-*/
+0..0			Value
+				ObservationCode is TBD#TBD
+				Members.Observation
+includes 0..*	ref(AnimalExposure)
+//includes 0..*	TBD "RadiationExposure"
+//includes 0..*	TBD "AllergenExposure"
+//includes 0..*	TBD "AirQuality"
+//includes 0..*	TBD "WaterQuality"
+
 	EntryElement:	AnimalExposure
 	Concept:		MTH#C0238646
 	Based on:		ExposureToSubstance
 	Description:	"The type of animals or pets the subject is exposed to."
 	1..1			ExposureSourceOrVector from AnimalExposureVS
 
-/*
+
 EntryElement:	SocialEnvironment
 Based on:		QuestionAnswerPanel
 Concept:		TBD
 Description:	"Factors affecting the health of the subject in their daily living environment."
-				Type is TBD#TBD
+0..0			Value
+				ObservationCode is TBD#TBD
 				Members.Observation
-				includes 0..1	ref(TransportationAvailability)
-				includes 0..1	ref(HousingSecurity)
-				includes 0..1	ref(PhysicalSafety)
-				includes 0..1	ref(EmotionalSafety)
-				includes 0..1	ref(DomesticViolence)
-				includes 0..*	ref(HomeEnvironmentRisk)
-*/
+includes 0..1	TransportationAvailability
+includes 0..1	HousingSecurity
+includes 0..1	PhysicalSafety
+includes 0..1	EmotionalSafety
+includes 0..1	DomesticViolence
+includes 0..*	HomeEnvironmentRisk
+
 	EntryElement:	TransportationAvailability
 	Based on:		QuestionAnswer
 	Concept:		TBD

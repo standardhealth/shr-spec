@@ -38,7 +38,7 @@ Based on:			Party
 Concept:			TBD
 Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater."
 Value:				ref(Party)  
-// Note: Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
+// Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
 
 
 
@@ -461,7 +461,7 @@ Concept:		TBD
 Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
 0..1			Identifier
-0..1			Description
+0..1			Details
 0..1			Capacity
 0..1			SpecimenQuantity 
 0..*			Additive
@@ -491,8 +491,6 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
 
 
-//--------------------  Substance -------------------------------
-
 EntryElement:	Substance
 Based on:		Object  // TODO: Substance is conceptual, not concrete, so is this correct?
 Concept:		MTH#C0439861
@@ -500,7 +498,7 @@ Description:	"Any matter of defined composition that has discrete existence, who
 1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
 0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
 0..1			ActiveFlagAsaCodeableConcept from http://hl7.org/fhir/ValueSet/substance-status
-0..1			Description
+0..1			Details
 0..*			Ingredient
 
 		Element:		Ingredient
@@ -518,9 +516,8 @@ Description:	"Any matter of defined composition that has discrete existence, who
 			Concept:		TBD
 			Description:	"The amount of an ingredient in a mixture, as a ratio. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
 			Value:			Ratio
-
 		
-Element:		Medication
+EntryElement:	Medication
 Based on:		Object
 Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
@@ -562,3 +559,12 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 			Concept:		TBD
 			Description:	"True if the ingredient is an active ingredient in the medication."
 			Value:			boolean // forced to use boolean by FHIR mapping 
+			
+			
+Element:		SubstanceOrCode
+Description:	"A substance entity or a substance code."
+Value:			CodeableConcept or Substance	
+
+Element:		MedicationOrCode
+Description:	"A medication entity or a medication code."
+Value:			CodeableConcept or Medication				

@@ -7,10 +7,10 @@ Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 EntryElement:	Study
 Based on:		Entity
 Concept:		TBD
-Description:	"A clinical trial or similar research study. For a list of FDA data elements describing a research study, see https://prsinfo.clinicaltrials.gov/definitions.html"
+Description:	"A clinical trial or similar research study. List of FDA data elements describing a research study: prsinfo.clinicaltrials.gov/definitions.html "
 1..1			Title
 1..1			Identifier
-0..1			Description
+0..1			Details
 0..*			PartOf value is type Study
 1..1			Status from http://hl7.org/fhir/ValueSet/research-study-status
 0..*			Enrollment
@@ -20,7 +20,7 @@ Description:	"A clinical trial or similar research study. For a list of FDA data
 0..*			ContactDetail
 0..1			PrincipalInvestigator
 0..*			Facility
-0..1			ReasonStopped
+0..1			TerminationReason
 0..*			Annotation
 0..*			StudyArm
 
@@ -40,13 +40,12 @@ Description:	"A clinical trial or similar research study. For a list of FDA data
 	Description:	"The country, state or other region taking legal responsibility for the conduct of the study."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/jurisdiction if covered
 	
-	
 	Element:		PrincipalInvestigator
 	Concept:		TBD
 	Description:	"Indicates the individual who has primary oversite of the execution of the study."
 	Value:			ref(Practitioner)
 	
-	Element:		ReasonStopped
+	Element:		TerminationReason
 	Concept:		TBD
 	Description:	"A description and/or code explaining the premature termination of the study."
 	Value:			CodeableConcept
@@ -56,8 +55,7 @@ Description:	"A clinical trial or similar research study. For a list of FDA data
 	Description:	"Arm refers to pre-specified group or subgroup of participant(s) in a clinical trial assigned to receive specific intervention(s) (or no intervention) according to a protocol."
 	1..1			Title
 	0..1			Type from StudyArmTypeVS
-	0..1			Description
-
+	0..1			Details
 
 EntryElement:	ResearchSubject
 Based on:		Role
@@ -67,10 +65,5 @@ Description:	"Record of a subject's enrollment and participation in a research s
 1..1			ref(Study)
 1..1 			Status from http://hl7.org/fhir/ValueSet/research-subject-status
 1..1			ParticipationPeriod
-0..1			TerminationReason
+0..1			TerminationReason from ResearchSubjectTerminationReasonVS
 	
-	Element:		TerminationReason
-	Based on:		Reason
-	Concept:		TBD
-	Description:	"Reason for leaving study, e.g., moved, died, study ended, etc."
-	Value:			CodeableConcept // TODO: Value Set TBD
