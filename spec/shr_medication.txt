@@ -91,7 +91,7 @@ Description:	"The action of ordering and deliving a medication to the party resp
 	Element:		NumberOfRefillsAllowed
 	Concept:		TBD
 	Description:	"The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
-	Value:			unsignedInt
+	Value:			positiveInt  // should be unsignedInt, but that causes a mapping error in FHIR 3.0
 
 	Element:		QuantityPerDispense
 	Concept:		TBD
@@ -135,7 +135,7 @@ Description:	"A record of a medication NOT used. Although usually not required, 
 0..0			Dosage		
 				
 EntryElement:	MedicationRequested
-Based on:		MedicationTopic
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
 				ActionContext is type RequestedContext
@@ -148,12 +148,6 @@ Concept:		TBD
 Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
 				ActionContext is type RequestedAgainstContext
 				ActionContext.Reason from MedicationNotUsedReasonVS
-
-EntryElement:	MedicationUsePlanned
-Based on:		MedicationTopic
-Concept:		TBD
-Description:	"A future intended performance of medication use."
-				ActionContext is type PlannedContext
 
 Element:		MedicationDispensed
 Based on:		MedicationDispenseTopic
