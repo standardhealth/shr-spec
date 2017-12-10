@@ -526,6 +526,10 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 0..1			Brand
 0..1			OverTheCounter
 0..*			MedicationIngredient
+0..1			Manufacturer
+0..1			LotNumber
+0..1			ExpirationDate
+0..1			Package could be from 	http://hl7.org/fhir/ValueSet/medication-package-form
 
 		Element:		DoseForm
 		Concept:		MTH#C0013058
@@ -559,12 +563,69 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 			Concept:		TBD
 			Description:	"True if the ingredient is an active ingredient in the medication."
 			Value:			boolean // forced to use boolean by FHIR mapping 
+
+		Element:		Manufacturer
+		Concept:		MTH#C1114744
+		Description:	"The organization producing the product."
+		Value:			ref(Organization)  // Following FHIR; could alternatively be a code from urn:oid:2.16.840.1.114222.4.11.826 (vaccine manufacturer value set in phin-vads)
 			
+		Element:		LotNumber
+		Concept:		MTH#C1115660
+		Description:	"A distinctive alpha-numeric identification code assigned by the manufacturer or distributor to a specific quantity of manufactured material or product within a batch."
+		Value:			string
+
+		Element:		ExpirationDate
+		Concept:		TBD
+		Description:	"When the medication will expire."
+		Value:			dateTime
+		
+		Element:		Package
+		Concept:		TBD
+		Description:	"The kind of container the medication comes in."
+		Value:			CodeableConcept
+	
+Element:		BodySite
+Based on:		Object
+Concept:		MTH#C1545955
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces, for example, right elbow, or left ventricle of the heart."
+Value:			CodeableConcept from BodySiteVS
+0..1 			Laterality
+0..1			Directionality
+0..1 			PortionTotality
+0..1			ClockDirection
+0..1			Distance // from landmark
+0..1 			Details
+0..1			BodySiteMarker
+
+	Element:		Laterality
+	Concept:		MTH#C0925205 "Anatomical laterality"
+	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+	Value:			CodeableConcept from LateralityVS
+
+	Element:		Directionality
+	Concept:		NCI#C99074
+	Description:	"Anatomical location or specimen further detailing directionality."
+	Value:			CodeableConcept from DirectionalityVS
+
+	Element:		PortionTotality
+	Concept:		NCI#C99075
+	Description:	"Further detail of the anatomical location or specimen detailing whether it includes the entire entity or only a part or portion."
+	Value:			CodeableConcept from PortionTotalityVS
+
+	Element:		BodySiteMarker
+	Concept:		TBD
+	Description:	"A marker surgically placed at the site, often during a biopsy procedure, to pinpoint the location. The marker is typically a metal clip or radioactive seed."
+	Value:			string   // for right now, just a description
+
 			
 Element:		SubstanceOrCode
 Description:	"A substance entity or a substance code."
-Value:			CodeableConcept or Substance	
+Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or Substance	
 
 Element:		MedicationOrCode
 Description:	"A medication entity or a medication code."
-Value:			CodeableConcept or Medication				
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered or Medication	
+
+Element:		BodySiteOrCode
+Description:	"A body site entity or a body site code."
+Value:			CodeableConcept from BodySiteVS or BodySite

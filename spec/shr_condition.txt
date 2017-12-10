@@ -22,7 +22,7 @@ Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-probl
 1..*			Category from ConditionCategoryVS
 1..1			Subject // cardinality constraint due to FHIR
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
-0..*			BodySite
+0..*			BodySiteOrCode
 0..1			Onset
 0..1			Abatement
 0..1			WhenClinicallyRecognized
@@ -95,10 +95,11 @@ Value:			CodeableConcept from SubjectiveProgressionVS
 
 EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
-Based on:			Condition
+Based on:			Assertion  // or Condition??
 Description:		"A problem with learning or behavior in a learning environment."
 Value:				CodeableConcept from TBD "AcademicProblemVS"
 0..0				BodySite
+
 
 EntryElement:		Injury
 Concept:			MTH#C3263722
@@ -118,18 +119,23 @@ EntryElement:	BodyStructurePresent
 Based on:		Finding
 Concept:		TBD // MTH#C1268086
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-Value:			CodeableConcept from BodyStructureVS
+Value:			CodeableConcept from BodySiteVS
 0..1			Morphology from http://hl7.org/fhir/ValueSet/bodystructure-code
+0..0			NegationFlag
 
 	Element:		Morphology	
+	Based on:		ObservationComponent
 	Concept:		TBD
 	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
 	Value:			CodeableConcept
 
 
 EntryElement:	BodyStructureAbsent
-Based on:		Assertion
+Based on:		Observation
 Concept:		TBD //MTH#C1268086
 Description:	"Absence of distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
 Value:			CodeableConcept from BodyStructureVS
-0..1			Morphology
+				ObservationCode is TBD#TBD
+1..1			NegationFlag is true
+Components.ObservationComponent
+includes 0..1	Morphology

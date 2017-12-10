@@ -45,28 +45,27 @@ Value: 			Device is type SupportSurface
 		Value:			Quantity with units UCUM#cm "cm"
 
 
-EntryElement:	WoundPresentAssert   // CIMI Assert
-Based on:		BodyStructurePresent
+EntryElement:	WoundPresent
+Based on:		Condition
 Concept:		TBD
 Description:	"A determination that a wound that exists at a particular body site, implicitly, the wound itself. Multiple wound assessments can be associated with a single wound."
-				Value is TBD#TBD // TODO: Need Wound type VS
-1..1			BodySite from WoundBodySiteVS if covered 
-
+Value:			CodeableConcept from WoundTypeVS
+				
 /*
-0..*				CausativeFactor  // part of Condition?
-0..*				TBD "WoundIntervention"    // pointer could go in the other direction
-
 		Element:		CausativeFactor
 		Concept:		TBD
 		Description:	"The cause the irritation or inflammation."
 		Value:			CodeableConcept from TBD "WoundCausationVS" or Device
+
 */
 
-EntryElement:		WoundAbsentFinding
-Based on:			ConditionAbsent
-Concept:			TBD
-Description:		"Documents the absence of wounds at a given body site."
-1..1				BodySite from WoundBodySiteVS if covered 	
+EntryElement:	WoundAbsent
+Based on:		Assertion
+Concept:		TBD
+Description:	"Documents the absence of wounds at a given body site."
+				Value is SCT#416462003 "Wound"
+				ObservationCode is TBD#TBD
+1..1			NegationFlag is true
 
 
 EntryElement:	WoundAssessment
@@ -74,18 +73,19 @@ Based on:		Observation
 Concept:		LNC#54574-9
 Description:	"Group of observations regarding the properties and severity of a wound."
 0..0			Value
+				ObservationCode is LNC#54574-9
+// 				FocalSubject is XXXXXXXXXXXX
 				Components.ObservationComponent
 includes 0..1	VisibleInternalStructure
 includes 0..1	WoundSize
-//includes 0..1	WoundTunneling
+includes 0..1	WoundTunneling
+includes 0..1	WoundBedAndEdge
 
 		Element:		VisibleInternalStructure
 		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"An internal body structure visible from outside the body, for example, due to injury."
 		Value:			CodeableConcept from VisibleInternalStructureVS
-
-
 		Element:		WoundSize
 		Based on:		ObservationComponent
 		Concept:		MTH#C3496620
@@ -97,53 +97,53 @@ includes 0..1	WoundSize
 		includes 0..1	Width
 		includes 0..1	Depth
 		includes 1..1	Length
-
-		
-// TODO: not linked to a particular wound		
-		Element:		WoundTunnelling
-		Based on:		Observation
+			
+		Element:		WoundTunneling
+		Based on:		ObservationComponent
 		Concept:		MTH#C0406830
 		Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
 		Value:			CodeableConcept from YesNoUnknownVS
-		1..1			ClockDirection
-		1..1			Length
+						Components.ObservationComponent
+		includes 1..1	ClockDirection
+		includes 1..1	Length
 
 		Element:		WoundUndermining
 		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Tunneling is just under the skin surface and doesn't involve deep tissue, and sinus tracts are a narrow tract that are away from the wound margins and go downward into the wound."
-		Value:			CodeableConcept from YesNoUnknownVS   // Code for Undermining?
-		1..1			ClockDirection
-		1..1			TBD "WoundUnderminingLength"
+		Value:			CodeableConcept from YesNoUnknownVS
+		 				Components.ObservationComponent
+		includes 1..1	ClockDirection
+		includes 1..1	Length
 
 		Element:		WoundBedAndEdge
 		Based on:		ObservationComponent
 		Concept:		TBD
-		Description:	""
-		// Components
-		1..1			TBD "WoundBaseAppearance"
-		1..1			TBD "WoundBaseColor"
-		1..1			WoundEdgeAppearance
-		1..1			TBD "WoundEdgeColor"
-		0..1			TBD "WoundClosureType"
+		Description:	"Description of the periphery and base of a wound."
+						Components.ObservationComponent
+		//includes 0..1	TBD "WoundBaseAppearance"
+		//includes 0..1	TBD "WoundBaseColor"
+		includes 0..1	WoundEdgeAppearance
+		//includes 0..1	TBD "WoundEdgeColor"
+		//includes 0..1	TBD "WoundClosureType"
 
 			Element:		WoundEdgeAppearance
-			Based on:		Observation
+			Based on:		ObservationComponent
 			Concept:		LNC#723204-9
 			Description:	"Evaluation of the state of the tissue at the edge of the wound."
 			Value:			CodeableConcept from WoundEdgeAppearanceVS
 							ObservationCode is LNC#723204-9
 
 		Element:		WoundExudate
-		Based on:		Observation
+		Based on:		ObservationComponent
 		Concept:		TBD
-		Description:	"A mass of cells and fluid that has seeped out of a wound."
-		//Value:			CodeableConcept from YesNoUnknownVS
-		// Components
-		1..1			TBD "WoundExudateOdor"
-		1..1			TBD "WoundExudateColor"
-		1..1			TBD "DrainageAmount"
-		1..1			TBD "WoundExudateAppearance"
+		Description:	"Description of the fluid produced by a wound."
+		0..0			Value
+		//				Components.ObservationComponent
+		//includes 0..1	TBD "WoundExudateOdor"
+		//includes 0..1	TBD "WoundExudateColor"
+		//includes 0..1	TBD "DrainageAmount"
+		//includes 0..1	TBD "WoundExudateAppearance"
 
 
 
