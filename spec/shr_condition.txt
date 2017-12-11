@@ -7,27 +7,28 @@ CodeSystem:     SCT = http://snomed.info/sct
 
 	
 EntryElement:	ConditionAbsent
-Based on:		SituationAbsentOrNotSuspected
+Based on:		Assertion
 Concept:		TBD
-Description:	"A finding that a condition not present in the subject."
+Description:	"A finding that a condition not present in the subject at a certain time."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-0..*			BodySite
+1..1			NegationFlag is true
+
 
 EntryElement:	Condition
-Based on:		SituationPresentOrSuspected
+Based on:		Finding
 Concept:		TBD // MTH#C0348080
 Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
-1..1			ClinicalStatus
-0..*			BodySite
+1..1			Subject // cardinality constraint due to FHIR
+1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
+0..*			BodySiteOrCode
 0..1			Onset
+0..1			Abatement
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
-0..1			Abatement
-0..*			BodySite
-0..1			Severity
-0..1			Criticality
+0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
+0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
 0..1			Stage
 
 /* 
@@ -41,7 +42,7 @@ Link to Related Medications
 			Element:		ClinicalStatus
 			Concept:		TBD
 			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
-			Value:			code from http://hl7.org/fhir/ValueSet/condition-clinical
+			Value:			code
 
 			Element:		Onset
 			Concept:		MTH#C0277793
@@ -66,26 +67,39 @@ Link to Related Medications
 			Element:		Severity
 			Concept:		MTH#C0392364
 			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept from http://hl7.org/fhir/ValueSet/condition-severity
+			Value: 			CodeableConcept 
 
 			Element:		Criticality
 			Concept:		MTH#C3858539 "Criticality"
 			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			code from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+			Value:			code
 
 			Element:		Stage
 			Concept:		MTH#C0699749
 			Description:	"The relative advancement in the course of a disease."
 			Value:			CodeableConcept
 
+			
+EntryElement:	DiseaseProgression
+Based on:		Observation
+Concept:		MTH#C0449258
+Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
+Value:			CodeableConcept from SubjectiveProgressionVS
+				FocalSubject should be from ConditionVS
+1..1			ObservationCode is MTH#C0421176 "Progression"
+0..*			Evidence from ProgressionEvidenceTypeVS
+	
+	
+			
 // Examples of how to specialize Condition
 
 EntryElement:		AcademicProblem
 Concept:			MTH#C0000873
-Based on:			Condition
+Based on:			Assertion  // or Condition??
 Description:		"A problem with learning or behavior in a learning environment."
 Value:				CodeableConcept from TBD "AcademicProblemVS"
 0..0				BodySite
+
 
 EntryElement:		Injury
 Concept:			MTH#C3263722
@@ -101,16 +115,27 @@ Description:		"A condition relating to a person’s psychological and emotional 
 Value:				CodeableConcept from DSMVS
 
 
-EntryElement:	BodyStructure
-Based on:		SituationPresentOrSuspected
+EntryElement:	BodyStructurePresent
+Based on:		Finding
 Concept:		TBD // MTH#C1268086
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-Value:			CodeableConcept from BodyStructureVS
+Value:			CodeableConcept from BodySiteVS
+0..1			Morphology from http://hl7.org/fhir/ValueSet/bodystructure-code
+0..0			NegationFlag
+
+	Element:		Morphology	
+	Based on:		ObservationComponent
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
 
 
 EntryElement:	BodyStructureAbsent
-Based on:		SituationAbsentOrNotSuspected
+Based on:		Observation
 Concept:		TBD //MTH#C1268086
-Description:	"Observation of the existence (or non-existence) distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
+Description:	"Absence of distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
 Value:			CodeableConcept from BodyStructureVS
-
+				ObservationCode is TBD#TBD
+1..1			NegationFlag is true
+Components.ObservationComponent
+includes 0..1	Morphology

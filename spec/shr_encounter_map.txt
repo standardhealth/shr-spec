@@ -2,32 +2,20 @@ Grammar:	Map 5.0
 Namespace:	shr.encounter
 Target:		FHIR_STU_3
 
-/*
-Facility maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-location:
-	FacilityName maps to name
-	Location[Address] maps to address
-	Location[Geoposition].Latitude maps to position.latitude
-	Location[Geoposition].Longitude maps to position.longitude
-	Location[Geoposition].Altitude maps to position.altitude
-	// Location[GeopoliticalLocation] maps to address // Can't do this since address is 0..1 and already mapped above
-	Telecom maps to telecom
-	ManagingOrganization maps to managingOrganization
-	Type maps to type
-
 EncounterPerformed maps to Encounter:
-	Entry.FocalSubject maps to subject
-	Status maps to status
-	OccurrenceTime  maps to period
-	EncounterClass maps to class
+	Subject maps to subject
+	TypeAsaCoding maps to class  // class is a coding, not a CodeableConcept. We should be able to handle that
+	ServiceProvider maps to serviceProvider
 	ServiceGiven maps to type
-	// ReasonEncounterDidNotHappen
-	Participant maps to participant.individual
-//	Participant.Patient maps to participant.individual
-//	Participant.Practitioner maps to participant.individual
-//	Participant.RelatedPerson maps to participant.individual
-	Participant.OccurrenceTime maps to participant.period
-	Participant.ParticipationType maps to participant.type
-	ProviderOrganization maps to serviceProvider
+	PerformedContext.Status maps to status
+	PerformedContext.OccurrenceTimeOrPeriod maps to period
+	PerformedContext.Participant maps to participant.individual
+	constrain participant.type to 0..1
+	PerformedContext.Participant.ParticipationType maps to participant.type
+	PerformedContext.Participant.ParticipationPeriod maps to participant.period
+	PerformedContext.RelatedRequest maps to incomingReferral
+	constrain location to 0..1
+	PerformedContext.Facility maps to location.location
+	PerformedContext.Reason maps to reason
+// what maps to apppointment? RelatedPromise?
 	TBD "HealthConcern" maps to indication
-
-*/

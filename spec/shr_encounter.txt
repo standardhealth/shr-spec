@@ -4,44 +4,16 @@ Description:		"The SHR Encounter domain contains definitions that capture intera
 Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 
-
-EntryElement:	Facility
-Concept:		MTH#C1547538
-Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
-1..1			FacilityName
-1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
-1..1			Location
-0..1			MobileFacility
-0..1			Telecom
-1..1			ManagingOrganization
-
-	Element:		FacilityName
-	Concept:		MTH#C3261404
-	Description:	"The DBA (doing business as) or most commonly-used name for a facility."
-	Value:			string
-
-	Element:		MobileFacility
-	Concept:		MTH#C0231435
-	Description:	"A facility that moves from place to place, such as Meals-On-Wheels."
-	Value:			boolean
-
-	Element:		ManagingOrganization
-	Concept:		MTH#C0677351
-	Description:	"The organization that manages the operation of an activity, facility, or service provision."
-	Value:			ref(Organization)
-
-
-EntryElement:	EncounterAction
-Based on:		Action
+EntryElement:	EncounterTopic
+Based on:		ActionTopic
 Concept:		TBD
 Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
+0..1			Subject
 0..1			ReferralDate
 0..1			ReferralSourceType
-0..1			EncounterClass 
+0..1			TypeAsaCoding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..*			ServiceGiven
-0..*			Participant
-1..1			ProviderOrganization
-0..1			Facility
+0..1			ServiceProvider
 0..1			TreatmentCooperation
 0..1			PaymentSource
 0..1			TBD "HealthConcern"
@@ -52,7 +24,6 @@ Description:	"A description of an interaction between a patient and healthcare p
 1..*			TBD "TreatmentServiceRendered"
 0..1			TBD "CompletionStatus"
 
-
 	Element:		ReferralDate
 	Concept:		MTH#C2735614
 	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client's behalf."
@@ -62,12 +33,12 @@ Description:	"A description of an interaction between a patient and healthcare p
 	Concept:		TBD
 	Description:	"The type of person or entity that instigated the encounter."
 	Value:			CodeableConcept from ReferralSourceTypeVS
-					
-	Element:		EncounterClass
+
+	Element:		ServiceProvider
 	Concept:		TBD
-	Description:	"The type of encounter, e.g., inpatient, outpatient, emergency, etc."
-	Value:			Coding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered  // FHIR TODO: should be CodeableConcept
-					
+	Description:	"The organization that provided the services rendered during this encounter."
+	Value:			ref(Organization)
+	
 	Element:		ServiceGiven
 	Concept:		TBD
 	Description:	"Indicates a medical service provided."
@@ -98,23 +69,24 @@ Description:	"A description of an interaction between a patient and healthcare p
 
 				
 EntryElement:	EncounterRequested
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type RequestedContext
 				
 EntryElement:	EncounterPerformed
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type PerformedContext
+				PerformedContext.Status from http://hl7.org/fhir/ValueSet/encounter-status
+				PerformedContext.OccurrenceTimeOrPeriod is type OccurrencePeriod
+				PerformedContext.Reason should be from http://hl7.org/fhir/ValueSet/encounter-reason
+
 				
 EntryElement:	EncounterNotPerformed
-Based on:		EncounterAction
+Based on:		EncounterTopic
 				ActionContext is type NotPerformedContext
 
-EntryElement:	EncounterPlanned
-Based on:		EncounterAction
-				ActionContext is type PlannedContext
 /*
 EntryElement:	HospitalizationAction
-Based on:		EncounterAction
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
@@ -129,7 +101,7 @@ Based on:		EncounterAction
 	Discharge Summary	Document
 
 EntryElement:	EmergencyEncounterAction
-Based on:		EncounterAction
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference

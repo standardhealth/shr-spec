@@ -1,56 +1,73 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.allergy
 Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.adverse, shr.condition
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.adverse, shr.condition, shr.medication
 
 CodeSystem:     SCT = http://snomed.info/sct
 
 		
 EntryElement:	AllergyIntolerance
-Based on:		SituationPresentOrSuspected
+Based on:		Finding
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-Value:			CodeableConcept from AllergenIrritantVS
-0..*			SubstanceCategory
-1..1			VerificationStatus
-0..1			AdverseReactionType 
+1..1			AllergenIrritant
+1..1			Subject // constrain cardinality to match FHIR
+0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
+1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
+0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..*			AdverseEvent  // not ref() because this maps to FHIR
+0..*			AdverseReaction
 0..1			Onset
 0..1			Abatement
 0..1			MostRecentOccurrenceTime
 
+		Element:	AllergenIrritant	
+		Concept:		TBD
+		Description:	"A substance that causes an allergic reaction or irritation."
+		Value:		CodeableConcept from AllergenIrritantVS
+
 		Element:		SubstanceCategory
 		Concept:		TBD
 		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
-		Value:			code from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
+		Value:			code
 
 		Element:		VerificationStatus
 		Concept:		TBD
 		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			code from http://hl7.org/fhir/ValueSet/allergy-verification-status
-
-		Element:		AdverseReactionType
-		Concept:		TBD
-		Description:	"Identification of the underlying physiological mechanism for a Reaction Risk."
-		Value:			code from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
+		Value:			code
 
 		Element:		MostRecentOccurrenceTime
 		Concept:		TBD
 		Description:	"The time of the last or latest of a series of events."
 		Value:			dateTime
 
-
-/*				
-EntryElement:	NoKnownAllergyIntoleranceToSubstance
-Based on:		SituationAbsentOrNotSuspected
-Concept:		TBD
-Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
+		Element:		AdverseReaction
+		Concept:		MTH#C0559546
+		Description:	"An instance of a negative response to the allergy or intolerance."
+		0..1			AllergenIrritant
+		0..1			Manifestation
+		0..1			Details
+		0..1			OccurrenceTime
+		0..1			Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
+		0..1			RouteIntoBody
+		
+				Element:	Manifestation
+				Concept:	MTH#C1280464
+				Description:	"A sign or symptom of an underlying condition."
+				Value:		CodeableConcept from ManifestationVS
+				
+			
+EntryElement:	NoAllergyToSubstance
+Based on:		QuestionAnswer
+Concept:		MTH#C4508987
+Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. NoAllergyToSubstance is not an assertion because the value (a code representing a substance) does not carry the complete meaning."
 Value:			CodeableConcept from AllergenIrritantVS
-*/
-	
+ObservationCode is MTH#C4508987 "No Allergy"
+
+
 EntryElement:	NoKnownAllergy
-Based on:		SituationAbsentOrNotSuspected
+Based on:		Assertion
 Concept:		MTH#C0262580
-Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors."
+Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors. NoKnownAllergy is an assertion because the code, such as 'No known food allergy' carries the complete meaning."
 Value:			CodeableConcept from NoKnownAllergyVS

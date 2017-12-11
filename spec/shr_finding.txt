@@ -1,36 +1,21 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.finding
 Description:	"The SHR Finding domain contains basic definitions used to capture subjective and objective information about the subject. Things observed about the subject can include demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions, and range from simple answered questions to vital signs and laboratory results."
-Uses:			shr.core, shr.base, shr.action, shr.entity, shr.lab, shr.medication, shr.condition, shr.device
+Uses:			shr.core, shr.base, shr.action, shr.entity, shr.procedure, shr.medication, shr.condition, shr.device
 
-		
+CodeSystem:     SCT = http://snomed.info/sct
+
 //-------------- FINDING Base Class ------------------------	
 
 Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
-Description:	"Base class for assertions and observations about a patient. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include demographic facts, history, subjective and objective observations, assessments, and judgments, excluding actual or potential interventions."
-1..1			Subject
-0..*			Category from FindingCategoryVS if covered
-0..1			ClinicallyRelevantTime
-0..1			Interpretation
+Description:	"Base class for assertions and observations. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+0..1			Subject
+0..1			FocalSubject
 0..1			FindingMethod
 0..1			FindingStatus
-
-	Element:		Subject
-	Concept:		TBD
-	Description:	"The person or thing that this finding refers to, usually the Person of Record. However, not all entries have health information specifically about the patient, but could refer to a fetus, family member, device, location, organization, finding, condition, or intervention."
-	Value:			ref(Content)
-	
-	Element:		ClinicallyRelevantTime
-	Concept:		TBD
-	Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-	Value:			GeneralizedTemporalContext
-	
-	Element:		Interpretation
-	Concept:		MTH#C0420833
-	Description:	"A clinical interpretation of a measurement."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
+0..*			Evidence
 		
 	Element:		FindingMethod
 	Concept:		TBD
@@ -39,126 +24,159 @@ Description:	"Base class for assertions and observations about a patient. The su
 
 	Element:		FindingStatus
 	Concept:		TBD
-	Description:	"Indicates whether the finding is complete and definite."
+	Description:	"Indicates whether the finding is preliminary, amended, final, etc.."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-status
 
 	Element:		Evidence
 	Concept:		TBD
-	Description:	"A finding or other item, for example, a pathology report, that serves as evidence for the current finding."
+	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
 	Value:			CodeableConcept or ref(Content)
 
-	
-Abstract Element:	Assessment
-Based on:			Finding
-Concept:			MTH#C0220825
-Description:		"A finding (preliminary or final) that establishes the presence or absence of a health state, resulting from synthesis of evidence (one or more observations)."
-Value:				CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-0..*				Evidence
 
-	
-EntryElement:		SituationPresentOrSuspected
-Based on:			Assessment
-Concept:			TBD
-Description:		"A finding that establishes the existence of a health state."
+//----------- The Observation branch of Finding---------
 
+EntryElement:	Observation
+Based on:		Finding
+Concept:		MTH#C1554188
+Description:	"Parent class for subjective or objective findings about a subject. An observation includes direct results of seeing, measuring, or evaluating. The method of observing can vary widely, and include measurement, direct questioning, physical examination, laboratory tests, and imaging procedures. Patient-generated data are also considered observations."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
+1..1			ObservationCode
+0..1			ValueAbsentReason
+0..1			ClinicallyRelevantTime
+1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR
+0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+0..1			BodySite
+0..1			ref(Specimen)
+0..1			ref(Device)
+0..*			ReferenceRange  // applies to a quantitative measurement only
+0..1			ChangeFlag
+0..1			Details
+0..1			Interpretation
+0..*			ObservationQualifier   //  = CIMI's Precondition
+0..1			Components 
 
-EntryElement:		SituationAbsentOrNotSuspected
-Based on:			Assessment
-Concept:			TBD
-Description:		"A finding that establishes the non-existence of a health state during the time period mentioned."
-
-		
-EntryElement:		Evaluation
-Based on:			Finding
-Concept:			TBD
-Description:		"Parent class for question/answer or measurement/value findings regarding the value of a property or aspect of a subject. Includes lab tests, measurements, observations, social, behavioral findings."
-Value:				0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
-0..1				DataAbsentReason from DataAbsentReasonVS
-1..1				QuestionCode
-0..1				Components 
-
-		Element:		DataAbsentReason
-		Concept:		TBD
-		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
-		Value:			CodeableConcept from DataAbsentReasonVS
-		
-		Element:		QuestionCode
+		Element:		ObservationCode
 		Concept:		MTH#C1706203
-		Description:	"What the finding concerns, for example, height, blood pressure, disease status, wound dimensions, diabetes risk, condition present, condition absent, etc. The observed entity is sometimes posed as a question, a property, or a test code."
+		Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named ObservationCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions (observations without an explicit question), the observation code is defaulted to a value representing 'assertion'."
 		Value:			CodeableConcept 
 		
-		Element:		Components
-		Concept:		TBD
-		Description:	"Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
-		Value:			0..* EvaluationComponent
+		Element:		ValueAbsentReason
+		Concept:		MTH#C1709044]
+		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
+		Value:			CodeableConcept from ValueAbsentReasonVS
 		
-
-Element:		EvaluationComponent   // not Content (cannot stand alone)! 
-Description:	"A simplified, non-separable observation consisting of a type code, value (or data absent reason), reference range, and interpretation. The item observered is the same as in the parent observation."
-Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Media or time or dateTime or TimePeriod)
-1..1			QuestionCode
-0..1			DataAbsentReason
-0..1			Interpretation
-0..*			ReferenceRange
-					
+		Element:		ClinicallyRelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod or Timing
+		
+		Element:		ChangeFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			CodeableConcept from ChangeFlagVS
+		
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
+	
+		Element:		ObservationQualifier
+		Concept:		MTH#C1443279
+		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
+		Value:			CodeableConcept
+		
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
 		Value:			Range   // TODO: align this with FHIR
-	
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			ApplicableSubpopulation
+		0..1			ApplicableAgeRange
+		
+				Element:	ApplicableSubpopulation
+				Concept:	MTH#C0039309 "Target Population"
+				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
+				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
+		
+				Element:	ApplicableAgeRange
+				Concept:	TBD
+				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
+				Value:		Range
+		
+		
+		Element:		Components
+		Concept:		TBD
+		Description:	"Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
+		Value:			0..* ObservationComponent
+		
+			Element:		ObservationComponent
+			Description:	"A simplified, non-separable observation consisting of a observation code, value (or value absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
+			Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
+			0..1			ValueAbsentReason
+			1..1			ObservationCode   // FHIR requires a code in each ObservationComponent, so it can't be a simple assertion
+			0..1			Interpretation
+			0..*			ReferenceRange
+			0..1			Components
+					
+
+		
+//------- Simplified and Specialized Observations
+		
+EntryElement:	Assertion
+Based on:		Observation
+Concept:		TBD
+Description:	"A unary observation, also known as an assertion, is an observation that takes the form of a single code, without an explicit question or property. Examples include reported symptoms such as 'chest pain' and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
+Value:			CodeableConcept
+				ObservationCode is SCT#385432009 "Not applicable"
+0..0			ValueAbsentReason // no sense in allowing an assertion that isn't there			
+0..0			ref(Specimen)
+0..0			ref(Device)
+0..0			ReferenceRange
+0..1			NegationFlag
+
+		Element:	NegationFlag
+		Concept:	MTH#C1518422
+		Description:	"A flag that indicates the meaning to be conveyed is the logical opposite of the current assertion. The assertion is negated only when the NegationIndicator is true. If absent or false, the assertion is not negated."
+		Value:		boolean
 
 EntryElement:	QuestionAnswer
-Based on:		Evaluation
-Description:	"A simple question answer pair."
+Based on:		Observation
+Description:	"A question-answer or property-value pair, regarding a subject (aka an object-attribute-value triple). A QuestionAnswer is a simplified observation that does not involve a specimen, device, or reference range."
+0..0			ref(Specimen)
+0..0			ref(Device)
+0..0			ReferenceRange
 
-	
+
+EntryElement:	Panel
+Concept:		TBD
+Based on:		Observation
+Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
+0..0			Components
+1..1			Members
+
+		Element:		Members
+		Concept:		TBD
+		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
+		Value:			0..* ref(Observation)				
+
+EntryElement:	QuestionAnswerPanel
+Concept:		TBD
+Based on:		Panel
+Description:	"A panel whose members are QuestionAnswer."
+0..0			ref(Specimen)
+0..0			ref(Device)
+0..0			ReferenceRange
+1..1			Members value is type QuestionAnswer
+
+		
+// Used in Careplan and elsewhere
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
 Value:			ref(Finding)
 
 
-EntryElement: 	Observation
-Based on:		Evaluation
-Concept:		MTH#C1554188
-Description:	"An observation includes direct results of observing, measuring, or evaluation. The method of observing can vary widely, from questioning, physical examination, laboratory tests, imaging procedures, etc. Patient-generated data is also considered an observation, where subject and observer are the same individual."
-// TODO: Support additional value types: SampledData or Attachment 
-0..1			BodySite
-0..1			ref(Specimen)
-0..1			ref(Device)
-0..*			ReferenceRange  // quantitative measurement only
-0..1			ChangeFlag
-0..*			ObservationQualifier   //  = CIMI's Precondition
 
-		Element:		ResultStatus
-		Concept:		TBD
-		Description:	"Labels the result as preliminary, amended, final, etc."
-		Value:			CodeableConcept from FindingCategoryVS if covered
-
-		Element:		ChangeFlag
-		Concept:		MTH#C1705241
-		Description:	"Indicator of significant change (delta) from the last or previous measurement."
-		Value:			CodeableConcept from ChangeFlagVS
-
-		Element:		ObservationQualifier
-		Concept:		MTH#C1443279
-		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
-		Value:			CodeableConcept
-
-
-EntryElement:	Panel
-Concept:		TBD
-Based on:		Observation  // inherit from Observation because a Panel might involve a shared specimen
-Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Could represent the content of a diagnostic report, such as a pathology report. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-0..0			Value
-1..1			Members
-
-		Element:		Members
-		Concept:		TBD
-		Description:	"Members represent the elements of a group of a related observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author."
-		Value:			0..* ref(Finding)				
-
-		
 		/* Orphans
 		Element:		ServiceCategory
 		Concept:		TBD
@@ -169,35 +187,4 @@ Description:	"A grouped set of related findings, frequently captured at the same
 		Concept:		TBD
 		Description:	"The status of the report associated with this panel."
 		Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-		*/
-		
-		
-		
-		/*
-EntryElement:	Assessment
-Based on:		Finding
-Concept:		MTH#C0220825
-Description:	"A conclusion (tentative or final) resulting from synthesis of evidence (one or more observations). An Assessment is a judgment rendered at a point in time. A diagnosis is a type of Assessment that can lead to creation of a Condition."
-0..*			Category from AssessmentTypeVS if covered
-1..1			Status from http://hl7.org/fhir/ValueSet/clinical-impression-status
-0..*			Subject  // Tumor or Wound???
-0..* 			AssessmentResult  // the result of the assessment as a text or code
-0..1			Method
-0..1			ClinicallyRelevantTime
-0..1			EvidenceQuality 
-0..*			RelatedFinding
-0..1			Summary   // is this necessary?
-
-
-		Element:		EvidenceQuality
-		Concept:		TBD
-		Description:	"An estimate of the quality and/or quantity of the source information that supports the assessment."
-		Value:			CodeableConcept from EvidenceQualityVS
-
-		Element:		AssessmentResult
-		Concept:		TBD
-		Description:	"A statement of judgment or opinion, often the outcome, finding, or conclusion of the investigation or analysis."
-		Value:			CodeableConcept
-		0..1			Certainty
-		
 		*/

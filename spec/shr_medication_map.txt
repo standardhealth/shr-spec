@@ -2,61 +2,53 @@ Grammar:	Map 5.0
 Namespace:	shr.medication
 Target:		FHIR_STU_3
 
-
-MaximumDosePerTimePeriod maps to Ratio:
-	AmountOfMedication maps to numerator
-	Duration maps to denominator
-
-
-Medication maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication:
-//	Type maps to code
-	DoseForm maps to form
-	Ingredient maps to ingredient.item[x].CodeableConcept
-	Ingredient.IngredientAmount maps to ingredient.amount.numerator
-	Ingredient.AmountOfMedication maps to ingredient.amount.denominator
-	Ingredient.IsActiveIngredient maps to ingredient.isActive
-	Brand maps to isBrand
-	OverTheCounter maps to isOverTheCounter
-
+Dosage maps to Dosage:
+	AmountPerDose maps to dose[x]
+	TimingOfDoses maps to timing
+	AsNeededIndicator maps to asNeeded[x]
+	DoseInstructionsText maps to text
+	AdditionalDoseInstruction maps to additionalInstruction
+	RouteIntoBody maps to route
+	AdministrationMethod maps to method
+	AdministrationBodySite maps to site
+	MaximumDosePerTimePeriod maps to maxDosePerPeriod
 
 MedicationUsed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
-	Medication maps to medication[x].Reference
-//	PeriodOfUse maps to effective[x].Period
-	Reason maps to reasonCode
-//	MedicationWasTaken maps to taken
-//	xxxxxxxxxxx maps to reasonNotTaken
+	Informant maps to informationSource
+	Entry.CreationTime maps to dateAsserted
+	MedicationOrCode maps to medication[x]
+	Category maps to category
+	fix taken to #y
+	constrain reasonNotTaken to 0..0
 	constrain dosage to 0..1
-	Dosage.AmountPerDose[Quantity] maps to dosage.dose[x].SimpleQuantity
-	Dosage.AmountPerDose[TBD "Range"] maps to dosage.dose[x].Range
-//	Dosage.TimingOfDoses maps to dosage.timing
-	Dosage.DoseAsNeededIndicator maps to dosage.asNeeded[x].boolean
-	Dosage.DoseInstructionsText maps to dosage.text
-	Dosage.AdditionalDoseInstruction maps to dosage.additionalInstruction
-	Dosage.RouteIntoBody maps to dosage.route
-	Dosage.AdministrationMethod maps to dosage.method
-	Dosage.AdministrationBodySite maps to dosage.site
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod
+	Dosage maps to dosage
+	PerformedContext.Reason maps to reasonCode
+	PerformedContext.OccurrenceTimeOrPeriod maps to effective[x]
+	PerformedContext.Status maps to status
 
+MedicationNotUsed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+	Informant maps to informationSource
+	Entry.CreationTime maps to dateAsserted
+	MedicationOrCode maps to medication[x]
+	Category maps to category
+	fix taken to #n
+	constrain dosage to 0..0
+	NotPerformedContext.Reason maps to reasonNotTaken
+	NotPerformedContext.OccurrenceTimeOrPeriod maps to effective[x]
+	
 MedicationRequested maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
-	Medication maps to medication[x].Reference
-	Reason maps to reasonCode
-//	Status maps to status
-//	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-//	Priority maps to priority
-//	ExpectedPerformer[Organization] maps to dispenseRequest.performer
+	MedicationOrCode maps to medication[x]
+	RequestedContext.Reason maps to reasonCode
+	RequestedContext.Status maps to status
+	RequestedContext.ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
+	RequestedContext.Priority maps to priority
+	RequestedContext.PerformerInstructions maps to note.text
+	RequestedContext.ExpectedPerformer[Organization] maps to dispenseRequest.performer
 	constrain note to 0..1
-//	PerformerInstructions maps to note.text
-//	NumberOfRepeatsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
-//	QuantityPerDispense maps to dispenseRequest.quantity
-//	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	QuantityPerDispense maps to dispenseRequest.quantity
+	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
 	constrain dosageInstruction to 0..1
-	Dosage.AmountPerDose[Quantity] maps to dosageInstruction.dose[x].SimpleQuantity
-	Dosage.AmountPerDose[TBD "Range"] maps to dosageInstruction.dose[x].Range
-//	Dosage.TimingOfDoses maps to dosageInstruction.timing
-	Dosage.DoseAsNeededIndicator maps to dosageInstruction.asNeeded[x].boolean
-	Dosage.DoseInstructionsText maps to dosageInstruction.text
-	Dosage.AdditionalDoseInstruction maps to dosageInstruction.additionalInstruction
-	Dosage.RouteIntoBody maps to dosageInstruction.route
-	Dosage.AdministrationMethod maps to dosageInstruction.method
-	Dosage.AdministrationBodySite maps to dosageInstruction.site
-	Dosage.MaximumDosePerTimePeriod maps to dosageInstruction.maxDosePerPeriod
+	Dosage maps to dosageInstruction
+
+	

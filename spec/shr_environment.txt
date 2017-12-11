@@ -1,7 +1,7 @@
 Grammar:			DataElement 5.0
 Namespace:			shr.environment
 Description:		"The SHR Environment domain contains definitions related to surroundings experienced by the person of record, including both the physical and sociological environments."
-Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, shr.medication, shr.lab
+Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, shr.medication, shr.procedure
 
 CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
@@ -9,22 +9,23 @@ CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
 EntryElement:	FinancialSituation
 Concept:		LNC#83335-0
-Based on:		Panel
+Based on:		QuestionAnswerPanel
 Description:	"Measures of the ability of the subject to obtain and pay for the necessities of life."
-Value:			CodeableConcept is MTH#C0516918
-//				Members.Finding
-0..1			ref(AnnualIncome)
-0..*			ref(IncomeSource)
-0..1			ref(IncomeStability)
-0..1			ref(CanAffordFood)
-0..1			ref(CanAffordHousing)
-0..1			ref(CanAffordClothing)
-0..1			ref(CanAffordUtilities)
-0..1			ref(CanAffordTransportation)
-0..1			ref(CanAffordMedication)
-0..1			ref(CanAffordDentalCare)
-0..1			ref(CanAffordChildCare)
-0..*			ref(NonCashBenefit)
+0..0			Value
+				ObservationCode is MTH#C0516918
+				Members.Observation
+includes 0..1	AnnualIncome
+includes 0..*	IncomeSource
+includes 0..1	IncomeStability
+includes 0..1	CanAffordFood
+includes 0..1	CanAffordHousing
+includes 0..1	CanAffordClothing
+includes 0..1	CanAffordUtilities
+includes 0..1	CanAffordTransportation
+includes 0..1	CanAffordMedication
+includes 0..1	CanAffordDentalCare
+includes 0..1	CanAffordChildCare
+includes 0..*	NonCashBenefit
 
 	EntryElement:	AnnualIncome
 	Concept:		MTH#C0557163
@@ -32,13 +33,11 @@ Value:			CodeableConcept is MTH#C0516918
 	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
 	Value:			Quantity with units CURRENCY#USD
 
-
 	EntryElement:	IncomeSource
 	Concept:		MTH#C0557162
 	Based on:		QuestionAnswer
 	Description:	"Where the household income comes from."
 	Value:			CodeableConcept from IncomeSourceVS
-
 
 	EntryElement:	IncomeStability
 	Concept:		MTH#C1820459
@@ -46,13 +45,11 @@ Value:			CodeableConcept is MTH#C0516918
 	Description:	"Whether the subject regards his or her source of income as dependable."
 	Value:			CodeableConcept from ResourceStabilityVS
 
-
 	EntryElement:	CanAffordFood
 	Concept:		TBD
 	Based on:		QuestionAnswer
 	Description:	"How often can the subject afford food?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
-
 
 	EntryElement:	CanAffordHousing
 	Concept:		TBD
@@ -105,22 +102,25 @@ Value:			CodeableConcept is MTH#C0516918
 
 EntryElement:	HouseholdSituation
 Concept:		TBD
-Based on:		Panel
+Based on:		QuestionAnswerPanel
 Description:	"Information about the makeup of the household of the subject."
-				Members.Finding
-				includes 0..1	ref(HouseholdSize)
-				includes 0..*	ref(Coinhabitant)
-				includes 0..1	ref(NumberOfDependents)
+0..0			Value
+				ObservationCode is TBD#TBD
+				Members.Observation
+includes 0..1	HouseholdSize
+includes 0..*	Coinhabitant
+includes 0..1	NumberOfDependents
 
 		EntryElement:	HouseholdSize
 		Concept:		MTH#C0000768
 		Based on:		QuestionAnswer
 		Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
 		Value:			Quantity with units UCUM#1 // should be positiveInt but FHIR Observations don't support integers
+		//Value is type Qount
 
 		EntryElement:	Coinhabitant
-		Concept:		TBD
 		Based on:		QuestionAnswer
+		Concept:		TBD
 		Description: 	"A person living with the subject."
 		Value:			CodeableConcept from CoinhabitantVS
 
@@ -128,113 +128,126 @@ Description:	"Information about the makeup of the household of the subject."
 		Concept:		MTH#C0557509
 		Based on:		QuestionAnswer
 		Description:	"The number of dependents supported by the subject."
-		Value:			Quantity with units UCUM#1 // should be unsignedInt but FHIR Observations don't support integers
+		Value:			Quantity with units UCUM#1
+		//Value: 			Qount
 
 
 //------------- Exposures ---------------------
 
-EntryElement:	ExposureToSubstance
-Based on:		Finding
+EntryElement:	ExposureToAgent
+Based on:		Observation
 Concept:		MTH#C0332157
-Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
-0..1			Substance
-				Category includes MTH#C0332157 "Exposure"
-0..*			ExposureSourceOrVector
-0..1			TBD "AmountOrDosage"
-0..1			ExposureReason
-0..1			ExposureMethod
-0..1			RouteIntoBody
-0..*			RelatedFinding  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
-0..*			TBD "Impact" // adverse event, allergic reaction, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+Description:	"A finding about exposure to a substance, type of substance, or disease vector potentially affecting health, including blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens. Can be used to deny such exposures via the NegationFlag."
+Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code
+				ObservationCode is SCT#24932003 "Exposure to"
+				Components.ObservationComponent
+includes 0..*	ExposureSourceOrVector
+//includes 0..1	TBD "AmountOrDosage" --- TBDs blow up CLI
+includes 0..1	ExposureReason
+includes 0..1	ExposureMethod
+includes 0..1	ExposureRoute
+
 
 		Element:		ExposureSourceOrVector
+		Based on:		ObservationComponent
 		Concept:		MTH#C0012656
 		Description:	"Where the substance originated. Vectors include animals (e.g., tick, mosquito, cats, livestock) capable of transmitting an infectious agent among vertebrates. Sources could include food, contaminated drinking water, air, radon gas in the home, etc."
 		Value:			CodeableConcept from TBD "ExposureSourceOrVectorVS"
 
 		Element:		ExposureMethod
+		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"How the exposure occurred, e.g. cutaneous contact, injection, ingestion, sexual contact, inhalation."
 		Value:			CodeableConcept from TBD "ExposureMethodVS"
 
 		Element:		ExposureReason
+		Based on:		ObservationComponent
 		Concept:		TBD
-		Based on:		Reason
 		Description:	"Why the exposure occurred."
 		Value:			CodeableConcept from ExposureReasonVS
 
-
-EntryElement:	EnvironmentalExposures   // not yet mapped
+		// This is redundant with RouteIntoBody, but that isn't an ObservationComponent
+		Element:		ExposureRoute
+		Based on:		ObservationComponent
+		Concept:		MTH#C0013153
+		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
+		
+		
+EntryElement:	EnvironmentalExposures 
+Based on:		QuestionAnswerPanel 
 Concept:		TBD
-Based on:		Panel
-Members.Finding
-includes 0..*			ref(AnimalExposure)
-//includes 0..*			TBD "RadiationExposure"
-//includes 0..*			TBD "AllergenExposure"
-//includes 0..*			TBD "AirQuality"
-//includes 0..*			TBD "WaterQuality"
+0..0			Value
+				ObservationCode is TBD#TBD
+				Members.Observation
+includes 0..*	ref(AnimalExposure)
+//includes 0..*	TBD "RadiationExposure"
+//includes 0..*	TBD "AllergenExposure"
+//includes 0..*	TBD "AirQuality"
+//includes 0..*	TBD "WaterQuality"
 
 	EntryElement:	AnimalExposure
 	Concept:		MTH#C0238646
-	Based on:		ExposureToSubstance
+	Based on:		ExposureToAgent
 	Description:	"The type of animals or pets the subject is exposed to."
 	1..1			ExposureSourceOrVector from AnimalExposureVS
 
 
 EntryElement:	SocialEnvironment
-Based on:		Panel
+Based on:		QuestionAnswerPanel
 Concept:		TBD
 Description:	"Factors affecting the health of the subject in their daily living environment."
-				QuestionCode is TBD#TBD
-				Members.Finding
-				includes 0..1	ref(TransportationAvailability)
-				includes 0..1	ref(HousingSecurity)
-				includes 0..1	ref(PhysicalSafety)
-				includes 0..1	ref(EmotionalSafety)
-				includes 0..1	ref(DomesticViolence)
-				includes 0..*	ref(HomeEnvironmentRisk)
+0..0			Value
+				ObservationCode is TBD#TBD
+				Members.Observation
+includes 0..1	TransportationAvailability
+includes 0..1	HousingSecurity
+includes 0..1	PhysicalSafety
+includes 0..1	EmotionalSafety
+includes 0..1	DomesticViolence
+includes 0..*	HomeEnvironmentRisk
 
 	EntryElement:	TransportationAvailability
 	Based on:		QuestionAnswer
 	Concept:		TBD
 	Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 	EntryElement:	HousingSecurity
 	Based on:		QuestionAnswer
 	Concept:		TBD
 	Description:	"Whether the subject is at-risk of losing their housing or in a stable housing situation."
 	Value:			CodeableConcept from ResourceStabilityVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 	EntryElement:	PhysicalSafety
 	Based on:		QuestionAnswer
 	Concept:		TBD
 	Description:	"How often the subject feels physically safe in the subject's home environment."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 	EntryElement:	EmotionalSafety
 	Based on:		QuestionAnswer
 	Concept:		TBD
 	Description:	"Whether the subject feels physically safe in the subject's home environment."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 	EntryElement:	DomesticViolence
 	Based on:		QuestionAnswer
 	Concept:		MTH#C0206073
 	Description:	"Whether the subject experiences domestic violence."
 	Value:			CodeableConcept from QualitativeFrequencyVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 	EntryElement:	HomeEnvironmentRisk
 	Based on:		QuestionAnswer
 	Concept:		TBD
 	Description:	"A risk experienced in the home environment."
 	Value:			CodeableConcept from HomeEnvironmentRiskVS
-					QuestionCode is TBD#TBD
+					ObservationCode is TBD#TBD
 
 
 /*

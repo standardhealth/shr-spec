@@ -1,77 +1,20 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.medication
 Description:		"The SHR Medication domain contains definitions related to medications taken, or not taken, by the person of record, both currently and in the past."
-Uses:				shr.core, shr.base, shr.action, shr.entity
-
-Path:			FHIR = http://hl7.org/fhir/ValueSet
-Path:			CORE = http://standardhealthrecord.org/core/vs
-
-Element:		Medication
-Based on:		Entity
-Concept:		MTH#C0013227
-Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
-Value: 			Type from MedicationVS
-0..1			DoseForm
-0..*			Ingredient
-0..1			Brand
-0..1			OverTheCounter
-
-		Element:		DoseForm
-		Concept:		MTH#C0013058
-		Description:	"The form in which active and/or inert ingredient(s) are physically presented."
-		Value:			CodeableConcept from FHIR/medication-form-codes
-
-		Element:		Ingredient
-		Concept:		MTH#C3176062
-		Description:	"Specifies how many (or how much) of an ingredient there is in this Medication. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
-		Value:			CodeableConcept from MedicationVS
-		1..1			IngredientAmount
-		1..1			AmountOfMedication
-		1..1			IsActiveIngredient
-
-			Element:		IngredientAmount
-			Concept:		TBD
-			Description:	"The amount of an ingredient in a medication."
-			Value:			Quantity
-
-			Element:		AmountOfMedication
-			Concept:		TBD
-			Description:	"A standardized measure or discrete amount of medication serving as a reference for dosing or strength, for example, 1 tablet."
-			Value:			Quantity
-
-			Element:		IsActiveIngredient
-			Concept:		TBD
-			Description:	"True if the ingredient is an active ingredient in the medication."
-			Value:			CodeableConcept from YesNoVS
-
-		Element:		Brand
-		Concept:		TBD
-		Description:	"If the product is branded, and if so, the brand name of a product."
-		Value: 			CodeableConcept from YesNoVS
-		0..1			BrandName
-
-			Element: 		BrandName
-			Concept:		TBD
-			Description:	"The marketing name for a brand name product"
-			Value:			string
-
-		Element:		OverTheCounter
-		Concept:		TBD
-		Description:	"True if the medication is available to consumers without a prescription."
-		Value:			CodeableConcept from YesNoVS
+Uses:				shr.core, shr.base, shr.action, shr.entity, shr.behavior, shr.finding
 
 /*
-EntryElement:	MedicationRegimen
+EntryElement:	MedicationRegimen   // Definitional 
 Concept:		MTH#C0237125
-Description:	"Use or application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
+Description:	"Defines a specific application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
 1..*			MedicationUsePlanned
 */
 		
-Element:		MedicationAction
-Based on:		Action
+Element:		MedicationTopic
+Based on:		ActionTopic
 Concept:		TBD
 Description:	"A course or dose of medication for a patient, independent of context of being recommended, used, or not used. Medication use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
-1..1			Medication
+1..1			MedicationOrCode
 0..1			Dosage
 
 	Element:		Dosage
@@ -79,29 +22,29 @@ Description:	"A course or dose of medication for a patient, independent of conte
 	Description:	"The dosage of the medication as prescribed. Do not include if dosage was not known."
 	1..1			AmountPerDose
 	1..1			TimingOfDoses
-	1..1			DoseAsNeededIndicator
+	1..1			AsNeededIndicator
 	0..1			DoseInstructionsText
-	0..*			AdditionalDoseInstruction
+	0..*			AdditionalDoseInstruction from http://hl7.org/fhir/ValueSet/additional-instruction-codes
 	0..1			RouteIntoBody
-	0..1			AdministrationMethod
+	0..1			AdministrationMethod from http://hl7.org/fhir/ValueSet/administration-method-codes
 	0..1			AdministrationBodySite
-	0..*			MaximumDosePerTimePeriod
+	0..1			MaximumDosePerTimePeriod
 
 		Element:		AmountPerDose
 		Concept:		TBD
 		Description:	"The amount of medication taken at each dose, as a quantity or range."
-		Value:			Quantity or Range
+		Value:			SimpleQuantity or Range
 
 		Element:		TimingOfDoses
 		Concept:		TBD
 		Description:	"When doses of medication should be administered."
-		Value:			TBD "Timing"
+		Value:			Timing
 
-		Element:		DoseAsNeededIndicator
+		Element:		AsNeededIndicator
 		Concept:		MTH#C1883728
-		Description:	"Indicates that a drug or therapy should be used as often as the patient decides it is necessary."
-		Value:			CodeableConcept from YesNoVS
-
+		Description:	"Indicates the pre-condition under which the drug or intervention should be used."
+		Value:			boolean or CodeableConcept could be from http://hl7.org/fhir/ValueSet/medication-as-needed-reason
+		
 		Element:		DoseInstructionsText
 		Concept:		TBD
 		Description:	"The directions (signetur) on the drug prescription or dispensing record."
@@ -110,17 +53,17 @@ Description:	"A course or dose of medication for a patient, independent of conte
 		Element:		AdditionalDoseInstruction
 		Concept:		MTH#C1644714
 		Description:	"Supplemental instructions - e.g. 'with meals'."
-		Value:			CodeableConcept from FHIR/additional-instruction-codes
+		Value:			CodeableConcept
 
 		Element:		RouteIntoBody
 		Concept:		MTH#C0013153
 		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
-		Value:			CodeableConcept from FHIR/route-codes
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
 		Element:		AdministrationMethod
 		Concept:		MTH#C1547585
 		Description:	"Technique for administering medication."
-		Value:			CodeableConcept from FHIR/administration-method-codes
+		Value:			CodeableConcept
 
 		Element:		AdministrationBodySite
 		Concept:		MTH#C0229986
@@ -130,23 +73,25 @@ Description:	"A course or dose of medication for a patient, independent of conte
 		Element:		MaximumDosePerTimePeriod
 		Concept:		TBD
 		Description:	"The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
-		1..1			AmountOfMedication
-		1..1			Duration
+		Value:			Ratio
 
+			Element:		AmountOfMedication
+			Concept:		TBD
+			Description:	"A standardized measure or discrete amount of medication serving as a reference for dosing or strength, for example, 1 tablet."
+			Value:			Quantity
 
-
-EntryElement:	MedicationDispenseAction
+EntryElement:	MedicationDispenseTopic
 Concept:		TBD
-Based on:		MedicationAction
+Based on:		MedicationTopic
 Description:	"The action of ordering and deliving a medication to the party responsible for administering the medication."
-0..1			NumberOfRepeatsAllowed
+0..1			NumberOfRefillsAllowed
 0..1			QuantityPerDispense
 0..1			SupplyDuration
 
-	Element:		NumberOfRepeatsAllowed
+	Element:		NumberOfRefillsAllowed
 	Concept:		TBD
-	Description:	"How many times the medication prescription can be refilled. This integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
-	Value:			positiveInt   // Should be unsignedInt - FHIR issue reported
+	Description:	"The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
+	Value:			positiveInt  // should be unsignedInt, but that causes a mapping error in FHIR 3.0
 
 	Element:		QuantityPerDispense
 	Concept:		TBD
@@ -158,36 +103,39 @@ Description:	"The action of ordering and deliving a medication to the party resp
 	Description:	"Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
 	Value: 			Duration
 	
-
-	
 	
 //----------- Actions ------------
 
 	
 EntryElement:	MedicationUsed
-Based on:		MedicationAction
+Based on:		MedicationTopic
 Concept:		TBD
 Description:	"A record of the use of a medication."
-				ActionContext is type PerformedContext				
-0..1			Adherence
+0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
+				ActionContext is type PerformedContext
+				PerformedContext.Status from 	http://hl7.org/fhir/ValueSet/medication-statement-status
+0..0			PerformedContext.Method // because of Dosage.Method				
 
-	Element:		Adherence  // TODO: This could be a statement relating to behavior, or an attribute of a particular MedicationUsed
-	Concept:		MTH#C2364172
-	Description:	"The frequency that the stated treatment plan, prescription, or protocol is followed. A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
-	Value:			CodeableConcept from QualitativeFrequencyVS
-	0..*			Reason from MedicationNonAdherenceReasonVS
-	0..1			Details
-
+EntryElement:	Adherence  // This could be attached to MedicationUsed directly as an extension, but modeling as an observation avoids creating an extension
+Based on:		BehavioralFinding
+Concept:		MTH#C2364172
+Description:	"The degree (frequency) that the stated treatment plan, prescription, or protocol was followed. A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
+Value:			CodeableConcept from QualitativeFrequencyVS
+				ObservationCode is MTH#C2364172
+0..*			ReasonForBehavior from MedicationNonAdherenceReasonVS
+// FocalSubject is an intervention
 
 EntryElement:	MedicationNotUsed
-Based on:		MedicationAction
+Based on:		MedicationTopic
 Concept:		TBD
 Description:	"A record of a medication NOT used. Although usually not required, a medication not used is sometimes reported when deviating from normal expectation or care plan."
 				ActionContext is type NotPerformedContext
-				Reason from MedicationNotUsedReasonVS
+				ActionContext.Reason from MedicationNotUsedReasonVS
+0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category		
+0..0			Dosage		
 				
 EntryElement:	MedicationRequested
-Based on:		MedicationAction
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
 				ActionContext is type RequestedContext
@@ -195,41 +143,35 @@ Description:	"An order for a medication to be dispensed and instructions for use
 				ActionContext.Priority from http://hl7.org/fhir/ValueSet/medication-request-priority
 				
 EntryElement:	MedicationNotRequested
-Based on:		MedicationAction
+Based on:		MedicationTopic
 Concept:		TBD
 Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
-				ActionContext is type NotRequestedContext
-				Reason from MedicationNotUsedReasonVS
-
-EntryElement:	MedicationUsePlanned
-Based on:		MedicationAction
-Concept:		TBD
-Description:	"A future intended performance of medication use."
-				ActionContext is type PlannedContext
+				ActionContext is type RequestedAgainstContext
+				ActionContext.Reason from MedicationNotUsedReasonVS
 
 Element:		MedicationDispensed
-Based on:		MedicationDispenseAction
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
 				ActionContext is type PerformedContext
 					
 Element:		MedicationNotDispensed
-Based on:		MedicationDispenseAction
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"Indicates that a medication product has NOT been dispensed for a named person/patient. This may be a result of the timing out of an order or detection of pharmacist of duplicate prescription or other reason."
 				ActionContext is type NotPerformedContext			
 
 
-// TODO: Not yet mapped to FHIR
-EntryElement:	MedicationChangeAction
-Based on:		Action
+// TODO: Not yet mapped to http://hl7.org/fhir/ValueSet
+EntryElement:	MedicationChangeTopic
+Based on:		ActionTopic
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."
 				ActionContext is type PerformedContext
 1..1			Type from MedicationChangeTypeVS  //"Whether the change is a dose change, switch to a new medication, or discontinuation."
 0..*			MedicationBeforeChange   //might be more than one
 0..*			MedicationAfterChange
-				Reason from MedicationChangeReasonVS
+				ActionContext.Reason from MedicationChangeReasonVS
 
 
 		Element:		MedicationBeforeChange

@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.behavior
 Description:	"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.environment, shr.medication, shr.encounter, shr.allergy 
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.environment, shr.medication, shr.encounter, shr.allergy, shr.procedure
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
@@ -10,18 +10,19 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 
 Abstract Element: BehavioralFinding
 Concept:		MTH#C0004927
-Based on:		Finding
+Based on:		QuestionAnswer
 Description:	"A statement about observable responses, actions, or activities of the subject. Can be used to assert or deny behaviors."
 				Category includes LNC#54511-1 "Behavior"
-0..*			TBD "Impact" // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+0..*			ReasonForBehavior  // behaviors have motivations
 0..1			ReadinessToChange
-0..1			Method is type AssessmentTool
+0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
 
-	Element:		AssessmentTool
+	Element:		ReasonForBehavior
+	Based on:		Reason
 	Concept:		TBD
-	Based on:		Method
-	Description:	"The name of the formal assessment or screening tool used to assess the behavior."
+	Description:	"Why the behavior has taken or is taking place."
 	Value:			CodeableConcept
+
 
 	Element:		ReadinessToChange
 	Concept:		TBD
@@ -30,20 +31,26 @@ Description:	"A statement about observable responses, actions, or activities of 
 
 
 EntryElement:	SubstanceUse
-Based on:		ExposureToSubstance
+Based on:		ExposureToAgent
 Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
-Value:			CodeableConcept
-				Substance from SubstanceOfAbuseVS
+Value:			CodeableConcept from SubstanceOfAbuseVS
 				Category includes MTH#C024251 "Substance Use"
+				Components.ObservationComponent
+includes 0..1	FrequencyOfUse
+
+		Element:		FrequencyOfUse
+		Based on:		ObservationComponent
+		Concept:		MTH#C0556346
+		Description:	"A description of the frequency of substance use."
+		Value:			CodeableConcept could be from SemiquantitativeFrequencyVS	
 
 EntryElement:   IntravenousDrugUse
 Based on:       SubstanceUse
 Concept:        MTH#C0242566
 Description:    "Records whether the subject injects recreational drugs."
-Value:			CodeableConcept from YesNoUnknownVS
-1..1            RouteIntoBody is MTH#C1522726 "Intravenous route"
-1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
+1..1            Components.ObservationComponent.RouteIntoBody is MTH#C1522726 "Intravenous route"
+1..1            Components.ObservationComponent.ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
 
 // It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUse so there is an explicit substance.
@@ -52,15 +59,15 @@ Based on:		BehavioralFinding
 Concept:		LNC#72166-2
 Description:	"Records the subject's use of tobacco."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
+1..1			Subject  // constrain Subject to 1..1
 
 EntryElement:	NicotineUse
 Based on:		SubstanceUse
 Concept:		LNC#11367-0
 Description:	"Records the history of a subject's use of nicotine."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
-				Substance is MTH#C2363943
-				RouteIntoBody from TBD "NicotineRouteVS"
-				ExposureMethod from TBD "NicotineExposureMethodVS"
+				Value is MTH#C2363943 "Nicotine"
+//				RouteIntoBody from TBD "NicotineRouteVS"
+//				ExposureMethod from TBD "NicotineExposureMethodVS"
 
 
 // How can we indicate that a subject used to be an alcoholic, but is now "on the wagon"?
@@ -68,12 +75,13 @@ EntryElement:	AlcoholUse
 Based on:		SubstanceUse
 Concept:		MTH#C0001948
 Description:	"The history of the subject's use of alcohol."
-Value:			CodeableConcept from TBD "AlcoholUseVS"  // e.g. former heavy drinker, non-drinker, light drinker, moderate drinker, heavy drinker, binge drinker
-				Substance is SCT#398624005 "alcohol"
-0..1			AssessmentTool from AlcoholUseScreeningToolVS
-0..1			AlcoholBingeFrequency
+				Value is SCT#398624005 "alcohol"
+0..1			FindingMethod from AlcoholUseScreeningToolVS
+				Components.ObservationComponent
+includes 0..1	AlcoholBingeFrequency
 
 	Element:		AlcoholBingeFrequency
+	Based on:		ObservationComponent
 	Concept:		MTH#C0556346
 	Description:	"How often have you had 6 or more Units if female, or 8 or more if male, on a single occasion in the last year?."
 	Value:			CodeableConcept from SemiquantitativeFrequencyVS
@@ -82,14 +90,15 @@ Value:			CodeableConcept from TBD "AlcoholUseVS"  // e.g. former heavy drinker, 
 EntryElement:	Religion
 Concept:		LNC#81364-2
 Based on:		BehavioralFinding
+Description:	"The affiliation of the person with a recognized religious group. "
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
 				Category includes #religion
 
 EntryElement:	ReligiousPracticeStatus
-Concept:		TBD
 Based on:		BehavioralFinding
+Concept:		TBD
 Description:	"The extent to which the religious practice is actively followed."
-Value:			CodeableConcept from ReligiousPracticeStatusVS
+Value:			CodeableConcept from  ReligiousPracticeStatusVS
 				Category includes #religion
 
 EntryElement:	ReligiousRestriction
@@ -103,40 +112,40 @@ EntryElement:	ReligiousCongregation
 Concept:		TBD
 Based on:		BehavioralFinding
 Description:	"A group of place of religious practice."
-Value:			string  
+Value:			string
 				Category includes #religion
 
 				
 EntryElement:	DietFollowed
 Concept:		TBD
-Based on:		Finding
+Based on:		QuestionAnswer
 Description:	"A type of nutritional plan followed by the subject."
 Value:			CodeableConcept from DietFollowedVS if covered
 				Category includes #nutrition
 
 EntryElement:	HasSufficientFood
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"Frequency that the person of record unable to obtain food to stay hunger."
-Based on:		Finding
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #nutrition
 
 EntryElement:	DietNutritionConcern
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"An anxiety or worry about the diet or nutritional intake of the subject."
-Based on:		Finding
 Value:			CodeableConcept from DietNutritionConcernVS
 				Category includes #nutrition
 
 EntryElement:	OverallSleepQuality
-Based on:		Finding
+Based on:		QuestionAnswer
 Concept:		LNC#28323-4
 Description:	"Self-reported sleep quality."
 Value:			CodeableConcept from PerformanceGradingScaleVS
 				Category includes #sleep
 
 EntryElement:	SleepQualityCause
-Based on:		Finding
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"Reason for poor sleep quality."
 Value:			CodeableConcept from SleepQualityCauseVS
@@ -145,33 +154,33 @@ Value:			CodeableConcept from SleepQualityCauseVS
 EntryElement:	TroubleFallingAsleep
 Concept:		TBD
 Description:	"How often the subject has trouble falling asleep."
-Based on:		Finding
+Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 	
 EntryElement:	TroubleStayingAsleep
 Concept:		TBD
 Description:	"How often the subject has trouble staying asleep."
-Based on:		Finding
+Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 
 EntryElement:	WakeFeelingRested
 Concept:		TBD
 Description:	"How often the subject feels rested when they wake up."
-Based on:		Finding
+Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 
 EntryElement:	HoursSleepPerNight
+Based on:		QuestionAnswer
 Concept:		LNC#65968-0
 Description:	"Typical hours spent sleeping per night."
-Based on:		Finding
-Value:			Quantity with units UCUM#1
+Value:			IntegerQuantity
 				Category includes #sleep
 
 EntryElement:	PhysicalActivityLevel
-Based on:		Panel
+Based on:		QuestionAnswer
 Concept:		LNC#28323-4
 Description:	"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288."
 Value:			CodeableConcept from QualitativeValueScaleVS
@@ -181,12 +190,12 @@ EntryElement:	ExerciseHoursPerWeek
 Concept:		TBD
 Based on:		BehavioralFinding
 Description:	"Hours of moderate or vigorous activity per week."
-Value:			Quantity with units UCUM#1  // TODO: potentially change to ratio with Units hours per one week
+Value:			IntegerQuantity  // TODO: potentially change to ratio with Units hours per one week
 				Category includes #exercise 
 
 EntryElement:	PhysicalActivityLimitation
 Concept:		TBD
-Based on:		Finding
+Based on:		QuestionAnswer
 Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions."
 Value:			CodeableConcept from PhysicalActivityLimitationVS
 				Category includes #exercise 
@@ -195,7 +204,7 @@ EntryElement:	SubstanceAbuseTreatment
 Concept: 		TBD
 Based on:		ProcedurePerformed
 Description:	"The treatment program used to address a substance abuse problem."
-Value:			CodeableConcept from SubstanceAbuseTreatmentTypeVS
+				Type from SubstanceAbuseTreatmentTypeVS
 
 EntryElement:	ViolentRiskToOthers
 Concept:		TBD

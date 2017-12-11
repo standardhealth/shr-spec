@@ -4,14 +4,38 @@ Target:		FHIR_STU_3
 
 
 Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
+	RelatedEncounter maps to context
 	Informant maps to asserter
-	Entry.OriginalCreationDate maps to assertedDate
+//	Author maps to recorder (not until FHIR 3.1)
+	Subject maps to subject
+	Entry.CreationTime maps to assertedDate
 	Value maps to code
 	Category maps to category
 	ClinicalStatus maps to clinicalStatus
 	Onset maps to onset[x]
 	Abatement maps to abatement[x]
-	BodySite.Value maps to bodySite   // Condition only uses a CodeableConcept, not a full BodySite resource
+	BodySiteOrCode[CodeableConcept] maps to bodySite   
+	// FHIR Condition uses a CodeableConcept, not a full BodySite resource, but there is a standard extension to link to a BodySite resource.
+	BodySiteOrCode[BodySite] maps to http://hl7.org/fhir/StructureDefinition/body-structure
 	Severity maps to severity
 	Stage maps to stage
 	Stage.Value maps to stage.summary
+	Evidence maps to evidence
+
+	
+/* not mapped
+0..1			FindingMethod
+0..1			FindingStatus
+0..1			WhenClinicallyRecognized
+0..1			Preexisting
+0..1			Criticality
+
+	Onset.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
+	Onset.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime	
+	Onset.GeneralizedTemporalContext.GeneralizedAge[Age] maps to effective[x].onsetAge
+	
+	Abatement.GeneralizedTemporalContext.GeneralizedDateTime[TimePeriod] maps to effective[x].Period
+	Onset.GeneralizedTemporalContext.GeneralizedDateTime[dateTime] maps to effective[x].dateTime	
+	Onset.GeneralizedTemporalContext.GeneralizedAge[Age] maps to effective[x].onsetAge
+
+*/

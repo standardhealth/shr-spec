@@ -4,39 +4,35 @@ Namespace:	shr.finding
 CodeSystem:		LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		DAR = http://hl7.org/fhir/ValueSet/observation-valueabsentreason
 
 
-ValueSet:			ExposureReasonVS
-Description:		"The reason that an exposure occurred."
-#voluntary			"The subject voluntarily subjects him or herself to the exposure, for example, smoking or using a drug recreationally."
-#addiction			"The subject is addicted to the substance."
-#self_prescribed	"The subject takes a non-prescription substance to address health issues or for prevention, e.g. herbal remedy for depression."
-#occupational		"Exposure in a workplace setting."
-#home				"Exposure in home setting."
-#passive			"The exposure occurred or occurs involuntarily, e.g., exposure to second-hand smoke."
-#accidental			"The exposure as a result of an accident."
+ValueSet: 					ValueAbsentReasonVS
+Description:				"Reasons that a value associated with a test or other finding is missing."
+Includes codes from DAR
+#missing_refused			"Human source was asked but declined to respond to the question, or an applicable question was left unanswered."
+#missing_noexplanation		"The reason the information is not present is not known."
+#missing_nonesuch			"The answer is missing because nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
+// The following values apply to lab tests
+#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
+#missing_specimen			"Missing due to a problem with the specimen, e.g. contamination, clotting, improper tube type, improper storage, too small, etc."
+#missing_malfunction		"Missing due to instrument malfunction."
 
-
-
-ValueSet:			ManifestationVS
-Description:		"An observable sign or symptom of an underlying physical or psychological cause."
-// TODO: Not sure the following implicit VS includes all signs and symptoms
-Includes codes descending from SCT#418799008 "Condition reported by subject or history provider"
 
 ValueSet:			ObservationResultVS
 Includes codes from LNC
 Includes codes from MTH
 Includes codes from SCT
 
-/* Not currently used - These are good reasons for why any procedure isn't done
-ValueSet:			ObservationNotMadeReasonVS
-Description:		"An explanation of why the observation was not made (or ordered), i.e., why test was not ordered, or why a question was not asked. Since an observation is really a type of procedure, reasons that an observation was not carried out are similar to reasons any procedure might not be carried out."
-#not_applicable		"The question or data element is not applicable, or based on other answers, no answer to this question is required."
-#contraindicated	"The test or observation is contraindicated, i.e., the subject is intolerant or at risk of an adverse reaction if subjected to the test or observation."
-#redundant			"The observation has made previously, or a previous test result is available, a new  test or observation would be redundant."
-#cost				"The observation would be too costly."
-#refused			"The subject refused the observation."
 
+
+/* Not currently used - These are good reasons for why any procedure isn't done
+ValueSet:			AssertionContextVS
+Description:		"A code describing whether the condition in question is present, absent, or undetermined."
+#present			"Known present"
+#suspected_present	"Suspected to be present"
+#suspected_absent 	"Suspected to be absent"
+#absent				"Known not present"
 
 ValueSet:		 AssessmentTypeVS
 Description:	"A code describing the type of assessment activity, e.g. diagnosis, prognosis, disease progression, healing, toxicity, treatment efficacy."
