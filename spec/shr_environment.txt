@@ -33,13 +33,11 @@ includes 0..*	NonCashBenefit
 	Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
 	Value:			Quantity with units CURRENCY#USD
 
-
 	EntryElement:	IncomeSource
 	Concept:		MTH#C0557162
 	Based on:		QuestionAnswer
 	Description:	"Where the household income comes from."
 	Value:			CodeableConcept from IncomeSourceVS
-
 
 	EntryElement:	IncomeStability
 	Concept:		MTH#C1820459
@@ -47,13 +45,11 @@ includes 0..*	NonCashBenefit
 	Description:	"Whether the subject regards his or her source of income as dependable."
 	Value:			CodeableConcept from ResourceStabilityVS
 
-
 	EntryElement:	CanAffordFood
 	Concept:		TBD
 	Based on:		QuestionAnswer
 	Description:	"How often can the subject afford food?"
 	Value:			CodeableConcept from QualitativeFrequencyVS
-
 
 	EntryElement:	CanAffordHousing
 	Concept:		TBD
@@ -138,38 +134,46 @@ includes 0..1	NumberOfDependents
 
 //------------- Exposures ---------------------
 
-EntryElement:	ExposureToSubstance
-Based on:		Observation //???
+EntryElement:	ExposureToAgent
+Based on:		Observation
 Concept:		MTH#C0332157
-Description:	"A statement about exposure to a substance, type of substance, or disease vector potentially affecting health, including pollutants, blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, or prenatal exposures to teratogens. Can be used to assert or deny such exposures."
-0..1			Substance
-				Category includes MTH#C0332157 "Exposure"
-// Components????
-0..*			ExposureSourceOrVector
-0..1			TBD "AmountOrDosage"
-0..1			ExposureReason
-0..1			ExposureMethod
-0..1			RouteIntoBody
-0..*			RelatedFinding  // Related tests that might confirm or refute the exposure and measure the effects of the exposure
-0..*			TBD "Impact" // adverse event, allergic reaction, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+Description:	"A finding about exposure to a substance, type of substance, or disease vector potentially affecting health, including blood products, pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens. Can be used to deny such exposures via the NegationFlag."
+Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code
+				ObservationCode is SCT#24932003 "Exposure to"
+				Components.ObservationComponent
+includes 0..*	ExposureSourceOrVector
+//includes 0..1	TBD "AmountOrDosage" --- TBDs blow up CLI
+includes 0..1	ExposureReason
+includes 0..1	ExposureMethod
+includes 0..1	ExposureRoute
+
 
 		Element:		ExposureSourceOrVector
+		Based on:		ObservationComponent
 		Concept:		MTH#C0012656
 		Description:	"Where the substance originated. Vectors include animals (e.g., tick, mosquito, cats, livestock) capable of transmitting an infectious agent among vertebrates. Sources could include food, contaminated drinking water, air, radon gas in the home, etc."
 		Value:			CodeableConcept from TBD "ExposureSourceOrVectorVS"
 
 		Element:		ExposureMethod
+		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"How the exposure occurred, e.g. cutaneous contact, injection, ingestion, sexual contact, inhalation."
 		Value:			CodeableConcept from TBD "ExposureMethodVS"
 
 		Element:		ExposureReason
+		Based on:		ObservationComponent
 		Concept:		TBD
-		Based on:		Reason
-		Description:	"Why the exposure occurred."  // TODO: How or why?
+		Description:	"Why the exposure occurred."
 		Value:			CodeableConcept from ExposureReasonVS
 
-
+		// This is redundant with RouteIntoBody, but that isn't an ObservationComponent
+		Element:		ExposureRoute
+		Based on:		ObservationComponent
+		Concept:		MTH#C0013153
+		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
+		
+		
 EntryElement:	EnvironmentalExposures 
 Based on:		QuestionAnswerPanel 
 Concept:		TBD
@@ -184,7 +188,7 @@ includes 0..*	ref(AnimalExposure)
 
 	EntryElement:	AnimalExposure
 	Concept:		MTH#C0238646
-	Based on:		ExposureToSubstance
+	Based on:		ExposureToAgent
 	Description:	"The type of animals or pets the subject is exposed to."
 	1..1			ExposureSourceOrVector from AnimalExposureVS
 

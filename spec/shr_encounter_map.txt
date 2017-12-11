@@ -4,16 +4,18 @@ Target:		FHIR_STU_3
 
 EncounterPerformed maps to Encounter:
 	Subject maps to subject
-	TypeAsaCoding maps to class
+	TypeAsaCoding maps to class  // class is a coding, not a CodeableConcept. We should be able to handle that
 	ServiceProvider maps to serviceProvider
 	ServiceGiven maps to type
 	PerformedContext.Status maps to status
-	PerformedContext.OccurrenceTimeOrPeriod  maps to period
+	PerformedContext.OccurrenceTimeOrPeriod maps to period
 	PerformedContext.Participant maps to participant.individual
-//	Participant.Patient maps to participant.individual
-//	Participant.Practitioner maps to participant.individual
-//	Participant.RelatedPerson maps to participant.individual
-	PerformedContext.Participant.ParticipationPeriod maps to participant.period
+	constrain participant.type to 0..1
 	PerformedContext.Participant.ParticipationType maps to participant.type
-
+	PerformedContext.Participant.ParticipationPeriod maps to participant.period
+	PerformedContext.RelatedRequest maps to incomingReferral
+	constrain location to 0..1
+	PerformedContext.Facility maps to location.location
+	PerformedContext.Reason maps to reason
+// what maps to apppointment? RelatedPromise?
 	TBD "HealthConcern" maps to indication
