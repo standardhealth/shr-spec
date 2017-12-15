@@ -34,9 +34,9 @@ EntryElement:	SubstanceUse
 Based on:		ExposureToAgent
 Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
-Value:			CodeableConcept from SubstanceOfAbuseVS
+				FocalSubject from SubstanceOfAbuseVS
 				Category includes MTH#C024251 "Substance Use"
-				Components.ObservationComponent
+				ObservationComponent
 includes 0..1	FrequencyOfUse
 
 		Element:		FrequencyOfUse
@@ -49,8 +49,8 @@ EntryElement:   IntravenousDrugUse
 Based on:       SubstanceUse
 Concept:        MTH#C0242566
 Description:    "Records whether the subject injects recreational drugs."
-1..1            Components.ObservationComponent.RouteIntoBody is MTH#C1522726 "Intravenous route"
-1..1            Components.ObservationComponent.ExposureMethod is MTH#C0021494 "Intravenous Injection"
+1..1            ObservationComponent.RouteIntoBody is MTH#C1522726 "Intravenous route"
+1..1            ObservationComponent.ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
 
 // It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUse so there is an explicit substance.
@@ -65,27 +65,34 @@ EntryElement:	NicotineUse
 Based on:		SubstanceUse
 Concept:		LNC#11367-0
 Description:	"Records the history of a subject's use of nicotine."
-				Value is MTH#C2363943 "Nicotine"
+				FocalSubject is MTH#C2363943 "Nicotine"
 //				RouteIntoBody from TBD "NicotineRouteVS"
 //				ExposureMethod from TBD "NicotineExposureMethodVS"
 
 
 // How can we indicate that a subject used to be an alcoholic, but is now "on the wagon"?
 EntryElement:	AlcoholUse
-Based on:		SubstanceUse
+Based on:		Panel
 Concept:		MTH#C0001948
 Description:	"The history of the subject's use of alcohol."
-				Value is SCT#398624005 "alcohol"
-0..1			FindingMethod from AlcoholUseScreeningToolVS
-				Components.ObservationComponent
+				FocalSubject is SCT#398624005 "alcohol"
+				FindingMethod from AlcoholUseScreeningToolVS
+				Members.Observation
 includes 0..1	AlcoholBingeFrequency
 
 	Element:		AlcoholBingeFrequency
-	Based on:		ObservationComponent
+	Based on:		Observation
 	Concept:		MTH#C0556346
 	Description:	"How often have you had 6 or more Units if female, or 8 or more if male, on a single occasion in the last year?."
 	Value:			CodeableConcept from SemiquantitativeFrequencyVS
 
+				
+EntryElement:	SubstanceAbuseTreatment
+Concept: 		TBD
+Based on:		ProcedurePerformed
+Description:	"The treatment program used to address a substance abuse problem."
+				Type from SubstanceAbuseTreatmentTypeVS
+	
 
 EntryElement:	Religion
 Concept:		LNC#81364-2
@@ -137,38 +144,44 @@ Description:	"An anxiety or worry about the diet or nutritional intake of the su
 Value:			CodeableConcept from DietNutritionConcernVS
 				Category includes #nutrition
 
-EntryElement:	OverallSleepQuality
-Based on:		QuestionAnswer
+
+EntryElement:	SleepQuality
+Based on:		Panel
 Concept:		LNC#28323-4
 Description:	"Self-reported sleep quality."
 Value:			CodeableConcept from PerformanceGradingScaleVS
 				Category includes #sleep
+				Members.Observation
+includes 0..*	SleepQualityCause
+includes 0..1	TroubleFallingAsleep
+includes 0..1	TroubleStayingAsleep
+includes 0..1	WakeFeelingRested
+includes 0..1	HoursSleepPerNight
 
 EntryElement:	SleepQualityCause
-Based on:		QuestionAnswer
+Based on:		Observation
 Concept:		TBD
 Description:	"Reason for poor sleep quality."
 Value:			CodeableConcept from SleepQualityCauseVS
-				Category includes #sleep
 
 EntryElement:	TroubleFallingAsleep
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"How often the subject has trouble falling asleep."
-Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 	
 EntryElement:	TroubleStayingAsleep
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"How often the subject has trouble staying asleep."
-Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 
 EntryElement:	WakeFeelingRested
+Based on:		QuestionAnswer
 Concept:		TBD
 Description:	"How often the subject feels rested when they wake up."
-Based on:		QuestionAnswer
 Value:			CodeableConcept from QualitativeFrequencyVS
 				Category includes #sleep
 
@@ -179,6 +192,19 @@ Description:	"Typical hours spent sleeping per night."
 Value:			IntegerQuantity
 				Category includes #sleep
 
+				
+EntryElement:	PhysicalActivity
+Based on:		Panel
+Concept:		TBD
+Description:	"Questions related to physical activity."
+0..0			Value
+				Category includes #exercise
+				Members.Observation
+includes 0..1	PhysicalActivityLevel
+includes 0..1	ExerciseHoursPerWeek
+includes 0..*	PhysicalActivityLimitation
+	
+				
 EntryElement:	PhysicalActivityLevel
 Based on:		QuestionAnswer
 Concept:		LNC#28323-4
@@ -200,11 +226,7 @@ Description:	"Anything that limits physical activity, including health factors, 
 Value:			CodeableConcept from PhysicalActivityLimitationVS
 				Category includes #exercise 
 
-EntryElement:	SubstanceAbuseTreatment
-Concept: 		TBD
-Based on:		ProcedurePerformed
-Description:	"The treatment program used to address a substance abuse problem."
-				Type from SubstanceAbuseTreatmentTypeVS
+
 
 EntryElement:	ViolentRiskToOthers
 Concept:		TBD
