@@ -67,60 +67,63 @@ Description:	"Documents the absence of wounds at a given body site."
 				ObservationCode is TBD#TBD
 1..1			NegationFlag is true
 
-
+// TODO: All must refer to the same wound
 EntryElement:	WoundAssessment
-Based on:		Observation
+Based on:		Panel
 Concept:		LNC#54574-9
 Description:	"Group of observations regarding the properties and severity of a wound."
 0..0			Value
 				ObservationCode is LNC#54574-9
 // 				FocalSubject is XXXXXXXXXXXX
-				Components.ObservationComponent
-includes 0..1	VisibleInternalStructure
+				Members.Observation
+includes 0..*	VisibleInternalStructure
 includes 0..1	WoundSize
-includes 0..1	WoundTunneling
+includes 0..*	WoundTunneling
+includes 0..*	WoundUndermining
 includes 0..1	WoundBedAndEdge
+includes 0..1	WoundExudate
 
 		Element:		VisibleInternalStructure
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		TBD
 		Description:	"An internal body structure visible from outside the body, for example, due to injury."
 		Value:			CodeableConcept from VisibleInternalStructureVS
+		
 		Element:		WoundSize
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		MTH#C3496620
 		Description:	"The estimated or measured dimensions of a wound."
-						Components.ObservationComponent
+						ObservationComponent
 		includes 0..1	Area 
 		includes 0..1	Circumference
 		includes 0..1	Volume
 		includes 0..1	Width
 		includes 0..1	Depth
-		includes 1..1	Length
+		includes 0..1	Length
 			
 		Element:		WoundTunneling
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		MTH#C0406830
 		Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
 		Value:			CodeableConcept from YesNoUnknownVS
-						Components.ObservationComponent
-		includes 1..1	ClockDirection
-		includes 1..1	Length
+						ObservationComponent
+		includes 0..1	ClockDirection
+		includes 0..1	Length
 
 		Element:		WoundUndermining
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		TBD
 		Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Tunneling is just under the skin surface and doesn't involve deep tissue, and sinus tracts are a narrow tract that are away from the wound margins and go downward into the wound."
 		Value:			CodeableConcept from YesNoUnknownVS
-		 				Components.ObservationComponent
-		includes 1..1	ClockDirection
-		includes 1..1	Length
+		 				ObservationComponent
+		includes 0..1	ClockDirection
+		includes 0..1	Length
 
 		Element:		WoundBedAndEdge
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		TBD
 		Description:	"Description of the periphery and base of a wound."
-						Components.ObservationComponent
+						ObservationComponent
 		//includes 0..1	TBD "WoundBaseAppearance"
 		//includes 0..1	TBD "WoundBaseColor"
 		includes 0..1	WoundEdgeAppearance
@@ -135,11 +138,11 @@ includes 0..1	WoundBedAndEdge
 							ObservationCode is LNC#723204-9
 
 		Element:		WoundExudate
-		Based on:		ObservationComponent
+		Based on:		Observation
 		Concept:		TBD
 		Description:	"Description of the fluid produced by a wound."
 		0..0			Value
-		//				Components.ObservationComponent
+		//				ObservationComponent
 		//includes 0..1	TBD "WoundExudateOdor"
 		//includes 0..1	TBD "WoundExudateColor"
 		//includes 0..1	TBD "DrainageAmount"

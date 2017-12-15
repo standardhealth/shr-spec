@@ -7,8 +7,8 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 //---------- Procedures ----------------
 
-Element:		ProcedureTopic
-Based on:		ActionTopic
+Element:		Procedure
+Based on:		Action
 Concept:		TBD
 Description:	"Description of a healthcare procedure, independent of action context. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
 1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
@@ -17,7 +17,7 @@ Description:	"Description of a healthcare procedure, independent of action conte
 0..1			AssociatedStudy
 0..1			PartOf value is type ref(ProcedurePerformed) 
 // TODO: also map to Observation and MedicationAdministration
-0..1			Category  // this is a constraint on the cardinality of ActionTopic.Category
+0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
 
 		Element:		AssociatedStudy
@@ -26,8 +26,8 @@ Description:	"Description of a healthcare procedure, independent of action conte
 		Value:			ref(Study)
 
 		
-Element:		SpecimenCollectionTopic
-Based on:		ProcedureTopic
+Element:		SpecimenCollection
+Based on:		Procedure
 Concept:		TBD
 Description:	"Attribution specific to the collection of a specimen."
 0..*			AmountOrSize
@@ -38,8 +38,8 @@ Description:	"Attribution specific to the collection of a specimen."
 	Value:			SimpleQuantity
 
 
-Element:		ImagingProcedureTopic
-Based on:		ProcedureTopic
+Element:		ImagingProcedure
+Based on:		Procedure
 Concept:		TBD
 Description:	"Experimental class for an imaging procedure. This class is still incomplete at this time."
 0..*			ImagingSubstance
@@ -49,8 +49,8 @@ Description:	"Experimental class for an imaging procedure. This class is still i
 	Description:	"Substance used for this imaging procedure such as a contrast agent."
 	Value:			CodeableConcept
 
-Element:		LaboratoryProcedureTopic
-Based on:		ProcedureTopic
+Element:		LaboratoryProcedure
+Based on:		Procedure
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
 1..1			Type from http://hl7.org/fhir/ValueSet/observation-codes
@@ -58,8 +58,8 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 0..1			ref(Specimen)
 0..1 			ref(Device)
 	
-Element:		SurgicalProcedureTopic
-Based on:		ProcedureTopic
+Element:		SurgicalProcedure
+Based on:		Procedure
 Concept:		TBD
 Description:	"A surgical action, independent of action context."
 0..*			DirectSite
@@ -138,65 +138,65 @@ Description:	"A surgical action, independent of action context."
 
 
 EntryElement:	ProcedurePerformed
-Based on:		ProcedureTopic
+Based on:		Procedure
 				ActionContext is type PerformedContext
 					
 EntryElement:	ProcedureNotPerformed
-Based on:		ProcedureTopic
+Based on:		Procedure
 				ActionContext is type NotPerformedContext
 0..1			ActionContext.Reason  // limitation in FHIR Procedure.notDoneReason
 					
 EntryElement:	ProcedureRequested
-Based on:		ProcedureTopic
+Based on:		Procedure
 				ActionContext is type RequestedContext	
 				RequestedContext.Priority must be from http://hl7.org/fhir/ValueSet/request-priority  // required
 0..0			PartOf
 
 EntryElement:	ProcedureRequestedAgainst
-Based on:		ProcedureTopic
+Based on:		Procedure
 				ActionContext is type RequestedAgainstContext					
 
 EntryElement:	SpecimenCollectionPerformed
-Based on:		SpecimenCollectionTopic
+Based on:		SpecimenCollection
 				ActionContext is type PerformedContext
 				PerformedContext.Participant value is type ref(Practitioner)
 0..1			BodySite  // FHIR limits Specimen.collection.bodySite to 0..1
 				
 EntryElement:	SpecimenCollectionRequested
-Based on:		SpecimenCollectionTopic
+Based on:		SpecimenCollection
 				ActionContext is type RequestedContext
 			
 EntryElement:	ImagingProcedurePerformed
-Based on:		ImagingProcedureTopic
+Based on:		ImagingProcedure
 				ActionContext is type PerformedContext
 
 EntryElement:	ImagingProcedureRequested
-Based on:		ImagingProcedureTopic
+Based on:		ImagingProcedure
 				ActionContext is type RequestedContext
 
 EntryElement:	SurgicalProcedurePerformed
-Based on:		SurgicalProcedureTopic
+Based on:		SurgicalProcedure
 				ActionContext is type PerformedContext
 
 EntryElement:	SurgicalProcedureRequested
-Based on:		SurgicalProcedureTopic
+Based on:		SurgicalProcedure
 				ActionContext is type RequestedContext
 
 EntryElement:	SurgicalProcedureNotPerformed
-Based on:		SurgicalProcedureTopic
+Based on:		SurgicalProcedure
 				ActionContext is type NotPerformedContext
 
 
 EntryElement:	SurgicalProcedureRequestedAgainst
-Based on:		SurgicalProcedureTopic
+Based on:		SurgicalProcedure
 				ActionContext is type RequestedAgainstContext
 		
 EntryElement:	LaboratoryProcedurePerformed
-Based on:		LaboratoryProcedureTopic
+Based on:		LaboratoryProcedure
 				ActionContext is type PerformedContext
 				
 EntryElement:	LaboratoryProcedureRequested
-Based on:		LaboratoryProcedureTopic
+Based on:		LaboratoryProcedure
 				ActionContext is type RequestedContext
 		
 	

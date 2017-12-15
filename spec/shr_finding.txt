@@ -53,7 +53,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..1			Details
 0..1			Interpretation
 0..*			ObservationQualifier   //  = CIMI's Precondition
-0..1			Components 
+0..* 			ObservationComponent
 
 		Element:		ObservationCode
 		Concept:		MTH#C1706203
@@ -102,12 +102,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 				Concept:	TBD
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
-		
-		
-		Element:		Components
-		Concept:		TBD
-		Description:	"Components are parts of the parent observation. Component observations share the same attributes (such as Specimen) as the primary observation and are not separable. However, the reference range may be different for each component observation."
-		Value:			0..* ObservationComponent
+
 		
 			Element:		ObservationComponent
 			Description:	"A simplified, non-separable observation consisting of a observation code, value (or value absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
@@ -116,7 +111,6 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 			1..1			ObservationCode
 			0..1			Interpretation
 			0..*			ReferenceRange
-			0..1			Components
 
 		
 //------- Simplified and Specialized Observations
@@ -124,7 +118,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 EntryElement:	Assertion
 Based on:		Observation
 Concept:		TBD
-Description:	"A unary observation, also known as an assertion, is an observation that takes the form of a single code, without an explicit question or property. Examples include reported symptoms such as 'chest pain' and simple reports such as 'bed in low position'. Assertions may be negated using the NegationFlag; if true, the assertion is taken as false. The question code is defaulted to 'assertion' since an assertion has no explicit question. Assertions may include a body site. "
+Description:	"A unary observation, also known as an assertion, is an observation that takes the form of a single code, without an explicit question or property. Examples include reported symptoms such as 'chest pain' and facts such as 'patient bed in low position'. Assertions may be negated setting the NegationFlag to true. The ObservationCode is defaulted to 'assertion' since assertions have no explicit question. Assertions cannot have a ValueAbsentReason, because assertions without a Value are completely meaningless."
 Value:			CodeableConcept
 				ObservationCode is SCT#385432009 "Not applicable"
 0..0			ValueAbsentReason // no sense in allowing an assertion that isn't there			
@@ -150,7 +144,8 @@ EntryElement:	Panel
 Concept:		TBD
 Based on:		Observation
 Description:	"A grouped set of related findings, frequently captured at the same time. An example is a complete blood count (CBC), with separate observations for hemoglobin, hematocrit, etc. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself. The panel and all its sub-observations share the same metadata (provenance)."
-0..0			Components
+// Why is Panel an Observation? See https://chat.fhir.org/#narrow/search/cbc Lloyd McKenzie said "has-member is for things like panels. For example, a CBC (complete blood count) would have members capturing white blood cell count, red blood cell count, hemoglobin, etc."
+0..0			ObservationComponent
 1..1			Members
 
 		Element:		Members
