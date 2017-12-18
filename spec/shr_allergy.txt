@@ -7,10 +7,10 @@ CodeSystem:     SCT = http://snomed.info/sct
 
 		
 EntryElement:	AllergyIntolerance
-Based on:		Finding
+Based on:		FindingIdentifiedByClass
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-1..1			AllergenIrritant
+Value:			CodeableConcept from AllergenIrritantVS
 1..1			Subject // constrain cardinality to match FHIR
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
@@ -22,10 +22,6 @@ Description:	"A finding related to the presence or absence of an individual's ri
 0..1			Abatement
 0..1			MostRecentOccurrenceTime
 
-		Element:	AllergenIrritant	
-		Concept:		TBD
-		Description:	"A substance that causes an allergic reaction or irritation."
-		Value:		CodeableConcept from AllergenIrritantVS
 
 		Element:		SubstanceCategory
 		Concept:		TBD
@@ -52,6 +48,11 @@ Description:	"A finding related to the presence or absence of an individual's ri
 		0..1			Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
 		0..1			RouteIntoBody
 		
+				Element:	AllergenIrritant	
+				Concept:	TBD
+				Description:"A substance that causes an allergic reaction or irritation."
+				Value:		CodeableConcept from AllergenIrritantVS
+		
 				Element:	Manifestation
 				Concept:	MTH#C1280464
 				Description:	"A sign or symptom of an underlying condition."
@@ -59,11 +60,10 @@ Description:	"A finding related to the presence or absence of an individual's ri
 				
 			
 EntryElement:	NoAllergyToSubstance
-Based on:		QuestionAnswer
-Concept:		MTH#C4508987
+Based on:		FindingIdentifiedByClass
+Concept:		MTH#C4508987 "No Allergy [to]"
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. NoAllergyToSubstance is not an assertion because the value (a code representing a substance) does not carry the complete meaning."
 Value:			CodeableConcept from AllergenIrritantVS
-ObservationCode is MTH#C4508987 "No Allergy"
 
 
 EntryElement:	NoKnownAllergy
@@ -71,3 +71,4 @@ Based on:		Assertion
 Concept:		MTH#C0262580
 Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors. NoKnownAllergy is an assertion because the code, such as 'No known food allergy' carries the complete meaning."
 Value:			CodeableConcept from NoKnownAllergyVS
+

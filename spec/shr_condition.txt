@@ -7,16 +7,15 @@ CodeSystem:     SCT = http://snomed.info/sct
 
 	
 EntryElement:	ConditionAbsent
-Based on:		Assertion
+Based on:		FindingIdentifiedByClass
 Concept:		TBD
 Description:	"A finding that a condition not present in the subject at a certain time."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-1..1			NegationFlag is true
 
 
 EntryElement:	Condition
-Based on:		Finding
-Concept:		TBD // MTH#C0348080
+Based on:		FindingIdentifiedByClass
+Concept:		MTH#C0348080
 Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
@@ -81,16 +80,15 @@ Link to Related Medications
 
 			
 EntryElement:	DiseaseProgression
-Based on:		Observation
-Concept:		MTH#C0449258
+Based on:		FindingIdentifiedByClass
+Concept:		MTH#C0421176 "Progression"
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
 Value:			CodeableConcept from SubjectiveProgressionVS
 				FocalSubject should be from ConditionVS
-1..1			ObservationCode is MTH#C0421176 "Progression"
+				FocalSubjectReference value is type ref(Condition)
 0..*			Evidence from ProgressionEvidenceTypeVS
 	
-	
-			
+
 // Examples of how to specialize Condition
 
 EntryElement:		AcademicProblem
@@ -115,27 +113,3 @@ Description:		"A condition relating to a person’s psychological and emotional 
 Value:				CodeableConcept from DSMVS
 
 
-EntryElement:	BodyStructurePresent
-Based on:		Finding
-Concept:		TBD // MTH#C1268086
-Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-Value:			CodeableConcept from BodySiteVS
-0..1			Morphology from http://hl7.org/fhir/ValueSet/bodystructure-code
-0..0			NegationFlag
-
-	Element:		Morphology	
-	Based on:		ObservationComponent
-	Concept:		TBD
-	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
-	Value:			CodeableConcept
-
-
-EntryElement:	BodyStructureAbsent
-Based on:		Observation
-Concept:		TBD //MTH#C1268086
-Description:	"Absence of distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
-Value:			CodeableConcept from BodyStructureVS
-				ObservationCode is TBD#TBD
-1..1			NegationFlag is true
-ObservationComponent
-includes 0..1	Morphology

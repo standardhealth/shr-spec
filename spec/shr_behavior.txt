@@ -13,31 +13,35 @@ Concept:		MTH#C0004927
 Based on:		QuestionAnswer
 Description:	"A statement about observable responses, actions, or activities of the subject. Can be used to assert or deny behaviors."
 				Category includes LNC#54511-1 "Behavior"
+				ObservationComponent
 0..*			ReasonForBehavior  // behaviors have motivations
 0..1			ReadinessToChange
 0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
 
 	Element:		ReasonForBehavior
-	Based on:		Reason
+	Based on:		ObservationComponent
 	Concept:		TBD
 	Description:	"Why the behavior has taken or is taking place."
 	Value:			CodeableConcept
 
-
 	Element:		ReadinessToChange
+	Based on:		ObservationComponent
 	Concept:		TBD
 	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
 	Value:			CodeableConcept from QualitativeLikelihoodVS
 
 
 EntryElement:	SubstanceUse
-Based on:		ExposureToAgent
+Based on:		BehavioralFinding
 Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
-				FocalSubject from SubstanceOfAbuseVS
+Value:			CodeableConcept from SubstanceOfAbuseVS
 				Category includes MTH#C024251 "Substance Use"
 				ObservationComponent
 includes 0..1	FrequencyOfUse
+includes 0..1	ExposureRoute
+includes 0..1	ExposureMethod
+includes 0..*	ExposureAmount
 
 		Element:		FrequencyOfUse
 		Based on:		ObservationComponent
@@ -52,30 +56,30 @@ Description:    "Records whether the subject injects recreational drugs."
 1..1            ObservationComponent.RouteIntoBody is MTH#C1522726 "Intravenous route"
 1..1            ObservationComponent.ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
-
-// It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUse so there is an explicit substance.
-EntryElement:	ONCSmokingStatus
-Based on:		BehavioralFinding
-Concept:		LNC#72166-2
-Description:	"Records the subject's use of tobacco."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
-1..1			Subject  // constrain Subject to 1..1
-
 EntryElement:	NicotineUse
 Based on:		SubstanceUse
 Concept:		LNC#11367-0
-Description:	"Records the history of a subject's use of nicotine."
-				FocalSubject is MTH#C2363943 "Nicotine"
-//				RouteIntoBody from TBD "NicotineRouteVS"
-//				ExposureMethod from TBD "NicotineExposureMethodVS"
+Description:	"The subject's current or past use of nicotine."
+				Value is MTH#C2363943 "Nicotine"
+//1..1            ObservationComponent.RouteIntoBody from TBD "NicotineRouteVS"  
+//1..1            ObservationComponent.ExposureMethod from TBD "NicotineExposureMethodVS"  e.g. first hand, second hand, smoked, vaped, chewed
 
 
-// How can we indicate that a subject used to be an alcoholic, but is now "on the wagon"?
+// It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUsed with the details recorded in attributes."
+EntryElement:	ONCSmokingStatus
+Based on:		BehavioralFinding
+Concept:		LNC#72166-2
+Description:	"Records the extent of the subject's use of tobacco."
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
+				ObservationCode is LNC#72166-2
+1..1			Subject // cardinality constraint
+
+// How can we indicate that a subject used to be an alcoholic, but is now sober?
 EntryElement:	AlcoholUse
-Based on:		Panel
+Based on:		SubstanceUse
 Concept:		MTH#C0001948
-Description:	"The history of the subject's use of alcohol."
-				FocalSubject is SCT#398624005 "alcohol"
+Description:	"The subject's current or past use of alcohol."
+				Value is SCT#398624005 "alcohol"
 				FindingMethod from AlcoholUseScreeningToolVS
 				Members.Observation
 includes 0..1	AlcoholBingeFrequency
@@ -145,8 +149,8 @@ Value:			CodeableConcept from DietNutritionConcernVS
 				Category includes #nutrition
 
 
-EntryElement:	SleepQuality
-Based on:		Panel
+EntryElement:	SleepQualityPanel
+Based on:		Observation
 Concept:		LNC#28323-4
 Description:	"Self-reported sleep quality."
 Value:			CodeableConcept from PerformanceGradingScaleVS
@@ -193,8 +197,8 @@ Value:			IntegerQuantity
 				Category includes #sleep
 
 				
-EntryElement:	PhysicalActivity
-Based on:		Panel
+EntryElement:	PhysicalActivityPanel
+Based on:		Observation
 Concept:		TBD
 Description:	"Questions related to physical activity."
 0..0			Value
