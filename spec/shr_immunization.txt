@@ -3,6 +3,8 @@ Namespace:			shr.immunization
 Description:		"The SHR Immunization domain contains definitions related to vaccinations, whether they are received, recommended, missing, or refused."
 Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.medication, shr.adverse
 
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+
 Element:		Vaccine   // Why not line up with Medication?
 Based on:		Entity
 Concept:		MTH#C1543322 "Vaccine"
@@ -12,7 +14,7 @@ Description:	"A specific type or manufactured instance of a vaccine, a prophylac
 0..1			LotNumber
 0..1			ExpirationDate
 
-Abstract Element: 	Immunization
+Abstract Element: 	ImmunizationAction
 Based on:			Action   // Note -- treating immunizations separately from medications for FHIR consistency
 Concept:			TBD
 Description:		"Describes the event of a patient being administered a vaccination or a record of a vaccination as reported by a patient, a clinician or another party and may include vaccine reaction information and what vaccination protocol was followed."
@@ -24,7 +26,7 @@ Description:		"Describes the event of a patient being administered a vaccination
 0..*				Outcome
 			
 EntryElement:	ImmunizationGiven
-Based on:		Immunization 
+Based on:		ImmunizationAction 
 Concept:		MTH#C0580520
 Description:	"A vaccination that was administered to the subject."
 				ActionContext is type PerformedContext
@@ -32,21 +34,21 @@ Description:	"A vaccination that was administered to the subject."
 
 EntryElement:	ImmunizationNotGiven
 Concept:		TBD
-Based on:		Immunization
+Based on:		ImmunizationAction
 Description:	"An immunization that was not given to the subject."
 				ActionContext is type NotPerformedContext 
 				ActionContext.Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
 
 EntryElement:	ImmunizationRequested
 Concept:		TBD
-Based on:		Immunization
+Based on:		ImmunizationAction
 Description:	"An immunization that is proposed or planned for the subject."
 				ActionContext is type RequestedContext
 				// Need reason value set for RequestedContext.Reason
 
 EntryElement:	ImmunizationRequestedAgainst
 Concept:		TBD
-Based on:		Immunization
+Based on:		ImmunizationAction
 Description:	"An immunization that is specifically not recommended, perhaps contraindicated for the individual."
 				ActionContext is type RequestedAgainstContext
 //				ActionContext.Reason from ...
