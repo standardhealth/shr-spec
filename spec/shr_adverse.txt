@@ -5,24 +5,23 @@ Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, s
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
 
-// 			
-/*			
-EntryElement:	NoAdverseReaction
+//			
+EntryElement:	NoAdverseEvent
 Based on:		Assertion
-Concept:		TBD
+Concept:		MTH#C1963761  "No adverse event"
 Description:	"Documentation of a situation where no adverse event has been detected or is known."
-*/
+				Value is MTH#C1963761  "No adverse event"
+//TODO: remove unnecessary attributes
 
 EntryElement:	AdverseEvent
-Based on:		Finding
+Based on:		SpecializedFinding
 Concept:		MTH#C0877248
 Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. The AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
 Value:			CodeableConcept from MedDRAVS
 0..1			Details
-0..1			OccurrenceTime
+0..1			OccurrenceTime  // TODO: Onset/Abatement
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
-
 0..1			TBD "PatternOfEvent"  // from STDM
 0..1			Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome
 0..1			ref(AssociatedStudy)
@@ -61,7 +60,7 @@ Value:			CodeableConcept from MedDRAVS
 	
 EntryElement:	ToxicReaction // In truth, this should be a filter on AdverseEvent, not a separate class
 Based on:		AdverseEvent
-Concept:		TBD
+Concept:		MTH#C0542243
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
 1..1			AdverseEventGrade from ToxicReactionVS  // only grade 3 and above
 1..1			CauseCategory is #treatment

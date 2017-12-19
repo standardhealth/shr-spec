@@ -6,10 +6,10 @@ Uses:			shr.core, shr.base, shr.finding, shr.action, shr.procedure, shr.medicati
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
 
-Abstract Element:	Entity
+Abstract Element:	Party
 Based on:			Content
 Concept:			TBD
-Description:		"Something that has separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
+Description:		"A person, organization, or object that be involved in a healthcare activity. A party has a separate and distinct existence, and objective or conceptual reality. Includes information, physical objects, and roles."
 0..1				Type
 
 	Element:		Type
@@ -17,33 +17,21 @@ Description:		"Something that has separate and distinct existence and objective 
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing being represented." 
 	Value:			CodeableConcept
 
-Abstract Element:	Party
-Based on:			Entity
-Concept:			TBD
-Description:		"A person, organization, or object that can participate in a healthcare activity."
-
-Abstract Element:	Object
+Abstract Element:	Entity
 Based on:			Party
 Concept:			TBD
-Description:		"A material thing that can be seen and touched. An object can be found in a specific location."
-
-Abstract Element:	InformationItem
-Based on:			Entity
-Concept:			TBD
-Description:		"A non-material thing that contains information relevant to health care, such as an image, consent form, or report."
-
+Description:		"Base class for material and non-material things. A non-material thing might be a goal or information relevant to health care, such as an image, consent form, or report. A material thing can be seen and touched, such as a device."
 	
 Abstract Element:	Role
 Based on:			Party
 Concept:			TBD
-Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater."
+Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater. The value contains the entity (party) playing the role."
 Value:				ref(Party)  
-// Use ref(Party), not ref(Object), so we can have roles on top of roles, such as ResearchSubject on Patient
-
+// Use ref(Party), not ref(Entity), so we can have roles on top of roles, such as ResearchSubject on Patient
 
 
 EntryElement:	Person  // Not the same as FHIR person, which is a linkage element only
-Based on:		Object
+Based on:		Entity
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
 0..* 			HumanName
@@ -133,7 +121,7 @@ Description:	"A person relevant to the health or social situation of the subject
 	Value:			CodeableConcept
 	
 	Element:		ExternalHealthRecord
-	Based on:		InformationItem
+	Based on:		Entity
 	Concept: 		TBD
 	Description:	"A health record other than the current health record; may have been used to help populate the current record."
 	1..1			Identifier
@@ -314,7 +302,7 @@ Description:	"A person in a role defined in relationship to a patient"
 
 
 EntryElement:	Organization
-Based on:		Object
+Based on:		Entity
 Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings."
 1..1			OrganizationName
@@ -375,13 +363,14 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 		
 	Element:	Member
 	Concept:	MTH#C0682343 "Member of Target Group"
-	// Value:	ref(Entity)
+	// Value:	ref(Party)
+	Description:	"A person or entity in a group."
 	Value:		ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance)
 	0..1		ParticipationPeriod
 	1..1		ActiveFlag
 
 EntryElement:	Facility
-Based on:		Object
+Based on:		Entity
 Concept:		MTH#C1547538
 Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
 1..1			FacilityName
@@ -409,7 +398,7 @@ Description:	"Services and space and equipment provided for a particular purpose
 
 				
 EntryElement:	Specimen
-Based on:		Object
+Based on:		Entity
 Description:	"Sample for analysis"
 0..1			AccessionIdentifier
 0..1			Status from http://hl7.org/fhir/ValueSet/specimen-status
@@ -456,7 +445,7 @@ Description:	"Sample for analysis"
 		
 
 EntryElement:	SpecimenContainer
-Based on:		Object
+Based on:		Entity
 Concept:		TBD
 Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
@@ -468,7 +457,7 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 0..1			SequenceNumber
 	
 // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
-// BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollection breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
+// BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollectionAction breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
 		Element:		Capacity
 		Concept:		TBD
 		Description:	"Container volume or size."
@@ -492,7 +481,7 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 
 
 EntryElement:	Substance
-Based on:		Object  // TODO: Substance is conceptual, not concrete, so is this correct?
+Based on:		Entity
 Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
 1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
@@ -518,7 +507,7 @@ Description:	"Any matter of defined composition that has discrete existence, who
 			Value:			Ratio
 		
 EntryElement:	Medication
-Based on:		Object
+Based on:		Entity
 Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
 1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
@@ -585,7 +574,7 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 		Value:			CodeableConcept
 	
 Element:		BodySite
-Based on:		Object
+Based on:		Entity
 Concept:		MTH#C1545955
 Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces, for example, right elbow, or left ventricle of the heart."
 Value:			CodeableConcept from BodySiteVS

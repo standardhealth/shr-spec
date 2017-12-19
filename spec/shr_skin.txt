@@ -45,7 +45,7 @@ Value: 			Device is type SupportSurface
 		Value:			Quantity with units UCUM#cm "cm"
 
 
-EntryElement:	WoundPresent
+EntryElement:	Wound
 Based on:		Condition
 Concept:		TBD
 Description:	"A determination that a wound that exists at a particular body site, implicitly, the wound itself. Multiple wound assessments can be associated with a single wound."
@@ -60,21 +60,20 @@ Value:			CodeableConcept from WoundTypeVS
 */
 
 EntryElement:	WoundAbsent
-Based on:		Assertion
+Based on:		ConditionAbsent
 Concept:		TBD
-Description:	"Documents the absence of wounds at a given body site."
-				Value is SCT#416462003 "Wound"
-				ObservationCode is TBD#TBD
-1..1			NegationFlag is true
+Description:	"Documents the absence of a wounds of a particular type at a given body site. if the Value is SCT#416462003 (Wound) then there is no wound of any type at the site."
+Value:			CodeableConcept from WoundTypeVS
+
 
 // TODO: All must refer to the same wound
-EntryElement:	WoundAssessment
-Based on:		Panel
+EntryElement:	WoundAssessmentPanel
+Based on:		Observation
 Concept:		LNC#54574-9
 Description:	"Group of observations regarding the properties and severity of a wound."
 0..0			Value
 				ObservationCode is LNC#54574-9
-// 				FocalSubject is XXXXXXXXXXXX
+ 				FocalSubjectReference value is type ref(Wound)
 				Members.Observation
 includes 0..*	VisibleInternalStructure
 includes 0..1	WoundSize

@@ -7,7 +7,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 //---------- Procedures ----------------
 
-Element:		Procedure
+Element:		ProcedureAction
 Based on:		Action
 Concept:		TBD
 Description:	"Description of a healthcare procedure, independent of action context. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
@@ -26,8 +26,8 @@ Description:	"Description of a healthcare procedure, independent of action conte
 		Value:			ref(Study)
 
 		
-Element:		SpecimenCollection
-Based on:		Procedure
+Element:		SpecimenCollectionAction
+Based on:		ProcedureAction
 Concept:		TBD
 Description:	"Attribution specific to the collection of a specimen."
 0..*			AmountOrSize
@@ -38,8 +38,8 @@ Description:	"Attribution specific to the collection of a specimen."
 	Value:			SimpleQuantity
 
 
-Element:		ImagingProcedure
-Based on:		Procedure
+Element:		ImagingAction
+Based on:		ProcedureAction
 Concept:		TBD
 Description:	"Experimental class for an imaging procedure. This class is still incomplete at this time."
 0..*			ImagingSubstance
@@ -50,7 +50,7 @@ Description:	"Experimental class for an imaging procedure. This class is still i
 	Value:			CodeableConcept
 
 Element:		LaboratoryProcedure
-Based on:		Procedure
+Based on:		ProcedureAction
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
 1..1			Type from http://hl7.org/fhir/ValueSet/observation-codes
@@ -59,7 +59,7 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 0..1 			ref(Device)
 	
 Element:		SurgicalProcedure
-Based on:		Procedure
+Based on:		ProcedureAction
 Concept:		TBD
 Description:	"A surgical action, independent of action context."
 0..*			DirectSite
@@ -138,40 +138,40 @@ Description:	"A surgical action, independent of action context."
 
 
 EntryElement:	ProcedurePerformed
-Based on:		Procedure
+Based on:		ProcedureAction
 				ActionContext is type PerformedContext
 					
 EntryElement:	ProcedureNotPerformed
-Based on:		Procedure
+Based on:		ProcedureAction
 				ActionContext is type NotPerformedContext
 0..1			ActionContext.Reason  // limitation in FHIR Procedure.notDoneReason
 					
 EntryElement:	ProcedureRequested
-Based on:		Procedure
+Based on:		ProcedureAction
 				ActionContext is type RequestedContext	
 				RequestedContext.Priority must be from http://hl7.org/fhir/ValueSet/request-priority  // required
 0..0			PartOf
 
 EntryElement:	ProcedureRequestedAgainst
-Based on:		Procedure
+Based on:		ProcedureAction
 				ActionContext is type RequestedAgainstContext					
 
 EntryElement:	SpecimenCollectionPerformed
-Based on:		SpecimenCollection
+Based on:		SpecimenCollectionAction
 				ActionContext is type PerformedContext
 				PerformedContext.Participant value is type ref(Practitioner)
 0..1			BodySite  // FHIR limits Specimen.collection.bodySite to 0..1
 				
 EntryElement:	SpecimenCollectionRequested
-Based on:		SpecimenCollection
+Based on:		SpecimenCollectionAction
 				ActionContext is type RequestedContext
 			
 EntryElement:	ImagingProcedurePerformed
-Based on:		ImagingProcedure
+Based on:		ImagingAction
 				ActionContext is type PerformedContext
 
 EntryElement:	ImagingProcedureRequested
-Based on:		ImagingProcedure
+Based on:		ImagingAction
 				ActionContext is type RequestedContext
 
 EntryElement:	SurgicalProcedurePerformed
