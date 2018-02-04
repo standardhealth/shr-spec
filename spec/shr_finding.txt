@@ -63,7 +63,7 @@ Description:	"Base class for observations (measurements, tests, or questions) an
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 0..1			ValueAbsentReason
 1..1			ObservationCode
-0..1			ClinicallyRelevantTime
+0..1			RelevantTime  // TODO: ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR Observation
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			BodySite  // TODO: Change to code to align with FHIR??
@@ -88,7 +88,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Value:			CodeableConcept 
 
 
-		Element:		ClinicallyRelevantTime
+		Element:		RelevantTime
 		Concept:		TBD
 		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod or Timing
@@ -148,6 +148,7 @@ Concept:		TBD
 Description:	"A simplified observation consisting of a question-answer pair. The question is identified by the ObservationCode, and the answer (if given) is in Value. If the answer is missing, the ValueAbsentReason must be provided."
 0..0			ref(Specimen)
 0..0			ref(Device)
+0..0			BodySite
 0..0			ReferenceRange  // applies to a quantitative measurement only
 1..1			Members value is type QuestionAnswer
 
