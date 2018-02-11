@@ -37,11 +37,10 @@ Concept:		MTH#C024251
 Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
 Value:			CodeableConcept from SubstanceOfAbuseVS
 				Category includes MTH#C024251 "Substance Use"
-				ObservationComponent
-includes 0..1	FrequencyOfUse
-includes 0..1	ExposureRoute
-includes 0..1	ExposureMethod
-includes 0..*	ExposureAmount
+0..1	FrequencyOfUse
+0..1	ExposureRoute
+0..1	ExposureMethod
+0..*	ExposureAmount
 
 		Element:		FrequencyOfUse
 		Based on:		ObservationComponent
@@ -53,8 +52,8 @@ EntryElement:   IntravenousDrugUse
 Based on:       SubstanceUse
 Concept:        MTH#C0242566
 Description:    "Records whether the subject injects recreational drugs."
-1..1            ObservationComponent.ExposureRoute is MTH#C1522726 "Intravenous route"
-1..1            ObservationComponent.ExposureMethod is MTH#C0021494 "Intravenous Injection"
+1..1            ExposureRoute is MTH#C1522726 "Intravenous route"
+1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
 
 EntryElement:	NicotineUse
 Based on:		SubstanceUse
@@ -103,30 +102,31 @@ Concept:		LNC#81364-2
 Based on:		BehavioralFinding
 Description:	"The affiliation of the person with a recognized religious group. "
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
-				Category includes #religion
+				Members.Observation
+includes 0..1	ReligiousPracticeStatus
+includes 0..*	ReligiousRestriction
+includes 0..1	ReligiousCongregation
 
 EntryElement:	ReligiousPracticeStatus
 Based on:		BehavioralFinding
 Concept:		TBD
 Description:	"The extent to which the religious practice is actively followed."
 Value:			CodeableConcept from  ReligiousPracticeStatusVS
-				Category includes #religion
+
 
 EntryElement:	ReligiousRestriction
 Concept:		TBD
 Based on:		BehavioralFinding
 Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
 Value:			CodeableConcept from ReligiousRestrictionVS
-				Category includes #religion
 
 EntryElement:	ReligiousCongregation
 Concept:		TBD
 Based on:		BehavioralFinding
 Description:	"A group of place of religious practice."
 Value:			string
-				Category includes #religion
 
-				
+		
 EntryElement:	DietFollowed
 Concept:		TBD
 Based on:		QuestionAnswer
@@ -154,7 +154,6 @@ Based on:		Observation
 Concept:		LNC#28323-4
 Description:	"Self-reported sleep quality."
 Value:			CodeableConcept from PerformanceGradingScaleVS
-				Category includes #sleep
 				Members.Observation
 includes 0..*	SleepQualityCause
 includes 0..1	TroubleFallingAsleep
