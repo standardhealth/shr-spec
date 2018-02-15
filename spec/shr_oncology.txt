@@ -9,54 +9,48 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
-
+//
 EntryElement:	BreastCancer
-Concept:		SCT#126926005  "Neoplasm of the breast"
+Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		Condition
 Description:	"Finding or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-Value:			CodeableConcept from BreastCancerTypeVS
+Value:			CodeableConcept from BreastCancerHistopathologicTypeVS
 				Category includes #disease
-0..1			Stage from urn:oid:2.16.840.1.113883.11.20.11.12
+				Stage from BreastCancerStageVS
+				Stage.StageDetail value is type BreastCancerTNMStage
+//				Stage.StageDetail.Value is type BreastCancerTNMStage
 
-
-EntryElement:	TNMStage
+EntryElement:	BreastCancerTNMStage
 Based on:		Observation
 Concept:		LNC#21908-9
-Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using the Roman Numeral system. See Table 140 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.12  // or normative answer group LNC#LL240-3
+Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
+Value:			CodeableConcept from BreastCancerStageVS  // or normative answer group LNC#LL240-3
 				ObservationCode is LNC#21908-9
 1..1			FindingMethod from StagingMethodVS
-0..1			StagingTiming
+0..1			StagingTiming from StagingTimeVS
 				ObservationComponent			
-includes 0..1 	T-Stage
-includes 0..1 	N-Stage
-includes 0..1 	M-Stage
+includes 0..1 	BreastCancerTStage
+includes 0..1 	BreastCancerNStage
+includes 0..1 	BreastCancerMStage
 
-		Element:		StagingSystem
+		Element:		StagingTiming
 		Concept:		TBD
-		Description:	"What staging system are used "
-		Value:			string  //TODO: is there a way to code this?
-		0..1			Version
+		Description:	"Indicates when the staging was done, in terms of treatment landmarks, for example, at diagnosis (clinical), at surgery(pathologic), after treatment (post-neoadjuvant), etc."
+		Value:			CodeableConcept
 
-		Element:		StagingTiming  // TODO: this is not a time, but rather an event. The name should reflect that
-		Concept:		TBD
-		Description:	"Indicates when the staging was done, in terms of treatment landmarks, for example, at diagnosis (clinical), at surgery(pathologic), after treatment (post-neoadjuvant), at entry to a clinical trial, or at recurrence."
-		Value:			CodeableConcept from StagingTimeVS
-		// TODO: do we want to have a boolean indicating if this is the initial staging or a restaging?
-
-		Element:		T-Stage
+		Element:		BreastCancerTStage
 		Concept:		LNC#59528-0
 		Based on:		ObservationComponent
-		Description:	"The size and extent of the primary tumor (greatest dimension), based on criteria from the American Joint Committee on Cancer. See Table 152 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.13
+		Description:	"The size and extent of the primary tumor (greatest dimension), based on criteria from the American Joint Committee on Cancer."
+		Value:			CodeableConcept from BreastCancerTStageVS
 
-		Element:		N-Stage
+		Element:		BreastCancerNStage
 		Concept:		LNC#59525-6
 		Based on:		ObservationComponent
 		Description:	"The presence of metastases in regional lymph nodes. TNM node category for staging derived from the American Joint Committee on Cancer. See Table 147 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
 		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.14
 
-		Element:		M-Stage
+		Element:		BreastCancerMStage
 		Concept:		LNC#59522-3
 		Based on:		ObservationComponent
 		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body. See Table 144 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
@@ -294,7 +288,7 @@ includes 0..1	PercentageAmplified
 		Based on:		ObservationComponent
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			Quantity with units UCUM#1
-							ObservationCode is CAP#29749
+						ObservationCode is CAP#29749
 							
 		Element:		AllredTotalScore
 		Concept:		CAP#31056
@@ -312,10 +306,11 @@ includes 0..1	PercentageAmplified
 EntryElement:	OncotypeDxRecurrenceScore
 Based on:		Observation
 Concept:		TBD
-Description:	"The Oncotype DX breast cancer test examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0-31 indicates the estimated risk of recurrence."
+Description:	"The Oncotype DX breast cancer test examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0 to 100 indicates the estimated risk of recurrence with highest risk indicated by score > 31."
 Value: 			Quantity with units UCUM#1
 				Interpretation from OncotypeDXRiskScoreInterpretationVS
-
+1..1			ref(Specimen)
+//0..1			StagingTiming
 
 EntryElement: 	TumorDimensions
 Based on:		Observation
