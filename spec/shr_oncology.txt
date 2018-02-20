@@ -14,30 +14,36 @@ EntryElement:	BreastCancer
 Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		Condition
 Description:	"Finding or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-Value:			CodeableConcept from BreastCancerHistopathologicTypeVS
+Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 				Stage from BreastCancerStageVS
+// Body site restricted to ?				
 				Stage.StageDetail value is type BreastCancerTNMStage
-//				Stage.StageDetail.Value is type BreastCancerTNMStage
+
 
 EntryElement:	BreastCancerTNMStage
 Based on:		Observation
 Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
-Value:			CodeableConcept from BreastCancerStageVS  // or normative answer group LNC#LL240-3
+Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3
 				ObservationCode is LNC#21908-9
 1..1			FindingMethod from StagingMethodVS
-0..1			StagingTiming from StagingTimeVS
+0..1			StageTimingPrefix from StageTimingPrefixVS
 				ObservationComponent			
 includes 0..1 	BreastCancerTStage
 includes 0..1 	BreastCancerNStage
 includes 0..1 	BreastCancerMStage
 
-		Element:		StagingTiming
+		Element:		StageTimingPrefix
 		Concept:		TBD
-		Description:	"Indicates when the staging was done, in terms of treatment landmarks, for example, at diagnosis (clinical), at surgery(pathologic), after treatment (post-neoadjuvant), etc."
+		Description:	"Indicates when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
 		Value:			CodeableConcept
 
+		Element:		StageSuffix
+		Concept:		TBD
+		Description:	"Modifies the stage by indicating the size or extent of the cancer or tumor."
+		Value:			CodeableConcept		
+		
 		Element:		BreastCancerTStage
 		Concept:		LNC#59528-0
 		Based on:		ObservationComponent
@@ -47,15 +53,14 @@ includes 0..1 	BreastCancerMStage
 		Element:		BreastCancerNStage
 		Concept:		LNC#59525-6
 		Based on:		ObservationComponent
-		Description:	"The presence of metastases in regional lymph nodes. TNM node category for staging derived from the American Joint Committee on Cancer. See Table 147 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.14
+		Description:	"The presence of metastases in regional lymph nodes. The node category for staging is based on criteria from the American Joint Committee on Cancer."
+		Value:			CodeableConcept from BreastCancerNStageVS
 
 		Element:		BreastCancerMStage
 		Concept:		LNC#59522-3
 		Based on:		ObservationComponent
-		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body. See Table 144 in HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm"
-		Value:			CodeableConcept from urn:oid:2.16.840.1.113883.11.20.11.25
-
+		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body."
+		Value:			CodeableConcept from BreastCancerMStageVS
 
 EntryElement:	HistologicGrade
 Concept:		MTH#C1511980
@@ -120,7 +125,7 @@ includes 0..1	OtherReceptorScoringSystem
 
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		Observation
-Concept:		MTH#C1514471
+Concept:		LNC#16113-3
 Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from PositiveNegativeIndeterminateVS
 				ObservationCode is LNC#16113-3
@@ -310,7 +315,6 @@ Description:	"The Oncotype DX breast cancer test examines the activity of 21 gen
 Value: 			Quantity with units UCUM#1
 				Interpretation from OncotypeDXRiskScoreInterpretationVS
 1..1			ref(Specimen)
-//0..1			StagingTiming
 
 EntryElement: 	TumorDimensions
 Based on:		Observation
