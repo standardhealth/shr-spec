@@ -2,7 +2,8 @@ Grammar:	Map 5.0
 Namespace:	shr.finding
 Target:		FHIR_STU_3
 
-Observation maps to Observation:
+
+EvaluationResult maps to Observation:
 	Entry.CreationTime maps to issued
 	RelatedEncounter  maps to context	
 //	Informant
@@ -13,10 +14,12 @@ Observation maps to Observation:
 	FindingMethod maps to method
 	FindingStatus maps to status
 	Value maps to value[x]
-	ValueAbsentReason maps to dataAbsentReason
+	ExceptionValue maps to dataAbsentReason
 	ObservationCode maps to code
 	BodySite maps to bodySite
-	Specimen maps to specimen
+//    constrain specimen to 0..0
+	Specimen maps to specimen 
+// note: can't add specimen at the LaboratoryTestResult level because it requires relaxing the 0..0 specimen constraint in EvaluationResult profile to 0..1 specimen in the LaboratoryTestResult profile.
 	Device maps to device
 	Interpretation maps to interpretation
 	Details maps to comment
@@ -31,8 +34,10 @@ Observation maps to Observation:
 	ObservationComponent maps to component (slice on = coding.code; slice strategy = includes)
 	ObservationComponent.ObservationCode maps to component.code
 	ObservationComponent.Value maps to component.value[x]
-	ObservationComponent.ValueAbsentReason maps to component.dataAbsentReason
+	ObservationComponent.ExceptionValue maps to component.dataAbsentReason
 	ObservationComponent.Interpretation maps to component.interpretation
 	ObservationComponent.ReferenceRange maps to component.referenceRange
-	Members.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	Members.EvaluationResult maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 
+// not needed  
+// LaboratoryTestResult maps to Observation:

@@ -7,7 +7,7 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		DAR = http://hl7.org/fhir/ValueSet/observation-valueabsentreason
 
 
-ValueSet: 					ValueAbsentReasonVS
+ValueSet: 					ExceptionValueVS
 Description:				"Reasons that a value associated with a test or other finding is missing."
 Includes codes from DAR
 #missing_refused			"Human source was asked but declined to respond to the question, or an applicable question was left unanswered."
@@ -18,22 +18,39 @@ Includes codes from DAR
 #missing_specimen			"Missing due to a problem with the specimen, e.g. contamination, clotting, improper tube type, improper storage, too small, etc."
 #missing_malfunction		"Missing due to instrument malfunction."
 
+ValueSet:			KnownOrSuspectedPresentContextVS
+Description:		"A code describing whether the finding in question is present, possible, suspected, etc."
+SCT#410590009		"Known possible"
+SCT#410592001		"Probably present"
+SCT#415684004		"Suspected"
+SCT#410593006		"Probably not present"
+SCT#261665006		"Unknown"
 
-ValueSet:			ObservationResultVS
-Includes codes from LNC
-Includes codes from MTH
-Includes codes from SCT
+ValueSet:			AbsentContextVS
+Description:		"A code describing whether the finding is question is absent, unknown, or not suspected."
+SCT#410516002		"Known absent"
+SCT#410594000		"Definitely not present"
+SCT#410593006		"Probably not present"
+SCT#428263003		"NOT suspected"
+
+ValueSet:			AtRiskContextVS
+Description:		"A code describing the sense in which the subject has risk of a hypothetical (future) finding. At present, this value set contains only one code, but it is presented as a value set to allow for more nuanced meanings in the future."
+SCT#410519009		"At risk"
+
+ValueSet:			ExpectationContextVS
+Description:		"A code describing the sense in which a finding is expected."
+SCT#410517006		"Expected"
+SCT#410596003		"Likely outcome"
+SCT#410595004		"Prognosis"
+SCT#71033007		"Impending"
+
+ValueSet:			GoalContextVS
+Description:		"A code describing the sense in which a finding is a goal or objective."
+SCT#703039001		"Health objective"
+SCT#410518001		"Goal"
 
 
-
-/* Not currently used - These are good reasons for why any procedure isn't done
-ValueSet:			AssertionContextVS
-Description:		"A code describing whether the condition in question is present, absent, or undetermined."
-#present			"Known present"
-#suspected_present	"Suspected to be present"
-#suspected_absent 	"Suspected to be absent"
-#absent				"Known not present"
-
+/*
 ValueSet:		 AssessmentTypeVS
 Description:	"A code describing the type of assessment activity, e.g. diagnosis, prognosis, disease progression, healing, toxicity, treatment efficacy."
 MTH#C0033325	"Prognosis - a prediction of the probable outcome of a disease based on a individual's condition and the usual course of the disease as seen in similar situations"

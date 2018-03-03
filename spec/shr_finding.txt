@@ -5,19 +5,55 @@ Uses:			shr.core, shr.base, shr.action, shr.entity, shr.procedure, shr.medicatio
 
 CodeSystem:     SCT = http://snomed.info/sct
 
-//-------------- FINDING Base Class ------------------------	
+Element:		FindingContext
+Concept:		SCT#410514004
+Description:	"The ontological status of finding, e.g., present, absent, goal, risk, etc. This class aligns with the SNOMED Situation with Explicit Context."
+Value:			CodeableConcept
+
+/*	
+	Element:		KnownOrSuspectedPresentContext
+	Based on:		FindingContext
+	Concept:		SCT#410515003
+	Description:	"Known present indicates the finding in question exists or is present to some level of certainty. For example, if the assertion involves a myocardial infarction, the known present context implies that cardiac arrest has taken place."
+					ContextCode from KnownOrSuspectedPresentContextVS
+
+	Element:		AbsentUnknownContext
+	Based on:		FindingContext
+	Concept:		TBD
+	Description:	"Indicates the finding in question is either known absent (ruled out), not suspected, or unknown."
+					ContextCode from AbsentUnknownContextVS
+			
+	Element:		AtRiskContext
+	Based on:		FindingContext
+	Concept:		SCT#410519009
+	Description:	"At risk indicates the finding should be interpreted as a future possibility or expectation."
+					ContextCode from AtRiskContextVS
+
+	Element:		ExpectationContext
+	Based on:		FindingContext
+	Concept:		SCT#410517006
+	Description:	"A context indicating the finding is an expectation, prognosis, or likely outcome."
+					ContextCode from ExpectationContextVS				
+
+	Element:		GoalContext
+	Based on:		FindingContext
+	Concept:		SCT#410518001
+	Description:	"A hypothetical or future finding that represents an objective or goal."
+					ContextCode from GoalContextVS
+*/					
 
 Abstract Element: Finding
 Based on:		Content
 Concept:		TBD
 Description:	"Base class for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			Subject   // TODO: change to 1..1?
+0..1			FindingContext  // if not present, assume present or observed
 0..1			FocusCodeableConcept
 0..1			FocusReference
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
-		
+	
 	Element:		FocusCodeableConcept
 	Concept:		TBD
 	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
@@ -43,74 +79,57 @@ Description:	"Base class for all kinds of determinations: questions/answers, con
 	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
 	Value:			CodeableConcept or ref(Content)
 
-//----------- Clinical Note ----------------
-
 EntryElement:	ClinicalNote
 Based on:		Finding
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from Finding."
 Value:			string
-	
-	
-//----------- Class-Keyed Findings ---------------------
+0..0			FindingContext  // Always present/observed
 
-Abstract Element:	SpecializedFinding
+Abstract Element:	Assertion
 Based on:		Finding
 Concept:		TBD
-Description:	"The base class for conditions, allergies, risks, etc. The type/topic of the finding is given by the concept code for the class. For example, for Condition, the finding represents a 'condition present' finding, while the Value represents the type of condition found. For this reason, a separate ObservationCode is not required for descendants of SpecializedFinding."
+Description:	"The base class for conditions, allergies, risks, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found. For this reason, a separate ObservationCode is not required for descendants of Assertion."
 Value:			CodeableConcept
-
 		
-//----------- Code-Keyed Findings ---------------------
 
-EntryElement:	Observation  // FindingIdentifiedByCode
+Abstract Element:	EvaluationBase
 Based on:		Finding
 Concept:		MTH#C1554188
-Description:	"Base class for observations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Description:	"Base class - independent of context - for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
-0..1			ValueAbsentReason
 1..1			ObservationCode
-0..1			RelevantTime  // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
-1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR Observation
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			BodySite  // TODO: Change to code to align with FHIR??
-0..1			ChangeFlag
+0..1			DeltaFlag
 0..1			Details
 0..1			Interpretation
-0..*			ObservationQualifier
-0..1			ref(Specimen)
-0..1			ref(Device)
+0..*			Precondition
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			ObservationComponent
 1..1			Members
-
-		Element:		ValueAbsentReason
-		Concept:		MTH#C1709044]
-		Description:	"Provides a reason why the value of the observation is missing, if it is expected (some observations are not expected to have a value)."
-		Value:			CodeableConcept from ValueAbsentReasonVS
 		
 		Element:		ObservationCode
 		Concept:		MTH#C1706203
-		Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named ObservationCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions (observations without an explicit question), the observation code is defaulted to a value representing 'assertion'."
+		Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named ObservationCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions (observations without an explicit question), the observation code is defaulted to the concept code."
 		Value:			CodeableConcept 
-
 
 		Element:		RelevantTime
 		Concept:		TBD
 		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod or Timing
 		
-		Element:		ChangeFlag
+		Element:		DeltaFlag
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
-		Value:			CodeableConcept from ChangeFlagVS
+		Value:			CodeableConcept from DeltaFlagVS
 		
 		Element:		Interpretation
 		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a finding."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 		
-		Element:		ObservationQualifier
+		Element:		Precondition
 		Concept:		TBD
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
@@ -135,43 +154,58 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 
 		
 		Abstract Element:	ObservationComponent
+		Concept:		TBD
 		Description:	"A simplified, non-separable observation consisting of a observation code, value (or value absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
 		Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
-		0..1			ValueAbsentReason
+		0..1			ExceptionValue
 		1..1			ObservationCode
 		0..1			Interpretation
 		0..*			ReferenceRange
+
 		
 		Element:		Members
 		Concept:		TBD
 		Description:	"Members represent the elements of a group of a related but independent observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		// Lloyd McKenzie said "has-member is for things like panels. For example, a CBC (complete blood count) would have members capturing white blood cell count, red blood cell count, hemoglobin, etc.  See https://chat.fhir.org/#narrow/search/cbc "
-		Value:			0..* ref(Observation)	
+		Value:			0..* ref(EvaluationResult)
+		
+	
+EntryElement:	EvaluationResult
+Based on:		EvaluationBase
+Concept:		TBD
+Description:	"Represents evaluations (measurements, tests, or questions) that have been performed. EvaluationResult has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+0..0			FindingContext
+0..1			ExceptionValue
+0..1			RelevantTime  // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR Observation
+0..1			ref(Device)
+0..1			ref(Specimen)
+
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept from ExceptionValueVS
+		
+EntryElement:	LaboratoryTestResult
+Based on:		EvaluationResult
+Concept:		TBD
+Description:	"Measurement resulting from a laboratory analysis."
+0..*			DiagnosticService
+		
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept
 
 EntryElement:	QuestionAnswer
-Based on:		Observation
+Based on:		EvaluationResult
 Concept:		TBD
-Description:	"A simplified observation consisting of a question-answer pair. The question is identified by the ObservationCode, and the answer (if given) is in Value. If the answer is missing, the ValueAbsentReason must be provided."
-0..0			ref(Specimen)
+Description:	"A simplified evaluation result consisting of a question-answer pair. The question is identified by the ObservationCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResult.Members can have the supporting questions."
 0..0			ref(Device)
 0..0			BodySite
 0..0			ReferenceRange  // applies to a quantitative measurement only
 1..1			Members value is type QuestionAnswer
-// Restrict components?
 
-EntryElement:	Assertion  // aka unary observation
-Based on:		Observation
-Concept:		MTH#C1301625 "Assertion"
-Description:	"A unary observation, also known as an assertion, is an observation that takes the form of a single code, without an explicit question or property. Examples include reported symptoms such as 'chest pain' and facts such as 'patient bed in low position'. Assertions may be negated setting the NegationFlag to true. The ObservationCode is defaulted to 'assertion' since assertions have no explicit question. Assertions cannot have a ValueAbsentReason, because Assertions without the asserted value are meaningless."
-Value:			CodeableConcept
-0..0			ValueAbsentReason
-0..1			NegationFlag
-				ObservationCode is MTH#C1301625 "Assertion"
-
-		Element:	NegationFlag
-		Concept:	MTH#C1518422
-		Description:	"A flag that indicates the meaning to be conveyed is the logical opposite of the current assertion. The assertion is negated only when the NegationIndicator is true. If absent or false, the assertion is not negated."
-		Value:		boolean
 
 // Used in Careplan and elsewhere
 Element:		RelatedFinding
@@ -180,39 +214,10 @@ Description:	"Findings associated with this item."
 Value:			ref(Finding)
 
 
-EntryElement:	BodyStructurePresent
-Based on:		Observation
-Concept:		MTH#C1268086
-Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-Value:			CodeableConcept from BodySiteVS
-				ObservationCode is MTH#C1268086
-				ObservationComponent
-includes 0..1	Morphology
-
-	Element:		Morphology
-	Based on:		ObservationComponent
-	Concept:		TBD
-	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/bodystructure-code
 
 
-EntryElement:	BodyStructureAbsent
-Based on:		Observation
-Concept:		TBD
-Description:	"Absence of distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. The observation has a body site that allows the the structure to be located in the body. The observation identifier allows other observations of the same body structure to be related to QualitativeValueScaleVSthis observation and tracked over time."
-Value:			CodeableConcept from BodySiteVS
-				ObservationCode is TBD#TBD
-				ObservationComponent
-includes 0..1	Morphology 
-
-
-
-		/* Orphans
-		Element:		ServiceCategory
-		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept
-
+		
+/*
 		Element:		ReportStatus
 		Concept:		TBD
 		Description:	"The status of the report associated with this panel."

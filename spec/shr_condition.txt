@@ -7,29 +7,21 @@ CodeSystem:     SCT = http://snomed.info/sct
 
 	
 EntryElement:	ConditionAbsent
-Based on:		Observation
+Based on:		Condition
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-				ObservationCode is MTH#C027754
+				FindingContext from AbsentContextVS
 
 
-EntryElement:	Condition
-Based on:		SpecializedFinding
+Abstract Element:	ConditionBase
+Based on:		Assertion
 Concept:		MTH#C0348080
-Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
+Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. "
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 1..1			Subject // cardinality constraint due to FHIR
-1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..*			BodySiteOrCode
-0..1			Onset
-0..1			Abatement
-0..1			WhenClinicallyRecognized
-0..1			Preexisting
-0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
-0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..1			Stage
+
 
 /* 
 TODO:
@@ -83,18 +75,55 @@ Link to Related Medications
 					Element:		StageDetail
 					Concept:		TBD
 					Description:	"The full staging information"
-					Value:			ref(Observation)
+					Value:			ref(EvaluationResult)
 
-			
+
+EntryElement:	Condition
+Based on:		ConditionBase
+Concept:		TBD
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
+				FindingContext from KnownOrSuspectedPresentContextVS
+1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
+0..1			Onset
+0..1			Abatement
+0..1			WhenClinicallyRecognized
+0..1			Preexisting
+0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
+0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+0..1			Stage
+				
+EntryElement:	ConditionAbsent
+Based on:		ConditionBase
+Concept:		TBD
+				FindingContext from AbsentContextVS
+
+					
 EntryElement:	DiseaseProgression
-Based on:		Observation
+Based on:		EvaluationResult
 Concept:		MTH#C0421176 "Progression"
-Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
+Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the FocusReference or FocusCodeableConcept as a reference to a Condition."
 Value:			CodeableConcept from ProgressionVS
 				ObservationCode is MTH#C0421176 "Progression"
 				FocusCodeableConcept should be from ConditionVS
 				FocusReference value is type ref(Condition)
 0..*			Evidence from ProgressionEvidenceTypeVS
+
+
+EntryElement:	BodyStructureFinding
+Based on:		EvaluationResult
+Concept:		MTH#C1268086
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+Value:			CodeableConcept from BodySiteVS
+0..1			Morphology
+
+	Element:		Morphology
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
+
+
+
+
 
 // Examples of how to specialize Condition
 
