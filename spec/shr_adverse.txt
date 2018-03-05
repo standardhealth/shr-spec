@@ -7,17 +7,25 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 //			
 EntryElement:	NoAdverseEvent
-Based on:		AdverseEvent
+Based on:		AdverseEventTopic
 Concept:		MTH#C1963761  "No adverse event"
 Description:	"Documentation of a situation where no adverse event has been detected or is known."
 				Value is MTH#C1963761  "No adverse event"
-//TODO: remove unnecessary attributes
+1..1			AbsenceContext
+
+Abstract Element:	AdverseEventTopic
+Based on:		AssertionTopic
+Concept:		MTH#C0877248
+Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
+Value:			CodeableConcept from MedDRAVS
+
+
 
 Abstract Element:	AdverseEvent
-Based on:		Assertion
+Based on:		AdverseEventTopic
 Concept:		MTH#C0877248
-Description:	"Any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. The AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
-Value:			CodeableConcept from MedDRAVS
+Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
+1..1			PresenceContext
 0..1			Details
 0..1			OccurrenceTime  // TODO: Onset/Abatement
 1..1			AdverseEventGrade
@@ -28,6 +36,7 @@ Value:			CodeableConcept from MedDRAVS
 1..1			CauseCategory 
 0..*			AdverseEventAttribution
 0..*			ActionTaken
+
 
 	Element:		SeriousAdverseEvent 
 	Concept:		MTH#C1710056
@@ -47,7 +56,7 @@ Value:			CodeableConcept from MedDRAVS
 	Element:		AdverseEventAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
-	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(Action)  // some substance or intervention, should be restricted to PerformedContext (but there's no way to do that)
+	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionTopic)  // some substance or intervention, should be restricted to PerformedContext (but there's no way to do that)
 	1..1			Certainty
 	0..1			RouteIntoBody
 	

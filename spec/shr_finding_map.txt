@@ -4,10 +4,10 @@ Target:		FHIR_STU_3
 
 
 EvaluationResult maps to Observation:
-	Entry.CreationTime maps to issued
-	RelatedEncounter  maps to context	
-//	Informant
-//	Author
+	_Entry.CreationTime maps to issued
+	_Entry.RelatedEncounter  maps to context	
+//	_Entry.Informant
+//	_Entry.Author
 	Subject maps to subject
 	Category maps to category
 	RelevantTime maps to effective[x]
@@ -15,9 +15,8 @@ EvaluationResult maps to Observation:
 	FindingStatus maps to status
 	Value maps to value[x]
 	ExceptionValue maps to dataAbsentReason
-	ObservationCode maps to code
+	FindingCode maps to code
 	BodySite maps to bodySite
-//    constrain specimen to 0..0
 	Specimen maps to specimen 
 // note: can't add specimen at the LaboratoryTestResult level because it requires relaxing the 0..0 specimen constraint in EvaluationResult profile to 0..1 specimen in the LaboratoryTestResult profile.
 	Device maps to device
@@ -31,13 +30,15 @@ EvaluationResult maps to Observation:
 	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
 	Interpretation maps to interpretation
 	fix related.type to #has-member
-	ObservationComponent maps to component (slice on = coding.code; slice strategy = includes)
-	ObservationComponent.ObservationCode maps to component.code
-	ObservationComponent.Value maps to component.value[x]
-	ObservationComponent.ExceptionValue maps to component.dataAbsentReason
-	ObservationComponent.Interpretation maps to component.interpretation
-	ObservationComponent.ReferenceRange maps to component.referenceRange
-	Members.EvaluationResult maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	EvaluationComponent.FindingCode maps to component.code
+	EvaluationComponent.Value maps to component.value[x]
+	EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	EvaluationComponent.Interpretation maps to component.interpretation
+	EvaluationComponent.ReferenceRange maps to component.referenceRange
+	Members.EvaluationTopic maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+	
 
 // not needed  
 // LaboratoryTestResult maps to Observation:

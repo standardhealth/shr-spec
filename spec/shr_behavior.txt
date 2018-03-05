@@ -8,40 +8,57 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
+Abstract Element: BehavioralTopic
+Concept:		MTH#C0004927
+Based on:		EvaluationTopic
+Description:	"Topic for observable responses, actions, or activities of the subject, independent of context. Can be used to assert or deny behaviors."
+				Category includes LNC#54511-1 "Behavior"
+				EvaluationComponent
+0..*			ReasonForBehavior  // behaviors have motivations
+0..1			ReadinessToChange
+0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+
+
 EntryElement:	BehavioralGoal
-Based on:		EvaluationBase
+Based on:		BehavioralTopic
 Concept:		TBD
-Description:	"A goal involving a behavior, such as walking 5000 steps per day."
-				FindingContext from GoalContextVS
+Description:	"A goal involving a behavior or activity, such as walking 5000 steps per day."
+1..1			GoalContext
 				Category includes LNC#54511-1 "Behavior"
 
-EntryElement: 	BehavioralFinding
+EntryElement:	BehaviorAbsent
+Based on:		BehavioralTopic
+Concept:		TBD
+Description:	"A statement about a response, action, or activity not demonstrated by the subject."
+				
+EntryElement: 	BehaviorPresent
+Based on:		BehavioralTopic
 Concept:		MTH#C0004927
-Based on:		QuestionAnswer
-Description:	"A statement about observable responses, actions, or activities of the subject. Can be used to assert or deny behaviors."
+Description:	"A statement about observable responses, actions, or activities of the subject."
+1..1			PresenceContext
 				Category includes LNC#54511-1 "Behavior"
-				ObservationComponent
+				EvaluationComponent
 0..*			ReasonForBehavior  // behaviors have motivations
 0..1			ReadinessToChange
 0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
 
 	Element:		ReasonForBehavior
-	Based on:		ObservationComponent
+	Based on:		EvaluationComponent
 	Concept:		TBD
 	Description:	"Why the behavior has taken or is taking place."
 	Value:			CodeableConcept
 
 	Element:		ReadinessToChange
-	Based on:		ObservationComponent
+	Based on:		EvaluationComponent
 	Concept:		TBD
 	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
 	Value:			CodeableConcept from QualitativeLikelihoodVS
 
 
 EntryElement:	SubstanceUse
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Concept:		MTH#C024251
-Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
+Description:	"AssertionTopic concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
 Value:			CodeableConcept from SubstanceOfAbuseVS
 				Category includes MTH#C024251 "Substance Use"
 0..1	FrequencyOfUse
@@ -50,7 +67,7 @@ Value:			CodeableConcept from SubstanceOfAbuseVS
 0..*	ExposureAmount
 
 		Element:		FrequencyOfUse
-		Based on:		ObservationComponent
+		Based on:		EvaluationComponent
 		Concept:		MTH#C0556346
 		Description:	"A description of the frequency of substance use."
 		Value:			CodeableConcept could be from SemiquantitativeFrequencyVS	
@@ -67,17 +84,17 @@ Based on:		SubstanceUse
 Concept:		LNC#11367-0
 Description:	"The subject's current or past use of nicotine."
 				Value is MTH#C2363943 "Nicotine"
-//1..1            ObservationComponent.ExposureRoute from TBD "NicotineRouteVS"  
-//1..1            ObservationComponent.ExposureMethod from TBD "NicotineExposureMethodVS"  e.g. first hand, second hand, smoked, vaped, chewed
+//1..1            EvaluationComponent.ExposureRoute from TBD "NicotineRouteVS"  
+//1..1            EvaluationComponent.ExposureMethod from TBD "NicotineExposureMethodVS"  e.g. first hand, second hand, smoked, vaped, chewed
 
 
 // It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUsed with the details recorded in attributes."
 EntryElement:	ONCSmokingStatus
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Concept:		LNC#72166-2
 Description:	"Records the extent of the subject's use of tobacco."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
-				ObservationCode is LNC#72166-2
+				FindingCode is LNC#72166-2
 1..1			Subject // cardinality constraint
 
 // How can we indicate that a subject used to be an alcoholic, but is now sober?
@@ -87,7 +104,7 @@ Concept:		MTH#C0001948
 Description:	"The subject's current or past use of alcohol."
 				Value is SCT#398624005 "alcohol"
 				FindingMethod from AlcoholUseScreeningToolVS
-				Members.EvaluationResult
+				Members.EvaluationTopic
 includes 0..1	AlcoholBingeFrequency
 
 	Element:		AlcoholBingeFrequency
@@ -106,16 +123,16 @@ Description:	"The treatment program used to address a substance abuse problem."
 
 EntryElement:	Religion
 Concept:		LNC#81364-2
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Description:	"The affiliation of the person with a recognized religious group. "
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
-				Members.EvaluationResult
+				Members.EvaluationTopic
 includes 0..1	ReligiousPracticeStatus
 includes 0..*	ReligiousRestriction
 includes 0..1	ReligiousCongregation
 
 EntryElement:	ReligiousPracticeStatus
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Concept:		TBD
 Description:	"The extent to which the religious practice is actively followed."
 Value:			CodeableConcept from  ReligiousPracticeStatusVS
@@ -123,13 +140,13 @@ Value:			CodeableConcept from  ReligiousPracticeStatusVS
 
 EntryElement:	ReligiousRestriction
 Concept:		TBD
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
 Value:			CodeableConcept from ReligiousRestrictionVS
 
 EntryElement:	ReligiousCongregation
 Concept:		TBD
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Description:	"A group of place of religious practice."
 Value:			string
 
@@ -161,7 +178,7 @@ Based on:		EvaluationResult
 Concept:		LNC#28323-4
 Description:	"Self-reported sleep quality."
 Value:			CodeableConcept from PerformanceGradingScaleVS
-				Members.EvaluationResult
+				Members.EvaluationTopic
 includes 0..*	SleepQualityCause
 includes 0..1	TroubleFallingAsleep
 includes 0..1	TroubleStayingAsleep
@@ -209,7 +226,7 @@ Concept:		TBD
 Description:	"Questions related to physical activity."
 0..0			Value
 				Category includes #exercise
-				Members.EvaluationResult
+				Members.EvaluationTopic
 includes 0..1	PhysicalActivityLevel
 includes 0..1	ExerciseHoursPerWeek
 includes 0..*	PhysicalActivityLimitation
@@ -223,8 +240,8 @@ Value:			CodeableConcept from QualitativeValueScaleVS
 				Category includes #exercise 
 
 EntryElement:	ExerciseHoursPerWeek
+Based on:		QuestionAnswer
 Concept:		TBD
-Based on:		BehavioralFinding
 Description:	"Hours of moderate or vigorous activity per week."
 Value:			IntegerQuantity  // TODO: potentially change to ratio with Units hours per one week
 				Category includes #exercise 
@@ -237,16 +254,15 @@ Value:			CodeableConcept from PhysicalActivityLimitationVS
 				Category includes #exercise 
 
 
-
 EntryElement:	ViolentRiskToOthers
 Concept:		TBD
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Description:	"Risk or danger posed by the focal subject to others."
 Value:			CodeableConcept from QualitativeValueScaleVS
 
 EntryElement:	ViolentRiskToSelf
 Concept:		TBD
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Description:	"Risk or danger posed by the focal subject to his or herself."
 Value:			CodeableConcept from QualitativeValueScaleVS
 

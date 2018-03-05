@@ -4,15 +4,14 @@ Description:		"The SHR Encounter domain contains definitions that capture intera
 Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 
-EntryElement:	Encounter
-Based on:		Action
+EntryElement:	EncounterTopic
+Based on:		ActionTopic
 Concept:		TBD
 Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
 0..1			Subject
 0..1			ReferralDate
 0..1			ReferralSourceType
-0..1			TypeAsaCoding from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
-0..*			ServiceGiven
+0..1			Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..1			ServiceProvider
 0..1			TreatmentCooperation
 0..1			PaymentSource
@@ -27,22 +26,12 @@ Description:	"A description of an interaction between a patient and healthcare p
 	Element:		ReferralDate
 	Concept:		MTH#C2735614
 	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client's behalf."
-	Value:			date
+	Value:			dateTime
 
 	Element:		ReferralSourceType
 	Concept:		TBD
 	Description:	"The type of person or entity that instigated the encounter."
 	Value:			CodeableConcept from ReferralSourceTypeVS
-
-	Element:		ServiceProvider
-	Concept:		TBD
-	Description:	"The organization that provided the services rendered during this encounter."
-	Value:			ref(Organization)
-	
-	Element:		ServiceGiven
-	Concept:		TBD
-	Description:	"Indicates a medical service provided."
-	Value:			CodeableConcept // TODO: Link to ICD-10 value set
 
 	Element:		TreatmentCooperation
 	Concept:		TBD
@@ -69,24 +58,49 @@ Description:	"A description of an interaction between a patient and healthcare p
 
 				
 EntryElement:	EncounterRequested
-Based on:		Encounter
-				ActionContext is type RequestedContext
+Based on:		EncounterTopic
+1..1			RequestedContext
+				RequestedContext.Status from http://hl7.org/fhir/ValueSet/request-status
+				RequestedContext.Priority from http://hl7.org/fhir/ValueSet/request-priority
+				
 				
 EntryElement:	EncounterPerformed
-Based on:		Encounter
-				ActionContext is type PerformedContext
+Based on:		EncounterTopic
+1..1			PerformedContext
 				PerformedContext.Status from http://hl7.org/fhir/ValueSet/encounter-status
 				PerformedContext.OccurrenceTimeOrPeriod is type OccurrencePeriod
 				PerformedContext.Reason should be from http://hl7.org/fhir/ValueSet/encounter-reason
+//				PerformedContext.RelatedRequest value is type ref(EncounterRequested)
+//				PerformedContext.RelatedPlan is type EncounterPlanned
+				PerformedContext.Participant.Entity is type PractitionerOrRelatedPerson
+0..*			ServiceGiven
+0..1			ServiceProvider
+
+	Element:		PractitionerOrRelatedPerson
+	Based on:		Entity
+	Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
+	Value:			ref(Practitioner) or ref(RelatedPerson)
+
+	Element:		ServiceProvider
+	Concept:		TBD
+	Description:	"The organization that provided the services rendered during this encounter."
+	Value:			ref(Organization)
+	
+	Element:		ServiceGiven
+	Concept:		TBD
+	Description:	"Indicates a medical service provided."
+	Value:			CodeableConcept // TODO: Link to ICD-10 value set
 
 				
 EntryElement:	EncounterNotPerformed
-Based on:		Encounter
-				ActionContext is type NotPerformedContext
+Based on:		EncounterTopic
+1..1			NotPerformedContext
+
+
 
 /*
-EntryElement:	HospitalizationAction
-Based on:		Encounter
+EntryElement:	HospitalizationTopic
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference
@@ -100,8 +114,8 @@ Based on:		Encounter
 	Discharge or Transfer Destination	?
 	Discharge Summary	Document
 
-EntryElement:	EmergencyEncounter
-Based on:		Encounter
+EntryElement:	EmergencyEncounterTopic
+Based on:		EncounterTopic
 	DateTime	TimePeriod
 	Location	Reference
 	Organization	Reference

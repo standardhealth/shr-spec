@@ -5,40 +5,42 @@ Uses:			shr.core, shr.base, shr.finding, shr.action, shr.procedure, shr.medicati
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
-
+/*
 Abstract Element:	Party
-Based on:			Content
+Based on:			Any
 Concept:			TBD
 Description:		"A person, organization, or object potentially involved in a healthcare activity. A party has a separate and distinct existence, and an objective or conceptual reality. Includes information, physical objects, and roles."
 0..1				Type
+*/
 
+Abstract Element:	Entity
+Based on:			Any
+Concept:			TBD
+Description:		"Base class for human, material, and informational things. A non-material thing might be a goal or information relevant to health care, such as an image, consent form, or report. A material thing can be seen and touched, such as a device."
+0..1				Type
+	
 	Element:		Type
 	Concept:		MTH#C0332307
 	Description:	"The most specific code (lowest level term) describing the kind or sort of thing being represented." 
 	Value:			CodeableConcept
 
-Abstract Element:	Entity
-Based on:			Party
-Concept:			TBD
-Description:		"Base class for material and non-material things. A non-material thing might be a goal or information relevant to health care, such as an image, consent form, or report. A material thing can be seen and touched, such as a device."
-	
+/* Commenting out - Not sure this is needed if we make practitioner, patient, related person, research subject all entities
 Abstract Element:	Role
-Based on:			Party
 Concept:			TBD
 Description:		"Abstract parent class for human parties, such as practitioners, patients, research subjects, and related persons. Role can also represent an object playing a specific role, such as a room playing the role of operating theater. The value contains the entity (party) playing the role."
 Value:				ref(Party)  
 // Use ref(Party), not ref(Entity), so we can have roles on top of roles, such as ResearchSubject on Patient
-
+*/
 
 EntryElement:	Person  // Not the same as FHIR person, which is a linkage element only
 Based on:		Entity
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
-0..* 			HumanName
+1..* 			HumanName
 0..1			AnonymizedFlag
 0..1			FictionalPersonFlag
 0..1			DateOfBirth
-0..1			AdministrativeGender
+1..1			AdministrativeGender
 0..*			Address
 0..1			Headshot
 0..*			ContactPoint
@@ -133,18 +135,18 @@ Description:	"A person relevant to the health or social situation of the subject
 	Value:			dateTime
 
 EntryElement:	Patient
-Based on:		Role
+Based on:		Entity
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
-				Value is type ref(Person)
-1..1			PlaceOfBirth
+1..1			ref(Person)
+0..1			PlaceOfBirth
 0..1			MultipleBirth
-1..1			BirthSex
-1..1		 	Race
-1..1		 	Ethnicity
-1..1		 	MaritalStatus
-1..1			MothersMaidenName
-1..1			FathersName
+0..1			BirthSex
+0..1		 	Race
+0..1		 	Ethnicity
+0..1		 	MaritalStatus
+0..1			MothersMaidenName
+0..1			FathersName
 0..1			SocialSecurityNumber
 0..1			DriversLicenseNumber
 0..*			PassportNumber
@@ -254,11 +256,11 @@ Description:	"A person in the role of a patient, including extended demographic 
 
 
 EntryElement:	Practitioner
-Based on:		Role
+Based on:		Entity
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-				Value is type ref(Person)
-//1..1			HumanName   // only one (limitation imposed by us-core)
+1..1			ref(Person)
+1..1			Person.HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..1    		NationalProviderIdentifier
 0..*    		Qualification
@@ -288,9 +290,9 @@ Description:	"A person who practices a healing art."
 
 
 EntryElement:	RelatedPerson
-Based on:		Role
+Based on:		Entity
 Description:	"A person in a role defined in relationship to a patient"
-				Value is type ref(Person)
+0..1			ref(Person)
 0..1			RelationshipType
 0..1			EffectiveTimePeriod
 
@@ -333,8 +335,7 @@ Description:    "A social or legal structure formed by human beings."
 	Element:		PartOf
 	Concept:		TBD
 	Description:	"The larger entity that this is a portion of."
-	Value:			ref(Content)
-
+	Value:			ref(Entity)
 	
 EntryElement:	Group
 Based on:		Entity
@@ -350,9 +351,9 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 
 	Element:		MembershipCriterion
 	Concept:		MTH#C0599755
-	Description:	"An inclusion or exclusion criterion as part of defining a cohort. If the criterion is an unary, then ObservationCode must be SCT#385432009 (not applicable)"
+	Description:	"An inclusion or exclusion criterion as part of defining a cohort. If the criterion is an unary, then FindingCode must be SCT#385432009 (not applicable)"
 	Value:			CodeableConcept or boolean or Quantity or Range
-	1..1			ObservationCode
+	1..1			FindingCode
 	1..1			ExcludeFlag
 	0..1			TimePeriod
 	

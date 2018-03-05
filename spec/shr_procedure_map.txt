@@ -4,33 +4,31 @@ Target:		FHIR_STU_3
 
 
 ProcedurePerformed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
-	RelatedEncounter maps to context
+	_Entry.RelatedEncounter maps to context
 	Type maps to code
 	Subject maps to subject
 	Category maps to category
-	PerformedContext.Reason maps to reasonCode
 	constrain notDone to 0..0
 	constrain notDoneReason to 0..0
 	BodySite maps to bodySite
-	PartOf maps to partOf
+	PartOfProcedure maps to partOf
 	Annotation maps to note
-	PerformedContext.OccurrenceTimeOrPeriod.dateTime maps to performed[x].dateTime
-	PerformedContext.OccurrenceTimeOrPeriod.TimePeriod maps to performed[x].Period
-	PerformedContext.Participant maps to performer
-	PerformedContext.Participant maps to performer.actor
-	PerformedContext.Participant.ParticipationType maps to performer.role
-	PerformedContext.Participant.OnBehalfOf maps to performer.onBehalfOf
-	PerformedContext.Status maps to status
+	ProcedurePerformedContext.Reason maps to reasonCode
+	ProcedurePerformedContext.OccurrenceTimeOrPeriod maps to performed[x]
+	ProcedurePerformedContext.Participant maps to performer
+	ProcedurePerformedContext.Participant.Entity maps to performer.actor
+	ProcedurePerformedContext.Participant.ParticipationType maps to performer.role
+	ProcedurePerformedContext.Participant.OnBehalfOf maps to performer.onBehalfOf
+	ProcedurePerformedContext.Status maps to status
 // TODO  The following statement is failing it might be a bug
-//	PerformedContext.Method maps to http://hl7.org/fhir/StructureDefinition/procedure-method
-	PerformedContext.RelatedRequest maps to basedOn
-	PerformedContext.RelatedPlan maps to definition
-	PerformedContext.Outcome maps to outcome
-	PerformedContext.Facility maps to location
+//	ProcedurePerformedContext.Method maps to http://hl7.org/fhir/StructureDefinition/procedure-method
+//	ProcedurePerformedContext.RelatedRequest maps to basedOn
+//	ProcedurePerformedContext.RelatedPlan maps to definition
+	ProcedurePerformedContext.Outcome maps to outcome
+	ProcedurePerformedContext.Facility maps to location
 
 /* Included in FHIR Procedure, but no element in SHR:
-notDone
-notDoneReason
+
 reasonReference
 report
 complication
@@ -43,7 +41,7 @@ usedCode
 
 
 ProcedureNotPerformed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
-	RelatedEncounter maps to context
+	_Entry.RelatedEncounter maps to context
 	Type maps to code
 	Subject maps to subject
 	Category maps to category
@@ -51,13 +49,13 @@ ProcedureNotPerformed maps to http://hl7.org/fhir/us/core/StructureDefinition/us
 //	fix notDone to true
 	NotPerformedContext.Reason maps to notDoneReason
 	BodySite maps to bodySite
-	PartOf maps to partOf
+	PartOfProcedure maps to partOf
 	Annotation maps to note
 	constrain performed[x] to 0..0
 	constrain performer to 0..0
 	fix status to http://hl7.org/fhir/event-status#suspended // FHIR is lacking a not-done status (see Gforge issue #14256)
-	NotPerformedContext.RelatedRequest maps to basedOn
-	NotPerformedContext.RelatedPlan maps to definition
+//	NotPerformedContext.RelatedRequest maps to basedOn
+//	NotPerformedContext.RelatedPlan maps to definition
 	constrain outcome to 0..0
 	constrain location to 0..0
 
@@ -68,21 +66,21 @@ SurgicalProcedurePerformed maps to http://hl7.org/fhir/us/core/StructureDefiniti
 
 
 ProcedureRequested maps to ProcedureRequest:
-	Entry.CreationTime maps to authoredOn
-	RelatedEncounter maps to context
-	Author maps to requester
+	_Entry.CreationTime maps to authoredOn
+	_Entry.RelatedEncounter maps to context
+	_Entry.Author maps to requester
 	Type maps to code
 	Category maps to category
 	constrain doNotPerform to 0..0  // 
-	RequestedContext.Reason maps to reasonCode
 	Subject maps to subject
 	BodySite maps to bodySite
-	RequestedContext.Status maps to status
-	RequestedContext.RequestIntent maps to intent
-	RequestedContext.ExpectedPerformanceTime maps to occurrence[x]
-	RequestedContext.ExpectedPerformerType maps to performerType
-	RequestedContext.ExpectedPerformer maps to performer
-	RequestedContext.Priority  maps to priority
+	ProcedureRequestedContext.Reason maps to reasonCode
+	ProcedureRequestedContext.Status maps to status
+	ProcedureRequestedContext.RequestIntent maps to intent
+	ProcedureRequestedContext.ExpectedPerformanceTime maps to occurrence[x]
+	ProcedureRequestedContext.ExpectedPerformerType maps to performerType
+	ProcedureRequestedContext.ExpectedPerformer maps to performer
+	ProcedureRequestedContext.Priority  maps to priority
 
 /*
 ProcedureRequestedAgainst maps to ProcedureRequest:

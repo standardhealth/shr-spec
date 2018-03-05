@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
-Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Any. The classes below Any are are Finding, Action, and Entity."
+Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Any. The classes below Any are are FindingTopic, Action, and Entity."
 Uses:			shr.core, shr.finding, shr.action, shr.entity, shr.encounter, shr.device
 
 
@@ -24,6 +24,10 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 0..*			SecurityLabel
 0..*			Tag
 0..*			DerivedFrom
+0..1			RelatedEncounter
+0..1			Author
+0..1			Informant
+
 
 	Element:		ShrId
 	Concept:		TBD
@@ -55,11 +59,13 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description: 	"A human language, spoken or written."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages if covered
 
+/*	Commenting out - not sure how to make the attribute pattern work
 	Element:		Attribution
 	Concept:		TBD
 	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..1			ref(Role)
+	1..1			ref(Entity)
 	1..1			ParticipationType
+*/
 		
 	Element:		SecurityLabel
 	Concept:		TBD
@@ -75,15 +81,7 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:		TBD
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
 	Value:			ref(Any)
-	
-Abstract Element:	Content
-Based on:		Any
-Concept:		TBD
-Description:	"An item that can constitute the payload of an Entry, aka an EntryElement."
-0..1			RelatedEncounter
-0..1			Author
-0..1			Informant
-//0..*			Attribution
+
 
 	Element:		Narrative
 	Concept:		TBD
@@ -104,21 +102,29 @@ Description:	"An item that can constitute the payload of an Entry, aka an EntryE
 	Element:    	Informant
 	Concept:        MTH#C0449416
 	Description:    "The person or entity that provided the information in the entry, as distinct from who created the entry, e.g. the subject (patient), medical professional, family member, device or software program."
-	//Value:	        string or ref(Party) 
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(Participant) or ref(RelatedPerson) or ref(Organization)
+	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
 	
 	Element:		Author
 	Concept:		TBD
 	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
-	//Value:		string or ref(Party)
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(Participant) or ref(RelatedPerson) or ref(Organization)
+	//Value:		string or ref(Entity)
+	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
 	
 	Element:		Subject
 	Concept:		TBD
 	Description:	"The person or thing that this entry relates to, usually the Person of Record. However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, finding, condition, or intervention."
 	Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Location) or ref(RelatedPerson) or ref(Organization)
 
-	
+
+Abstract Element:	Topic
+Based on:		Any
+Concept:		TBD
+Description:	"Compositional and reusable grouping of attributes that make up the clinical focus of an entry. A topic does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded)."	
+
+Abstract Element:	Context
+Based on:		Any
+Concept:		TBD
+Description:	"Compositional and reusable grouping of attributes that provides the context for the topic of a clinical statement. The Context provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information."
 
 /*
 

@@ -3,17 +3,17 @@ Namespace:	shr.medication
 Description:		"The SHR Medication domain contains definitions related to medications taken, or not taken, by the person of record, both currently and in the past."
 Uses:				shr.core, shr.base, shr.action, shr.entity, shr.behavior, shr.finding
 
-/*
+/* Taking out for now since the Planned context has not been defined
 EntryElement:	MedicationRegimen   // Definitional 
 Concept:		MTH#C0237125
 Description:	"Defines a specific application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
 1..*			MedicationUsePlanned
 */
-		
-Element:		MedicationAction
-Based on:		Action
+
+Element:		MedicationTopic
+Based on:		ActionTopic
 Concept:		TBD
-Description:	"A course or dose of medication for a patient, independent of context of being recommended, used, or not used. Medication use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
+Description:	"Base class for actions involving medications, independent of context."
 1..1			MedicationOrCode
 0..1			Dosage
 
@@ -75,9 +75,9 @@ Description:	"A course or dose of medication for a patient, independent of conte
 		Description:	"The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
 		Value:			Ratio
 
-EntryElement:	MedicationDispenseAction
+EntryElement:	MedicationDispenseTopic
 Concept:		TBD
-Based on:		MedicationAction
+Based on:		MedicationTopic
 Description:	"The action of ordering and deliving a medication to the party responsible for administering the medication."
 0..1			NumberOfRefillsAllowed
 0..1			QuantityPerDispense
@@ -99,83 +99,85 @@ Description:	"The action of ordering and deliving a medication to the party resp
 	Value: 			Duration
 	
 	
-//----------- Actions ------------
+Element:		MedicationUseTopic
+Based on:		MedicationTopic
+Concept:		TBD
+Description:	"A course or dose of medication for a patient, independent of context of being recommended, used, or not used. Medication use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 
 	
 EntryElement:	MedicationUsed
-Based on:		MedicationAction
+Based on:		MedicationUseTopic
 Concept:		TBD
 Description:	"A record of the use of a medication."
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				ActionContext is type PerformedContext
-				PerformedContext.Status from 	http://hl7.org/fhir/ValueSet/medication-statement-status
+1..1			PerformedContext
+				PerformedContext.Status from http://hl7.org/fhir/ValueSet/medication-statement-status
 0..0			PerformedContext.Method // because of Dosage.Method				
 
 EntryElement:	Adherence  // This could be attached to MedicationUsed directly as an extension, but modeling as an observation avoids creating an extension
-Based on:		BehavioralFinding
+Based on:		BehaviorPresent
 Concept:		MTH#C2364172
 Description:	"The degree (frequency) that the stated treatment plan, prescription, or protocol was followed. A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
 Value:			CodeableConcept from QualitativeFrequencyVS
-				ObservationCode is MTH#C2364172
+				FindingCode is MTH#C2364172
 0..*			ReasonForBehavior from MedicationNonAdherenceReasonVS
 // TODO: The Focus(Ref or CodeableConcept6t;p'[45) of an adherence finding is a particular intervention
 
 EntryElement:	MedicationNotUsed
-Based on:		MedicationAction
+Based on:		MedicationUseTopic
 Concept:		TBD
 Description:	"A record of a medication NOT used. Although usually not required, a medication not used is sometimes reported when deviating from normal expectation or care plan."
-				ActionContext is type NotPerformedContext
-				ActionContext.Reason from MedicationNotUsedReasonVS
+1..1			NotPerformedContext
+				NotPerformedContext.Reason from MedicationNotUsedReasonVS
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category		
 0..0			Dosage		
 				
-EntryElement:	MedicationRequested
-Based on:		MedicationDispenseAction
+EntryElement:	MedicationDispenseRequested
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
-				ActionContext is type RequestedContext
-				ActionContext.Status from http://hl7.org/fhir/ValueSet/medication-request-status
-				ActionContext.Priority from http://hl7.org/fhir/ValueSet/medication-request-priority
+1..1			RequestedContext
+				RequestedContext.Status from http://hl7.org/fhir/ValueSet/medication-request-status
+				RequestedContext.Priority from http://hl7.org/fhir/ValueSet/medication-request-priority
 				
-EntryElement:	MedicationNotRequested
-Based on:		MedicationAction
+EntryElement:	MedicationDispenseNotRequested
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"A record of a medication NOT prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
-				ActionContext is type RequestedAgainstContext
-				ActionContext.Reason from MedicationNotUsedReasonVS
+1..1			RequestedAgainstContext
+				RequestedAgainstContext.Reason from MedicationNotUsedReasonVS
 
 Element:		MedicationDispensed
-Based on:		MedicationDispenseAction
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
-				ActionContext is type PerformedContext
+1..1			PerformedContext
 					
 Element:		MedicationNotDispensed
-Based on:		MedicationDispenseAction
+Based on:		MedicationDispenseTopic
 Concept:		TBD
 Description:	"Indicates that a medication product has NOT been dispensed for a named person/patient. This may be a result of the timing out of an order or detection of pharmacist of duplicate prescription or other reason."
-				ActionContext is type NotPerformedContext			
+1..1			NotPerformedContext			
 
 
 // TODO: Not yet mapped to http://hl7.org/fhir/ValueSet
 EntryElement:	MedicationChange
-Based on:		Action // Change to MedicationAction?
+Based on:		ActionTopic // Change to MedicationUseTopic?
 Concept:		MTH#C0554834
 Description:	"Description of a modification or change of a medication or dosage."
-				ActionContext is type PerformedContext
+1..1			PerformedContext
+				PerformedContext.Reason from MedicationChangeReasonVS
 1..1			Type from MedicationChangeTypeVS  //"Whether the change is a dose change, switch to a new medication, or discontinuation."
 0..*			MedicationBeforeChange   //might be more than one
 0..*			MedicationAfterChange
-				ActionContext.Reason from MedicationChangeReasonVS
-
 
 		Element:		MedicationBeforeChange
 		Concept:		TBD
 		Description:	"The medication taken, prior to the change."
-		Value:			ref(MedicationRequested) or ref(MedicationUsed)
+		Value:			ref(MedicationDispenseRequested) or ref(MedicationUsed)
 		
 		Element:		MedicationAfterChange
 		Concept:		TBD
 		Description:	"The medication taken, prior to the change."
-		Value:			ref(MedicationRequested) or ref(MedicationUsed)
+		Value:			ref(MedicationDispenseRequested) or ref(MedicationUsed)
 
