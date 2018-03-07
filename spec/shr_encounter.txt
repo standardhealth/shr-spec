@@ -4,7 +4,41 @@ Description:		"The SHR Encounter domain contains definitions that capture intera
 Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
 
 
-EntryElement:	EncounterTopic
+Element:		EncounterRequestedContext
+Based on:		RequestedContext
+Description:	"Context for encounter requests."
+				Status from http://hl7.org/fhir/ValueSet/request-status
+				Priority from http://hl7.org/fhir/ValueSet/request-priority
+				
+Element:		EncounterPerformedContext
+Based on:		PerformedContext
+Description:	"Context for encounters performed."
+				Status from http://hl7.org/fhir/ValueSet/encounter-status
+				OccurrenceTimeOrPeriod is type OccurrencePeriod
+				Reason should be from http://hl7.org/fhir/ValueSet/encounter-reason
+//				RelatedRequest value is type ref(EncounterRequested)
+//				RelatedPlan is type EncounterPlanned
+				Participant.Entity is type PractitionerOrRelatedPerson
+0..*			ServiceGiven
+0..1			ServiceProvider
+
+	Element:		PractitionerOrRelatedPerson
+	Based on:		Entity
+	Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
+	Value:			ref(Practitioner) or ref(RelatedPerson)
+
+	Element:		ServiceProvider
+	Concept:		TBD
+	Description:	"The organization that provided the services rendered during this encounter."
+	Value:			ref(Organization)
+	
+	Element:		ServiceGiven
+	Concept:		TBD
+	Description:	"Indicates a medical service provided."
+	Value:			CodeableConcept // TODO: Link to ICD-10 value set
+
+
+Element:		EncounterTopic
 Based on:		ActionTopic
 Concept:		TBD
 Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient, independent of the context of requested, planned, performed, etc."
@@ -56,40 +90,19 @@ Description:	"A description of an interaction between a patient and healthcare p
 	Value:			CodeableConcept from EpisodeOfCareCompletionVS
 */
 
+
+//-------------- Instantiations -----------------------			
+
 				
 EntryElement:	EncounterRequested
 Based on:		EncounterTopic
-1..1			RequestedContext
-				RequestedContext.Status from http://hl7.org/fhir/ValueSet/request-status
-				RequestedContext.Priority from http://hl7.org/fhir/ValueSet/request-priority
+1..1			EncounterRequestedContext
+
 				
 				
 EntryElement:	EncounterPerformed
 Based on:		EncounterTopic
-1..1			PerformedContext
-				PerformedContext.Status from http://hl7.org/fhir/ValueSet/encounter-status
-				PerformedContext.OccurrenceTimeOrPeriod is type OccurrencePeriod
-				PerformedContext.Reason should be from http://hl7.org/fhir/ValueSet/encounter-reason
-//				PerformedContext.RelatedRequest value is type ref(EncounterRequested)
-//				PerformedContext.RelatedPlan is type EncounterPlanned
-				PerformedContext.Participant.Entity is type PractitionerOrRelatedPerson
-0..*			ServiceGiven
-0..1			ServiceProvider
-
-	Element:		PractitionerOrRelatedPerson
-	Based on:		Entity
-	Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
-	Value:			ref(Practitioner) or ref(RelatedPerson)
-
-	Element:		ServiceProvider
-	Concept:		TBD
-	Description:	"The organization that provided the services rendered during this encounter."
-	Value:			ref(Organization)
-	
-	Element:		ServiceGiven
-	Concept:		TBD
-	Description:	"Indicates a medical service provided."
-	Value:			CodeableConcept // TODO: Link to ICD-10 value set
+1..1			EncounterPerformedContext
 
 				
 EntryElement:	EncounterNotPerformed
