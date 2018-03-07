@@ -28,7 +28,7 @@ Description:	"The base class for representing the ontological status of a findin
 	Based on:		PresenceContext
 	Concept:		TBD
 	Description:	"A simplified PresenceContext used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The ReportedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes."
-					ContextCode is SCT#36692007 "Known"  // not exactly right -- from its descendants, known means either known absent, known possible, known present, etc. We really want a code that just says this is known or observed.
+					ContextCode is SCT#733985002 "Reported" 
 	0..0			Onset
 	0..0			Abatement
 
@@ -62,32 +62,8 @@ Based on:		Topic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			Subject   // TODO: change to 1..1?  IF COMMENTED OUT, then in FHIR types would be defaulted to UN-PROFILED values
-1..1			FindingCode
-0..1			FocusCodeableConcept
-0..1			FocusReference
-0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
-
-	Element:		FindingCode
-	Concept:		MTH#C1706203
-	Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named FindingCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions and finding classes (findings without an explicit question), the observation code defaults to the concept code, so, for example, the finding code for an AdverseReaction is SCT#281647001 (Adverse reaction)."
-	Value:			CodeableConcept 
-	
-	Element:		FocusCodeableConcept
-	Concept:		TBD
-	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
-	Value:			CodeableConcept
-	
-	Element:		FocusReference
-	Concept:		TBD
-	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
-	Value:			ref(Topic)
-		
-	Element:		FindingMethod
-	Concept:		TBD
-	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-	Value:			CodeableConcept should be from http://loinc.org
 
 	Element:		FindingStatus
 	Concept:		TBD
@@ -118,6 +94,10 @@ Concept:		MTH#C1554188
 Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+1..1			FindingCode
+0..1			FocusCodeableConcept
+0..1			FocusReference
+0..1			EvaluationMethod
 0..1			BodySite  // TODO: Change to code to align with FHIR??
 0..1			ref(Device)
 0..1			ref(Specimen)
@@ -128,6 +108,27 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
 1..1			Members
+
+	Element:		FindingCode
+	Concept:		MTH#C1706203
+	Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named FindingCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code."
+	Value:			CodeableConcept 
+	
+	Element:		FocusCodeableConcept
+	Concept:		TBD
+	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
+	Value:			CodeableConcept
+	
+	Element:		FocusReference
+	Concept:		TBD
+	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
+	Value:			ref(Topic)
+		
+	Element:		EvaluationMethod
+	Concept:		TBD
+	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
+	Value:			CodeableConcept should be from http://loinc.org
+
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -196,7 +197,7 @@ Description:	"Context for an evaluation result, when the evaluation has been car
 
 		Element:		EvaluationProcedurePerformed
 		Concept:		TBD
-		Description:	"The evaluation procedure that is the source of the evaluation result. The FindingMethod is the general method used to produce the result, while the EvaluationProcedure is a pointer to the actual instance of the procedure."
+		Description:	"The evaluation procedure that is the source of the evaluation result. The EvaluationMethod is the general method used to produce the result, while the EvaluationProcedure is a pointer to the actual instance of the procedure."
 		Value:			ref(ProcedureTopic)   // can't do ProcedurePerformed because subclasses are based on Topic -- this is a pain, and we need multiple inheritance!
 
 
