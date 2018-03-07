@@ -28,7 +28,7 @@ Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
 Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3
 				FindingCode is LNC#21908-9
-1..1			FindingMethod from StagingMethodVS
+1..1			EvaluationMethod from StagingMethodVS
 0..1			StageTimingPrefix from StageTimingPrefixVS
 				EvaluationComponent			
 includes 0..1 	BreastCancerTStage
@@ -154,7 +154,7 @@ Concept:		LNC#48676-1
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from HER2StatusVS
 				FindingCode is LNC#48676-1 "HER2 Interpretation in Tissue"
-				FindingMethod from HER2MethodVS
+				EvaluationMethod from HER2MethodVS
 				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
 0..0			FocusCodeableConcept
@@ -171,7 +171,7 @@ includes 0..1	HER2byInSituHybridization
 
 				
 EntryElement:	HER2byImmunohistochemistry
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		CAP#31163
 Description:	"HER2 status as determined by Immunohistochemistry (IHC)"
 Value:		 	CodeableConcept from HER2StatusVS
@@ -187,7 +187,7 @@ includes 0..1	PrimaryAntibody  // from HER2AntibodyIHCVS if covered
 		Value:			Quantity with units UCUM#%   // TODO: Percentage causes CLI error
 		
 EntryElement:	HER2byInSituHybridization
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		CAP#31166
 Description:	"HER2 status as determined by In Situ HybridizationISH."
 Value:		 	CodeableConcept from HER2StatusVS
@@ -243,7 +243,7 @@ includes 0..1	PercentageAmplified
 						FindingCode is CAP#31073
 	
 		Element:		LaboratoryTest
-		Based on:		FindingMethod  // Profiling CodeableConcept!
+		Based on:		EvaluationMethod  // Profiling CodeableConcept!
 		Concept:		CAP#31089
 		Description:	"The specific test code and additional details. The test name is part of the CodeableConcept."
 		0..1			Manufacturer // test vendor
@@ -325,7 +325,7 @@ includes 0..1	PercentageAmplified
 
 		
 EntryElement:	OncotypeDxRecurrenceScore
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		TBD
 Description:	"The Oncotype DX breast cancer test examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0 to 100 indicates the estimated risk of recurrence with highest risk indicated by score > 31."
 Value: 			Quantity with units UCUM#1
@@ -362,7 +362,7 @@ includes 0..1	SizeOfGrossTumorBed
 
 
 EntryElement: 	TumorMargins
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		MTH#C4086369
 Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
 Value: 			CodeableConcept from PositiveNegativeVS
@@ -393,7 +393,7 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 
 	
 EntryElement:	LymphaticInvolvement
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		MTH#C0746333
 Description:	"Description of lymph nodes contain cancer cells."
 Value:			CodeableConcept from PositiveNegativeVS
@@ -424,7 +424,7 @@ includes 0..1 	DegreeOfLymphaticInvolvement
 
 
 	Element: 		Ki-67LabelingIndex
-	Based on:		EvaluationResult		
+	Based on:		LaboratoryTestResult		
 	Concept:		MTH#C4049944
 	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
 	Value:		 	Quantity with units UCUM#%
@@ -440,11 +440,20 @@ includes 0..1 	DegreeOfLymphaticInvolvement
 					FindingCode is LNC#29593-1
 
 EntryElement:	GeneticVariant
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		MTH#C0678941
 Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			FocusCodeableConcept from GeneIdentifierVS
+				Category is OBSCAT#laboratory
+				DiagnosticService is #genetics
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			Members.EvaluationTopic
+0..0			DeltaFlag
+0..0			BodySite
 				EvaluationComponent
 includes 0..1	Refseq
 
@@ -456,9 +465,18 @@ includes 0..1	Refseq
 
 EntryElement:	BreastCancerGeneticAnalysisPanel
 Concept:		TBD
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 				FindingCode is TBD#TBD
+				Category is OBSCAT#laboratory
+				DiagnosticService is #genetics
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			DeltaFlag
+0..0			BodySite
+0..0			EvaluationComponent
 				Members.EvaluationTopic
 includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
@@ -469,6 +487,7 @@ includes 1..1	BRCA2Variant
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
 					FocusCodeableConcept is HGNC#BRCA1Gene
+					
 
 	Element:		BRCA2Variant
 	Concept:		TBD
