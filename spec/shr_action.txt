@@ -11,16 +11,15 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 Abstract Element:	ActionTopic
 Based on:			Topic
-Concept:			TBD
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
 0..1 				Type
 0..*				Category
 
 Abstract Element:	ActionContext
 Based on:			Context
-Concept:			MTH#C0449255
 Description:		"The ontological status of the intervention, e.g., performed/not performed, requested/not requested."
 0..*				Reason
+
 
 Element:		PerformedContext
 Based on:		ActionContext
@@ -30,7 +29,7 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 0..*			Participant
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
-//0..1			RelatedRequest
+//0..1			RelatedRequest  // TODO: perhaps change to 0..* ?
 //0..1			RelatedPlan
 0..1			ref(Facility)
 0..1			Outcome  // e.g., AdverseEvent
@@ -68,13 +67,13 @@ Description:	"ActionContext indicating actual performance or execution of a heal
 		Element:		RelatedRequest
 		Concept:		TBD
 		Description:	"The request that this action fulfills"
-		Value:			ref(ProcedureRequested)   // TODO: We can't narrow this to ActionRequested under single inheritance
+		Value:			ref(RequestedContext)   // TODO: We can't do this under single inheritance
 */		
-/* Taking out for now because the PlannedContext has not yet been developed
+/* Remove PlannedContext because this should be addressed using the RequestIntent
 		Element:		RelatedPlan
 		Concept:		TBD
 		Description:	"The plan that this action fulfills"
-		Value:			ref(ActionTopic)   //ActionPlanned
+		Value:			ref(ActionPlanned)   //ActionPlanned
 */		
 		Element:		Outcome
 		Concept:		TBD
@@ -106,7 +105,7 @@ Description:	"An order for something to take place."
 0..1			PerformerInstructions
 0..1			PatientInstructions	
 0..1			CommunicationMethod
-		
+
 		Element:		RequestIntent	
 		Concept:		TBD
 		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."

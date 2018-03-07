@@ -5,34 +5,22 @@ Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, s
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
 
-//			
-EntryElement:	NoAdverseEvent
-Based on:		AdverseEventTopic
-Concept:		MTH#C1963761  "No adverse event"
-Description:	"Documentation of a situation where no adverse event has been detected or is known."
-				Value is MTH#C1963761  "No adverse event"
-1..1			AbsenceContext
-
-Abstract Element:	AdverseEventTopic
+//
+Element:		AdverseEventTopic
 Based on:		AssertionTopic
-Concept:		MTH#C0877248
 Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
-Value:			CodeableConcept from MedDRAVS
-
-
-
-Abstract Element:	AdverseEvent
-Based on:		AdverseEventTopic
-Concept:		MTH#C0877248
-Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
-1..1			PresenceContext
+Value:			0..1 CodeableConcept from MedDRAVS
 0..1			Details
-0..1			OccurrenceTime  // TODO: Onset/Abatement
+0..1			ref(AssociatedStudy)
+
+Element:		AdverseEventPresenceContext
+Based on:		PresenceContext
+Description:	"The context for an adverse event that is known, suspected, or possibly occurred."
+
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
-0..1			TBD "PatternOfEvent"  // from STDM
+//0..1			TBD "PatternOfEvent"  // from STDM
 0..1			Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome
-0..1			ref(AssociatedStudy)
 1..1			CauseCategory 
 0..*			AdverseEventAttribution
 0..*			ActionTaken
@@ -66,9 +54,25 @@ Description:	"The topic (independent of context) for any unfavorable and uninten
 	1..1			Details
 	0..1			ref(MedicationChange)
 
-	
+
+//---------------- Instantiations --------------
+
+EntryElement:	NoAdverseEvent
+Based on:		AdverseEventTopic
+Concept:		MTH#C1963761  "No adverse event"
+Description:	"Documentation of a situation where no adverse event has been detected or is known."
+0..0			Value
+1..1			AbsenceContext   // Non-occurrence context?
+
+
+EntryElement:	AdverseEvent
+Based on:		AdverseEventTopic
+Concept:		MTH#C0877248
+Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
+1..1			AdverseEventPresenceContext
+
 EntryElement:	ToxicReaction // In truth, this should be a filter on AdverseEvent, not a separate class
 Based on:		AdverseEvent
 Concept:		MTH#C0542243
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
-1..1			AdverseEventGrade from ToxicReactionVS  // restricted to grade 3, 4 or 5
+1..1			AdverseEventPresenceContext.AdverseEventGrade from ToxicReactionVS  // restricted to grade 3, 4 or 5
