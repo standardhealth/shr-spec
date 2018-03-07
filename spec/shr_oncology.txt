@@ -9,6 +9,7 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 //
 
 EntryElement:	BreastCancer
@@ -93,25 +94,22 @@ includes 0..1 	MitoticCountScore
 //			includes 0..1	PercentageInSituCarcinoma   // not sure where this belongs
 
 
-EntryElement:	BreastCancerBiomarkerPanel
-Based on:		LaboratoryTestResult
-Concept:		CAP#31159
-Description:	"Immunohistochemistry (IHC) assessment for estrogen receptor (ER) and progesterone receptor (PR) as well as IHC or in situ hybridization (ISH) determination of human epidermal growth factor receptor 2 (HER2) status"
-Value:			CodeableConcept from BrcaReceptorStatusVS
-				FindingCode is CAP#31159
-				Members.EvaluationTopic
-includes 0..1 	EstrogenReceptorStatus
-includes 0..1 	ProgesteroneReceptorStatus
-includes 0..1 	HER2ReceptorStatus
-
-
 EntryElement:	EstrogenReceptorStatus
 Based on:		LaboratoryTestResult
 Concept:		CAP#31160
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-Value:			CodeableConcept from PositiveNegativeIndeterminateVS
+Value:			CodeableConcept from PositiveNegativeVS
 				FindingCode is LNC#16112-5
-				FindingMethod is type SpecificLaboratoryTest
+				Category is OBSCAT#laboratory
+				DiagnosticService is #pathology
+0..0			FocusCodeableConcept
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			Members.EvaluationTopic
+0..0			BodySite // BodySite is in Specimen collection
+1..1			ref(Specimen)  // BodySite of the collection is found in Specimen.SpecimenCollectionPerformed.BodySite				
 0..1			EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -124,12 +122,21 @@ includes 0..1	OtherReceptorScoringSystem
 
 
 EntryElement:	ProgesteroneReceptorStatus
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		LNC#16113-3
 Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-Value:		 	CodeableConcept from PositiveNegativeIndeterminateVS
+Value:		 	CodeableConcept from PositiveNegativeVS
 				FindingCode is LNC#16113-3
-				FindingMethod is type SpecificLaboratoryTest
+				Category is OBSCAT#laboratory
+				DiagnosticService is #pathology
+0..0			FocusCodeableConcept
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			Members.EvaluationTopic
+0..0			BodySite // BodySite is in Specimen collection
+1..1			ref(Specimen)  // BodySite of the collection is found in Specimen.SpecimenCollectionPerformed.BodySite				
 				EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -142,13 +149,22 @@ includes 0..1	OtherReceptorScoringSystem
 
 
 EntryElement:	HER2ReceptorStatus
-Based on:		EvaluationResult
+Based on:		LaboratoryTestResult
 Concept:		LNC#48676-1
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from HER2StatusVS
 				FindingCode is LNC#48676-1 "HER2 Interpretation in Tissue"
-				FindingMethod is type SpecificLaboratoryTest
-				SpecificLaboratoryTest from HER2MethodVS
+				FindingMethod from HER2MethodVS
+				Category is OBSCAT#laboratory
+				DiagnosticService is #pathology
+0..0			FocusCodeableConcept
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			EvaluationComponent
+0..0			BodySite // BodySite is in Specimen collection
+1..1			ref(Specimen)  // BodySite of the collection is found in Specimen.SpecimenCollectionPerformed.BodySite	
 				Members.EvaluationTopic  // probably not "has member" but "related"
 includes 0..1	HER2byImmunohistochemistry
 includes 0..1	HER2byInSituHybridization
@@ -226,7 +242,7 @@ includes 0..1	PercentageAmplified
 		Value:			Quantity with units UCUM#%
 						FindingCode is CAP#31073
 	
-		Element:		SpecificLaboratoryTest
+		Element:		LaboratoryTest
 		Based on:		FindingMethod  // Profiling CodeableConcept!
 		Concept:		CAP#31089
 		Description:	"The specific test code and additional details. The test name is part of the CodeableConcept."
@@ -349,7 +365,7 @@ EntryElement: 	TumorMargins
 Based on:		EvaluationResult
 Concept:		MTH#C4086369
 Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-Value: 			CodeableConcept from PositiveNegativeIndeterminateVS
+Value: 			CodeableConcept from PositiveNegativeVS
 				FindingCode is TBD#TBD
 				EvaluationComponent
 includes 0..1	TumorMarginDescription
@@ -380,7 +396,7 @@ EntryElement:	LymphaticInvolvement
 Based on:		EvaluationResult
 Concept:		MTH#C0746333
 Description:	"Description of lymph nodes contain cancer cells."
-Value:			CodeableConcept from PositiveNegativeIndeterminateVS
+Value:			CodeableConcept from PositiveNegativeVS
 1..1			BodySite from LymphSystemSubdivisionVS 
 				EvaluationComponent
 includes 0..1 	LargestLymphNodeSize
@@ -427,8 +443,8 @@ EntryElement:	GeneticVariant
 Based on:		EvaluationResult
 Concept:		MTH#C0678941
 Description:	"Whether a subject carries a mutation in a particular gene."
-Value:			CodeableConcept from PositiveNegativeIndeterminateVS
-1..1			Focus_CodeableConcept from GeneIdentifierVS
+Value:			CodeableConcept from PositiveNegativeVS
+1..1			FocusCodeableConcept from GeneIdentifierVS
 				EvaluationComponent
 includes 0..1	Refseq
 
@@ -451,15 +467,15 @@ includes 1..1	BRCA2Variant
 	Concept:		TBD
 	Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
-	Value:			CodeableConcept from PositiveNegativeIndeterminateVS
-					Focus_CodeableConcept is HGNC#BRCA1Gene
+	Value:			CodeableConcept from PositiveNegativeVS
+					FocusCodeableConcept is HGNC#BRCA1Gene
 
 	Element:		BRCA2Variant
 	Concept:		TBD
 	Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
-	Value:			CodeableConcept from PositiveNegativeIndeterminateVS
-					Focus_CodeableConcept is HGNC#BRCA2Gene
+	Value:			CodeableConcept from PositiveNegativeVS
+					FocusCodeableConcept is HGNC#BRCA2Gene
 
 
 

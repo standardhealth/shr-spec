@@ -24,10 +24,10 @@ Description:	"The base class for representing the ontological status of a findin
 	0..1			Onset
 	0..1			Abatement
 	
-	Element:		AsWrittenContext
+	Element:		ReportedContext
 	Based on:		PresenceContext
 	Concept:		TBD
-	Description:	"A simplified PresenceContext used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The AsWrittenContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes."
+	Description:	"A simplified PresenceContext used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The ReportedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes."
 					ContextCode is SCT#36692007 "Known"  // not exactly right -- from its descendants, known means either known absent, known possible, known present, etc. We really want a code that just says this is known or observed.
 	0..0			Onset
 	0..0			Abatement
@@ -61,10 +61,10 @@ Element: 		FindingTopic
 Based on:		Topic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-0..1			Subject   // TODO: change to 1..1?
+0..1			Subject   // TODO: change to 1..1?  IF COMMENTED OUT, then in FHIR types would be defaulted to UN-PROFILED values
 1..1			FindingCode
-0..1			Focus_CodeableConcept
-0..1			Focus_Reference
+0..1			FocusCodeableConcept
+0..1			FocusReference
 0..1			FindingMethod
 0..1			FindingStatus
 0..*			Evidence
@@ -74,12 +74,12 @@ Description:	"Base class - independent of context - for all kinds of determinati
 	Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named FindingCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code. In assertions and finding classes (findings without an explicit question), the observation code defaults to the concept code, so, for example, the finding code for an AdverseReaction is SCT#281647001 (Adverse reaction)."
 	Value:			CodeableConcept 
 	
-	Element:		Focus_CodeableConcept
+	Element:		FocusCodeableConcept
 	Concept:		TBD
 	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
 	Value:			CodeableConcept
 	
-	Element:		Focus_Reference
+	Element:		FocusReference
 	Concept:		TBD
 	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
 	Value:			ref(Topic)
@@ -87,7 +87,7 @@ Description:	"Base class - independent of context - for all kinds of determinati
 	Element:		FindingMethod
 	Concept:		TBD
 	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-	Value:			CodeableConcept
+	Value:			CodeableConcept should be from http://loinc.org
 
 	Element:		FindingStatus
 	Concept:		TBD
@@ -104,7 +104,7 @@ Based on:		FindingTopic
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
 Value:			string
-1..1			AsWrittenContext	
+1..1			ReportedContext	
 
 Abstract Element: AssertionTopic
 Based on:		FindingTopic
@@ -183,7 +183,25 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Description:	"Members represent the elements of a group of a related but independent observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		// Lloyd McKenzie said "has-member is for things like panels. For example, a CBC (complete blood count) would have members capturing white blood cell count, red blood cell count, hemoglobin, etc.  See https://chat.fhir.org/#narrow/search/cbc "
 		Value:			0..* ref(EvaluationTopic)
+
 		
+Element:		EvaluationResultReportedContext
+Based on:		ReportedContext
+Description:	"Context for an evaluation result, when the evaluation has been carried out, and a result is reported."
+0..1			ExceptionValue
+0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR Observation
+0..1			EvaluationProcedurePerformed
+
+
+		Element:		EvaluationProcedurePerformed
+		Concept:		TBD
+		Description:	"The evaluation procedure that is the source of the evaluation result. The FindingMethod is the general method used to produce the result, while the EvaluationProcedure is a pointer to the actual instance of the procedure."
+		Value:			ref(ProcedureTopic)   // can't do ProcedurePerformed because subclasses are based on Topic -- this is a pain, and we need multiple inheritance!
+
+
+		
+//----------------- Instantiations ------------------
 
 EntryElement:	EvaluationGoal
 Based on:		EvaluationTopic
@@ -196,10 +214,7 @@ EntryElement:	EvaluationResult
 Based on:		EvaluationTopic
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResult has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-1..1			AsWrittenContext
-0..1			ExceptionValue
-0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
-1..1			FindingStatus  // constrain from 0..1 to 1..1 to match FHIR Observation
+1..1			EvaluationResultReportedContext
 				Members value is type ref(EvaluationResult)
 
 		Element:		ExceptionValue
@@ -213,11 +228,12 @@ Based on:		EvaluationResult
 Concept:		TBD
 Description:	"Measurement resulting from a laboratory analysis."
 0..*			DiagnosticService
+0..1			EvaluationProcedurePerformed value is type LaboratoryProcedureTopic  // LaboratoryProcedurePerformed is not subclass a ProcedurePerformed
 		
 		Element:		DiagnosticService
 		Concept:		TBD
 		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
 EntryElement:	QuestionAnswer
 Based on:		EvaluationResult
@@ -244,8 +260,8 @@ Concept:		MTH#C0421176 "Progression"
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
 Value:			CodeableConcept from ProgressionVS
 				FindingCode is MTH#C0421176 "Progression"
-				Focus_CodeableConcept should be from ConditionVS
-				Focus_Reference value is type ref(Condition)
+				FocusCodeableConcept should be from ConditionVS
+				FocusReference value is type ref(Condition)
 0..*			Evidence from ProgressionEvidenceTypeVS
 
 
