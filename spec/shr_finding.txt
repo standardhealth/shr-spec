@@ -55,7 +55,18 @@ Description:	"The base class for representing the ontological status of a findin
 	Concept:		SCT#410518001
 	Description:	"A hypothetical or future finding that represents an objective or goal."
 					ContextCode from GoalContextVS
-				
+	
+	/* Other situations:
+		Family history ofs
+		Past history of
+		No family history of
+		No history of
+		
+		Finding context: Known present, etc.
+		Temporal context: Current or past (actual)
+		Subject-relationship context? (Subject of Record, Person in family of subject, etc.)
+	*/
+	
 
 Element: 		FindingTopic
 Based on:		Topic
@@ -171,7 +182,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Abstract Element:	EvaluationComponent
 		Concept:		TBD
-		Description:	"A simplified, non-separable evaluation consisting of a finding code, value (or value absent reason), reference range, and interpretation. The subject of the observation component is the same as in the parent observation."
+		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
 		Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 		0..1			ExceptionValue
 		0..1			Interpretation
@@ -180,7 +191,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		Members
 		Concept:		TBD
-		Description:	"Members represent the elements of a group of a related but independent observations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent observation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		Description:	"Members represent the elements of a group of a related but independent evaluations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		// Lloyd McKenzie said "has-member is for things like panels. For example, a CBC (complete blood count) would have members capturing white blood cell count, red blood cell count, hemoglobin, etc.  See https://chat.fhir.org/#narrow/search/cbc "
 		Value:			0..* ref(EvaluationTopic)
 
@@ -225,7 +236,6 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 		
 EntryElement:	LaboratoryTestResult
 Based on:		EvaluationResult
-Concept:		TBD
 Description:	"Measurement resulting from a laboratory analysis."
 0..*			DiagnosticService
 0..1			EvaluationProcedurePerformed value is type LaboratoryProcedureTopic  // LaboratoryProcedurePerformed is not subclass a ProcedurePerformed
@@ -235,6 +245,20 @@ Description:	"Measurement resulting from a laboratory analysis."
 		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
+EntryElement:	SimpleLaboratoryTestResult
+Based on:		LaboratoryTestResult
+Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient."
+				Category is OBSCAT#laboratory
+				Subject value is type ref(Patient)
+0..0			FocusCodeableConcept
+0..0			FocusReference
+0..0			Evidence
+0..0			Precondition
+0..0			ReferenceRange
+0..0			Members.EvaluationTopic
+0..0			BodySite // BodySite is covered in the Specimen collection
+1..1			ref(Specimen)  // BodySite of the collection is found in Specimen.SpecimenCollectionPerformed.BodySite				
+	
 EntryElement:	QuestionAnswer
 Based on:		EvaluationResult
 Concept:		TBD
