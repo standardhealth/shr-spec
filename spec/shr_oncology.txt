@@ -134,7 +134,7 @@ includes 0..1	OtherReceptorScoringSystem
 
 
 EntryElement:	HER2ReceptorStatus
-Based on:		LaboratoryTestResult
+Based on:		SimplifiedLaboratoryTestResult
 Concept:		LNC#48676-1
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from HER2StatusVS
@@ -143,23 +143,13 @@ Value:		 	CodeableConcept from HER2StatusVS
 				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
 				EvaluationMethod from HER2MethodVS
-0..0			EvaluationComponent		
-0..0			Evidence
-0..0			FocusCodeableConcept
-0..0			FocusReference
-0..0			Precondition
-				Members.EvaluationTopic  // probably not "has member" but "related"
-includes 0..1	HER2byImmunohistochemistry
-includes 0..1	HER2byInSituHybridization
-
 				
-EntryElement:	HER2byImmunohistochemistry
-Based on:		SimplifiedLaboratoryTestResult
+EntryElement:	HER2ReceptorStatusIHC
+Based on:		HER2ReceptorStatus
 Concept:		CAP#31163
-Description:	"HER2 status as determined by Immunohistochemistry (IHC)"
-Value:		 	CodeableConcept from HER2StatusVS
+Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)"
 				FindingCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
-				DiagnosticService is #pathology
+				EvaluationMethod is #ihc
 				EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
 includes 0..1	PrimaryAntibody  // from HER2AntibodyIHCVS if covered
@@ -170,13 +160,12 @@ includes 0..1	PrimaryAntibody  // from HER2AntibodyIHCVS if covered
 		Description:	"Percentage of cells with uniform intense complete membrane staining."
 		Value:			Quantity with units UCUM#%   // TODO: Percentage causes CLI error
 		
-EntryElement:	HER2byInSituHybridization
-Based on:		SimplifiedLaboratoryTestResult
+EntryElement:	HER2ReceptorStatusISH
+Based on:		HER2ReceptorStatus
 Concept:		CAP#31166
-Description:	"HER2 status as determined by In Situ HybridizationISH."
-Value:		 	CodeableConcept from HER2StatusVS
+Description:	"HER2 receptor status as determined by In Situ HybridizationISH."
 				FindingCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
-				DiagnosticService is #pathology
+				EvaluationMethod from HER2ISHMethodVS
 				EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
