@@ -29,7 +29,7 @@ Description:	"The stage of a cancer, assessed according to the standard establis
 Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3
 				FindingCode is LNC#21908-9
 				FocusReference value is type BreastCancer
-0..0			FocusCodeableConcept  // potentially from BreastCancerTypeVS
+				FocusCodeableConcept from BreastCancerTypeVS
 1..1			EvaluationMethod from StagingMethodVS
 0..1			StageTimingPrefix from StageTimingPrefixVS
 				EvaluationComponent			
@@ -139,6 +139,8 @@ Concept:		LNC#48676-1
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from HER2StatusVS
 				FindingCode is LNC#48676-1 "HER2 Interpretation in Tissue"
+				Subject value is type ref(Patient)
+				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
 				EvaluationMethod from HER2MethodVS
 				Members.EvaluationTopic  // probably not "has member" but "related"
@@ -225,21 +227,6 @@ includes 0..1	PercentageAmplified
 				Description:	"A range of percentage values."
 				0..1			LowerBound value is type Percentage
 				0..1			UpperBound value is type Percentage
-
-//				Numerator.Quantity with units UCUM#1
-//				Denominator.Quantity.Units with Coding from http://hl7.org/fhir/ValueSet/units-of-time
-/*
-			Element:		NuclearPositivityPercentage
-			Concept:		TBD
-			Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
-			Value:			Quantity with units UCUM#%
-			
-			Element:		NuclearPositivityDecile
-			Concept:		TBD
-			Description:	"The percentage of cells that test (stain) positive for the presence of a receptor, as a percentage range, 0-10, 11-20, 21-30, etc."
-			Value:			CodeableConcept from DecileVS
-				
-*/
 
 		Element:		PrimaryAntibody
 		Based on:		EvaluationComponent
