@@ -200,10 +200,11 @@ Description:	"Context for an evaluation result, when the evaluation has been car
 0..1			EvaluationProcedurePerformed
 
 
+
 		Element:		EvaluationProcedurePerformed
 		Concept:		TBD
 		Description:	"The evaluation procedure that is the source of the evaluation result. The EvaluationMethod is the general method used to produce the result, while the EvaluationProcedure is a pointer to the actual instance of the procedure."
-		Value:			ref(ProcedureTopic)   // can't do ProcedurePerformed because subclasses are based on Topic -- this is a pain, and we need multiple inheritance!
+		Value:			ref(ProcedureTopic)   // can't reference ProcedurePerformed because there are no direct subclasses of ProcedurePerformed, only subclasses of ProcedureTopic and ProcedureContext. There's no way in CIMPL to indicate "Any class whose Topic is descended from ProcedureTopic and Context descended from ProcedureContext." Even multiple inheritance doesn't address this.
 
 
 		
@@ -216,12 +217,12 @@ Description:	"Represents an evaluation result that is in the prospective (future
 1..1			GoalContext
 
 	
-EntryElement:	EvaluationResult
+EntryElement:	EvaluationResultRecorded
 Based on:		EvaluationTopic
 Concept:		TBD
-Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResult has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..1			EvaluationResultRecordedContext
-				Members value is type ref(EvaluationResult)
+				Members value is type ref(EvaluationResultRecorded)
 
 		Element:		ExceptionValue
 		Concept:		TBD
@@ -229,8 +230,8 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 		Value:			CodeableConcept from ExceptionValueVS
 
 		
-EntryElement:	LaboratoryTestResult
-Based on:		EvaluationResult
+EntryElement:	LaboratoryTestResultRecorded
+Based on:		EvaluationResultRecorded
 Description:	"Measurement resulting from a laboratory analysis."
 0..*			DiagnosticService
 0..1			EvaluationProcedurePerformed value is type LaboratoryProcedureTopic  // LaboratoryProcedurePerformed is not subclass a ProcedurePerformed
@@ -240,11 +241,11 @@ Description:	"Measurement resulting from a laboratory analysis."
 		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
-EntryElement:	SimplifiedLaboratoryTestResult
-Based on:		LaboratoryTestResult
+EntryElement:	SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient."
 				Category is OBSCAT#laboratory
-				Subject value is type ref(Patient)
+				Subject value is type Patient
 0..0			FocusCodeableConcept
 0..0			FocusReference
 0..0			Evidence
@@ -254,14 +255,14 @@ Description:	"The usual case for a test result from a pathology lab, based on a 
 0..0			BodySite // BodySite is covered in the Specimen collection
 1..1			ref(Specimen)  // BodySite of the collection is found in Specimen.SpecimenCollectionPerformed.BodySite				
 	
-EntryElement:	QuestionAnswer
-Based on:		EvaluationResult
+EntryElement:	QuestionAnswerRecorded
+Based on:		EvaluationResultRecorded
 Concept:		TBD
-Description:	"A simplified evaluation (independent of context) consisting of a question-answer pair. The question is identified by the FindingCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResult.Members can have the supporting questions."
+Description:	"A simplified evaluation (independent of context) consisting of a question-answer pair. The question is identified by the FindingCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResultRecorded.Members can have the supporting questions."
 0..0			ref(Device)
 0..0			BodySite
 0..0			ReferenceRange  // applies to a quantitative measurement only
-1..1			Members value is type QuestionAnswer
+1..1			Members value is type QuestionAnswerRecorded
 
 
 
@@ -274,7 +275,7 @@ Value:			ref(FindingTopic)
 
 
 EntryElement:	DiseaseProgression
-Based on:		EvaluationResult
+Based on:		EvaluationResultRecorded
 Concept:		MTH#C0421176 "Progression"
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
 Value:			CodeableConcept from ProgressionVS
