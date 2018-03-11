@@ -100,7 +100,7 @@ Concept:		MTH#C1554188
 Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-1..1			FindingCode
+1..1			TopicCode
 0..1			Focus
 0..1			EvaluationMethod
 0..1			BodySite  // TODO: Change to code to align with FHIR??
@@ -113,11 +113,6 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
 1..1			Members
-
-	Element:		FindingCode
-	Concept:		MTH#C1706203
-	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
-	Value:			CodeableConcept
 	
 	Element:		Focus
 	Concept:		TBD
@@ -251,7 +246,7 @@ Description:	"The usual case for a test result from a pathology lab, based on a 
 EntryElement:	QuestionAnswerRecorded
 Based on:		EvaluationResultRecorded
 Concept:		TBD
-Description:	"A simplified evaluation (independent of context) consisting of a question-answer pair. The question is identified by the FindingCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResultRecorded.Members can have the supporting questions."
+Description:	"A simplified evaluation (independent of context) consisting of a question-answer pair. The question is identified by the TopicCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResultRecorded.Members can have the supporting questions."
 0..0			ref(Device)
 0..0			BodySite
 0..0			ReferenceRange  // applies to a quantitative measurement only
@@ -272,7 +267,7 @@ Based on:		EvaluationResultRecorded
 Concept:		MTH#C0421176 "Progression"
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
 Value:			CodeableConcept from ProgressionVS
-				FindingCode is MTH#C0421176 "Progression"
+				TopicCode is MTH#C0421176 "Progression"
 				Focus.CodeableConcept should be from ConditionVS
 				Focus.Topic is type Condition
 0..*			Evidence from ProgressionEvidenceTypeVS
@@ -283,7 +278,7 @@ Based on:		EvaluationTopic
 Concept:		MTH#C1268086
 Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
 Value:			CodeableConcept from BodySiteVS
-				FindingCode is MTH#C1268086
+				TopicCode is MTH#C1268086
 0..1			Morphology
 
 	Element:		Morphology
