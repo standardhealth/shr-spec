@@ -101,8 +101,7 @@ Description:	"The base class, independent of context for evaluations (measuremen
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
 0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 1..1			FindingCode
-0..1			FocusCodeableConcept
-0..1			FocusReference
+0..1			Focus
 0..1			EvaluationMethod
 0..1			BodySite  // TODO: Change to code to align with FHIR??
 0..1			ref(Device)
@@ -117,18 +116,13 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 
 	Element:		FindingCode
 	Concept:		MTH#C1706203
-	Description:	"A code that represents what the finding concerns, for example, the subject's height, blood pressure, disease status, wound dimensions, diabetes risk, etc. Although named FindingCode, in different contexts the same attribute might be more naturally referred to as a property, observable, or test code."
-	Value:			CodeableConcept 
-	
-	Element:		FocusCodeableConcept
-	Concept:		TBD
 	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
 	Value:			CodeableConcept
 	
-	Element:		FocusReference
+	Element:		Focus
 	Concept:		TBD
 	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
-	Value:			ref(Topic)
+	Value:			CodeableConcept or ref(Topic)
 		
 	Element:		EvaluationMethod
 	Concept:		TBD
@@ -246,8 +240,7 @@ Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient."
 				Category is OBSCAT#laboratory
 				Subject value is type Patient
-0..0			FocusCodeableConcept
-0..0			FocusReference
+0..0			Focus
 0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
@@ -280,8 +273,8 @@ Concept:		MTH#C0421176 "Progression"
 Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
 Value:			CodeableConcept from ProgressionVS
 				FindingCode is MTH#C0421176 "Progression"
-				FocusCodeableConcept should be from ConditionVS
-				FocusReference value is type ref(Condition)
+				Focus.CodeableConcept should be from ConditionVS
+				Focus.Topic is type Condition
 0..*			Evidence from ProgressionEvidenceTypeVS
 
 
