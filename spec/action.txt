@@ -1,0 +1,154 @@
+Grammar:		DataElement 5.0
+Namespace:		action
+Description:	"The Action domain contains base definitions for interventions and procedures, from education to surgery."
+Uses:			shr.core, shr.base, finding, entity, encounter, device, research
+
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+
+
+//------------ Actions and Interventions -------------
+
+Abstract Element:	ActionTopic
+Based on:			Topic
+Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
+0..*				Category
+
+
+Abstract Element:	ActionContext
+Based on:			Context
+Description:		"The ontological status of the intervention, e.g., performed/not performed, requested/not requested."
+0..*				Reason
+
+
+Element:		PerformedContext
+Based on:		ActionContext
+Concept:		TBD
+Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
+1..1			OccurrenceTimeOrPeriod  // when the action took place
+0..*			Participant
+1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
+0..1			Method
+//0..1			RelatedRequest  // TODO: perhaps change to 0..* ?
+//0..1			RelatedPlan
+0..1			ref(Facility)
+0..1			Outcome  // e.g., AdverseEvent
+
+		Element:		Participant
+		Concept:		MTH#C1550369
+		Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
+		0..1			Entity
+		0..1 			ParticipationType  // role
+		0..1			ParticipationPeriod
+		0..1			OnBehalfOf
+		
+			Element:		ParticipationType
+			Concept:		MTH#C1553854
+			Description:	"The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
+			Value:			CodeableConcept from FHIR/v3-ParticipationType
+			
+			Element:		ParticipationPeriod
+			Concept:		TBD
+			Description:	"The point in time or span of time the participant is involved."
+			Value:			TimePeriod
+
+
+		Element:		Status
+		Concept:		MTH#C0449438
+		Description:	"Position in workflow."
+		Value:			code or Coding or CodeableConcept
+	
+		Element:		Method
+		Concept:		TBD
+		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
+		Value:			CodeableConcept  // TODO: limit to a procedure code
+		
+/* Taking out for now because there is no way to limit the related request to items of type RequestContext
+		Element:		RelatedRequest
+		Concept:		TBD
+		Description:	"The request that this action fulfills"
+		Value:			ref(RequestedContext)   // TODO: We can't do this under single inheritance
+*/		
+/* Remove PlannedContext because this should be addressed using the RequestIntent
+		Element:		RelatedPlan
+		Concept:		TBD
+		Description:	"The plan that this action fulfills"
+		Value:			ref(ActionPlanned)   //ActionPlanned
+*/		
+		Element:		Outcome
+		Concept:		TBD
+		Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."
+		Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/procedure-outcome
+		0..*			ref(FindingTopic)
+
+		
+Element:		NotPerformedContext
+Based on:		ActionContext
+Concept:		TBD
+Description:	"A record that a clinical act was not performed at a certain time or during a stated period of time, particularly when there might be an expectation of performing such an act, for example, if a vaccination is not given because of parental objection. Do not use this context if the act was initiated or started but aborted or cancelled."
+//0..1			RelatedRequest
+//0..1			RelatedPlan
+1..1			NonOccurrenceTimeOrPeriod
+	
+	
+Element:		RequestedContext
+Concept:		MTH#C1705178
+Based on:		ActionContext
+Description:	"An order for something to take place."
+1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status
+1..1			RequestIntent
+0..1			ExpectedPerformanceTime
+0..1			ExpectedPerformerType
+0..1			ExpectedPerformer
+0..1			ExpectedMethod 
+0..1 			Priority should be from http://hl7.org/fhir/ValueSet/request-priority
+0..1			PerformerInstructions
+0..1			PatientInstructions	
+0..1			CommunicationMethod
+
+		Element:		RequestIntent	
+		Concept:		TBD
+		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
+		Value:			code from http://hl7.org/fhir/ValueSet/request-intent
+		
+		Element:		ExpectedPerformanceTime
+		Concept:		TBD
+		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			dateTime or date or TimePeriod or Timing
+
+		Element:		ExpectedPerformerType
+		Concept:		TBD
+		Description:	"What type of party should carry out the testing."
+		Value:			CodeableConcept // what ValueSet??
+
+		Element:		ExpectedPerformer
+		Concept:		TBD
+		Description:	"Who should carry out the tests. For example, the patient or caregiver."
+		Value:			ref(Entity) or ref(Organization)
+		
+		Element:		ExpectedMethod
+		Concept:		TBD
+		Description:	"The method that should be used to carry out the action."
+		Value:			ref(Method)
+
+		Element:		PerformerInstructions
+		Concept:		TBD
+		Description:	"Information for the performer of the test, if needed."
+		Value:			string
+
+		Element:		PatientInstructions
+		Concept:		TBD
+		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
+		Value:			string
+		
+		Element:		CommunicationMethod
+		Concept:		TBD
+		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
+		Value:			CodeableConcept
+
+Element:		RequestedAgainstContext
+Concept:		TBD
+Based on:		ActionContext
+Description:	"Represents a recommendation or order from a practitioner or clinical decision support system to NOT perform an act."
+
+

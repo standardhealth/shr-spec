@@ -1,0 +1,77 @@
+Grammar:		DataElement 5.0
+Namespace:		device
+Description:	"The SHR Device domain contains definitions relating to devices used to treat the person of record, either in measurements and observations, durable medical equipment used by the patient, and device implants."
+Uses:			shr.core, shr.base, finding, action, entity
+
+Element:		Device
+Based on:		Entity
+Concept:		TBD
+Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients."
+1..1			Type from DeviceVS
+0..*			DeviceUdi
+0..1 			VendorModelNumber
+
+	Element:		DeviceUdi
+	Concept:		TBD
+	Description:	"Unique Device Identifier (UDI) Barcode string number for a device, assigned by the organization using the device."
+	Value:			string
+
+	Element:		VendorModelNumber
+	Concept:		TBD
+	Description:	"The model number of the device, assigned by the manufacturer or vendor."
+	Value:			string
+
+	
+Element:		DeviceTopic
+Based on:		ActionTopic
+Concept:		TBD
+Description:	"A medical device or implanted device of a patient, independent of context of being recommended, used, or not used. Device use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, and other patient-reported information."
+1..1			Subject //SubjectPG
+1..1			Device
+0..1			Implanted
+0..1			BodySite
+
+	Element:		Implanted
+	Concept:		TBD
+	Description:	"Whether this device is implanted in the body."
+	Value:			CodeableConcept from YesNoUnknownVS
+
+/*	Element:		DeviceUseStatus
+	Concept:		TBD
+	Description:	"A code representing the patient or other source's judgment about the state of the device used that this statement is about. Generally this will be active or completed."
+	Value:			code from http://hl7.org/fhir/ValueSet/device-statement-status
+*/
+
+
+EntryElement:	DeviceUsed
+Based on:		DeviceTopic
+Concept:		TBD
+Description:	"A record of the use of a device by a patient."
+1..1			PerformedContext
+0..0			PerformedContext.Participant
+1..1			PerformedContext.Status from http://hl7.org/fhir/ValueSet/device-statement-status
+
+
+EntryElement:	DeviceNotUsed
+Based on:		DeviceTopic
+Concept:		TBD
+Description:	"A record of a device not used by a patient, for example, no stent implanted."
+1..1			NotPerformedContext
+
+	
+/*  NOT READY
+Element:		RespiratoryAssistSetting
+Concept:		TBD
+Description:	"The prescribed rate or limit to respiratory rate, expressed as breaths per minute."
+1..1			Device is type RespiratoryAssistDevice
+1..*			DeviceSetting
+
+
+Element:		RespiratoryRateDeviceSetting
+1..1 			RespiratoryRate
+1..1			Type  // "Type of setting, for example, an alarm limit, a target, a maximum, or minimum."
+
+	Element:		RespiratoryRate
+	Value:			SimpleQuantity with units UCUM#/min "/min"
+
+*/

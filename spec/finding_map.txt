@@ -1,0 +1,47 @@
+Grammar:	Map 5.1
+Namespace:	finding
+Target:		FHIR_STU_3
+
+
+EvaluationResultRecorded maps to Observation:
+	_Entry.CreationTime maps to issued
+	_Entry.RelatedEncounter  maps to context	
+//	_Entry.Informant
+//	_Entry.Author
+	Subject maps to subject
+	Category maps to category
+	EvaluationMethod maps to method
+	Value maps to value[x]
+	TopicCode maps to code
+	BodySite maps to bodySite
+	Specimen maps to specimen
+	Device maps to device
+	Interpretation maps to interpretation
+	Details maps to comment
+	EvaluationResultRecordedContext.RelevantTime maps to effective[x]
+	EvaluationResultRecordedContext.FindingStatus maps to status
+	EvaluationResultRecordedContext.ExceptionValue maps to dataAbsentReason
+// TODO: need to map something to Observation.performer. Should this come from _Entry.Author? Procedure participant? 	
+	// note: can't add specimen at the LaboratoryTestResultRecorded level because it requires relaxing the 0..0 specimen constraint in EvaluationResultRecorded profile to 0..1 specimen in the LaboratoryTestResultRecorded profile.
+	ReferenceRange maps to referenceRange
+	ReferenceRange.Range.LowerBound maps to referenceRange.low
+	ReferenceRange.Range.UpperBound maps to referenceRange.high
+	ReferenceRange.Type maps to referenceRange.type
+	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
+	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
+	fix related.type to #has-member
+	EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	EvaluationComponent._Concept maps to component.code
+	EvaluationComponent.Value maps to component.value[x]
+	EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	EvaluationComponent.Interpretation maps to component.interpretation
+	EvaluationComponent.ReferenceRange maps to component.referenceRange
+	Members.EvaluationTopic maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+	
+SimplifiedLaboratoryTestResultRecorded:
+	constrain related to 0..0  // no Members (not a panel)
+	
+	
+// not needed  
+// LaboratoryTestResultRecorded maps to Observation:
