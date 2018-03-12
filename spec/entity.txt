@@ -26,9 +26,7 @@ Description:	"A person relevant to the health or social situation of the subject
 0..1			DateOfBirth
 1..1			AdministrativeGender
 0..*			Address
-0..1			Headshot
 0..*			ContactPoint
-0..*			LanguageUsed
 0..1			ActiveFlag
 0..*    		ref(ExternalHealthRecord)
 
@@ -52,32 +50,6 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
 	Value:          code from http://hl7.org/fhir/ValueSet/administrative-gender
 
-	Element:		Headshot
-	Concept:		TBD
-	Description:	"A photograph showing a person's face."
-	Value:			Attachment
-	
-	Element:		LanguageUsed  // needs to be aligned with CCDA 2.1
-	Concept:		TBD
-	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
-	Value:			Language
-	0..1 			SpokenLanguageProficiency
-	0..1 			WrittenLanguageProficiency
-	0..*			LanguageQualifier
-
-			Element:		SpokenLanguageProficiency
-			Concept:		MTH#C0678997
-			Description:	"Accuracy and fluency in spoken communication in a language."
-			Value:			CodeableConcept from PerformanceGradingScaleVS
-
-			Element:		WrittenLanguageProficiency
-			Concept:		MTH#C0586739
-			Description:	"Accuracy and fluency of reading and writing in a language."
-			Value:			CodeableConcept from PerformanceGradingScaleVS
-
-			Element:		LanguageQualifier
-			Description:	"Additional information about a person's use of language."
-			Value:			CodeableConcept from LanguageQualifierVS
 
 	Element:		Deceased
 	Concept:		MTH#C0011065
@@ -134,7 +106,6 @@ Description:	"A person in the role of a patient, including extended demographic 
 0..1			SocialSecurityNumber
 0..1			DriversLicenseNumber
 0..*			PassportNumber
-0..1			MedicalInterpreterNeeded
 0..1			Deceased
 
 	Element:   		PlaceOfBirth
@@ -232,12 +203,6 @@ Description:	"A person in the role of a patient, including extended demographic 
 		Value:			CodeableConcept
 	
 
-	Element: 		MedicalInterpreterNeeded
-	Concept:		MTH#C1442531
-	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-	Value:			CodeableConcept from YesNoUnknownVS
-	1..1			Language
-
 
 EntryElement:	Practitioner
 Based on:		Entity
@@ -271,22 +236,7 @@ Description:	"A person who practices a healing art."
 			Concept:	TBD
 			Description:"An organization who issues a qualification, identifier, or license."
 			Value:		ref(Organization)
-
-
-EntryElement:	RelatedPerson
-Based on:		Entity
-Description:	"A person in a role defined in relationship to a patient"
-0..1			ref(Person)
-0..1			RelationshipType
-0..1			EffectiveTimePeriod
-
-
-	EntryElement:	RelationshipType
-	Concept:		MTH#C0015608
-	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
-	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
-
-
+			
 EntryElement:	Organization
 Based on:		Entity
 Concept:        MTH#C1561598
