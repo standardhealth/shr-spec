@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		entity
 Description:	"The SHR Entity domain contains definitions for objects, people and organizations that are involved with the person of record, in some capacity. Entities are things that have separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
-Uses:			shr.core, shr.base, finding, action, procedure, medication, device
+Uses:			shr.core, shr.base, finding, action
 
 Path:     	FHIR = http://hl7.org/fhir/ValueSet
 
@@ -350,62 +350,9 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 	Concept:	MTH#C0682343 "Member of Target Group"
 	// Value:	ref(Party)
 	Description:	"A person or entity in a group."
-	Value:		ref(Patient) or ref(Practitioner) or ref(Substance)
+	Value:		ref(Patient) or ref(Practitioner)
 	0..1		ParticipationPeriod
 	1..1		ActiveFlag
-
-EntryElement:	Facility
-Based on:		Entity
-Concept:		MTH#C1547538
-Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
-1..1			FacilityName
-1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
-1..1			Location
-0..1			MobileFacility
-0..1			ContactPoint
-1..1			ManagingOrganization
-
-	Element:		FacilityName
-	Concept:		MTH#C3261404
-	Description:	"The DBA (doing business as) or most commonly-used name for a facility."
-	Value:			string
-
-	Element:		MobileFacility
-	Concept:		MTH#C0231435
-	Description:	"A facility that moves from place to place, such as Meals-On-Wheels."
-	Value:			boolean
-
-	Element:		ManagingOrganization
-	Concept:		MTH#C0677351
-	Description:	"The organization that manages the operation of an activity, facility, or service provision."
-	Value:			ref(Organization)
-
-EntryElement:	Substance
-Based on:		Entity
-Concept:		MTH#C0439861
-Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
-1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
-0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
-0..1			ActiveFlagAsaCodeableConcept from http://hl7.org/fhir/ValueSet/substance-status
-0..1			Details
-0..*			Ingredient
-
-		Element:		Ingredient
-		Concept:		MTH#C3176062
-		Description:	"Specifies an material component in a non-medication substance."
-		Value:			CodeableConcept or ref(Substance)
-		1..1			IngredientAmount
-		
-			Element:		IsActiveIngredient
-			Concept:		TBD
-			Description:	"True if the ingredient is an active ingredient in the medication."
-			Value:			boolean // forced to use boolean by FHIR mapping 
-		
-			Element:		IngredientAmount
-			Concept:		TBD
-			Description:	"The amount of an ingredient in a mixture, as a ratio. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
-			Value:			Ratio
-
 			
 Element:		BodySite
 Based on:		Entity
@@ -439,11 +386,6 @@ Value:			CodeableConcept from BodySiteVS
 	Concept:		TBD
 	Description:	"A marker surgically placed at the site, often during a biopsy procedure, to pinpoint the location. The marker is typically a metal clip or radioactive seed."
 	Value:			string   // for right now, just a description
-
-			
-Element:		SubstanceOrCode
-Description:	"A substance entity or a substance code."
-Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or Substance	
 
 
 Element:		BodySiteOrCode
