@@ -47,12 +47,6 @@ Description:	"Base class - independent of context - for all kinds of determinati
 	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
 	Value:			CodeableConcept or ref(Topic)
 
-EntryElement:	ClinicalNote
-Based on:		FindingTopic
-Concept:		MTH#C0747978 "Progress Note"
-Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
-Value:			string
-1..1			RecordedContext	
 
 Abstract Element: AssertionTopic
 Based on:		FindingTopic
@@ -160,7 +154,7 @@ Description:	"Context for an evaluation result, when the evaluation has been car
 		
 //----------------- Instantiations ------------------
 	
-EntryElement:	EvaluationResultRecorded
+Element:	EvaluationResultRecorded
 Based on:		EvaluationTopic
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
@@ -173,7 +167,7 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 		Value:			CodeableConcept from ExceptionValueVS
 
 		
-EntryElement:	LaboratoryTestResultRecorded
+Element:		LaboratoryTestResultRecorded
 Based on:		EvaluationResultRecorded
 Description:	"Measurement resulting from a laboratory analysis."
 0..*			DiagnosticService
@@ -183,7 +177,7 @@ Description:	"Measurement resulting from a laboratory analysis."
 		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
-EntryElement:	SimplifiedLaboratoryTestResultRecorded
+Element:		SimplifiedLaboratoryTestResultRecorded
 Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
 				Category is OBSCAT#laboratory
@@ -194,33 +188,12 @@ Description:	"The usual case for a test result from a pathology lab, based on a 
 0..0			Members.EvaluationTopic
 0..0			BodySite // BodySite is covered in the Specimen collection
 	
-EntryElement:	QuestionAnswerRecorded
-Based on:		EvaluationResultRecorded
-Concept:		TBD
-Description:	"A simplified evaluation (independent of context) consisting of a question-answer pair. The question is identified by the TopicCode, and the answer (if given) is in Value. If the answer is missing, an ExceptionValue must be provided. For a series of related questions, the EvaluationResultRecorded.Members can have the supporting questions."
-0..0			BodySite
-0..0			ReferenceRange  // applies to a quantitative measurement only
-1..1			Members value is type QuestionAnswerRecorded
-
-
-
 
 // Used in Careplan and elsewhere
 Element:		RelatedFinding
 Concept:		TBD
 Description:	"Findings associated with this item." 
 Value:			ref(FindingTopic)
-
-
-EntryElement:	DiseaseProgression
-Based on:		EvaluationResultRecorded
-Concept:		MTH#C0421176 "Progression"
-Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
-Value:			CodeableConcept from ProgressionVS
-				TopicCode is MTH#C0421176 "Progression"
-				Focus.CodeableConcept should be from ConditionVS
-				Focus.Topic is type Condition
-0..*			Evidence from ProgressionEvidenceTypeVS
 
 
 Abstract Element:	BodyStructureTopic
