@@ -26,8 +26,9 @@ Value:			0..1 decimal
 		Element:		Units
 		Concept:		TBD
 		Description:	"Code for the unit of measure of the quantity."
-		Value:			Coding from http://hl7.org/fhir/ValueSet/ucum-units or Coding from CurrencyVS
+		Value:			Coding from http://hl7.org/fhir/ValueSet/ucum-units
 
+		
 Element:		SimpleQuantity
 Based on:		Quantity
 Description:	"A quantity where the comparator is not used, as defined in FHIR"
@@ -55,12 +56,6 @@ Based on:		Quantity
 Concept:		MTH#C0449238
 Description:	"The length of time that something continues."
 				Units with Coding from TimeUnitOfMeasureVS
-
-Element:		Money
-Based on:		Quantity
-Concept:		TBD
-Description:	"Representation of an amount of currency or monetary value."
-				Units with Coding from CurrencyVS
 
 
 //------------- Complex data types in FHIR 3.0 ---------------
@@ -117,15 +112,6 @@ Value:			0..1 code
 0..1			CodeSystem
 0..1 			CodeSystemVersion
 0..1			DisplayText
-//0..*			CodingQualifier
-	
-/*
- TODO: Suggest changing FHIR's Coding.userSelected to Coding.qualifier 
-	Element:		CodingQualifier
-	Concept:		TBD
-	Description:	"A description of the purpose or origin of the code that assists in understanding the code."
-	Value:			code from CodingQualifierVS
-*/
 
 	Element:		CodeSystem
 	Concept:		TBD
@@ -273,82 +259,23 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 	
 //------------ Complex Data Types not in FHIR ----------------
 
-Element:		Count
-Concept:		MTH#C0750480
-Description:	"The number of items (0 or more), as an integer."
-Value:			unsignedInt
 
 Element:		EmbeddedContent
 Concept:		TBD
 Description:	"Abstract class defining the common metadata of all types of encapsulated data, such as images."
 
-Element:		ParsableContent
-Based on:		EmbeddedContent
-Concept:		TBD
-Description:	"A string that follows a formal syntax and can be analyzed and broken into meaningful parts."
-Value:			string
-1..1			Formalism
-
-	Element:		Formalism
-	Concept:		TBD
-	Description:	"The system of formal syntax or interpretation associated with parsable content."
-	Value:			CodeableConcept
-
-/*  No can do! Can't restrict "value is type" to a primitive
-Element:		UnsignedIntegerRange
-Description:	"A range of non-negative integers. One of the two bounds must be present, and the lower bound must be less than or equal to the upper bound."
-0..1			LowerBound value is type unsignedInt
-0..1			UpperBound value is type unsignedInt
-*/
 
 Element:		DurationRange
 Description:	"A range of durations."
 0..1			LowerBound value is type Duration
 0..1			UpperBound value is type Duration
-	
-Element:		Statistic
-Based on: 		Quantity
-Concept:		MTH#C2828391
-Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
-1..1			StatisticType
 
-		Element:		StatisticType
-		Concept:		TBD
-		Description:	"The type of statistic that is represented by the value."
-		Value:			CodeableConcept from StatisticTypeVS
-
-Element: 		Priority
-Concept:		MTH#C0549179
-Description:	"An indication of the importance of an action."
-Value:			positiveInt or CodeableConcept
 
 Element:		Percentage
 Based on:		SimpleQuantity
 Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units.Coding is UCUM#%
-
-Element:		Likelihood
-Concept:		MTH#C0033204
-Description:	"A measure of the expectation of the occurrence of a particular event, as a percentage."
-Value:			positiveInt   // 0-100 do not allow zero, since this will create an implicit modifier
-
-Element:		QualitativeLikelihood
-Concept:		TBD
-Description:	"A qualitative (subjective) likelihood."
-Value:			CodeableConcept from QualitativeLikelihoodVS
-
-Element:		GeneralizedLikelihood
-Concept:		TBD
-Description:	"Quantitative or qualitative measure of likelihood."
-Value:			Likelihood or QualitativeLikelihood
-
-Element:		Certainty
-Concept:		TBD
-Description:	"The degree of confidence in a conclusion or assertion."
-Value:			CodeableConcept from QualitativeValueScaleVS
-
-
 
 Element:		Length
 Based on:		EvaluationComponent
@@ -392,19 +319,6 @@ Description:	"A direction indicated by an angle relative to 12 o'clock."
 Value:			CodeableConcept from ClockDirectionVS
 
 
-// --------------- Times and Time TimePeriods ----------------
-
-
-
-Element:		QualitativeDateTime
-Concept:		TBD
-Description:	"A point in time, described qualitatively."
-Value:			CodeableConcept from QualitativeDateTimeVS
-
-
-
-
-
 // -----------  Age --------------------------
 
 Element:		AgeRange
@@ -419,12 +333,12 @@ Description:	"A quantitative range of ages. One of the two ages must be specifie
 
 Element:		GeneralizedDateTime
 Concept:		TBD
-Description:	"A point in time, specified qualitatively or quantitatively."
-Value:			dateTime or TimePeriod or QualitativeDateTime
+Description:	"A point in time, specified quantitatively."
+Value:			dateTime or TimePeriod
 
 Element:		GeneralizedAge
 Concept:		TBD
-Description:	"Qualitative or quantitative, exact or inexact description of age."
+Description:	"Exact or inexact description of age."
 Value:			Age or AgeRange
 
 Element:		GeneralizedTemporalContext
@@ -432,39 +346,6 @@ Concept:		TBD
 Description:	"A generalized indicator of a dateTime or an age when an event happened."
 Value:			GeneralizedDateTime or GeneralizedAge
 
-//-------------- Duration and Frequency  -----------------
-
-Element:		SemiquantDuration
-Concept:		TBD
-Description:	"The duration of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeDurationVS
-
-Element:		GeneralizedDuration
-Concept:		TBD
-Description:	"The duration of an event, qualitatively or quantitatively."
-Value:			Duration or SemiquantDuration
-
-Element:		Frequency   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
-Based on:		Ratio
-Concept:		MTH#C0376249
-Description:	"How many occurrences of an event per unit of time."
-				Numerator.Quantity with units UCUM#1
-				Denominator.Quantity.Units with Coding from http://hl7.org/fhir/ValueSet/units-of-time
-
-Element:		SemiquantFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeFrequencyVS
-
-Element:		QualitativeFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described qualitatively."
-Value:			CodeableConcept from QualitativeFrequencyVS
-
-Element:		GeneralizedFrequency
-Concept:		TBD
-Description:	"The frequency of an event, qualitatively or quantitatively."
-Value:			Frequency or SemiquantFrequency or QualitativeFrequency
 
 
 //------------- Interpretations of Time -------------------
@@ -518,12 +399,6 @@ Element:		OccurrenceDuration
 Concept:		TBD
 Description:	"The length of time in which something happens."
 Value:			Duration
-
-	
-Element:		BodyPosition
-Concept:		MTH#C1262869
-Description:	"The position or physical attitude of the body."
-Value:			CodeableConcept from BodyPositionVS
 
 Element:		Details
 Concept: 		MTH#C0947611
