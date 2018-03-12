@@ -350,7 +350,7 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 	Concept:	MTH#C0682343 "Member of Target Group"
 	// Value:	ref(Party)
 	Description:	"A person or entity in a group."
-	Value:		ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance)
+	Value:		ref(Patient) or ref(Practitioner) or ref(Device) or ref(Substance)
 	0..1		ParticipationPeriod
 	1..1		ActiveFlag
 
@@ -380,91 +380,6 @@ Description:	"Services and space and equipment provided for a particular purpose
 	Description:	"The organization that manages the operation of an activity, facility, or service provision."
 	Value:			ref(Organization)
 
-
-				
-EntryElement:	Specimen
-Based on:		Entity
-Description:	"Sample for analysis"
-0..1			AccessionIdentifier
-0..1			Status from http://hl7.org/fhir/ValueSet/specimen-status
-1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
-1..1			Subject value is type ref(Patient)  // Discounting the possibility that the subject could be a device or group
-0..1			SourceSpecimen
-0..1			ReceivedTime
-0..1			ref(SpecimenCollectionPerformed)
-0..*			ref(SpecimenContainer)
-0..*			SpecimenTreatment
-0..*			HandlingRisk
-0..*			SpecialHandling
-
-		Element:		AccessionIdentifier
-		Concept:		TBD
-		Description:	"Identifier assigned by the lab"
-		Value:			Identifier
-
-		Element:		SourceSpecimen
-		Concept:		TBD
-		Description:	"Identifier for the source specimen from which this specimen was derived."
-		Value:			ref(Specimen)
-
-		Element:		SpecimenType
-		Concept:		TBD
-		Description:	"Kind of material that forms the specimen"
-		Value:			CodeableConcept
-
-		Element:		HandlingRisk
-		Concept:		TBD
-		Description:	"Cautions on the handling of this specimen."
-		Value:			CodeableConcept
-
-		Element:		SpecialHandling
-		Concept:		TBD
-		Description:	"Information about the proper handling of the specimen."
-		Value:			CodeableConcept
-
-		EntryElement:	SpecimenTreatment
-		Based on:		ProcedurePerformed
-		Concept:		TBD
-		Description:	"Treatment performed on the specimen."
-		0..*			Additive
-		
-
-EntryElement:	SpecimenContainer
-Based on:		Entity
-Concept:		TBD
-Description:	"Direct container of specimen (tube&#47;slide, etc.)"
-0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
-0..1			Identifier
-0..1			Details
-0..1			Capacity
-0..1			SpecimenQuantity 
-0..*			Additive
-0..1			SequenceNumber
-	
-// BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
-// BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollectionAction breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
-		Element:		Capacity
-		Concept:		TBD
-		Description:	"Container volume or size."
-		Value:			SimpleQuantity
-
-		Element:		SpecimenQuantity
-		Concept:		TBD
-		Description:	"Quantity of specimen within container."
-		Value:			SimpleQuantity
-
-		Element:		Additive
-		Concept:		TBD
-		Description:	"Additive associated with container."
-		Value:			CodeableConcept or ref(Substance)
-
-		Element:		SequenceNumber
-		Concept:		TBD
-		Description:	"The sequence number for this specimen in a collection of specimens."
-		Value:			CodeableConcept
-		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
-
-
 EntryElement:	Substance
 Based on:		Entity
 Concept:		MTH#C0439861
@@ -490,74 +405,8 @@ Description:	"Any matter of defined composition that has discrete existence, who
 			Concept:		TBD
 			Description:	"The amount of an ingredient in a mixture, as a ratio. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
 			Value:			Ratio
-		
-EntryElement:	Medication
-Based on:		Entity
-Concept:		MTH#C0013227
-Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
-1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
-0..1			DoseForm
-0..1			Brand
-0..1			OverTheCounter
-0..*			MedicationIngredient
-0..1			Manufacturer
-0..1			LotNumber
-0..1			ExpirationDate
-0..1			Package could be from 	http://hl7.org/fhir/ValueSet/medication-package-form
 
-		Element:		DoseForm
-		Concept:		MTH#C0013058
-		Description:	"The form in which active and/or inert ingredient(s) are physically presented."
-		Value:			CodeableConcept from FHIR/medication-form-codes
-
-		Element:		Brand
-		Concept:		TBD
-		Description:	"If the product is branded, and if so, the brand name of a product."
-		Value: 			boolean
-		0..1			BrandName
-
-			Element: 		BrandName
-			Concept:		TBD
-			Description:	"The marketing name for a brand name product"
-			Value:			string
-
-		Element:		OverTheCounter
-		Concept:		TBD
-		Description:	"True if the medication is available to consumers without a prescription."
-		Value:			boolean
-
-		Element:		MedicationIngredient
-		Concept:		MTH#C3176062
-		Description:	"Specifies an material component in a medication."
-		Value:			CodeableConcept or ref(Substance) or ref(Medication)
-		1..1			IngredientAmount
-		1..1			IsActiveIngredient
-		
-			Element:		IsActiveIngredient
-			Concept:		TBD
-			Description:	"True if the ingredient is an active ingredient in the medication."
-			Value:			boolean // forced to use boolean by FHIR mapping 
-
-		Element:		Manufacturer
-		Concept:		MTH#C1114744
-		Description:	"The organization producing the product or test."
-		Value:			ref(Organization)  // Following FHIR; could alternatively be a code from urn:oid:2.16.840.1.114222.4.11.826 (vaccine manufacturer value set in phin-vads)
 			
-		Element:		LotNumber
-		Concept:		MTH#C1115660
-		Description:	"A distinctive alpha-numeric identification code assigned by the manufacturer or distributor to a specific quantity of manufactured material or product within a batch."
-		Value:			string
-
-		Element:		ExpirationDate
-		Concept:		TBD
-		Description:	"When the medication will expire."
-		Value:			dateTime
-		
-		Element:		Package
-		Concept:		TBD
-		Description:	"The kind of container the medication comes in."
-		Value:			CodeableConcept
-	
 Element:		BodySite
 Based on:		Entity
 Concept:		MTH#C1545955
@@ -596,9 +445,6 @@ Element:		SubstanceOrCode
 Description:	"A substance entity or a substance code."
 Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or Substance	
 
-Element:		MedicationOrCode
-Description:	"A medication entity or a medication code."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered or Medication	
 
 Element:		BodySiteOrCode
 Description:	"A body site entity or a body site code."
