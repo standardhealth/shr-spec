@@ -3,7 +3,7 @@ Namespace:		entity
 Description:	"The SHR Entity domain contains definitions for objects, people and organizations that are involved with the person of record, in some capacity. Entities are things that have separate and distinct existence and objective or conceptual reality. Includes information items, physical objects, health states, and parties."
 Uses:			shr.core, shr.base, finding
 
-Path:     	FHIR = http://hl7.org/fhir/ValueSet
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 
 Abstract Element:	Entity
 Based on:			Any
@@ -18,10 +18,8 @@ Value:			CodeableConcept from BodySiteVS
 0..1 			Laterality
 0..1			Directionality
 0..1 			PortionTotality
-0..1			ClockDirection
-0..1			Distance // from landmark
 0..1 			Details
-0..1			BodySiteMarker
+
 
 	Element:		Laterality
 	Concept:		MTH#C0925205 "Anatomical laterality"
@@ -38,12 +36,53 @@ Value:			CodeableConcept from BodySiteVS
 	Description:	"Further detail of the anatomical location or specimen detailing whether it includes the entire entity or only a part or portion."
 	Value:			CodeableConcept from PortionTotalityVS
 
-	Element:		BodySiteMarker
-	Concept:		TBD
-	Description:	"A marker surgically placed at the site, often during a biopsy procedure, to pinpoint the location. The marker is typically a metal clip or radioactive seed."
-	Value:			string   // for right now, just a description
-
 
 Element:		BodySiteOrCode
 Description:	"A body site entity or a body site code."
 Value:			CodeableConcept from BodySiteVS or BodySite
+
+
+EntryElement:	Specimen
+Based on:		Entity
+Description:	"Sample for analysis. NOTE: This logical model has been cut down to separate it from other parts of the reference model that are not relevant to the current oncology ballot."
+1..1			Type
+0..1			SourceSpecimen
+0..1			ReceivedTime
+0..*			HandlingRisk
+0..*			SpecialHandling
+0..1			CollectionTime
+0..1			CollectionMethod
+0..1			CollectionSite
+
+
+		Element:		SourceSpecimen
+		Concept:		TBD
+		Description:	"Identifier for the source specimen from which this specimen was derived."
+		Value:			ref(Specimen)
+
+		Element:		HandlingRisk
+		Concept:		TBD
+		Description:	"Cautions on the handling of this specimen."
+		Value:			CodeableConcept
+
+		Element:		SpecialHandling
+		Concept:		TBD
+		Description:	"Information about the proper handling of the specimen."
+		Value:			CodeableConcept
+		
+		Element:		CollectionTime
+		Concept:		TBD
+		Description:	"When the sample was obtained."
+		Value:			dateTime or TimePeriod
+		
+		Element:		CollectionMethod
+		Concept:		TBD
+		Description:	"How the specimen was obtained."
+		Value:			CodeableConcept	
+		
+		Element:		CollectionSite
+		Concept:		TBD
+		Description:	"The body site where specimen was collected"
+		Value:			BodySite
+		
+

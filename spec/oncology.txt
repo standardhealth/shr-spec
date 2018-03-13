@@ -12,6 +12,26 @@ CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 //
 
+EntryElement:	BreastSite
+Based on:		BodySite
+Description:	"A body site specific to the breast structure."
+Value:			CodeableConcept from BreastSiteVS
+0..1			ClockDirection
+0..1			DistanceToNipple
+
+		Element:		DistanceToNipple
+		Description:	"The body site location in relation to the nipple."
+		Value:			Quantity with units UCUM#cm
+
+		
+EntryElement:	BreastSpecimen
+Based on:		Specimen
+Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
+				Type from BreastSpecimenTypeVS
+				CollectionSite value is type BreastSite
+				CollectionMethod from BreastSpecimenCollectionMethodVS
+			
+
 EntryElement:	BreastCancer
 Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		Condition  
@@ -76,6 +96,7 @@ Based on:		SimplifiedLaboratoryTestResultRecorded
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 Value:			CodeableConcept from NottinghamCombinedGradeVS
 				DiagnosticService is #pathology
+				Specimen is type BreastSpecimen
 				EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
@@ -108,7 +129,8 @@ Concept:		CAP#31160
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:			CodeableConcept from PositiveNegativeVS
 				TopicCode is LNC#16112-5
-				DiagnosticService is #pathology				
+				DiagnosticService is #pathology	
+				Specimen is type BreastSpecimen				
 				EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -126,7 +148,8 @@ Concept:		LNC#16113-3
 Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 Value:		 	CodeableConcept from PositiveNegativeVS
 				TopicCode is LNC#16113-3	
-				DiagnosticService is #pathology				
+				DiagnosticService is #pathology	
+				Specimen is type BreastSpecimen				
 				EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -146,6 +169,7 @@ Value:		 	CodeableConcept from HER2StatusVS
 				TopicCode is LNC#48676-1 "HER2 Interpretation in Tissue"
 				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
+				Specimen is type BreastSpecimen
 				EvaluationMethod from HER2MethodVS
 				
 EntryElement:	HER2ReceptorStatusIHC
@@ -275,6 +299,7 @@ Description:	"The Oncotype DX breast cancer test examines the activity of 21 gen
 Value: 			Quantity with units UCUM#1
 				Interpretation from OncotypeDXRiskScoreInterpretationVS
 				DiagnosticService is #pathology
+				Specimen is type ref(BreastSpecimen)	
 
 EntryElement: 	TumorDimensions
 Based on:		SimplifiedLaboratoryTestResultRecorded
@@ -314,6 +339,7 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 Value: 			CodeableConcept from PositiveNegativeVS
 				TopicCode is MTH#C4086369
 				DiagnosticService is #pathology
+				Specimen is type ref(BreastSpecimen)	
 				EvaluationComponent
 includes 0..1	TumorMarginDescription
 includes 0..1	Cellularity   // not sure this belongs here
@@ -346,6 +372,7 @@ Description:	"Description of lymph nodes contain cancer cells."
 Value:			CodeableConcept from PositiveNegativeVS
 1..1			BodySite from LymphSystemSubdivisionVS 
 				DiagnosticService is #pathology
+				Specimen is type BreastSpecimen
 0..0			Focus
 0..0			Evidence
 0..0			Precondition
