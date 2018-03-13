@@ -177,84 +177,6 @@ Description:	"A period of time defined by a start and end time, date, or year. I
 	Description:	"The time at which something is to end or did end. Boundary is considered inclusive."
 	Value:			dateTime   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 
-
-Element: 	Timing
-Concept:	TBD
-Description: "A timing schedule that specifies an event that may occur multiple times. Timing offers a choice of multiple OccurrenceTime (used is used to specify specific times), or recurrence patterns."
-0..*		OccurrenceTime
-0..1		TimingCode
-0..1		EventDuration
-0..1		RecurrencePattern
-0..1		RecurrenceRange
-
-	Element:		TimingCode
-	Concept:		TBD
-	Description: 	"A code for the timing schedule. Some codes such as BID are ubiquitous, but many institutions define their own additional codes. If a code is provided, the code is understood to be a complete statement of whatever is specified in the structured timing data, and either the code or the data may be used to interpret the Timing, with the exception that .repeat.bounds still applies over the code (and is not contained in the code)."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/timing-abbreviation if covered
-	
-	Element:		EventDuration
-	Description:	"The length of the recurring event."
-	Value:			DurationRange
-	
-	Element:	RecurrencePattern
-	Concept:	TBD
-	Description: "A set of rules that describe when a recurring event is scheduled."
-	0..1		RecurrenceInterval
-	0..*		DayOfWeek
-	0..*		TimeOfDay
-	0..*		DailyLifeEvent
-	0..1		LifeEventOffset
-	0..1		CountPerInterval
-
-		Element:		RecurrenceInterval
-		Concept:		TBD
-		Description:	"The period of time after which the pattern repeats, for example, each day. To specify an event should take place every other Monday, the recurrence interval should be two weeks, and DayOfWeek should be Monday."
-		Value:			Duration
-		
-		Element:		DayOfWeek
-		Concept:		TBD
-		Description:	"A day of the week that the pattern should take place."
-		Value:			code from http://hl7.org/fhir/ValueSet/days-of-week
-		
-		Element:		TimeOfDay
-		Concept:		TBD
-		Description:	"Time of day the event should take place on the designated day(s). TimeOfDay should only be specified if the RecurrenceInterval and/or DayOfWeek establishes the day when the event should take place."
-		Value:			time
-		
-		Element:		DailyLifeEvent
-		Concept:		TBD
-		Description:	"A quotidian landmark, such as rising, mealtime, or bedtime, when an event should take place."
-		Value:			code from http://hl7.org/fhir/ValueSet/event-timing
-
-		Element:		LifeEventOffset
-		Concept:		TBD
-		Description:	"A time in minutes before or after a given life event, for example, 30 minutes before a meal. Whether this means before or after is carried by the life event code."
-		Value:			unsignedInt
-		
-		Element:		CountPerInterval
-		Concept:		TBD
-		Description:	"How many times the event should take place during one recurrence interval, for example, to specify 3-4 times per day, the CountPerInterval should be 3 to 4."
-		0..1			MinCount
-		0..1			MaxCount
-		
-				Element:	MinCount
-				Description: "Lower bound on a count."
-				Value:		integer   // FHIR - should be unsignedInt	
-				
-				Element:	MaxCount
-				Description: "Upper bound on a count."
-				Value:		integer // FHIR - should be unsignedInt		
-		
-	Element: 		RecurrenceRange
-	Concept:		TBD
-	Description:	"The start and end of the overall recurrence pattern in terms of dates/times or in terms of number of repeats. Could also be an event, such as when all doses are taken."
-	Value:			TimePeriod or NumberOfRepeats
-			
-		Element:		NumberOfRepeats
-		Concept:		TBD
-		Description:	"How many times the action should be repeated."
-		Value:			positiveInt
-
 	
 //------------ Complex Data Types not in FHIR ----------------
 
@@ -276,43 +198,8 @@ Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units.Coding is UCUM#%
 
-Element:		Length
-Based on:		EvaluationComponent
-Concept:		MTH#C1444754
-Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Width
-Based on:		EvaluationComponent
-Concept:		MTH#C0487742
-Description:	"The measurement or extent of something from side to side."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Depth
-Based on:		EvaluationComponent
-Concept:		MTH#C0205125
-Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Volume
-Based on:		EvaluationComponent
-Concept:		MTH#C0449468
-Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Area
-Based on:		EvaluationComponent
-Concept:		MTH#C0205146
-Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Circumference
-Based on:		EvaluationComponent
-Concept:		MTH#C0332520
-Description:	"The length of such a boundary line of a figure, area, or object."
-
 Element:		ClockDirection
-Based on:		EvaluationComponent
+//Based on:		EvaluationComponent
 Concept:		LNC#72294-2
 Description:	"A direction indicated by an angle relative to 12 o'clock."
 Value:			CodeableConcept from ClockDirectionVS
