@@ -6,35 +6,48 @@ Uses:			shr.core, finding, entity
 
 Abstract Element:	Any 
 Concept:			TBD
-Description:		"The top level class in the hierarchy"
+Description:		"The top level class in the hierarchy. 
+
+In CIMI V0.0.4, the top level class is Locatable, which defines the idea of 'locatability in an archetyped structure'. The existence of Locatable as a class is an artifact of CIMI's use of Archetype Description Language (ADL). While Locatable will exist as long as CIMI uses ADL, CIMI is currently changing its top level class structure so that Any is the root of all classes, as anticipated here."
 
 Element: 		Entry
 Based on:		Any
 Concept:		MTH#C1705654
-Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
+Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded.
+
+This class aligns with InformationEntry in CIMI V0.0.4. However, there are many conflicts between FHIR's standard set of attributes in DomainResource (namely: id, versionId, lastUpdated, profile, security, tag, implicitRules, language, text, contained, extension, modifierExtension), and CIMI's standard set of attributes in Information Entry (namely: identifier, subjectOfInformation, attribution, additionalText, recordStatus). Since resolving these differences is outside the scope of the current ballot on breast cancer, we have removed the CIMI attributes from Entry to so we do not have to profile FHIR DomainResource, which would add 'noise' to the FHIR profiles snapshots, ultimately making them harder for reviewers to understand."
 
 
-Abstract Element:	Topic
+Abstract Element:	StatementTopic
 Based on:		Any
 Concept:		TBD
 Description:	"Compositional and reusable grouping of attributes that make up the clinical focus of an entry. A topic does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded)."
-0..1			TopicCode
+1..1			TopicCode
 
 		Element:		TopicCode	
 		Concept:		TBD
-		Description:	"A code that identifies the topic of a clinical statement.  In the case of a Finding, the TopicCode represents the type of observable, question, examination, or test."
+		Description:	"The concept representing the finding or action that is the topic of the statement. For actions, the key represents the action being described. For findings, the key represents the 'question' or property being investigated. For evaluation result findings, the key contains a concept for an observable entity, such as systolic blood pressure. For assertion findings (which by nature lack an explicit question), the key contains a default concept signifying that an assertion is being made. In all cases, the key describes the topic independent of the context of the action or the finding.
+		
+		This attribute was named 'key' in CIMI V0.0.4. Recently, CIMI has recently moved to rename this element TopicCode, as anticipated here, to make it more clear that this is an identifier for the topic, not the context."
 		Value:			CodeableConcept
 
 
-Abstract Element:	Context
+Abstract Element:	StatementContext
 Based on:		Any
 Concept:		TBD
-Description:	"Compositional and reusable grouping of attributes that provides the context for the topic of a clinical statement. The Context provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information."
-0..1			ContextCode
+Description:	"Compositional and reusable grouping of attributes that provides the context for the topic of a clinical statement. StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information."
+1..1			ContextCode
+0..0			TemporalContext
 
 		Element:		ContextCode	
 		Concept:		TBD
-		Description:	"A code that identifies the context of an instance."
+		Description:	"A code ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc. Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC.
+		
+		This attribute was named 'type' in CIMI V0.0.4. However, CIMI has recently moved to rename this element ContextCode, as anticipated here, to make it more clear that this is an identifier for the context, not the topic."
 		Value:			CodeableConcept
 
+		Element:		TemporalContext	
+		Concept:		TBD
+		Description:	"Whether the topic is prospective or retrospective. E.g., action occurred in the past. This attribute is aligned with the SNOMED Situation With Explicit Context temporal context attribute."
+		Value:			CodeableConcept
 

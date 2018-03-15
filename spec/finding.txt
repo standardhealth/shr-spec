@@ -7,24 +7,29 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 Element:		FindingContext
-Based on:		Context
+Based on:		StatementContext
 Concept:		SCT#410514004
-Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context."
+Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context.
+
+In CIMI Version 0.0.4, FindingContext includes the attribute 'status' of datatype Attribution. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be type 'code' and Attribution doesn't align with code. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not really the same as the status of a finding."
 
 
-	Element:		PresenceContext
+	Element:		KnownOrSuspectedPresentContext
 	Based on:		FindingContext
 	Concept:		SCT#410515003
-	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
-	In CIMI Version 0.0.4, this class is called KnownOrSuspectedPresent."
-					ContextCode from PresenceContextVS
+	Description:	"KnownOrSuspectedPresentContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
+	
+	In CIMI Version 0.0.4, this class is called KnownOrSuspectedPresent, but the name is being changed to add 'Context'."
+					ContextCode from KnownOrSuspectedPresentContextVS
 	0..1			Onset
 	0..1			Abatement
 	
 	Element:		RecordedContext
 	Based on:		FindingContext
 	Concept:		TBD
-	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes."
+	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
+	
+	The RecordedContext class does not exist in CIMI Version 0.0.4, but CIMI is currently in the process of adding it. That change in CIMI is anticipated here."
 					ContextCode is SCT#424975005 "Record Entity" 
 	1..1			FindingStatus
 	0..1			ExceptionValue
@@ -42,7 +47,7 @@ Description:	"The base class for representing the ontological status of a findin
 
 		
 Element: 		FindingTopic
-Based on:		Topic
+Based on:		StatementTopic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..*			Evidence
@@ -51,7 +56,7 @@ Description:	"Base class - independent of context - for all kinds of determinati
 	Element:		Evidence
 	Concept:		TBD
 	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
-	Value:			CodeableConcept or ref(Topic)
+	Value:			CodeableConcept or ref(StatementTopic)
 
 
 Abstract Element: AssertionTopic
@@ -63,10 +68,13 @@ Value:			0..1  CodeableConcept
 Element:		EvaluationTopic
 Based on:		FindingTopic
 Concept:		MTH#C1554188
-Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+
+In CIMI Version 0.0.4, LaboratoryTestResult.specimen is 0..* but that cardinality makes it impossible to map to FHIR Observation, because Observation.specimen is 0..1. Therefore, the cardinality of Specimen is changed to 0..1 to be consistent with FHIR.
+
+In CIMI Version 0.0.4, Findings (including EvaluationResult and LaboratoryTestResult) do not have related ('has-member') observations, nor components (sub-observations). These features of FHIR Observations were found to be very useful in modeling breast cancer pathology, and so they are included here. This represents a significant departure from the CIMI model."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-1..1			TopicCode
 0..1			Focus
 0..1			EvaluationMethod
 0..1			BodySite  // TODO: Change to code to align with FHIR??
@@ -78,15 +86,17 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 0..* 			EvaluationComponent
 1..1			Members
 	
-	Element:		Focus
-	Concept:		TBD
-	Description:	"The specific observed aspect of the Subject under consideration, potentially a specific condition, intervention, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to the Subject's bipolar disorder."
-	Value:			CodeableConcept or ref(Topic)
+		Element:		Focus
+		Concept:		TBD
+		Description:	"The specific aspect, person, or thing related to the Subject under observation, potentially a specific condition, fetus, drug regimen, environmental location, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to a particular tumor, or an observation about a change in a particular behavior, or an observation about a systemic condition.
 		
-	Element:		EvaluationMethod
-	Concept:		TBD
-	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-	Value:			CodeableConcept should be from http://loinc.org
+		CIMI Version 0.0.4 does not have this attribute, nor does FHIR 3.0.1. However, an issue has been approved for adding an attribute (focalSubject) to FHIR. That change to FHIR is anticipated here."
+		Value:			CodeableConcept or ref(StatementTopic)
+			
+		Element:		EvaluationMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle. In CIMI Version 0.0.4, this attribute is called 'method'."
+		Value:			CodeableConcept should be from http://loinc.org
 
 		
 		Element:		DeltaFlag
@@ -139,8 +149,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		Members
 		Concept:		TBD
-		Description:	"Members represent the elements of a group of a related but independent evaluations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
-		// Lloyd McKenzie said "has-member is for things like panels. For example, a CBC (complete blood count) would have members capturing white blood cell count, red blood cell count, hemoglobin, etc.  See https://chat.fhir.org/#narrow/search/cbc "
+		Description:	"Members represent the elements of a group of a related but independent evaluations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
+		
+		CIMI V0.0.4 does not have this attribute."
 		Value:			0..* ref(EvaluationTopic)
 
 
@@ -207,7 +218,7 @@ EntryElement:	BodyStructurePresent
 Based on:		BodyStructureTopic
 Concept:		TBD
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-1..1			PresenceContext
+1..1			KnownOrSuspectedPresentContext
 		
 
 /*
