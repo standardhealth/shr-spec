@@ -78,16 +78,23 @@ Based on:		StatementTopic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
-In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applied to EvaluationResult (not Condition), and has been introduced in that class."
+In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applies to EvaluationResult (not Condition), and has been introduced in that class."
+0..1			FindingMethod
 
-
+		Element:		FindingMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle. In CIMI Version 0.0.4, this attribute is called 'method'."
+		Value:			CodeableConcept should be from http://loinc.org
+//
 Abstract Element: AssertionTopic
 Based on:		FindingTopic
 Concept:		TBD
 Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found.
 
-In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change its name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the KnownOrSuspectedPresentContext context, and can be found there."
+In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the KnownOrSuspectedPresentContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
 Value:			0..1  CodeableConcept
+
+		Element:	
 		
 Element:		EvaluationResultTopic
 Based on:		FindingTopic
@@ -100,7 +107,6 @@ In CIMI Version 0.0.4, Findings (including EvaluationResult and LaboratoryTestRe
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			Focus
-0..1			EvaluationMethod
 0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
 0..1			Specimen
 0..1			DeltaFlag	
@@ -116,13 +122,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		CIMI Version 0.0.4 does not have this attribute, nor does FHIR 3.0.1. However, an issue has been approved for adding an attribute (focalSubject) to FHIR. That change to FHIR is anticipated here."
 		Value:			CodeableConcept or ref(StatementTopic)
-			
-		Element:		EvaluationMethod
-		Concept:		TBD
-		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle. In CIMI Version 0.0.4, this attribute is called 'method'."
-		Value:			CodeableConcept should be from http://loinc.org
 
-		
 		Element:		DeltaFlag
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
