@@ -23,18 +23,14 @@ Based on:		FindingContext
 Concept:		TBD
 Description:	"The parent class of contexts that can associate with AssertionTopic and its subclasses."
 
-Element:		PresenceAbsenceContext
-Based on:		AssertionContext
-Concept:		TBD
-Description:	"The parent class for contexts asserting presence or absence of a finding."
 
-	Element:		KnownOrSuspectedPresentContext
-	Based on:		PresenceAbsenceContext
+	Element:		PresenceContext
+	Based on:		AssertionContext
 	Concept:		SCT#410515003
-	Description:	"KnownOrSuspectedPresentContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
+	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
 	
-	In CIMI Version 0.0.4, this class is called KnownOrSuspectedPresent, but the name is being changed to include 'Context'. In addition, the class AssertionKnownOrSuspectedPresent is being collapsed into KnownOrSuspectedPresent, so the attributes of that class are included here."
-					ContextCode from KnownOrSuspectedPresentContextVS
+	In CIMI Version 0.0.4, there were two classes, KnownOrSuspectedPresent and AssertionKnownOrSuspectedPresent. CIMI has decided to combine these classes and rename them to PresenceContext, as represented here."
+					ContextCode from PresenceContextVS
 	1..1			VerificationStatus			
 	0..1			Onset
 	0..1			Abatement
@@ -56,7 +52,7 @@ Description:	"The parent class for contexts asserting presence or absence of a f
 	Concept:		TBD
 	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
 	
-	The RecordedContext class does not exist in CIMI Version 0.0.4, but CIMI is currently in the process of adding it. That change is anticipated here."
+	The RecordedContext class did not exist in CIMI Version 0.0.4, but CIMI is the process of adding it. That change is anticipated here."
 					ContextCode is SCT#424975005 "Record Entity" 
 	1..1			FindingStatus
 	0..1			ExceptionValue
@@ -78,7 +74,7 @@ Based on:		StatementTopic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
-In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applies to EvaluationResult (not Condition), and has been introduced in that class."
+In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as the Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applies to EvaluationResult (not Condition), and has been introduced in that class."
 0..1			FindingMethod
 
 		Element:		FindingMethod
@@ -91,7 +87,7 @@ Based on:		FindingTopic
 Concept:		TBD
 Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found.
 
-In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the KnownOrSuspectedPresentContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
+In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the PresenceContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
 Value:			0..1  CodeableConcept
 
 		
@@ -234,7 +230,7 @@ EntryElement:	BodyStructurePresent
 Based on:		BodyStructureTopic
 Concept:		TBD
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-1..1			KnownOrSuspectedPresentContext
+1..1			PresenceContext
 		
 
 /*

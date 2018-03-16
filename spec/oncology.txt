@@ -44,17 +44,26 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 EntryElement:	BreastCancer
 Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		Condition  
-Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
+Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body.
+
+The following steps are required to create this class in CIMI:
+
+1) Update the CIMI Reference Model, adding the property MorphologyBehavior to create BreastCancerConditionTopic class.
+2) Create an archetype of ClinicalStatement that combines the new topic BreastCancerConditionTopic with the ConditionPresenceContext, and introduces constraints on Value, Category, Stage, and MorphologyBehavior.
+
+In this model, the path of least work was to subclass Condition, add the new attribute, and introduce the required constraints, all at once.
+
+The attributes of ClinicalStatement are not included in this class because of the mapping difficulties discussed in Entry."
 Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 				ConditionPresenceContext.Stage from BreastCancerStageVS				
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerTNMStage
-0..1			MorphologyBehavior
+0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
 			Concept:		TBD
 			Description:	"A description of the morphology characteristics of the cancer."
-			Value:			CodeableConcept from MorphologyBehaviorVS
+			Value:			CodeableConcept
 
 EntryElement:	BreastCancerTNMStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation

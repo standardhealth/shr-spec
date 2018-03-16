@@ -15,6 +15,14 @@ Description:	"An Entry is the minimal unit independent of logical information or
 
 This class corresponds to Entry in CIMI V0.0.4. However, the CIMI-defined attributes from Entry (and InformationEntry) have been omitted from this model because the mapping to Entry to FHIR DomainResource is problematic. FHIR's standard set of attributes in DomainResource (id, versionId, lastUpdated, profile, security, tag, implicitRules, language, text, contained, extension, modifierExtension) are quite different than CIMI's standard set of attributes (namely: identifier, subjectOfInformation, attribution, additionalText, recordStatus). Reconciling these differences is outside the scope of the current ballot on breast cancer. "
 
+Element:		ClinicalStatement
+Based on:		Entry
+Concept:		TBD
+Description: 	"A special type of information entry consisting of a topic and a context. The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
+1..1			StatementTopic
+1..1			StatementContext
+
+
 
 Abstract Element:	StatementTopic
 Based on:		Locatable
@@ -35,17 +43,11 @@ Based on:		Locatable
 Concept:		TBD
 Description:	"Compositional and reusable grouping of attributes that provides the context for the topic of a clinical statement. StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information."
 1..1			ContextCode
-0..0			TemporalContext
 
 		Element:		ContextCode	
 		Concept:		TBD
 		Description:	"A code ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc. Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC.
 		
 		This attribute was named 'type' in CIMI V0.0.4. However, CIMI has recently moved to rename this element ContextCode, as anticipated here, to make it more clear that this is an identifier for the context, not the topic."
-		Value:			CodeableConcept
-
-		Element:		TemporalContext	
-		Concept:		TBD
-		Description:	"Whether the topic is prospective or retrospective. E.g., action occurred in the past. This attribute is aligned with the SNOMED Situation With Explicit Context temporal context attribute."
 		Value:			CodeableConcept
 
