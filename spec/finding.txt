@@ -11,25 +11,52 @@ Based on:		StatementContext
 Concept:		SCT#410514004
 Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context.
 
-In CIMI Version 0.0.4, FindingContext includes the attribute 'status' of datatype Attribution. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be type 'code' and Attribution doesn't align with code. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not really the same as the status of a finding."
+In CIMI Version 0.0.4, FindingContext includes the attribute 'status'. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be Concept, but in CIMI, the datatype of status is Attribution, which can't be mapped. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not really the same as the status of a finding."
 
+Element:		EvaluationResultContext
+Based on:		FindingContext
+Concept:		TBD
+Description:	"The parent class of contexts that can associate with EvaluationResultTopic and its subclasses."
+
+Element:		AssertionContext
+Based on:		FindingContext
+Concept:		TBD
+Description:	"The parent class of contexts that can associate with AssertionTopic and its subclasses."
+
+Element:		PresenceAbsenceContext
+Based on:		AssertionContext
+Concept:		TBD
+Description:	"The parent class for contexts asserting presence or absence of a finding."
 
 	Element:		KnownOrSuspectedPresentContext
-	Based on:		FindingContext
+	Based on:		PresenceAbsenceContext
 	Concept:		SCT#410515003
 	Description:	"KnownOrSuspectedPresentContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
 	
-	In CIMI Version 0.0.4, this class is called KnownOrSuspectedPresent, but the name is being changed to add 'Context'."
+	In CIMI Version 0.0.4, this class is called KnownOrSuspectedPresent, but the name is being changed to include 'Context'. In addition, the class AssertionKnownOrSuspectedPresent is being collapsed into KnownOrSuspectedPresent, so the attributes of that class are included here."
 					ContextCode from KnownOrSuspectedPresentContextVS
+	1..1			VerificationStatus			
 	0..1			Onset
 	0..1			Abatement
+	0..1			Certainty
+	
+			Element:	VerificationStatus
+			Concept:	TBD
+			Description: "Whether an assessment has been confirmed by testing or observation."
+			Value:		CodeableConcept			
+	
+	
+			Element:	Certainty
+			Concept:	TBD
+			Description:	"The degree of confidence in a conclusion or assertion."
+			Value:		CodeableConcept
 	
 	Element:		RecordedContext
-	Based on:		FindingContext
+	Based on:		EvaluationResultContext
 	Concept:		TBD
 	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
 	
-	The RecordedContext class does not exist in CIMI Version 0.0.4, but CIMI is currently in the process of adding it. That change in CIMI is anticipated here."
+	The RecordedContext class does not exist in CIMI Version 0.0.4, but CIMI is currently in the process of adding it. That change is anticipated here."
 					ContextCode is SCT#424975005 "Record Entity" 
 	1..1			FindingStatus
 	0..1			ExceptionValue
@@ -49,23 +76,20 @@ In CIMI Version 0.0.4, FindingContext includes the attribute 'status' of datatyp
 Element: 		FindingTopic
 Based on:		StatementTopic
 Concept:		TBD
-Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-0..*			Evidence
+Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
-
-	Element:		Evidence
-	Concept:		TBD
-	Description:	"A symptom, observation, or other item, for example, a radiology report, that serves as evidence for the current assessment."
-	Value:			CodeableConcept or ref(StatementTopic)
+In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applied to EvaluationResult (not Condition), and has been introduced in that class."
 
 
 Abstract Element: AssertionTopic
 Based on:		FindingTopic
 Concept:		TBD
-Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found.
+
+In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change its name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the KnownOrSuspectedPresentContext context, and can be found there."
 Value:			0..1  CodeableConcept
 		
-Element:		EvaluationTopic
+Element:		EvaluationResultTopic
 Based on:		FindingTopic
 Concept:		MTH#C1554188
 Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
@@ -77,7 +101,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			Focus
 0..1			EvaluationMethod
-0..1			BodySite  // TODO: Change to code to align with FHIR??
+0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
 0..1			Specimen
 0..1			DeltaFlag	
 0..1			Interpretation
@@ -152,14 +176,14 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Description:	"Members represent the elements of a group of a related but independent evaluations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
 		
 		CIMI V0.0.4 does not have this attribute."
-		Value:			0..* ref(EvaluationTopic)
+		Value:			0..* ref(EvaluationResultTopic)
 
 
 		
 //----------------- Instantiations ------------------
 	
 Element:		EvaluationResultRecorded
-Based on:		EvaluationTopic
+Based on:		EvaluationResultTopic
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..1			RecordedContext
@@ -186,19 +210,18 @@ Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
 				Category is OBSCAT#laboratory
 0..0			Focus
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
-0..0			Members.EvaluationTopic
-0..0			BodySite // BodySite is covered in the Specimen collection
+0..0			Members.EvaluationResultTopic
+0..0			AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 	
 
 
 Abstract Element:	BodyStructureTopic
-Based on:		EvaluationTopic
+Based on:		EvaluationResultTopic
 Concept:		MTH#C1268086
 Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
-Value:			CodeableConcept from BodySiteVS
+Value:			CodeableConcept from AnatomicalLocationVS
 				TopicCode is MTH#C1268086
 0..1			Morphology
 

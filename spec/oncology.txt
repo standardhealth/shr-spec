@@ -13,7 +13,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 //
 
 EntryElement:	BreastSite
-Based on:		BodySite
+Based on:		AnatomicalLocation
 Description:	"A body site specific to the breast structure."
 Value:			CodeableConcept from BreastSiteVS
 0..1			ClockDirection
@@ -311,6 +311,7 @@ Value: 			Quantity with units UCUM#1
 				Interpretation from OncotypeDXRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				Specimen is type ref(BreastSpecimen)	
+
 /*
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
@@ -323,11 +324,12 @@ Value: 			Quantity with units xxxxxx
 */
 	
 EntryElement: 	TumorDimensions
-Based on:		SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded   /// Imaging???
 Concept:		MTH#C4086369
 0..0			Value
 0..0			ExceptionValue
-				Focus is type Tumor
+//				Focus is type Tumor
+// 				AnatomicalLocation ???
 				TopicCode is MTH#C4086369
 				DiagnosticService is #pathology
 				EvaluationComponent
@@ -393,14 +395,13 @@ Concept:		MTH#C0746333
 Description:	"Description of lymph nodes contain cancer cells."
 Value:			CodeableConcept from PositiveNegativeVS
 				TopicCode is MTH#C0746333
-1..1			BodySite from LymphSystemSubdivisionVS 
+1..1			AnatomicalLocation from LymphSystemSubdivisionVS 
 				DiagnosticService is #pathology
 				Specimen is type BreastSpecimen
 0..0			Focus
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
-0..0			Members.EvaluationTopic
+0..0			Members.EvaluationResultTopic
 0..0			DeltaFlag
 				EvaluationComponent
 includes 0..1 	LargestLymphNodeSize
@@ -452,12 +453,11 @@ Value:			CodeableConcept from PositiveNegativeVS
 				Focus.CodeableConcept from GeneIdentifierVS
 				DiagnosticService is #genetics
 				TopicCode is MTH#C3263354
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
-0..0			Members.EvaluationTopic
+0..0			Members.EvaluationResultTopic
 0..0			DeltaFlag
-0..0			BodySite
+0..0			AnatomicalLocation
 				EvaluationComponent
 includes 0..1	Refseq
 
@@ -475,13 +475,12 @@ Description:	"The status of genes known or suspected to play a role in breast ca
 0..0			Value
 				TopicCode is MTH#C2708453
 				DiagnosticService is #genetics
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
 0..0			DeltaFlag
-0..0			BodySite
+0..0			AnatomicalLocation
 0..0			EvaluationComponent
-				Members.EvaluationTopic
+				Members.EvaluationResultTopic
 includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
 
