@@ -12,12 +12,14 @@ Based on:		AssertionTopic
 Concept:		MTH#C0348080
 Description:	"Representation of a condition, independent of context of being present, absent, risk, expectation etc. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, etc. 
 
-In CIMI Version 0.0.4, the corresponding reference model class was called ConditionAssertion. The CIMI name is being changed to ConditionTopic (perhaps ConditionAssertionTopic), as anticipated here. In CIMI Version 0.0.4, the ConditionAssertion has properties associated with the presence of the condition, including severity, dueTo, diseasePhase, and more. In the current logical model, the properties associated with the occurrence of a condition have been placed (more appropriately) with ConditionPresenceContext.
+In CIMI Version 0.0.4, the corresponding reference model class was called ConditionAssertion. The CIMI name is being changed to ConditionTopic, as anticipated here. In CIMI Version 0.0.4, the ConditionAssertion had properties such as severity, dueTo, and diseasePhase, that are associated with the actual presence of the condition, and would never be part of other contexts, such as the AbsenceContext. Therefor, in the current logical model, the properties associated with the presence of a condition have been moved to ConditionPresenceContext.
 
-The presence of terminology bindings (necessary to align with FHIR Condition.category and enforce the extensible binding in US Core of Condition.code) means that this class cannot be defined entirely within the CIMI reference model. The constraints could only exist in an archetype derived from the reference model class. The logical model here represents both the class structure and the terminology bindings."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+In a departure from the separation of class hierarchy and constraints imposed within CIMI, the logical model here represents both the class structure and the terminology bindings. Bindings are necessary to align with FHIR Condition.category the US-Core binding of Condition.code."
+				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocationOrCode
+//0..*			AnatomicalLocation
+
 
 Element:		ConditionPresenceContext
 Based on:		PresenceContext
@@ -82,18 +84,14 @@ The presence of terminology bindings (necessary to align with FHIR clinicalStatu
 					
 //------------- Implementable Classes-------------------
 
-Element:		Condition  // aka Condition Present
-Based on:		ConditionTopic
+EntryElement:	ConditionPresenceStatement 
+Based on:		ClinicalStatement
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 
 In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The attributes of ClinicalStatement are not included here because of mapping difficulties.
 
 In CIMI V0.0.4, this class would be represented as an archetype, specifically, a ClinicalStatement whose topic is ConditionAssertion and whose context is AssertionKnownOrSuspectedPresent. The name of the CIMI archetype has not been determined as of V0.0.4;. Here, the class is called Condition because it corresponds to FHIR Condition."
-1..1			ConditionPresenceContext
-
-
-
-
-
-
+			StatementTopic is type ConditionTopic
+			StatementContext is type ConditionPresenceContext
+			

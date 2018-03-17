@@ -40,24 +40,11 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 		NOTE: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. The CIMI clinical statement would be mapped to FHIR as a Procedure. In this case, the procedure involves chilling the specimen (the key or code) and the duration of that procedure (corresponding to PerformanceContext.duration) would be interpreted as the cold ischemic time. The drawback of this would be that the information on cold ischemic time (necessary for interpreting results) would not travel with the specimen. To provide a cutpoint between this IG and the rest of CIMI, and to avoid unnecessary complexity, an extension was introduced."
 		Value:			Quantity with units UCUM#min
 
-
-EntryElement:	BreastCancer
+		
+Element:		BreastCancerTopic
 Concept:		SCT#126926005 "Neoplasm of the breast"
-Based on:		Condition  
-Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body.
-
-The following steps are required to create this class in CIMI:
-
-1) Update the CIMI Reference Model, adding the property MorphologyBehavior to create BreastCancerConditionTopic class.
-2) Create an archetype of ClinicalStatement that combines the new topic BreastCancerConditionTopic with the ConditionPresenceContext, and introduces constraints on Value, Category, Stage, and MorphologyBehavior.
-
-In this model, the path of least work was to subclass Condition, add the new attribute, and introduce the required constraints, all at once.
-
-The attributes of ClinicalStatement are not included in this class because of the mapping difficulties discussed in Entry."
-Value:			CodeableConcept from BreastCancerTypeVS
-				Category includes #disease
-				ConditionPresenceContext.Stage from BreastCancerStageVS				
-				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerTNMStage
+Based on:		ConditionTopic
+Description:	"Topic concerning cancer originating in the tissues of the breast, and potentially spread to other organs of the body, independent of context."
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -65,13 +52,25 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Description:	"A description of the morphology characteristics of the cancer."
 			Value:			CodeableConcept
 
+
+EntryElement:	BreastCancerPresenceStatement
+Concept:		SCT#126926005 "Neoplasm of the breast"
+Based on:		ConditionPresenceStatement
+Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
+				ConditionTopic is type BreastCancerTopic
+				ConditionTopic.TopicCode from BreastCancerTypeVS
+				ConditionTopic.Category includes #disease
+				ConditionPresenceContext.Stage from BreastCancerStageVS				
+				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerTNMStage
+
+
 EntryElement:	BreastCancerTNMStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
 Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3
 				TopicCode is LNC#21908-9
-				Focus.StatementTopic is type BreastCancer
+				Focus.ClinicalStatement is type BreastCancerPresenceStatement
 				Focus.CodeableConcept from BreastCancerTypeVS
 1..1			FindingMethod from StagingMethodVS
 0..1			StageTimingPrefix from StageTimingPrefixVS

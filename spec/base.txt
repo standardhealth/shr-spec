@@ -9,19 +9,33 @@ Concept:			TBD
 Description:		"Abstract top level class in the hierarchy. Locatable defines the idea of 'locatability in an archetyped structure'. Having this class at the top of the class hierarchy reflects CIMI's use of Archetype Description Language (ADL). In CIMI, Locatable brings with it three attributes that occur in every CIMI child class: archetype_node_id, name (not a healthcare-relevant name, but a name created at runtime), and archetype_details. These attributes reflect a CIMI model implementation detail, and are irrelevant to cancer detailed clinical models, and should by rights remain hidden. So as to not complicate all profiles with extra extensions, these three attributes have been omitted."
 
 Element: 		Entry
-Based on:		Locatable
 Concept:		MTH#C1705654
 Description:	"An Entry is the minimal unit independent of logical information or knowledge, such as a clinical statement in a patient record, a knowledge entry in a knowledge artifact, a product in a product catalog, etc. Entry contains attributes that apply to all such items. An Entry may represent an item in a single person's health record, or could represent an entity that surfaces in multiple patient records, such as organizations or practitioners.
 
-This class corresponds to Entry in CIMI V0.0.4. However, the CIMI-defined attributes from Entry (and InformationEntry) have been omitted from this model because the mapping to Entry to FHIR DomainResource is problematic. FHIR's standard set of attributes in DomainResource (id, versionId, lastUpdated, profile, security, tag, implicitRules, language, text, contained, extension, modifierExtension) are quite different than CIMI's standard set of attributes (namely: identifier, subjectOfInformation, attribution, additionalText, recordStatus). Reconciling these differences is outside the scope of the current ballot on breast cancer. "
+The Entry class in CIMI Version 0.0.4 has been eliminated from the current class hierarchy because it defines no properties and has no child classes besides InformationEntry."
+
+Element:		InformationEntry
+Based on:		Locatable
+Concept:		TBD
+Description:	"An entry in a patient record or in a report, generally used for the documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified. 
+
+The class Entry in CIMI has been eliminated from the class hierarchy because it defines no properties and has no child classes besides InformationEntry.
+
+CIMI-defined attributes of InformationEntry have been omitted from this model because the mapping to FHIR DomainResource was found to be problematic. FHIR's standard set of attributes in DomainResource (id, versionId, lastUpdated, profile, security, tag, implicitRules, language, text, contained, extension, modifierExtension) are quite different than CIMI's standard set of attributes in InformationEntry (namely: identifier, subjectOfInformation, attribution, additionalText, and recordStatus). Reconciling these differences is outside the scope of the current ballot."
+
 
 Element:		ClinicalStatement
-Based on:		Entry
+Based on:		InformationEntry
 Concept:		TBD
 Description: 	"A special type of information entry consisting of a topic and a context. The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
 1..1			StatementTopic
 1..1			StatementContext
+0..1			Encounter
 
+	Element:		Encounter
+	Based on:		InformationEntry
+	Concept:		TBD
+	Description:	"An abstract class that represents an encounter class. This class has been stubbed out to limit the scope of this implementation guide to classes relevant to this ballot concerning breast cancer."
 
 
 Abstract Element:	StatementTopic
