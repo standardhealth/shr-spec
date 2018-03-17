@@ -9,9 +9,9 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 Element:		FindingContext
 Based on:		StatementContext
 Concept:		SCT#410514004
-Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context.
+Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc.
 
-In CIMI Version 0.0.4, FindingContext includes the attribute 'status'. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be Concept, but in CIMI, the datatype of status is Attribution, which can't be mapped. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not really the same as the status of a finding."
+In CIMI Version 0.0.4, FindingContext includes the attribute 'status'. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be Concept, but in CIMI, the datatype of status is Attribution, which can't be mapped. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not the same meaning as the status of a finding."
 
 Element:		EvaluationResultContext
 Based on:		FindingContext
@@ -27,7 +27,9 @@ Description:	"The parent class of contexts that can associate with AssertionTopi
 	Element:		PresenceContext
 	Based on:		AssertionContext
 	Concept:		SCT#410515003
-	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present, i.e., the present time.
+	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. 
+	
+	For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present.
 	
 	In CIMI Version 0.0.4, there were two classes, KnownOrSuspectedPresent and AssertionKnownOrSuspectedPresent. CIMI has decided to combine these classes and rename them to PresenceContext, as represented here."
 					ContextCode from PresenceContextVS
@@ -50,7 +52,9 @@ Description:	"The parent class of contexts that can associate with AssertionTopi
 	Element:		RecordedContext
 	Based on:		EvaluationResultContext
 	Concept:		TBD
-	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
+	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. 
+	
+	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
 	
 	The RecordedContext class did not exist in CIMI Version 0.0.4, but CIMI is the process of adding it. That change is anticipated here."
 					ContextCode is SCT#424975005 "Record Entity" 
@@ -65,14 +69,18 @@ Description:	"The parent class of contexts that can associate with AssertionTopi
 	
 		Element:		RelevantTime
 		Concept:		TBD
-		Description:	"The time or time period that the finding addresses. The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Description:	"The time or time period that the finding addresses.
+		
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 
 		
 Element: 		FindingTopic
 Based on:		StatementTopic
 Concept:		TBD
-Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. 
+
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
 In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. In this model, the result is captured as the Value in AssertionTopic and EvaluationResultTopic. Description has been omitted for brevity. Multimedia has not yet come up in modeling discussions, and has been omitted, for now. Interpretation only applies to EvaluationResult (not Condition), and has been introduced in that class."
 0..1			FindingMethod
@@ -94,7 +102,9 @@ Value:			0..1  CodeableConcept
 Element:		EvaluationResultTopic
 Based on:		FindingTopic
 Concept:		MTH#C1554188
-Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). 
+
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
 In CIMI Version 0.0.4, LaboratoryTestResult.specimen is 0..* but that cardinality makes it impossible to map to FHIR Observation, because Observation.specimen is 0..1. Therefore, the cardinality of Specimen is changed to 0..1 to be consistent with FHIR.
 
@@ -113,9 +123,11 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 	
 		Element:		Focus
 		Concept:		TBD
-		Description:	"The specific aspect, person, or thing related to the Subject under observation, potentially a specific condition, fetus, drug regimen, environmental location, activity, body structure, or environmental factor. For use when the observation is not the Subject as a whole. An example would be an observation related to a particular tumor, or an observation about a change in a particular behavior, or an observation about a systemic condition.
+		Description:	"The specific aspect, person, or thing related to the Subject under observation, potentially a specific condition, fetus, drug regimen, environmental location, activity, body structure, or environmental factor. 
 		
-		CIMI Version 0.0.4 does not have this attribute, nor does FHIR 3.0.1. However, an issue has been approved for adding an attribute (focalSubject) to FHIR. That change to FHIR is anticipated here."
+		Focus is used when the observation is not the Subject as a whole. An example would be an observation related to a particular tumor, or an observation about a change in a particular behavior, or an observation about a systemic condition.
+		
+		CIMI Version 0.0.4 does not have this attribute, nor does FHIR 3.0.1. However, a FHIR tracker issue has been approved for adding an attribute (tentatively named focalSubject) to FHIR. That change is anticipated here."
 		Value:			CodeableConcept or ref(StatementTopic)
 
 		Element:		DeltaFlag
@@ -130,7 +142,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		Precondition
 		Concept:		TBD
-		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
+		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. 
+		
+		Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
 		
 		Element:		ReferenceRange
@@ -159,7 +173,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		EvaluationComponent
 		Concept:		TBD
-		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
+		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. 
+		
+		The subject of the evaluation component is the same as in the parent evaluation."
 		Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)
 		0..1			ExceptionValue
 		0..1			Interpretation
@@ -168,7 +184,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		Members
 		Concept:		TBD
-		Description:	"Members represent the elements of a group of a related but independent evaluations. Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
+		Description:	"Members represent the elements of a group of a related but independent evaluations. 
+		
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
 		
 		CIMI V0.0.4 does not have this attribute."
 		Value:			0..* ref(EvaluationResultTopic)
@@ -180,7 +198,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 Element:		EvaluationResultRecorded
 Based on:		EvaluationResultTopic
 Concept:		TBD
-Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed. EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+
+EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..1			RecordedContext
 				Members value is type ref(EvaluationResultRecorded)
 
@@ -226,16 +246,11 @@ Value:			CodeableConcept from AnatomicalLocationVS
 	Value:			CodeableConcept
 
 	
-EntryElement:	BodyStructurePresent
+Element:		BodyStructurePresent
 Based on:		BodyStructureTopic
 Concept:		TBD
-Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate.
+
+Examples include tissue types, tumors, and wounds. Body structures are continuants (objects that exist over a period of time) that allow observations of the same body structure to be related to be tracked over time."
 1..1			PresenceContext
 		
-
-/*
-Element:		ReportStatus
-Concept:		TBD
-Description:	"The status of the report associated with this panel."
-Value:			code from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-*/
