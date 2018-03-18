@@ -217,7 +217,7 @@ includes 0..1	PrimaryAntibody  // from HER2AntibodyIHCVS if covered
 EntryElement:	HER2ReceptorStatusISH
 Based on:		HER2ReceptorStatus
 Concept:		LNC#72383-3
-Description:	"HER2 receptor status as determined by In Situ HybridizationISH."
+Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH)."
 				TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				FindingMethod from HER2ISHMethodVS
 				EvaluationComponent
@@ -230,13 +230,13 @@ includes 0..1	PercentageAmplified
 
 		Element:		AverageHER2SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		CAP#25910
+		Concept:		LNC#74860-8
 		Description:	"Average number of HER2 signals per cell"
 		Value:			Quantity
 		
 		Element:		AverageCEP17SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		CAP#25911
+		Concept:		LNC#74861-6
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 		Value:			Quantity
 		
@@ -269,12 +269,7 @@ includes 0..1	PercentageAmplified
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			PercentageRange
-		
-				Element:		PercentageRange
-				Based on:		Range
-				Description:	"A range of percentage values."
-				0..1			LowerBound value is type Percentage
-				0..1			UpperBound value is type Percentage
+	
 
 		Element:		PrimaryAntibody
 		Based on:		EvaluationComponent
@@ -318,26 +313,55 @@ includes 0..1	PercentageAmplified
 		Description:	"A scoring system other than Allred."
 
 		
-EntryElement:	OncotypeDxRecurrenceScore
+EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		MTH#C1709318
-Description:	"The Oncotype DX breast cancer test examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0 to 100 indicates the estimated risk of recurrence with highest risk indicated by score > 31."
+Description:	"The Oncotype DX test for invasive breast cancer examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0 to 100 indicates the estimated risk of recurrence with highest risk indicated by score > 31.
+
+No LOINC code currently exists for this test. See https://loinc.org/forums/topic/cancer-specific-panels-and-biomarkers/ for details"
 Value: 			Quantity with units UCUM#1
 				TopicCode is MTH#C1709318
-				Interpretation from OncotypeDXRiskScoreInterpretationVS
+				Interpretation from OncotypeDxInvasiveRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				Specimen is type ref(BreastSpecimen)	
 
-/*
+EntryElement:	OncotypeDxDCISRecurrenceScore
+Based on:		SimplifiedLaboratoryTestResultRecorded
+Concept:		MTH#C3898101
+Description:	"The Oncotype DX test for DCIS (Ductal Carcinoma in Situ) breast cancer. Risk scores are range from 0 to 100 with the following interpretations: 0-38: Low-Risk, 39-54: Intermediate-Risk, 55+: High-Risk.
+
+No LOINC code currently exists for this test. See https://loinc.org/forums/topic/cancer-specific-panels-and-biomarkers/"
+Value: 			Quantity with units UCUM#1
+				TopicCode is MTH#C3898101
+				Interpretation from OncotypeDxDCISRiskScoreInterpretationVS
+				DiagnosticService is #pathology
+				Specimen is type ref(BreastSpecimen)	
+				
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		LNC#76544-6
-Description:	"Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna."
-Value: 			Quantity with units xxxxxx
-				Interpretation from xxxxx
+Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Prosigna.
+
+The Prosigna Score is reported on a 0 -100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptorpositive, early stage breast cancer."
+Value: 			Quantity with units UCUM#1
+				TopicCode is LNC#76544-6
+				Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				Specimen is type ref(BreastSpecimen)
-*/
+				
+EntryElement:	MammaprintRecurrenceScore
+Based on:		SimplifiedLaboratoryTestResultRecorded
+Concept:		MTH#C2827401
+Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Mammaprint.
+
+In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
+
+The is currently no LOINC code for Mammaprint test."
+Value: 			Quantity
+				TopicCode is MTH#C2827401
+				Interpretation from MammaprintRiskScoreInterpretationVS
+				DiagnosticService is #pathology
+				Specimen is type ref(BreastSpecimen)				 
 	
 EntryElement: 	TumorDimensions
 Based on:		LaboratoryTestResultRecorded   /// Imaging???
