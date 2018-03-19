@@ -33,9 +33,9 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 				CollectionSite value is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
 				SourceSpecimen value is type BreastSpecimen
-0..1			ColdIschemicTime
+0..1			ColdIschemiaTime //RMB CAP form discusses cold ischemia time, not ischemic time
 
-		Element:	 	ColdIschemicTime
+		Element:	 	ColdIschemiaTime
 		Description:	"The time between the chilling of a tissue or tissue sample and the time it is warmed. 
 		NOTE: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. The CIMI clinical statement would be mapped to FHIR as a Procedure. In this case, the procedure involves chilling the specimen (the key or code) and the duration of that procedure (corresponding to PerformanceContext.duration) would be interpreted as the cold ischemic time. The drawback of this would be that the information on cold ischemic time (necessary for interpreting results) would not travel with the specimen. To provide a cutpoint between this IG and the rest of CIMI, and to avoid unnecessary complexity, an extension was introduced."
 		Value:			Quantity with units UCUM#min
@@ -74,12 +74,12 @@ EntryElement:	BreastCancerTNMStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
-Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3
+Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3 //RMB: technically, not using the normative answer list we are "violating" LOINC, but the right thing to do is to constrain the value set to those terms applicable to breast cancer.
 				TopicCode is LNC#21908-9
 				Focus.StatementTopic is type BreastCancer
 				Focus.CodeableConcept from BreastCancerTypeVS
 1..1			FindingMethod from StagingMethodVS
-0..1			StageTimingPrefix from StageTimingPrefixVS
+1..1			StageTimingPrefix from StageTimingPrefixVS //RMB: in order to be compliant with the AJCC standard, the prefix is mandatory.
 				EvaluationComponent			
 includes 0..1 	BreastCancerTStage
 includes 0..1 	BreastCancerNStage
@@ -118,6 +118,8 @@ Concept:		MTH#C18513
 Based on: 		SimplifiedLaboratoryTestResultRecorded
 Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
 Value:			CodeableConcept from NuclearGradeVS
+			Specimen is type BreastSpecimen
+			TopicCode is MTH#C18513
 0..0			EvaluationComponent
 
 EntryElement:	HistologicGrade
