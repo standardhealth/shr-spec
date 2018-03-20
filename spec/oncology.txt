@@ -64,14 +64,24 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Description:	"A description of the morphology characteristics of the cancer."
 			Value:			CodeableConcept
 
+
+EntryElement:	BreastCancerPrognosticStage
+Based on:		EvaluationResultRecorded  // maps to FHIR Observation
+Concept:		LNC#21908-9
+Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
+Value:			CodeableConcept from BreastCancerStageVS 
+				Members.EvaluationResultTopic
+includes 					
+			
+			
 EntryElement:	BreastCancerTNMStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
 Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
 Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3 //RMB: technically, not using the normative answer list we are "violating" LOINC, but the right thing to do is to constrain the value set to those terms applicable to breast cancer.
 				TopicCode is LNC#21908-9
-				Focus.StatementTopic is type BreastCancerPresenceStatement
-				Focus.CodeableConcept from BreastCancerTypeVS
+//				Focus.StatementTopic is type BreastCancerPresenceStatement
+//				Focus.CodeableConcept from BreastCancerTypeVS
 1..1			FindingMethod from StagingMethodVS
 1..1			StageTimingPrefix from StageTimingPrefixVS //RMB: in order to be compliant with the AJCC standard, the prefix is mandatory.
 				EvaluationComponent			
@@ -219,7 +229,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
 				Specimen is type BreastSpecimen
-0..0			Focus
+//0..0			Focus
 0..0			Precondition
 0..0			ReferenceRange
 0..0			AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
@@ -440,7 +450,7 @@ Value:			CodeableConcept from PositiveNegativeVS
 1..1			AnatomicalLocation from LymphSystemSubdivisionVS 
 				DiagnosticService is #pathology
 				Specimen is type BreastRegionalLymphNodeSpecimen
-0..0			Focus
+//0..0			Focus
 0..0			Precondition
 0..0			ReferenceRange
 0..0			Members.EvaluationResultTopic
