@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, finding, entity, condition
+Uses:  			shr.core, shr.base, cimi, finding, entity, condition
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -20,6 +20,7 @@ Value:			CodeableConcept from BreastSiteVS
 0..1			DistanceToNipple
 				Laterality from LeftRightLateralityVS
 0..0			Directionality
+0..0			PortionTotality
 
 		Element:		DistanceToNipple
 		Description:	"The body site location in relation to the nipple."
@@ -55,7 +56,7 @@ The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, w
 Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 				ConditionPresenceContext.Stage from BreastCancerStageVS				
-				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerTNMStage
+				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerPrognosticStage
 				FindingMethod from BreastCancerDetectionVS
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
@@ -64,40 +65,28 @@ Value:			CodeableConcept from BreastCancerTypeVS
 			Description:	"A description of the morphology characteristics of the cancer."
 			Value:			CodeableConcept
 
-
-EntryElement:	BreastCancerPrognosticStage
+Element:		BreastCancerPrognosticStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
-Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
+Description:	"The prognostic stage of a breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). Only the prognostic stage is used in US and Canada."
 Value:			CodeableConcept from BreastCancerStageVS 
-				Members.EvaluationResultTopic
-includes 					
-			
-			
-EntryElement:	BreastCancerTNMStage
-Based on:		EvaluationResultRecorded  // maps to FHIR Observation
-Concept:		LNC#21908-9
-Description:	"The stage of a cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). TNM Stage Grouping categorizes the progression of cancer using a modified Roman Numeral system."
-Value:			CodeableConcept from BreastCancerStageVS  // could be normative answer group LNC#LL240-3 //RMB: technically, not using the normative answer list we are "violating" LOINC, but the right thing to do is to constrain the value set to those terms applicable to breast cancer.
-				TopicCode is LNC#21908-9
-//				Focus.StatementTopic is type BreastCancerPresenceStatement
-//				Focus.CodeableConcept from BreastCancerTypeVS
 1..1			FindingMethod from StagingMethodVS
-1..1			StageTimingPrefix from StageTimingPrefixVS //RMB: in order to be compliant with the AJCC standard, the prefix is mandatory.
+1..1			StageTimingPrefix from StageTimingPrefixVS
 				EvaluationComponent			
 includes 0..1 	BreastCancerTCategory
 includes 0..1 	BreastCancerNCategory
 includes 0..1 	BreastCancerMCategory
+				Members.EvaluationResultTopic
+includes 1..1	HER2ReceptorStatus
+includes 1..1	EstrogenReceptorStatus
+includes 1..1	ProgesteroneReceptorStatus
+includes 0..1	NuclearGrade
+includes 0..1	HistologicGrade	
 
 		Element:		StageTimingPrefix
 		Concept:		TBD
-		Description:	"Indicates when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
-		Value:			CodeableConcept
-
-		Element:		StageSuffix
-		Concept:		TBD
-		Description:	"Modifies the stage by indicating the size or extent of the cancer or tumor."
-		Value:			CodeableConcept		
+		Description:	"Mandatory element indicating when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
+		Value:			CodeableConcept	
 		
 		Element:		BreastCancerTCategory
 		Concept:		LNC#59528-0
@@ -172,42 +161,41 @@ Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue"
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-0..0			Value
-0..0			ExceptionValue
+Value:			PercentageRange
 				Interpretation from PositiveNegativeVS
 				TopicCode is LNC#16112-5
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen				
 				EvaluationComponent
-includes 0..1	NuclearPositivity
+//includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 
 
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		LNC#16113-3
-Description:	"Progesterone receptor is expressed in 65% of breast carcinomas. PR status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
+Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity. 
 
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model.
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-0..0			Value
-0..0			ExceptionValue
+Value:			PercentageRange
 				Interpretation from PositiveNegativeVS
 				TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen				
 				EvaluationComponent
-includes 0..1	NuclearPositivity
+//includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 
+/*
 		Element:		NuclearPositivity
 		Based on:		EvaluationComponent
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			PercentageRange
 		0..0			ReferenceRange
-			
+*/			
 		Element:		AverageStainingIntensity
 		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
 		Based on:		EvaluationComponent

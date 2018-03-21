@@ -1,69 +1,9 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
 Description:	"The SHR Base domain contains definitions for basic classes in SHR."
-Uses:			shr.core, finding, entity
+//Uses:			shr.core, finding, entity
 
-
-Element:	Locatable 
-Concept:			TBD
-Description:		"Abstract top level class in the hierarchy. Locatable defines the idea of 'locatability in an archetyped structure'.
-
-Having this class at the top of the class hierarchy reflects CIMI's use of Archetype Description Language (ADL). In CIMI, Locatable brings with it three attributes that occur in every CIMI child class: archetype_node_id, name (not a healthcare-relevant name, but a name created at runtime), and archetype_details. These attributes reflect a CIMI model implementation detail, and are irrelevant to cancer detailed clinical models, and should by rights remain hidden. So as to not complicate all profiles with extra extensions, these three attributes have been omitted."
 
 Element:		Entry
 Concept:		TBD
 Description:	"Entry contains attributes that apply to all such items. An Entry may represent an item in a single person's health record, or could represent an entity that surfaces in multiple patient records, such as organizations or practitioners."
-
-Element: 		InformationEntry
-Based on:		Locatable
-Concept:		MTH#C1705654
-Description:	"An InformationEntry is the minimal unit independent of logical information or knowledge, such as a clinical statement in a patient record, a knowledge entry in a knowledge artifact, a product in a product catalog, etc. 
-
-TThe CIMI-defined attributes from InformationEntry (and those inherited from Entry) have been omitted from the current model because of problems mapping between InformationEntry and FHIR DomainResource. Attributes in DomainResource (id, versionId, lastUpdated, profile, security, tag, implicitRules, language, text, contained, extension, modifierExtension) are quite different than those in InformationEntry (identifier, subjectOfInformation, attribution, additionalText, recordStatus). Reconciling these differences is outside the scope of the current ballot on breast cancer. "
-
-Element:		ClinicalStatement
-Based on:		InformationEntry
-Concept:		TBD
-Description: 	"A special type of information entry consisting of a topic and a context. 
-
-The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
-1..1			StatementTopic
-1..1			StatementContext
-
-
-
-Element:		StatementTopic
-Based on:		Locatable
-Concept:		TBD
-Description:	"Compositional and reusable grouping of attributes that make up the clinical focus of an entry. 
-
-A topic does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc.), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded)."
-1..1			TopicCode
-
-		Element:		TopicCode	
-		Concept:		TBD
-		Description:	"The concept representing the finding or action that is the topic of the statement. 
-		
-		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic independent of the context of the action or the finding.
-		
-		This attribute was named 'key' in CIMI V0.0.4. Recently, CIMI has recently moved to rename this element TopicCode, as anticipated here, to make it more clear that this is an identifier for the topic, not the context."
-		Value:			CodeableConcept
-
-
-Element:		StatementContext
-Based on:		Locatable
-Concept:		TBD
-Description:	"Compositional and reusable grouping of attributes that provides the context for the topic of a clinical statement.
-
-StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information."
-1..1			ContextCode
-
-		Element:		ContextCode	
-		Concept:		TBD
-		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc. 
-		
-		Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC.
-		
-		This attribute was named 'type' in CIMI V0.0.4. However, CIMI has recently moved to rename this element ContextCode, as anticipated here, to make it more clear that this is an identifier for the context, not the topic."
-		Value:			CodeableConcept
-
