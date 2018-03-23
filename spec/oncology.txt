@@ -49,7 +49,6 @@ Description:	"The removal of regional lymph node(s) at the time of surgery of th
 // To be determined
 
 
-
 EntryElement:	BreastCancerPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		ConditionPresenceStatement
@@ -60,7 +59,7 @@ The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, w
 				ConditionTopic.Category includes #disease
 				ConditionTopic.FindingMethod from BreastCancerDetectionVS
 				ConditionPresenceContext.Stage from BreastCancerStageVS				
-				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerPrognosticStage
+//				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerPrognosticStage
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -72,14 +71,15 @@ EntryElement:	BreastCancerPrognosticStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
 Description:	"The prognostic stage of a breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). Only the prognostic stage is used in US and Canada."
-				EvaluationResultTopic.Value from BreastCancerStageVS 
+				EvaluationResultTopic.CodeableConcept from BreastCancerStageVS 
 1..1			EvaluationResultTopic.FindingMethod from StagingMethodVS
 1..1			StageTimingPrefix from StageTimingPrefixVS
-				EvaluationResultTopic.EvaluationComponent			
-includes 0..1 	BreastCancerTCategory
-includes 0..1 	BreastCancerNCategory
-includes 0..1 	BreastCancerMCategory
-				EvaluationResultTopic.Members.EvaluationResultTopic
+1..1			EvaluationResultTopic.EvaluationComponent			
+includes 1..1 	BreastCancerTCategory
+includes 1..1 	BreastCancerNCategory
+includes 1..1 	BreastCancerMCategory
+// Note the weirdness of the cardinality constraint!
+0..1			EvaluationResultTopic.Members.EvaluationResultRecorded
 includes 1..1	HER2ReceptorStatus
 includes 1..1	EstrogenReceptorStatus
 includes 1..1	ProgesteroneReceptorStatus
@@ -116,7 +116,7 @@ EntryElement:	NuclearGrade
 Concept:		MTH#C18513
 Based on: 		SimplifiedLaboratoryTestResultRecorded
 Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
-				EvaluationResultTopic.Value from NuclearGradeVS
+				EvaluationResultTopic.CodeableConcept from NuclearGradeVS
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 				EvaluationResultTopic.TopicCode is MTH#C18513
 0..0			EvaluationResultTopic.EvaluationComponent
@@ -125,11 +125,11 @@ EntryElement:	HistologicGrade
 Concept:		LNC#44648-4
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
-				EvaluationResultTopic.Value from NottinghamCombinedGradeVS
+				EvaluationResultTopic.CodeableConcept from NottinghamCombinedGradeVS
 				EvaluationResultTopic.TopicCode is LNC#44648-4
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 				DiagnosticService is #pathology
-				EvaluationResultTopic.EvaluationComponent
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
@@ -164,15 +164,13 @@ Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue"
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-				EvaluationResultTopic.Value is type PercentageRange
+				EvaluationResultTopic.Range is type PercentageRange
 				EvaluationResultTopic.Interpretation from PositiveNegativeVS
 				EvaluationResultTopic.TopicCode is LNC#16112-5
 				DiagnosticService is #pathology	
 				EvaluationResultTopic.Specimen is type BreastSpecimen				
-				EvaluationResultTopic.EvaluationComponent
-//includes 0..1	NuclearPositivity
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageStainingIntensity
-
 
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		SimplifiedLaboratoryTestResultRecorded
@@ -182,23 +180,14 @@ Description:	"Progesterone receptor status is a factor in determining prognosis 
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model.
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-				EvaluationResultTopic.Value is type PercentageRange
+				EvaluationResultTopic.Range is type PercentageRange
 				EvaluationResultTopic.Interpretation from PositiveNegativeVS
 				EvaluationResultTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				DiagnosticService is #pathology	
 				EvaluationResultTopic.Specimen is type BreastSpecimen				
-				EvaluationResultTopic.EvaluationComponent
-//includes 0..1	NuclearPositivity
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageStainingIntensity
 
-/*
-		Element:		NuclearPositivity
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
-		Value:			PercentageRange
-		0..0			ReferenceRange
-*/			
 		Element:		AverageStainingIntensity
 		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
 		Based on:		EvaluationComponent
@@ -213,8 +202,9 @@ Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation of HER2 by IHC and HER2 by ISH tests, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-0..0			EvaluationResultTopic.Value
-0..0			EvaluationResultTopic.ExceptionValue
+// The following two lines cause problems
+//0..0			EvaluationResultTopic.Value
+//0..0			EvaluationResultTopic.ExceptionValue
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
 				EvaluationResultTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
 				EvaluationResultTopic.Category is OBSCAT#laboratory
@@ -225,7 +215,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 0..0			EvaluationResultTopic.ReferenceRange
 0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 0..0			EvaluationResultTopic.FindingMethod
-				EvaluationResultTopic.Members.EvaluationResultTopic
+				EvaluationResultTopic.Members.EvaluationResultRecorded
 includes 0..*	HER2byIHC
 includes 0..*	HER2byISH
 				
@@ -233,13 +223,12 @@ EntryElement:	HER2byIHC
 Based on:		EvaluationResultRecorded
 Concept:		LNC#72383-3
 Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)."
-				EvaluationResultTopic.Value from HER2byIHCScoreVS
+				EvaluationResultTopic.CodeableConcept from HER2byIHCScoreVS
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2IHCMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
-				EvaluationResultTopic.EvaluationComponent
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
-//includes 0..1	PrimaryAntibody  // from HER2AntibodyIHCVS if covered
 
 		Element:		CompleteMembraneStainingPercent
 		Based on:		EvaluationComponent
@@ -255,7 +244,7 @@ Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH).
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2ISHMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
-				EvaluationResultTopic.EvaluationComponent
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
 includes 0..1	HER2toCEP17Ratio
@@ -312,12 +301,13 @@ Concept:		MTH#C1709318
 Description:	"The Oncotype DX test for invasive breast cancer examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value is 0 to 100 indicates the estimated risk of recurrence with highest risk indicated by score > 31.
 
 No LOINC code currently exists for this test."
-				EvaluationResultTopic.Value is type Quantity with units UCUM#1
+				EvaluationResultTopic.Quantity with units UCUM#1
 				EvaluationResultTopic.TopicCode is MTH#C1709318
 				EvaluationResultTopic.Interpretation from OncotypeDxInvasiveRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 0..0			EvaluationResultTopic.EvaluationComponent				
+
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
@@ -325,7 +315,7 @@ Concept:		MTH#C3898101
 Description:	"The Oncotype DX test for DCIS (Ductal Carcinoma in Situ) breast cancer. Risk scores are range from 0 to 100 with the following interpretations: 0-38: Low-Risk, 39-54: Intermediate-Risk, 55+: High-Risk.
 
 No LOINC code currently exists for this test."
-				EvaluationResultTopic.Value is type Quantity with units UCUM#1
+				EvaluationResultTopic.Quantity with units UCUM#1
 				EvaluationResultTopic.TopicCode is MTH#C3898101
 				EvaluationResultTopic.Interpretation from OncotypeDxDCISRiskScoreInterpretationVS
 				DiagnosticService is #pathology
@@ -338,13 +328,14 @@ Concept:		LNC#76544-6
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Prosigna.
 
 The Prosigna Score is reported on a 0 -100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptorpositive, early stage breast cancer."
-				EvaluationResultTopic.Value is type Quantity with units UCUM#1
+				EvaluationResultTopic.Quantity with units UCUM#1
 				EvaluationResultTopic.TopicCode is LNC#76544-6
 				EvaluationResultTopic.Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 0..0			EvaluationResultTopic.EvaluationComponent				
-				
+
+			
 EntryElement:	MammaprintRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		MTH#C2827401
@@ -353,61 +344,28 @@ Description:	"Breast cancer genomic signature assay for 10-year risk of distant 
 In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
 
 The is currently no LOINC code for Mammaprint test."
-				EvaluationResultTopic.Value is type Quantity
+// CHRIS: The following constraint is bombing out
+//				EvaluationResultTopic value is type Quantity
 				EvaluationResultTopic.TopicCode is MTH#C2827401
 				EvaluationResultTopic.Interpretation from MammaprintRiskScoreInterpretationVS
 				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastSpecimen				 
 0..0			EvaluationResultTopic.EvaluationComponent
+
 	
-EntryElement: 	TumorDimensions
-Based on:		LaboratoryTestResultRecorded   /// Imaging???
-Concept:		MTH#C4086369
-0..0			EvaluationResultTopic.Value is type QuantityValue
-0..0			EvaluationResultTopic.ExceptionValue
-//				Focus is type Tumor
-// 				AnatomicalLocation ???
-				EvaluationResultTopic.TopicCode is MTH#C4086369
-				DiagnosticService is #pathology
-				EvaluationResultTopic.EvaluationComponent
-includes 0..1	TumorPrimaryDimensionSize
-includes 0..1	TumorSecondaryDimensionSize
-includes 0..1	SizeOfGrossTumorBed
-
-		Element:		TumorPrimaryDimensionSize
-		Description:	"The longest diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		LNC#33728-7
-		Value:			Quantity with units UCUM#mm	
-		0..0			ReferenceRange		
-		
-		Element:		TumorSecondaryDimensionSize
-		Description:	"The longest perpendicular diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		LNC#33729-5
-		Value:			Quantity with units UCUM#mm
-		0..0			ReferenceRange
-
-		Element:		SizeOfGrossTumorBed
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
-		Value:			Quantity with units UCUM#mm
-		0..0			ReferenceRange
-
-
 EntryElement: 	TumorMargins
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		MTH#C4086369
 Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-Value: 			CodeableConcept from PositiveNegativeVS
-				TopicCode is MTH#C4086369
+				EvaluationResultTopic.CodeableConcept from PositiveNegativeVS
+				EvaluationResultTopic.TopicCode is MTH#C4086369
 				DiagnosticService is #pathology
-				Specimen is type BreastSpecimen	
-				EvaluationComponent
+				EvaluationResultTopic.Specimen is type BreastSpecimen	
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1	TumorMarginDescription
 includes 0..1	Cellularity   // not sure this belongs here
 includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
+
 // Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
 
 		Element:		TumorMarginDescription
@@ -436,17 +394,17 @@ EntryElement:	LymphaticInvolvement
 Based on:		LaboratoryTestResultRecorded
 Concept:		MTH#C0746333
 Description:	"Description of lymph nodes contain cancer cells."
-				EvaluationResultTopic.Value from PositiveNegativeVS
+				EvaluationResultTopic.CodeableConcept from PositiveNegativeVS
 				EvaluationResultTopic.TopicCode is MTH#C0746333
 1..1			EvaluationResultTopic.AnatomicalLocation from LymphSystemSubdivisionVS 
-				EvaluationResultTopic.DiagnosticService is #pathology
+				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastRegionalLymphNodeSpecimen
 //0..0			Focus
 0..0			EvaluationResultTopic.Precondition
 0..0			EvaluationResultTopic.ReferenceRange
-0..0			EvaluationResultTopic.Members.EvaluationResultTopic
+0..0			EvaluationResultTopic.Members.EvaluationResultRecorded
 0..0			EvaluationResultTopic.DeltaFlag
-				EvaluationResultTopic.EvaluationComponent
+0..1			EvaluationResultTopic.EvaluationComponent
 includes 0..1 	LargestLymphNodeSize
 includes 0..1 	NumberOfLymphNodesInvolved
 includes 0..1 	DegreeOfLymphaticInvolvement
@@ -477,83 +435,17 @@ includes 0..1 	DegreeOfLymphaticInvolvement
 	Based on:		SimplifiedLaboratoryTestResultRecorded		
 	Concept:		LNC#33055-5
 	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
-					EvaluationResultTopic.Value is type Quantity with units UCUM#%
+					EvaluationResultTopic.Quantity with units UCUM#%
 					EvaluationResultTopic.TopicCode is LNC#33055-5
-					EvaluationResultTopic.DiagnosticService is #pathology
+					DiagnosticService is #pathology
 	0..0			EvaluationResultTopic.EvaluationComponent
-	//includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
 
 	Element:		S-PhaseFraction
 	Based on:		SimplifiedLaboratoryTestResultRecorded
 	Concept:		LNC#30913-8
 	Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
-					EvaluationResultTopic.Value is type Quantity with units UCUM#%
+					EvaluationResultTopic.Quantity with units UCUM#%
 					EvaluationResultTopic.TopicCode is LNC#30913-8
-					EvaluationResultTopic.DiagnosticService is #pathology
+					DiagnosticService is #pathology
 	0..0			EvaluationResultTopic.EvaluationComponent				
-					
-/*  Out of scope for ballot
-EntryElement:	GeneticVariant
-Based on:		LaboratoryTestResultRecorded
-Concept:		MTH#C3263354
-Description:	"Whether a subject carries a mutation in a particular gene."
-Value:			CodeableConcept from PositiveNegativeVS
-				Focus.CodeableConcept from GeneIdentifierVS
-				DiagnosticService is #genetics
-				TopicCode is MTH#C3263354
-0..0			Precondition
-0..0			ReferenceRange
-0..0			Members.EvaluationResultTopic
-0..0			DeltaFlag
-0..0			AnatomicalLocation
-				EvaluationComponent
-includes 0..1	Refseq
-
-			Element:		Refseq
-			Based on:		EvaluationComponent
-			Concept:		TBD
-			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
-			Value: 			CodeableConcept from RefseqVS
-
-
-EntryElement:	BreastCancerGeneticAnalysisPanel
-Concept:		MTH#C2708453
-Based on:		LaboratoryTestResultRecorded
-Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-0..0			Value
-				TopicCode is MTH#C2708453
-				DiagnosticService is #genetics
-0..0			Precondition
-0..0			ReferenceRange
-0..0			DeltaFlag
-0..0			AnatomicalLocation
-0..0			EvaluationComponent
-				Members.EvaluationResultTopic
-includes 1..1	BRCA1Variant
-includes 1..1	BRCA2Variant
-
-	Element:		BRCA1Variant
-	Concept:		MTH#C2010863
-	Based on:		GeneticVariant
-	Description:	"Whether the patient has a mutation in the BRCA1 gene."
-	Value:			CodeableConcept from PositiveNegativeVS
-					Focus.CodeableConcept is HGNC#BRCA1Gene
-					TopicCode is MTH#C2010863
-					
-	Element:		BRCA2Variant
-	Concept:		MTH#C2010864
-	Based on:		GeneticVariant
-	Description:	"Whether the patient has a mutation in the BRCA2 gene."
-	Value:			CodeableConcept from PositiveNegativeVS
-					Focus.CodeableConcept is HGNC#BRCA2Gene
-					TopicCode is MTH#C2010864
-
-*/
-
-/*
-FHIR Genomics:
-https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
-https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
-https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
-https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
-*/
+				
