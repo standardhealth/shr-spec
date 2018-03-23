@@ -2,13 +2,13 @@ Grammar:	ValueSet 5.0
 Namespace:	oncology
 
 CodeSystem:     SCT = http://snomed.info/sct
-CodeSystem:		HGNC = http://www.genenames.org
+//CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
-CodeSystem:		ICDO = https://seer.cancer.gov/icd-o-3/
+//CodeSystem:		REFSEQ = https://www.ncbi.nlm.nih.gov/refseq
+CodeSystem:		ICDO3 = https://seer.cancer.gov/icd-o-3/
+CodeSystem:		CAP = https://sdt.cap.org
 
 
-//TO DO methods of observation, limit to direct visual observation (32750006), palpation (113011001), or imaging procedures (363679005) such as computed tomography (77477000), plain x-ray, MRI (113091000), ultrasonography, etc.
 
 ValueSet:		BreastSiteVS
 Description:	"Topography of the breast. Codes are drawn from ICD-O-3."
@@ -93,6 +93,15 @@ Description:	"Histologic types of breast cancer. Codes are drawn from ICD-O-3."
 #8982	"Myoepithelial carcinoma"
 #8983	"Adenomyoepithelioma with carcinoma"
 
+ValueSet:		BreastCancerDetectionVS
+Description:	"Basis for cancer detection. 
+
+Value set from HL7 CDA® R2 Implementation Guide: Clinical Oncology Treatment Plan and Summary, Release 1 - US Realm Standard for Trial Use Release 3, October 2016, Volume 2 — Templates and Supporting Material."
+SCT#360156006	"Screening"
+SCT#160237006	"History/Symptoms"
+SCT#261087003	"Incidental"
+//TO DO methods of observation, limit to direct visual observation (32750006), palpation (113011001), or imaging procedures (363679005) such as computed tomography (77477000), plain x-ray, MRI (113091000), ultrasonography, etc.
+
 ValueSet:		MorphologyBehaviorVS
 Description:	"The morphologic behavior of the cancer. These are the suffix to the ICD-O-3 histologic type codes"
 #0				"Benign"
@@ -104,105 +113,113 @@ Description:	"The morphologic behavior of the cancer. These are the suffix to th
 
 ValueSet:		StagingMethodVS
 Description:	"The methodology or standard used to do the staging."
-#ajcc_v7		"AJCC Breast Carcinoma Version 7"
+//#ajcc_v7		"AJCC Breast Carcinoma Version 7" // not supporting Version 7 as of yet
 #ajcc_v8		"AJCC Breast Carcinoma Version 8"
 
 ValueSet:		StageTimingPrefixVS
 Description:	"When staging was done, relative to treatment events."
-#c				"Clinical staging, upon initial diagnosis"
-#p				"Pathologic staging, post-operative, after resection surgery"
-#yc				"Post-neoadjuvant clinical stage timing"
-#yp				"Post-neoadjuvant pathologic stage timing"
+#c				"The concept designated by the symbol c in Version 8 of AJCC's breast cancer staging guide."
+#p				"The concept designated by the symbol p in Version 8 of AJCC's breast cancer staging guide."
+#yc				"The concept designated by the symbol yc in Version 8 of AJCC's breast cancer staging guide."
+#yp				"The concept designated by the symbol yp in Version 8 of AJCC's breast cancer staging guide."
 
 ValueSet:		BreastCancerStageVS
-Description:	"The AJCC stage group."
-#0				"AJCC Stage 0"
-#IA				"AJCC Stage IA"
-#IB				"AJCC Stage IB"
-#IIA			"AJCC Stage IIA"
-#IIB			"AJCC Stage IIB"
-#IIIA			"AJCC Stage IIIA"
-#IIIB			"AJCC Stage IIIB"
-#IIIC			"AJCC Stage IIIC"
-#IV				"AJCC Stage IV"
+Description:	"Codes that designate concepts describing breast cancer stage group, according to AJCC breast cancer staging recommendations."
+#0				"The concept designated by the symbol 0 in Version 8 of AJCC's breast cancer staging guide."
+#IA				"The concept designated by the symbol IA in Version 8 of AJCC's breast cancer staging guide."
+#IB				"The concept designated by the symbol IB in Version 8 of AJCC's breast cancer staging guide."
+#IIA			"The concept designated by the symbol IIA in Version 8 of AJCC's breast cancer staging guide."
+#IIB			"The concept designated by the symbol IIB in Version 8 of AJCC's breast cancer staging guide."
+#IIIA			"The concept designated by the symbol IIIA in Version 8 of AJCC's breast cancer staging guide."
+#IIIB			"The concept designated by the symbol IIIB in Version 8 of AJCC's breast cancer staging guide."
+#IIIC			"The concept designated by the symbol IIIC in Version 8 of AJCC's breast cancer staging guide."
+#IV				"The concept designated by the symbol IV in Version 8 of AJCC's breast cancer staging guide."
 
-ValueSet:		BreastCancerTStageVS
-Description:	"Tumor category according to AJCC breast cancer staging recommendations."
-#TX				"The primary tumor cannot be evaluated."
-#Tis_DCIS		"DCIS is a noninvasive cancer, but if not removed it can develop into an invasive breast cancer later. DCIS means that cancer cells have been found in breast ducts and have not spread past the layer of tissue where they began."
-#Tis_Paget		"Paget’s disease of the nipple is a rare form of early, noninvasive cancer that is only in the skin cells of the nipple. Sometimes Paget’s disease is associated with another, invasive breast cancer. If there is also an invasive breast cancer present, it is classified according to the stage of the invasive tumor."
-#T1				"The invasive part of the tumor in the breast is 20 millimeters (mm) or smaller in size at its widest area. This stage is then broken into 3 substages (a, b, c) depending on the size of the tumor"
-#T1mi			"T1mi is a tumor less than or equal  to 1 mm in greatest dimension."
-#T1a			"T1a is a tumor that is larger than 1 mm, but 5 mm or smaller."
-#T1b			"T1b is a tumor that is larger than 5 mm, but 10 mm or smaller."
-#T1c			"T1c is a tumor that is larger than 10 mm, but 20 mm or smaller."
-#T2				"The invasive part of the tumor is larger than 20 mm but not larger than 50 mm."
-#T3				"The invasive part of the tumor is larger than 50 mm."
-#T4				"The tumor has grown into the chest wall and/or the skin, or is inflammatory."
-#T4a			"T4a means the tumor has grown into the chest wall."
-#T4b			"T4b is when the tumor has grown into the skin."
-#T4c			"T4c is cancer that has grown into the chest wall and the skin."
-#T4d			"T4d is inflammatory breast cancer."
+ValueSet:		BreastCancerTCategoryVS
+Description:	"Codes that designate concepts describing stages for Tumor category according to AJCC breast cancer staging recommendations."
+#TX				"The concept designated by the symbol TX in Version 8 of AJCC's breast cancer staging guide."
+#Tis_DCIS		"The concept designated by the symbol Tis_DCIS in Version 8 of AJCC's breast cancer staging guide."
+#Tis_Paget		"The concept designated by the symbol Tis_Paget in Version 8 of AJCC's breast cancer staging guide."
+#T1				"The concept designated by the symbol T1 in Version 8 of AJCC's breast cancer staging guide."
+#T1mi			"The concept designated by the symbol T1mi in Version 8 of AJCC's breast cancer staging guide."
+#T1a			"The concept designated by the symbol T1a in Version 8 of AJCC's breast cancer staging guide."
+#T1b			"The concept designated by the symbol T1b in Version 8 of AJCC's breast cancer staging guide."
+#T1c			"The concept designated by the symbol T1c in Version 8 of AJCC's breast cancer staging guide."
+#T2				"The concept designated by the symbol T2 in Version 8 of AJCC's breast cancer staging guide."
+#T3				"The concept designated by the symbol T3 in Version 8 of AJCC's breast cancer staging guide."
+#T4				"The concept designated by the symbol T4 in Version 8 of AJCC's breast cancer staging guide."
+#T4a			"The concept designated by the symbol T4a in Version 8 of AJCC's breast cancer staging guide."
+#T4b			"The concept designated by the symbol T4b in Version 8 of AJCC's breast cancer staging guide."
+#T4c			"The concept designated by the symbol T4c in Version 8 of AJCC's breast cancer staging guide."
+#T4d			"The concept designated by the symbol T4d in Version 8 of AJCC's breast cancer staging guide."
 
-ValueSet:		BreastCancerNStageVS
-Description:	"Regional nodes N category according to AJCC breast cancer staging recommendations. The codes do not include the stage timing prefix, recorded separately in the StageTimingPrefix attribute."
-#NX				"The lymph nodes cannot be evaluated (for example, previously removed)"	
-#N0				"No cancer was found in the lymph nodes."
-#N1				"The cancer has spread to 1 to 3 axillary lymph nodes under the arm, and is at least 2 mm in size."
-#N1mi			"Micrometastasis, larger than 0.2 mm but less than 2 mm in size."
-#N1a			"Cancer has spread to 1 to 3 lymph nodes under the arm with at least one area of cancer spread greater than 2 mm across."
-#N1b			"Cancer has spread to internal mammary lymph nodes on the same side as the cancer, but this spread could only be found on sentinel lymph node biopsy (it did not cause the lymph nodes to become enlarged)."
-#N1c			"Both N1a and N1b apply, i.e., cancer has spread to 1 to 3 lymph nodes under the arm with at least one area of cancer spread greater than 2 mm across, and Cancer has spread to internal mammary lymph nodes on the same side as the cancer without causing lymph node enlargement."
-#N2				"Cancer has spread to 4 to 9 lymph nodes under the arm, or cancer has enlarged the internal mammary lymph nodes."
-#N2a			"Cancer has spread to 4 to 9 lymph nodes under the arm, with at least one area of cancer spread larger than 2 mm."
-#N2b			"Cancer has spread to one or more internal mammary lymph nodes, causing them to become enlarged."
-#N3				"Cancer has spread to auxiliary lymph nodes, and meets criteria in either N3a, N3b, or N3c."
-#N3a			"Cancer has spread to 10 or more axillary lymph nodes, with at least one area of cancer spread greater than 2 mm, or cancer has spread to the lymph nodes under the collarbone (infraclavicular nodes), with at least one area of cancer spread greater than 2 mm."
-#N3b			"Cancer is found in at least one axillary lymph node (with at least one area of cancer spread greater than 2 mm) and has enlarged the internal mammary lymph nodes, or cancer has spread to 4 or more axillary lymph nodes (with at least one area of cancer spread greater than 2 mm), and tiny amounts of cancer are found in internal mammary lymph nodes on sentinel lymph node biopsy."
-#N3c			"Cancer has spread to the lymph nodes above the collarbone (supraclavicular nodes) with at least one area of cancer spread greater than 2 mm."
+ValueSet:		BreastCancerNCategoryVS
+Description:	"Codes that designate concepts describing Node category according to AJCC breast cancer staging recommendations."
+#NX				"The concept designated by the symbol NX in Version 8 of AJCC's breast cancer staging guide."
+#N0				"The concept designated by the symbol N0 in Version 8 of AJCC's breast cancer staging guide."
+#N1				"The concept designated by the symbol N1 in Version 8 of AJCC's breast cancer staging guide."
+#N1mi			"The concept designated by the symbol N1mi in Version 8 of AJCC's breast cancer staging guide."
+#N1a			"The concept designated by the symbol N1a in Version 8 of AJCC's breast cancer staging guide."
+#N1b			"The concept designated by the symbol N1b in Version 8 of AJCC's breast cancer staging guide."
+#N1c			"The concept designated by the symbol N1c in Version 8 of AJCC's breast cancer staging guide."
+#N2				"The concept designated by the symbol N2 in Version 8 of AJCC's breast cancer staging guide."
+#N2a			"The concept designated by the symbol N2a in Version 8 of AJCC's breast cancer staging guide."
+#N2b			"The concept designated by the symbol N2b in Version 8 of AJCC's breast cancer staging guide."
+#N3				"The concept designated by the symbol N3 in Version 8 of AJCC's breast cancer staging guide."
+#N3a			"The concept designated by the symbol N3a in Version 8 of AJCC's breast cancer staging guide."
+#N3b			"The concept designated by the symbol N3b in Version 8 of AJCC's breast cancer staging guide."
+#N3c			"The concept designated by the symbol N3c in Version 8 of AJCC's breast cancer staging guide."
 //NX, N0, N1, N2, N2a, N2b, N3, N3a, N3b, N3c (for clinical staging) 
 //NX, N0, N1, N1mi, N1a, N1b, N1c, N2, N2a, N2b, N3 (for pathologic staging)
 
-ValueSet:		BreastCancerMStageVS
-Description:	"Metastasis category according to AJCC breast cancer staging recommendations."
-#MX				"Distant spread (metastasis) cannot be assessed."
-#M0				"No detectable metastatis by clinical or radiogical examination."
-#M1				"Cancer has spread to distant organs (most often to the bones, lungs, brain, or liver)."
+ValueSet:		BreastCancerMCategoryVS
+Description:	"Codes that designate concepts describing Metastases category according to AJCC breast cancer staging recommendations."
+#MX				"The concept designated by the symbol MX in Version 8 of AJCC's breast cancer staging guide."
+#M0				"The concept designated by the symbol M0 in Version 8 of AJCC's breast cancer staging guide."
+#M1				"The concept designated by the symbol M1 in Version 8 of AJCC's breast cancer staging guide."
 
 
 ValueSet:		StainingIntensityVS
 Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 (Negative) to 3 (Strong)."
-#none			"None/Negative - CAP#29915"
-#weak			"Weak - CAP#29811"
-#moderate		"Moderate - CAP#29812"
-#strong			"Strong - CAP#29914"
+#none			"None/Negative"
+#weak			"Weak"
+#moderate		"Moderate"
+#strong			"Strong"
 
-
-ValueSet:		StainingControlVS
-Description:	"Staining of control cells, required if staining is negative."
-#staining 		"Internal control cells present and stain as expected - CAP#25896"
-#nonstaining 	"Internal control cells present; no immunoreactivity of either tumor cells or internal controls - CAP#32089"
-#absent 		"Internal control cells absent. - CAP#25898"
 
 ValueSet:		NottinghamCombinedGradeVS
-SCT#369790002	"Low grade or well differentiated"
-SCT#369791003	"Intermediate/moderate grade or moderately differentiated"
-SCT#369792005	"High grade or pooly differentiated"
+Description:	""
+SCT#369790002	"Nottingham Combined Grade I: 3-5 points (finding)"
+SCT#369791003	"Nottingham Combined Grade II: 6-7 points (finding)"
+SCT#369792005	"Nottingham Combined Grade III: 8-9 points (finding)"
+
+ValueSet: 		NuclearGradeVS
+Description:	"The nuclear grade describes how closely the nuclei of cancer cells look like the nuclei of normal breast cells. In general, the higher the nuclear grade, the more abnormal the nuclei are and the more aggressive the tumor cells tend to be. The nuclear grade is a part of overall tumor grade."
+#G1 			"Grade I - low grade or well differentiated"
+#G2 			"Grade II - Intermediate/moderate grade or moderately differentiated"
+#G3 			"Grade III - High grade or pooly differentiated"
 
 ValueSet:		LymphSystemSubdivisionVS
 Description:	"A lymph node area or nodal group; a subdivision of the entire lymphatic system. For breast cancer, this includes 5 areas: internal mammary lymph nodes, axillary lymph nodes level I, II, and III, and the supraclavicular lymph nodes."
 Includes codes descending from SCT#122490001 "Lymphoid system structure (body structure)"
 
-ValueSet:		HER2MethodVS
-Description:	"Value set containing methods of determining HER2 status"
-#single			"HER2 by Single Probe Assay In SituHybridization test" 
-#dual			"HER2 by Dual Probe Assay In SituHybridization test"
-#ihc			"HER2 by ImmunoHistochemistry"
-
 ValueSet:		HER2ISHMethodVS
 Description:	"Value set containing In Situ Hybridization methods of determining HER2 status"
 #single			"HER2 by Single Probe Assay In Situ Hybridization test" 
 #dual			"HER2 by Dual Probe Assay In Situ Hybridization test"
+
+ValueSet:		HER2IHCMethodVS
+Description:	"Value set containing methods of determining HER2 status by immunohistochemistry"
+#ihc			"HER2 by ImmunoHistochemistry"
+
+ValueSet:		HER2byIHCScoreVS
+Description:	"Value set containing possible scores resulting from determining HER2 status by immunohistochemistry. Based on LNC#LL4396-9 answer list."
+LNC#LA6111-4	"0"
+LNC#LA11841-6	"1+"
+LNC#LA11842-4	"2+"
+LNC#LA11843-2	"3+"
+LNC#LA11884-6	"Indeterminate"
+
 
 ValueSet:		DegreeOfLymphaticInvolvementVS
 Description:	"Value set containing the degree of lymphatic involvement."
@@ -210,54 +227,13 @@ Description:	"Value set containing the degree of lymphatic involvement."
 #gross			"The cancer can be seen or felt without aid of microscopy."
 #extracapsular	"Cancer has spread outside the wall of the node."
 
-ValueSet:		GeneIdentifierVS
-Description: "A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
-Includes codes from HGNC
-
-ValueSet:		RefseqVS
-Includes codes from REFSEQ
-
-ValueSet:		EstrogenAntibodyVS
-Description:	"Antibodies relevant to Estrogen receptor."
-#SP1			"SP1 - CAP#31093"
-#6F11			"6F11 - CAP#31094"
-#1D5 			"1D5 - CAP#31095"
-
-ValueSet:		ProgesteroneAntibodyVS
-Description:	"Antibodies relevant to Estrogen receptor."
-#1E2 			"1E2 - CAP#31103"
-#636 			"636 - CAP#31104"
-#16 			"16 - CAP#31105" 
-#SP2			"SP2 - CAP#31097" 
-#1A6 			"1A6 - CAP#31098" 
-#1294 			"1294 - CAP#32115" 
-#312 			"312 - CAP#32116"
-
 ValueSet:		HER2StatusVS
 Description:	"HER2 status overall result"
-#not_amplified 	"Negative/Not Amplified (IHC Score 0) - CAP#31015"
-#negative		"Negative (IHC Score 1+) - CAP#31016 "
-#equivocal 		"Equivocal (IHC Score 2+) - CAP#31017"
-#positive		"Positive/Amplified (IHC Score 3+) - CAP#31018" 
-//		"Cannot be determined (indeterminate) - CAP#25883"
-
-
-ValueSet:		HER2AntibodyIHCVS
-Description:	"Antibodies relevant to HER2 receptor (IHC Test)."
-#4B5			"4B5 - CAP#31117"
-#Hercep 		"HercepTest - CAP#31118"
-#A0485	 		"A0485 - CAP#31119" 
-#SP3 			"SP3 - CAP#31120"
-#CB11 			"CB11 - CAP#31121"
-
-
-ValueSet:		Ki67AntibodyVS
-Description:	"Antibodies relevant to Ki-67 Text."
-#MIB1 			"MIB1 - CAP#31125" 
-#SP6 			"SP6 - CAP#31126" 
-#MM1 			"MM1 - CAP#32169" 
-#30-9 			"30-9 - CAP#32160" 
-#IR/IS62 		"IR / IS626 - CAP#32168"
+#not_amplified 	"Negative/Not Amplified (IHC Score 0)"
+#negative		"Negative (IHC Score 1+) "
+#equivocal 		"Equivocal (IHC Score 2+)"
+#positive		"Positive/Amplified (IHC Score 3+)" 
+//		"Cannot be determined (indeterminate)"
 
 ValueSet:		TumorMarginDescriptionVS
 Description:	"Value set containing the descriptions of tumor margin."
@@ -282,7 +258,94 @@ SCT#384735004	"Nuclear pleomorphism: small regular nuclei (score=1)"
 SCT#384737007	"Nuclear pleomorphism: moderate increase in size, etc (score = 2)"
 SCT#384738002	"Nuclear pleomorphism: marked variation in size, nucleoli, chromatin clumping, etc (score = 3)"
 
+
+ValueSet:		OncotypeDxInvasiveRiskScoreInterpretationVS
+Description:	"Intepretation of OncotypeDX Recurrence Score for invasive cancers."
+#low_risk		"Recurrence Score lower than 18: The cancer has a low risk of recurrence. The benefit of chemotherapy is likely to be small and will not outweigh the risks of side effects."
+#intermediate_risk		"Recurrence Score of 18 up to and including 30: The cancer has an intermediate risk of recurrence. It’s unclear whether the benefits of chemotherapy outweigh the risks of side effects."
+#high_risk		"Recurrence Score greater than or equal to 31: The cancer has a high risk of recurrence, and the benefits of chemotherapy are likely to be greater than the risks of side effects."
+
+
+ValueSet:		OncotypeDxDCISRiskScoreInterpretationVS
+Description:	"Intepretation of OncotypeDX DCIS (Ductal Carcinoma In Situ) Recurrence Score"
+#low_risk		"Recurrence Score lower than 38: The cancer has a low risk of recurrence. The benefit of chemotherapy is likely to be small and will not outweigh the risks of side effects."
+#intermediate_risk		"Recurrence Score of 39 up to and including 54: The cancer has an intermediate risk of recurrence. It’s unclear whether the benefits of chemotherapy outweigh the risks of side effects."
+#high_risk		"Recurrence Score greater than or equal to 55: The cancer has a high risk of recurrence, and the benefits of chemotherapy are likely to be greater than the risks of side effects."
+ 
+ValueSet:		MammaprintRiskScoreInterpretationVS
+Description:	"Intepretation of Mammaprint Recurrence Score"
+#low_risk		"Score between 0.0 and +1.0, meaning a patient has on average a 10% chance that her cancer will recur within 10 years without any additional adjuvant treatment, either hormonal therapy or chemotherapy."
+#high_risk		"Score between -1.0 and 0.0, meaning a patient has a 29% chance that her cancer will recur within 10 years without any additional adjuvant treatment, either hormonal therapy or chemotherapy.Recurrence Score greater than or equal to 55: The cancer has a high risk of recurrence, and the benefits of chemotherapy are likely to be greater than the risks of side effects."
+
+
+ValueSet:			RecurrenceRiskScoreInterpretationVS
+Description:		"Interpretations of risk as high, intermediate, or low. Answer set taken from LOINC LL3198-0" 
+#LA19541-4   	 	"High risk of recurrence."  	 		 
+#LA22380-2		 	"Intermediate risk of recurrence."  	 	 
+#LA19542-2	 		"Low risk of recurrence."
+
+ValueSet:			PositiveNegativeVS
+Description:		"Value set containing the values positive and negative."
+MTH#C1446409		"Positive"
+MTH#C0205160		"Negative"
+
+ValueSet:		PositiveNegativeEquivocalVS
+Description:	"Interpretation of a test result as positive, negative or equivocal."
+#negative		"Negative"
+#equivocal 		"Equivocal"
+#positive		"Positive"
+
+
+
 /*
+
+ValueSet:		StainingControlVS
+Description:	"Staining of control cells, required if staining is negative."
+#staining 		"Internal control cells present and stain as expected"
+#nonstaining 	"Internal control cells present; no immunoreactivity of either tumor cells or internal controls"
+#absent 		"Internal control cells absent."
+
+ValueSet:		GeneIdentifierVS
+Description: "A unique code for a gene, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous communication, drawn from HUGO Gene Nomenclature Committee."
+Includes codes from HGNC
+
+ValueSet:		RefseqVS
+Includes codes from REFSEQ
+
+ValueSet:		EstrogenAntibodyVS
+Description:	"Antibodies relevant to Estrogen receptor."
+#SP1			"SP1"
+#6F11			"6F11"
+#1D5 			"1D5"
+
+ValueSet:		ProgesteroneAntibodyVS
+Description:	"Antibodies relevant to Estrogen receptor."
+#1E2 			"1E2"
+#636 			"636"
+#16 			"16" 
+#SP2			"SP2" 
+#1A6 			"1A6" 
+#1294 			"1294" 
+#312 			"312"
+
+
+ValueSet:		HER2AntibodyIHCVS
+Description:	"Antibodies relevant to HER2 receptor (IHC Test)."
+#4B5			"4B5"
+#Hercep 		"HercepTest"
+#A0485	 		"A0485" 
+#SP3 			"SP3"
+#CB11 			"CB11"
+
+
+ValueSet:		Ki67AntibodyVS
+Description:	"Antibodies relevant to Ki-67 Text."
+#MIB1 			"MIB1" 
+#SP6 			"SP6" 
+#MM1 			"MM1" 
+#30-9 			"30-9" 
+#IR/IS62 		"IR / IS626"
+
 ValueSet:		BrcaReceptorStatusVS
 Description:	"Classification of receptor status in breast cancer."
 #luminal_A		"Group 1. Includes tumors that are ER positive and PR positive, but negative for HER2. Luminal A breast cancers are likely to benefit from hormone therapy and may also benefit from chemotherapy."
@@ -290,23 +353,3 @@ Description:	"Classification of receptor status in breast cancer."
 #HER2_positive	"Group 3. Includes tumors that are ER negative and PR negative, but HER2 positive. HER2 breast cancers are likely to benefit from chemotherapy and treatment targeted to HER2."
 #Triple_negative "Group 4. Also called basal-like breast cancer, includes tumors that are ER negative, PR negative and HER2 negative. Basal-like breast cancers are likely to benefit from chemotherapy."
 */
-ValueSet:		OncotypeDXRiskScoreInterpretationVS
-Description:	"Intepretation of OncotypeDX Recurrence Score"
-#low_risk		"Recurrence Score lower than 18: The cancer has a low risk of recurrence. The benefit of chemotherapy is likely to be small and will not outweigh the risks of side effects."
-#intermediate_risk		"Recurrence Score of 18 up to and including 30: The cancer has an intermediate risk of recurrence. It’s unclear whether the benefits of chemotherapy outweigh the risks of side effects."
-#high_risk		"Recurrence Score greater than or equal to 31: The cancer has a high risk of recurrence, and the benefits of chemotherapy are likely to be greater than the risks of side effects."
-
-/*
-ValueSet:			RecurrenceRiskScoreInterpretationVS
-Description:		"Interpretations of risk as high, intermediate, or low. Answer set taken from LOINC LL3198-0" 
-#LA19541-4   	 	High risk    	 		 
-#LA22380-2		 	Intermediate risk    	 	 
-#LA19542-2	 		Low risk    	 	
-*/
-
-ValueSet:			PositiveNegativeVS
-Description:		"Value set containing the values positive and negative."
-MTH#C1446409		"Positive"
-MTH#C0205160		"Negative"
-
-
