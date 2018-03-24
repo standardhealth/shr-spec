@@ -104,6 +104,7 @@ Description:	"The base topic for conditions, allergies, adverse events, etc. The
 
 In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the PresenceContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
 Value:			0..1  CodeableConcept
+0..1			ExceptionValue
 
 		
 Element:		EvaluationResultTopic
@@ -118,11 +119,13 @@ CIMI Differences:
 2) In CIMI Version 0.0.4, Findings (including EvaluationResult and LaboratoryTestResult) do not have related ('has-member') observations, nor components (sub-observations). These features of FHIR Observations were found to be very useful in modeling breast cancer pathology, and so they are included here. This represents a significant departure from the CIMI model.
 3) In CIMI Version 0.0.4, allowable datatype for result include EmbeddedContent,  GpsLocation,  Multimedia,  ParsableContent, and other types not allowed in a FHIR Observation. To make mapping feasible, the types of Value were restricted to the allowable FHIR datatypes."
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+0..1			ExceptionValue
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 //0..1			Focus
 0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
 0..1			Specimen
 0..1			DeltaFlag	
+0..1			Interpretation
 0..*			Precondition
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
@@ -141,7 +144,11 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from DeltaFlagVS
-
+		
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
 		
 		Element:		Precondition
 		Concept:		TBD
