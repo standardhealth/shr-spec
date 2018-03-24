@@ -72,14 +72,13 @@ Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
 Description:	"The prognostic stage of a breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). Only the prognostic stage is used in US and Canada."
 				EvaluationResultTopic.CodeableConcept from BreastCancerStageVS 
-1..1			EvaluationResultTopic.FindingMethod from StagingMethodVS
+				EvaluationResultTopic.FindingMethod from StagingMethodVS
 1..1			StageTimingPrefix from StageTimingPrefixVS
-1..1			EvaluationResultTopic.EvaluationComponent			
+				EvaluationResultTopic.EvaluationComponent			
 includes 1..1 	BreastCancerTCategory
 includes 1..1 	BreastCancerNCategory
 includes 1..1 	BreastCancerMCategory
-// Note the weirdness of the cardinality constraint!
-0..1			EvaluationResultTopic.Members.EvaluationResultRecorded
+				EvaluationResultTopic.Members.EvaluationResultRecorded
 includes 1..1	HER2ReceptorStatus
 includes 1..1	EstrogenReceptorStatus
 includes 1..1	ProgesteroneReceptorStatus
@@ -129,7 +128,7 @@ Description:	"The Elston Grade/Nottingham Score, representative of the aggressiv
 				EvaluationResultTopic.TopicCode is LNC#44648-4
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 				DiagnosticService is #pathology
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
@@ -169,7 +168,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				EvaluationResultTopic.TopicCode is LNC#16112-5
 				DiagnosticService is #pathology	
 				EvaluationResultTopic.Specimen is type BreastSpecimen				
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageStainingIntensity
 
 EntryElement:	ProgesteroneReceptorStatus
@@ -185,7 +184,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				EvaluationResultTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				DiagnosticService is #pathology	
 				EvaluationResultTopic.Specimen is type BreastSpecimen				
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageStainingIntensity
 
 		Element:		AverageStainingIntensity
@@ -203,8 +202,8 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 
 We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation of HER2 by IHC and HER2 by ISH tests, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
 // The following two lines cause problems
-//0..0			EvaluationResultTopic.Value
-//0..0			EvaluationResultTopic.ExceptionValue
+0..0			EvaluationResultTopic.Value
+0..0			EvaluationResultTopic.ExceptionValue
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
 				EvaluationResultTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
 				EvaluationResultTopic.Category is OBSCAT#laboratory
@@ -227,7 +226,7 @@ Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)."
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2IHCMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
 
 		Element:		CompleteMembraneStainingPercent
@@ -244,7 +243,7 @@ Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH).
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2ISHMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
 includes 0..1	HER2toCEP17Ratio
@@ -344,8 +343,8 @@ Description:	"Breast cancer genomic signature assay for 10-year risk of distant 
 In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
 
 The is currently no LOINC code for Mammaprint test."
-// CHRIS: The following constraint is bombing out
-//				EvaluationResultTopic value is type Quantity
+
+				EvaluationResultTopic value is type Quantity
 				EvaluationResultTopic.TopicCode is MTH#C2827401
 				EvaluationResultTopic.Interpretation from MammaprintRiskScoreInterpretationVS
 				DiagnosticService is #pathology
@@ -361,7 +360,7 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 				EvaluationResultTopic.TopicCode is MTH#C4086369
 				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastSpecimen	
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1	TumorMarginDescription
 includes 0..1	Cellularity   // not sure this belongs here
 includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
@@ -404,7 +403,7 @@ Description:	"Description of lymph nodes contain cancer cells."
 0..0			EvaluationResultTopic.ReferenceRange
 0..0			EvaluationResultTopic.Members.EvaluationResultRecorded
 0..0			EvaluationResultTopic.DeltaFlag
-0..1			EvaluationResultTopic.EvaluationComponent
+				EvaluationResultTopic.EvaluationComponent
 includes 0..1 	LargestLymphNodeSize
 includes 0..1 	NumberOfLymphNodesInvolved
 includes 0..1 	DegreeOfLymphaticInvolvement
