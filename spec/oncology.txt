@@ -1,15 +1,13 @@
 Grammar:		DataElement 5.0
 Namespace:		oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, cimi, finding, entity, condition
+Uses:  			shr.core, shr.base, cimi, cimi-statement
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
-//CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
-CodeSystem:		CAP = https://sdt.cap.org
 //
 
 EntryElement:	BreastSite
@@ -51,14 +49,15 @@ The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, w
 				ConditionTopic.TopicCode from BreastCancerTypeVS
 				ConditionTopic.Category includes #disease
 				ConditionTopic.FindingMethod from BreastCancerDetectionVS
-				ConditionPresenceContext.Stage from BreastCancerStageVS				
-				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerPrognosticStage
+				Stage from BreastCancerStageVS				
+				Stage.StageDetail value is type BreastCancerPrognosticStage
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
 			Concept:		TBD
 			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
+
 
 EntryElement:	BreastCancerPrognosticStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
@@ -71,7 +70,7 @@ Description:	"The prognostic stage of a breast cancer, assessed according to the
 includes 1..1 	BreastCancerTCategory
 includes 1..1 	BreastCancerNCategory
 includes 1..1 	BreastCancerMCategory
-				EvaluationResultTopic.Members.EvaluationResultRecorded
+				Members.EvaluationResultRecorded
 includes 1..1	HER2ReceptorStatus
 includes 1..1	EstrogenReceptorStatus
 includes 1..1	ProgesteroneReceptorStatus
@@ -217,7 +216,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 0..0			EvaluationResultTopic.ReferenceRange
 0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 0..0			EvaluationResultTopic.FindingMethod
-				EvaluationResultTopic.Members.EvaluationResultRecorded
+				Members.EvaluationResultRecorded
 includes 0..*	HER2byIHC
 includes 0..*	HER2byISH
 				

@@ -1,0 +1,78 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi-statement
+Description:	"The namespace containing classes representing complete clinical statements, implemented in the topic-context pattern."
+Uses:			shr.core, cimi
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+
+Element:		EvaluationResultRecorded
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+
+EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+				StatementTopic is type EvaluationResultTopic
+				StatementContext is type RecordedContext
+1..1			Members
+
+		Element:		Members
+		Concept:		TBD
+		Description:	"Members represent the elements of a group of a related but independent evaluations. 
+		
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
+		
+		CIMI V0.0.4 does not have this attribute. Although the proper place to define this might be in EvaluationResultTopic, it cannot be defined there because the value references EvaluationResultRecorded, which is not part of core CIMI."
+		Value:			0..* ref(EvaluationResultRecorded)
+
+
+Element:		LaboratoryTestResultRecorded
+Based on:		EvaluationResultRecorded
+Description:	"Measurement resulting from a laboratory analysis."
+0..*			DiagnosticService
+		
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
+
+		
+	
+Element:		SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded
+Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
+				EvaluationResultTopic.Category is OBSCAT#laboratory
+0..0			EvaluationResultTopic.Precondition
+0..0			EvaluationResultTopic.ReferenceRange
+0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
+// CHRIS -- CLI doesn't like the following statement
+//0..0			Members.EvaluationResultRecorded	
+
+
+Element:		ConditionPresenceStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+
+In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource."
+			StatementTopic is type ConditionTopic
+			StatementContext is type ConditionPresenceContext
+0..1		Stage
+			
+			Element:		Stage
+			Concept:		MTH#C0699749
+			Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information.
+			
+			This attribute does not have a direct analogy in CIMI V0.0.4 (the closest being ConditionAssertion.diseasePhase), but is included here for consistency with FHIR and because staging is important in the context of breast cancer and cancer in general."
+			Value:			CodeableConcept
+			0..1			StageDetail
+			
+					Element:		StageDetail
+					Concept:		TBD
+					Description:	"The full staging information"
+					Value:			ref(EvaluationResultRecorded)
+
+

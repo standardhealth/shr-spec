@@ -1,0 +1,49 @@
+Grammar:	Map 5.1
+Namespace:	cimi-statement
+Target:		FHIR_STU_3
+
+
+EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+	EvaluationResultTopic.Category maps to category
+	EvaluationResultTopic.FindingMethod maps to method
+	EvaluationResultTopic.Value maps to value[x]
+	EvaluationResultTopic.TopicCode maps to code
+	EvaluationResultTopic.AnatomicalLocation maps to bodySite
+	EvaluationResultTopic.Specimen maps to specimen
+	EvaluationResultTopic.Interpretation maps to interpretation
+	EvaluationResultTopic.ReferenceRange maps to referenceRange
+	EvaluationResultTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
+	EvaluationResultTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
+	EvaluationResultTopic.ReferenceRange.Type maps to referenceRange.type
+	EvaluationResultTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
+	EvaluationResultTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age
+	fix related.type to #has-member
+	EvaluationResultTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	EvaluationResultTopic.EvaluationComponent._Concept maps to component.code
+	EvaluationResultTopic.EvaluationComponent.Value maps to component.value[x]
+	EvaluationResultTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	EvaluationResultTopic.EvaluationComponent.Interpretation maps to component.interpretation
+	EvaluationResultTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
+	Members.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	RecordedContext.RelevantTime maps to effective[x]
+	RecordedContext.FindingStatus maps to status
+	RecordedContext.ExceptionValue maps to dataAbsentReason
+
+	
+SimplifiedLaboratoryTestResultRecorded:
+	constrain related to 0..0  // no Members (not a panel)
+
+
+ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
+	ConditionTopic.TopicCode maps to code
+	ConditionTopic.Category maps to category
+	ConditionTopic.AnatomicalLocationOrCode maps to bodySite 
+//	ConditionTopic.AnatomicalLocationOrCode[AnatomicalLocation] maps to http://hl7.org/fhir/StructureDefinition/body-site-instance
+	ConditionPresenceContext.ClinicalStatus maps to clinicalStatus
+	ConditionPresenceContext.VerificationStatus maps to verificationStatus
+	ConditionPresenceContext.Onset maps to onset[x]
+	ConditionPresenceContext.Abatement maps to abatement[x]
+	ConditionPresenceContext.Severity maps to severity
+	Stage maps to stage
+	Stage.CodeableConcept maps to stage.summary
+	Stage.StageDetail maps to stage.assessment
