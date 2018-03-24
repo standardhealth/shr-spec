@@ -1,0 +1,142 @@
+Grammar:	ValueSet 5.0
+Namespace:	cimi
+
+
+CodeSystem:		SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		LNC = http://loinc.org
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM
+
+
+ValueSet: 					ExceptionValueVS
+Description:				"Reasons that a value associated with a test or other finding is missing. Extended set based on http://hl7.org/fhir/ValueSet/observation-valueabsentreason"
+#unknown					"The value is not known."
+#asked						"The source human does not know the value."
+#temp						"There is reason to expect (from the workflow) that the value may become known."
+#not-asked					"The workflow didn't lead to this value being known."
+#masked						"The information is not available due to security, privacy or related reasons."
+#unsupported				"The source system wasn't capable of supporting this element."
+#astext						"The content of the data is represented in the resource narrative."
+#error						"Some system or workflow process error means that the information is not available."
+#NaN						"NaN, standing for not a number, is a numeric data type value representing an undefined or unrepresentable value."
+#not-performed				"The value is not available because the observation procedure  (test, etc.) was not performed."
+#missing_refused			"Human source was asked but declined to respond to the question, or an applicable question was left unanswered."
+#missing_noexplanation		"The reason the information is not present is not known."
+#missing_nonesuch			"The answer is missing because nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
+// The following values apply to lab tests
+#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
+#missing_specimen			"Missing due to a problem with the specimen, e.g. inadequate specimen, contamination, clotting, improper tube type, improper storage, too small, etc."
+#missing_malfunction		"Missing due to instrument malfunction."
+
+
+ValueSet:			PresenceContextVS
+Description:		"A code describing whether the finding in question is present, possible, suspected, etc."
+//SCT#36692007 		"Known" 
+//SCT#410605003		"Confirmed present"
+//SCT#410591008		"Definitely present"
+SCT#410515003		"Known present"
+//SCT#410590009		"Known possible"
+SCT#410592001		"Probably present"
+SCT#415684004		"Suspected"
+SCT#410593006		"Probably not present"
+//SCT#261665006		"Unknown"
+
+ValueSet:			DiagnosticServiceVS
+Description:		"The type of laboratory service used in producing a laboratory result"
+#microbiology		"Laboratory concerned with cultures, to look for suspected pathogens."
+#parasitology		"Laboratory responsible for examining parasites, feces samples may be examined for evidence of intestinal parasites such as tapeworms or hookworms and others."
+#virology			"Laboratory concerned with identification of viruses in specimens such as blood, urine, and cerebrospinal fluid."
+#hematology 		"Laboratory that works with whole blood to do full blood counts, and blood films as well as many other specialised tests."
+#biochemistry		"Laboratory that usually receives serum or plasma and tests the serum for chemicals present in blood."
+#toxicology 		"Laboratory that mainly tests for pharmaceutical and recreational drugs. Urine and blood samples are submitted to this lab."
+#immunology			"Immunology/Serology laboratory uses the concept of antigen-antibody interaction as a diagnostic tool. Compatibility of transplanted organs is also determined."
+#Immunohaematology	"Laboratory or blood bank that determines blood groups, and performs compatibility testing on donor blood and recipients. It also prepares blood components, derivatives, and products for transfusion."
+#urinalysis 		"Laboratory tests urine for many analytes. Some health care providers have a urinalysis laboratory, while others don't."
+#pathology 			"Surgical, cytopathology, or histopathology laboratory. Surgical pathology examines organs, limbs, tumors, fetuses, and other tissues biopsied in surgery such as breast mastectomies."
+#genetics 			"Laboratory that mainly performs DNA analysis."
+#cytogenetics 		"Laboratory that uses blood and other cells to get a karyotype. This can be helpful in prenatal diagnosis (e.g. Down's syndrome) as well as in cancer (some cancers have abnormal chromosomes)."
+
+ValueSet:			DeltaFlagVS
+Concept:			MTH#C1705241
+MTH#C2346711		"About the same"
+TBD#TBD				"Significant change"
+MTH#C0332272		"Better"
+MTH#C1457868		"Worse"
+MTH#C3854148		"Significant change up"
+MTH#C3854147		"Significant change down"
+
+
+ValueSet:				ConditionVS
+Includes codes descending from SCT#64572001 "disease"
+
+
+ValueSet:				ConditionCategoryVS
+#disease				"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms or that affects a specific location and is not simply a direct result of physical injury."
+#functional_impairment	"A disability experienced by the subject."
+#structural_abnormality	"An abnormality of physiologic structure."
+#concern				"Something the subject is worried about, which may or may not have yet been manifested. The object of the concern does not have to be a medical disorder."
+#symptom				"A sign or manifestation of a deeper cause, of known or unknown etiology, e.g. pain or ringing in the ears."
+#adverse_reaction		"An adverse reaction to an intervention."
+
+
+ValueSet:       AnatomicalLocationVS
+Concept:        MTH#C1545955
+Description:    "Codes that describe normal and pathologic anatomic systems, regions, cavities, and spaces."
+Includes codes descending from SCT#123037004  "Body Structure"
+
+ValueSet:       LateralityVS
+Concept:        NCI#C99073 "Anatomical laterality"
+Description:    "Anatomical location or specimen further detailing the side(s) of interest. Codes are from NCI"
+#C13332 		"BILATERAL Affecting both sides of the body, or a pair of organs."
+#C25307 		"CONTRALATERAL Having to do with the opposite side of the body, in relation to a pre-existing reference point."
+#C25308 		"IPSILATERAL Having to do with the same side of the body, in relation to a pre-existing reference point."
+#C25230 		"LATERAL Situated at or extending to the side."
+#C25229 		"LEFT Being or located on or directed toward the side of the body to the west when facing north."
+#C25228 		"RIGHT Being or located on or directed toward the side of the body to the east when facing north."
+#C68598 		"UNILATERAL Affecting one side of the body or one of a pair of organs."
+
+ValueSet:       DirectionalityVS
+Concept:        NCI#C99074
+Description:    "Anatomical location or specimen further detailing directionality. Codes are from NCI"
+#C25231 "ANTERIOR Denoting the front portion of the body or a structure."
+#C25423 "APICAL Relating to or located at the apex."
+#C90067 "BASAL Relating to or located at the lowest portion of a structure."
+#C73851 "CAUDAL Toward the tail in a body."
+#C25445 "CENTRAL A point or area that is approximately central within some larger region or structure."
+#C37936 "CRANIAL Toward the head in a body."
+#C25240 "DEEP Extending relatively far inward."
+#C25237 "DISTAL Situated farthest from a point of reference."
+#C45874 "DORSAL Pertaining to the back or upper surface of the body."
+#C90376 "DORSOLATERAL Toward the back and side of a body."
+#C90386 "FORE Of or involving the front of a main body."
+#C90393 "HIND Of or involving the back of a main body."
+#C25353 "INFERIOR Pertaining to a point below a given reference point."
+#C37980 "INNER Inside or closer to the inside of the body or object."
+#C73705 "INTERMEDIATE Located between two points or extremes."
+#C25309 "LOWER The bottom one of two."
+#C25232 "MEDIAL Toward the middle or in a limb toward the median plane."
+#C81170 "MIDLINE A medial line, especially the medial line or medial plane of the body (or some part of the body)."
+#C27958 "NASAL Of, or related to, or in the direction of the nose."
+#C38166 "OUTER Being on or toward the outside of the body or object."
+#C25233 "PERIPHERAL On or near an edge or constituting an outer boundary;the outer area."
+#C25622 "POSTERIOR Denoting the back portion of the body or a structure."
+#C94393 "ROSTRAL Toward the muzzle in the head."
+#C25239 "SUPERFICIAL Of or pertaining to the exterior surface."
+#C25235 "SUPERIOR Pertaining to a point above a given reference point."
+#C25245 "SURFACE The extended two-dimensional outer layer or area of a three-dimensional object."
+#C117754 "TEMPORAL Of, or related to, anatomic sites that are located in the cranium, brain, and eye."
+#C90069 "TIP The pointed end of a structure."
+#C25355 "UPPER The top one of two."
+#C45875 "VENTRAL Pertaining to the front or lower surface of the body."
+#C98798 "VENTROLATERAL Of or pertaining to the front and side of a main body."
+
+
+ValueSet:       PortionTotalityVS
+Concept:        NCI#C99075
+Description:    "Further detail of the anatomical location or specimen detailing whether it includes the entire entity or only a part or portion."
+#C64916 "ALL Being or representing the total number of individual entities."
+#C25326 "ENTIRE Whole Being or representing the complete extent of a single entity."
+#C78728 "MULTIPLE Many;Several More than one."
+#C25378 "PARTIAL Being or representing an incomplete extent of a single entity."
+#C45312 "SEGMENT One of the parts into which something is divided."
+#C48440 "SINGLE One."

@@ -3,6 +3,10 @@ Namespace:		cimi
 Description:	"The namespace containing definitions for basic classes in CIMI."
 Uses:			shr.core
 
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 Element:		Locatable 
 Concept:		TBD
@@ -69,4 +73,435 @@ StatementContext provides the expressivity required to specify that an act was p
 		
 		This attribute was named 'type' in CIMI V0.0.4. However, CIMI has recently moved to rename this element ContextCode, as anticipated here, to make it more clear that this is an identifier for the context, not the topic."
 		Value:			CodeableConcept
+
+Element:		FindingContext
+Based on:		StatementContext
+Concept:		SCT#410514004
+Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc.
+
+In CIMI Version 0.0.4, FindingContext includes the attribute 'status'. However, there are two problems with including FindingContext.status: (1) to align with FHIR, the datatype of status has to be Concept, but in CIMI, the datatype of status is Attribution, which can't be mapped. (2) Status might not have the same interpretation in all child classes. For example, in GoalContext, the status might be relative to the progress toward the goal, not the same meaning as the status of a finding."
+
+Element:		EvaluationResultContext
+Based on:		FindingContext
+Concept:		TBD
+Description:	"The parent class of contexts that can associate with EvaluationResultTopic and its subclasses."
+
+Element:		AssertionContext
+Based on:		FindingContext
+Concept:		TBD
+Description:	"The parent class of contexts that can associate with AssertionTopic and its subclasses."
+
+
+	Element:		PresenceContext
+	Based on:		AssertionContext
+	Concept:		SCT#410515003
+	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. 
+	
+	For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present.
+	
+	In CIMI Version 0.0.4, there were two classes, KnownOrSuspectedPresent and AssertionKnownOrSuspectedPresent. CIMI has decided to combine these classes and rename them to PresenceContext, as represented here."
+					ContextCode from PresenceContextVS
+	1..1			VerificationStatus			
+	0..1			Onset
+	0..1			Abatement
+	0..1			Certainty
+	
+			Element:	VerificationStatus
+			Concept:	TBD
+			Description: "Whether an assessment has been confirmed by testing or observation."
+			Value:		CodeableConcept			
+	
+	
+			Element:	Certainty
+			Concept:	TBD
+			Description:	"The degree of confidence in a conclusion or assertion."
+			Value:		CodeableConcept
+	
+	Element:		RecordedContext
+	Based on:		EvaluationResultContext
+	Concept:		TBD
+	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. 
+	
+	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
+	
+	The RecordedContext class did not exist in CIMI Version 0.0.4, but CIMI is the process of adding it. That change is anticipated here."
+					ContextCode is SCT#424975005 "Record Entity" 
+	1..1			FindingStatus
+	0..1			ExceptionValue
+	0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc.."
+		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
+	
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses.
+		
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
+
+		
+Element: 		FindingTopic
+Based on:		StatementTopic
+Concept:		TBD
+Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. 
+
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+
+In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. Here, result is represented by EvaluationResultTopic.Value and AssertionTopic.Value. Description and Multimedia have been omitted for brevity. "
+0..1			FindingMethod
+0..1			Interpretation
+		
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
+
+		Element:		FindingMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle. In CIMI Version 0.0.4, this attribute is called 'method'."
+		Value:			CodeableConcept should be from http://loinc.org
+//
+Abstract Element: AssertionTopic
+Based on:		FindingTopic
+Concept:		TBD
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a ConditionPresenceStatement, the Value represents the type of condition found.
+
+In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the PresenceContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
+Value:			0..1  CodeableConcept
+0..1			ExceptionValue
+
+		
+Element:		EvaluationResultTopic
+Based on:		FindingTopic
+Concept:		MTH#C1554188
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). 
+
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+
+CIMI Differences:
+1) In CIMI Version 0.0.4, LaboratoryTestResult.specimen is 0..* but that cardinality makes it impossible to map to FHIR Observation, because Observation.specimen is 0..1. Therefore, the cardinality of Specimen is changed to 0..1 to be consistent with FHIR.
+2) In CIMI Version 0.0.4, Findings (including EvaluationResult and LaboratoryTestResult) do not have related ('has-member') observations, nor components (sub-observations). These features of FHIR Observations were found to be very useful in modeling breast cancer pathology, and so they are included here. This represents a significant departure from the CIMI model.
+3) In CIMI Version 0.0.4, allowable datatype for result include EmbeddedContent,  GpsLocation,  Multimedia,  ParsableContent, and other types not allowed in a FHIR Observation. To make mapping feasible, the types of Value were restricted to the allowable FHIR datatypes."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+0..1			ExceptionValue
+1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+//0..1			Focus
+0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
+0..1			Specimen
+0..1			DeltaFlag	
+0..1			Interpretation
+0..*			Precondition
+0..*			ReferenceRange  // applies to a quantitative measurement only
+0..* 			EvaluationComponent
+1..1			Members
+	
+/*		Element:		Focus
+		Concept:		TBD
+		Description:	"The specific aspect, person, or thing related to the Subject under observation, potentially a specific condition, fetus, drug regimen, environmental location, activity, body structure, or environmental factor. 
+		
+		Focus is used when the observation is not the Subject as a whole. An example would be an observation related to a particular tumor, or an observation about a change in a particular behavior, or an observation about a systemic condition.
+		
+		CIMI Version 0.0.4 does not have this attribute, nor does FHIR 3.0.1. However, a FHIR tracker issue has been approved for adding an attribute (tentatively named focalSubject) to FHIR. That change is anticipated here."
+		Value:			CodeableConcept or ref(StatementTopic)
+*/
+		Element:		DeltaFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			CodeableConcept from DeltaFlagVS
+		
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation
+		
+		Element:		Precondition
+		Concept:		TBD
+		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. 
+		
+		Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
+		Value:			CodeableConcept
+		
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			Range   // TODO: align this with FHIR
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			ApplicableSubpopulation
+		0..1			ApplicableAgeRange
+		
+				Element:		Type
+				Concept:		MTH#C0332307
+				Description:	"The most specific code (lowest level term) describing the kind or sort of thing being represented." 
+				Value:			CodeableConcept
+		
+				Element:	ApplicableSubpopulation
+				Concept:	MTH#C0039309 "Target Population"
+				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
+				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
+		
+				Element:	ApplicableAgeRange
+				Concept:	TBD
+				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
+				Value:		Range
+
+		
+		Element:		EvaluationComponent
+		Concept:		TBD
+		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. 
+		
+		The subject of the evaluation component is the same as in the parent evaluation."
+		Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)
+		0..1			ExceptionValue
+		0..1			Interpretation
+		0..*			ReferenceRange
+		
+		Element:		Members
+		Concept:		TBD
+		Description:	"Members represent the elements of a group of a related but independent evaluations. 
+		
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
+		
+		CIMI V0.0.4 does not have this attribute."
+		Value:			0..* ref(EvaluationResultRecorded)
+
+
+Element:		ConditionTopic
+Based on:		AssertionTopic
+Concept:		MTH#C0348080
+Description:	"Representation of a condition, independent of context of being present, absent, risk, expectation etc. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, etc. 
+
+In CIMI Version 0.0.4, the corresponding class is ConditionAssertion, but this name has been changed to ConditionTopic, as anticipated here. ConditionAssertion had properties associated with the presence of the condition, including severity, dueTo, diseasePhase, and more. In the current logical model, any properties associated with condition occurrence have been placed with ConditionPresenceContext.
+
+The presence of terminology bindings (necessary to align with FHIR Condition.category and enforce the extensible binding in US Core of Condition.code) means that this class cannot be defined entirely within the CIMI reference model. The constraints could only exist in an archetype derived from the reference model class. The logical model here represents both the class structure and the terminology bindings."
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				TopicCode is MTH#C0348080
+1..*			Category from ConditionCategoryVS
+0..*			AnatomicalLocationOrCode
+
+Element:		ConditionPresenceContext
+Based on:		PresenceContext
+Concept:		TBD
+Description:	"The context for a condition that is known, suspected, or possibly present.
+
+In CIMI Version 0.0.4, this class was called AssertionKnownOrSuspectedPresent. The corresponding CIMI class is ungoing a name change to include the word 'StatementContext' and remove the word 'Assertion'.
+
+The presence of terminology bindings (necessary to align with FHIR clinicalStatus, severity, and criticality) means that this class cannot be defined entirely within the CIMI reference model. The constraints could only exist in an archetype derived from the reference model class. The logical model here represents both the class structure and the terminology bindings."
+1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
+				VerificationStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
+0..1			PresentOnAdmission
+0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
+0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+0..1			Stage
+
+
+			Element:		ClinicalStatus
+			Concept:		TBD
+			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+			Value:			code
+
+			Element:		Onset
+			Concept:		MTH#C0277793
+			Description:	"The beginning or first appearance of a mental or physical disorder.
+			This attribute aligns with FHIR Condition.onset, and with dateOfOnset and ageAtOnset in CIMI Version 0.0.4 but includes additional datatypes corresponding to FHIR"
+			Value:			dateTime or Age or TimePeriod or Range or string
+
+			Element:		PresentOnAdmission
+			Concept:		TBD
+			Description:	"If the problem or condition existed before the current episode of care."
+			Value:			CodeableConcept from YesNoUnknownVS
+
+			Element:		Abatement
+			Concept:		MTH#C1880019
+			Description:	"The end of the condition, either remission or resolution. This attribute corresponds to dateAbated and hasAbated in CIMI Version 0.0.4, but includes additional datatypes corresponding to FHIR"
+			Value:			dateTime or Age or boolean or TimePeriod or Range or string
+
+			Element:		Severity
+			Concept:		MTH#C0392364
+			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
+			Value: 			CodeableConcept 
+
+			Element:		Criticality
+			Concept:		MTH#C3858539 "Criticality"
+			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
+			Value:			code
+
+			Element:		Stage
+			Concept:		MTH#C0699749
+			Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information.
+			
+			This attribute does not have a direct analogy in CIMI V0.0.4 (the closest being ConditionAssertion.diseasePhase), but is included here for consistency with FHIR and because staging is important in the context of breast cancer and cancer in general."
+			Value:			CodeableConcept
+			0..1			StageDetail
+			
+					Element:		StageDetail
+					Concept:		TBD
+					Description:	"The full staging information"
+					Value:			ref(EvaluationResultRecorded)
+
+Abstract Element:	Entity
+Based on:			Locatable
+Concept:			TBD
+Description:		"Base class for human, material, and informational things. A non-material thing might be a goal or information relevant to health care, such as an image, consent form, or report. A material thing can be seen and touched, such as a device.
+
+In CIMI V0.0.4, Entities were not stand-alone classes. However, this is currently being changed in CIMI, so in the future, CIMI entities will more closely correspond to the FHIR entity-like resources such as Organization, Location, Device, Substance, and the like. In order to map to FHIR and produce profiles for this ballot, this change has been anticipated.
+
+Further, in CIMI V0.0.4, Entity was a subclass of Party. Party is part of CIMI's participation model that is currently undergoing review and revision. Rather than introducing the complexity the CIMI participation model, which has little relevance to the current ballot of cancer profiles and is undergoing revision anyway, the superclass Party has been omitted."
+
+			
+Element:		AnatomicalLocation
+Based on:		Entity
+Concept:		MTH#C1545955
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces, for example, right elbow, or left ventricle of the heart.
+
+Note: In CIMI Version 0.0.4, AnatomicalLocation has no parent class. This appears to have been an oversight, and the parent should have been Entity, as modeled here. This class corresponds to that CIMI reference model class, but it would be defined in a CIMI archetype, because it involves value set bindings on each of the attributes."
+Value:			CodeableConcept from AnatomicalLocationVS
+0..1 			Laterality
+0..1			Directionality
+0..1 			PortionTotality
+
+
+	Element:		Laterality
+	Concept:		MTH#C0925205 "Anatomical laterality"
+	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+	Value:			CodeableConcept from LateralityVS
+
+	Element:		Directionality
+	Concept:		NCI#C99074
+	Description:	"Anatomical location or specimen further detailing directionality.
+	Note: In CIMI Version 0.0.4, this is called anatomicalDirection."
+	Value:			CodeableConcept from DirectionalityVS
+
+	Element:		PortionTotality
+	Concept:		NCI#C99075
+	Description:	"Further detail of the anatomical location or specimen detailing whether it includes the entire entity or only a part or portion. NOTE: This attribute is not part of CIMI. It was included because it further details an anatomical location or specimen, in Clinical Data Interchange Standards Consortium (CDISC) Study Data Tabulation Model (SDTM)."
+	Value:			CodeableConcept from PortionTotalityVS
+
+
+Element:		AnatomicalLocationOrCode
+Description:	"A body site entity or a body site code."
+Value:			CodeableConcept from AnatomicalLocationVS or AnatomicalLocation
+
+
+Element:	Specimen
+Based on:		Entity
+Description:	"Sample for analysis. 
+
+NOTE: This class has been cut down to separate it from other parts of the reference model that are not relevant to the current oncology ballot."
+1..1			Type
+0..1			SourceSpecimen
+0..1			ReceivedTime
+0..1			CollectionTime
+0..1			CollectionMethod
+0..1			CollectionSite
+
+
+		Element:		SourceSpecimen
+		Concept:		TBD
+		Description:	"Identifier for the source specimen from which this specimen was derived.
+		
+		In CIMI V0.0.4, this attribute is called parentSpecimenIdentifier (datatype Identifier). The corresponding element in FHIR (Specimen.parent) is type ref(Specimen). It is impossible to map Idenfier to Specimen, so the datatype of this element has been changed to make the mapping feasible."
+		Value:			ref(Specimen)
+		
+		Element:		CollectionTime
+		Concept:		TBD
+		Description:	"When the sample was obtained, as a specific time or time period.
+		
+		Specimen collection time seems to be missing in CIMI V0.0.4. Given that is not in Specimen, the next place to look is in the associated CollectionProcedure, specifically in the Performance context of the clinical statement representing that procedure. But there is no time found there, either, only a temporalContext (type Concept) and duration (not a point in time). If the specimen collection time is supposed to be recorded in Performance.Attribution (a list of actions), it would be nearly impossible to create a mapping."
+		Value:			dateTime or TimePeriod
+		
+		Element:		CollectionMethod
+		Concept:		TBD
+		Description:	"How the specimen was obtained."
+		Value:			CodeableConcept	
+		
+		Element:		CollectionSite
+		Concept:		TBD
+		Description:	"The body site where specimen was collected"
+		Value:			AnatomicalLocation
+					
+					
+//------------- Implementable Classes-------------------
+
+	
+Element:		EvaluationResultRecorded
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+
+EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+				StatementTopic is type EvaluationResultTopic
+				StatementContext is type RecordedContext
+//				StatementTopic.Members value is type ref(EvaluationResultRecorded)
+
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept from ExceptionValueVS
+
+		
+Element:		LaboratoryTestResultRecorded
+Based on:		EvaluationResultRecorded
+Description:	"Measurement resulting from a laboratory analysis."
+0..*			DiagnosticService
+		
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
+
+Element:		SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded
+Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
+				EvaluationResultTopic.Category is OBSCAT#laboratory
+//0..0			Focus
+0..0			EvaluationResultTopic.Precondition
+0..0			EvaluationResultTopic.ReferenceRange
+0..0			EvaluationResultTopic.Members.EvaluationResultRecorded
+0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
+	
+
+
+Abstract Element:	BodyStructureTopic
+Based on:		EvaluationResultTopic
+Concept:		MTH#C1268086
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
+Value:			CodeableConcept from AnatomicalLocationVS
+				TopicCode is MTH#C1268086
+0..1 			Laterality
+0..1			Directionality
+0..1 			PortionTotality				
+0..1			Morphology
+
+	Element:		Morphology
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
+
+	
+Element:		BodyStructurePresent
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate.
+
+Examples include tissue types, tumors, and wounds. Body structures are continuants (objects that exist over a period of time) that allow observations of the same body structure to be related to be tracked over time."
+				StatementTopic is type BodyStructureTopic
+				StatementContext is type PresenceContext
+		
+
+Element:		ConditionPresenceStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+
+In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource."
+			StatementTopic is type ConditionTopic
+			StatementContext is type ConditionPresenceContext
+
+
+
+
+
 

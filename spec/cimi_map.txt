@@ -1,5 +1,5 @@
 Grammar:	Map 5.1
-Namespace:	finding
+Namespace:	cimi
 Target:		FHIR_STU_3
 
 
@@ -31,7 +31,34 @@ EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition
 	
 SimplifiedLaboratoryTestResultRecorded:
 	constrain related to 0..0  // no Members (not a panel)
+
+ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
+	ConditionTopic.TopicCode maps to code
+	ConditionTopic.Category maps to category
+	ConditionTopic.AnatomicalLocationOrCode maps to bodySite 
+//	ConditionTopic.AnatomicalLocationOrCode[AnatomicalLocation] maps to http://hl7.org/fhir/StructureDefinition/body-site-instance
+	ConditionPresenceContext.ClinicalStatus maps to clinicalStatus
+	ConditionPresenceContext.VerificationStatus maps to verificationStatus
+	ConditionPresenceContext.Onset maps to onset[x]
+	ConditionPresenceContext.Abatement maps to abatement[x]
+	ConditionPresenceContext.Severity maps to severity
+	ConditionPresenceContext.Stage maps to stage
+	ConditionPresenceContext.Stage.Value maps to stage.summary
+	ConditionPresenceContext.Stage.StageDetail maps to stage.assessment
+
 	
-	
-// not needed  
-// LaboratoryTestResultRecorded maps to Observation:
+AnatomicalLocation maps to BodySite:
+	Value maps to code
+	Laterality maps to qualifier (slice on = coding.code)
+	Directionality maps to qualifier
+	PortionTotality	maps to qualifier	
+
+Specimen maps to Specimen:
+	Type maps to type
+	SourceSpecimen maps to parent
+	ReceivedTime maps to receivedTime
+	CollectionTime maps to collection.collected[x]
+	CollectionMethod maps to collection.method
+//	CollectionSite[CodeableConcept] maps to collection.bodySite   
+//	CollectionSite[AnatomicalLocation] maps to http://hl7.org/fhir/StructureDefinition/body-site-instance
+	CollectionSite maps to http://hl7.org/fhir/StructureDefinition/body-site-instance
