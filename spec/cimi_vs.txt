@@ -1,11 +1,54 @@
 Grammar:	ValueSet 5.0
 Namespace:	cimi
 
-
 CodeSystem:		SCT = http://snomed.info/sct
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM
 CodeSystem:		LNC = http://loinc.org
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM
+
+
+ValueSet: 					ExceptionValueVS
+Description:				"Reasons that a value associated with a test or other finding is missing. Extended set based on http://hl7.org/fhir/ValueSet/observation-valueabsentreason"
+#unknown					"The value is not known."
+#asked						"The source human does not know the value."
+#temp						"There is reason to expect (from the workflow) that the value may become known."
+#not-asked					"The workflow didn't lead to this value being known."
+#masked						"The information is not available due to security, privacy or related reasons."
+#unsupported				"The source system wasn't capable of supporting this element."
+#astext						"The content of the data is represented in the resource narrative."
+#error						"Some system or workflow process error means that the information is not available."
+#NaN						"NaN, standing for not a number, is a numeric data type value representing an undefined or unrepresentable value."
+#not-performed				"The value is not available because the observation procedure  (test, etc.) was not performed."
+#missing_refused			"Human source was asked but declined to respond to the question, or an applicable question was left unanswered."
+#missing_noexplanation		"The reason the information is not present is not known."
+#missing_nonesuch			"The answer is missing because nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
+// The following values apply to lab tests
+#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
+#missing_specimen			"Missing due to a problem with the specimen, e.g. inadequate specimen, contamination, clotting, improper tube type, improper storage, too small, etc."
+#missing_malfunction		"Missing due to instrument malfunction."
+
+
+ValueSet:			PresenceContextVS
+Description:		"A code describing whether the finding in question is present, possible, suspected, etc."
+//SCT#36692007 		"Known" 
+//SCT#410605003		"Confirmed present"
+//SCT#410591008		"Definitely present"
+SCT#410515003		"Known present"
+//SCT#410590009		"Known possible"
+SCT#410592001		"Probably present"
+SCT#415684004		"Suspected"
+SCT#410593006		"Probably not present"
+//SCT#261665006		"Unknown"
+
+
+ValueSet:			DeltaFlagVS
+Concept:			MTH#C1705241
+MTH#C2346711		"About the same"
+TBD#TBD				"Significant change"
+MTH#C0332272		"Better"
+MTH#C1457868		"Worse"
+MTH#C3854148		"Significant change up"
+MTH#C3854147		"Significant change down"
 
 
 ValueSet:				ConditionVS
@@ -19,6 +62,7 @@ ValueSet:				ConditionCategoryVS
 #concern				"Something the subject is worried about, which may or may not have yet been manifested. The object of the concern does not have to be a medical disorder."
 #symptom				"A sign or manifestation of a deeper cause, of known or unknown etiology, e.g. pain or ringing in the ears."
 #adverse_reaction		"An adverse reaction to an intervention."
+
 
 ValueSet:       AnatomicalLocationVS
 Concept:        MTH#C1545955
@@ -81,45 +125,3 @@ Description:    "Further detail of the anatomical location or specimen detailing
 #C25378 "PARTIAL Being or representing an incomplete extent of a single entity."
 #C45312 "SEGMENT One of the parts into which something is divided."
 #C48440 "SINGLE One."
-
-ValueSet: 					ExceptionValueVS
-Description:				"Reasons that a value associated with a test or other finding is missing. Extended set based on http://hl7.org/fhir/ValueSet/observation-valueabsentreason"
-#unknown					"The value is not known."
-#asked						"The source human does not know the value."
-#temp						"There is reason to expect (from the workflow) that the value may become known."
-#not-asked					"The workflow didn't lead to this value being known."
-#masked						"The information is not available due to security, privacy or related reasons."
-#unsupported				"The source system wasn't capable of supporting this element."
-#astext						"The content of the data is represented in the resource narrative."
-#error						"Some system or workflow process error means that the information is not available."
-#NaN						"NaN, standing for not a number, is a numeric data type value representing an undefined or unrepresentable value."
-#not-performed				"The value is not available because the observation procedure  (test, etc.) was not performed."
-#missing_refused			"Human source was asked but declined to respond to the question, or an applicable question was left unanswered."
-#missing_noexplanation		"The reason the information is not present is not known."
-#missing_nonesuch			"The answer is missing because nothing of a type of thing is known to exists, e.g., the siblings of an only child. Also use this code to represent a 'none of the above' answer"
-// The following values apply to lab tests
-#missing_collection			"Missing due to a problem collecting, identifying, or locating the specimen, including patient refusal or unable to provide specimen"
-#missing_specimen			"Missing due to a problem with the specimen, e.g. inadequate specimen, contamination, clotting, improper tube type, improper storage, too small, etc."
-#missing_malfunction		"Missing due to instrument malfunction."
-
-
-ValueSet:			PresenceContextVS
-Description:		"A code describing whether the finding in question is present, possible, suspected, etc."
-//SCT#36692007 		"Known" 
-//SCT#410605003		"Confirmed present"
-//SCT#410591008		"Definitely present"
-SCT#410515003		"Known present"
-//SCT#410590009		"Known possible"
-SCT#410592001		"Probably present"
-SCT#415684004		"Suspected"
-SCT#410593006		"Probably not present"
-//SCT#261665006		"Unknown"
-
-ValueSet:			DeltaFlagVS
-Concept:			MTH#C1705241
-MTH#C2346711		"About the same"
-TBD#TBD				"Significant change"
-MTH#C0332272		"Better"
-MTH#C1457868		"Worse"
-MTH#C3854148		"Significant change up"
-MTH#C3854147		"Significant change down"
