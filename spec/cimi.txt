@@ -95,8 +95,6 @@ The presence of terminology bindings (necessary to align with FHIR clinicalStatu
 0..1			PresentOnAdmission
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..1			Stage
-
 
 			Element:		ClinicalStatus
 			Concept:		TBD
@@ -129,21 +127,6 @@ The presence of terminology bindings (necessary to align with FHIR clinicalStatu
 			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
 			Value:			code
 
-			Element:		Stage
-			Concept:		MTH#C0699749
-			Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information.
-			
-			This attribute does not have a direct analogy in CIMI V0.0.4 (the closest being ConditionAssertion.diseasePhase), but is included here for consistency with FHIR and because staging is important in the context of breast cancer and cancer in general."
-			Value:			CodeableConcept
-			0..1			StageDetail
-			
-					Element:		StageDetail
-					Concept:		TBD
-					Description:	"The full staging information"
-					Value:			ref(EvaluationResultRecorded)
-
-					
-					
 
 Abstract Element:	Entity
 Based on:			Locatable
@@ -286,6 +269,11 @@ Description:	"The parent class of contexts that can associate with AssertionTopi
 		Concept:		TBD
 		Description:	"Indicates whether the finding is preliminary, amended, final, etc.."
 		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
+		
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept from ExceptionValueVS
 	
 		Element:		RelevantTime
 		Concept:		TBD
@@ -416,84 +404,9 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself.
 		
-		CIMI V0.0.4 does not have this attribute."
+		CIMI V0.0.4 does not have this class."
 		Value:			0..* ref(EvaluationResultTopic)
 
-
-//------------- Implementable Classes-------------------
-
-Element:		ConditionPresenceStatement
-Based on:		ConditionTopic
-Concept:		TBD
-Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
-
-In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource.
-
-In CIMI V0.0.4, this class would be represented as an archetype, specifically, a ClinicalStatement whose topic is ConditionAssertion and whose context is AssertionKnownOrSuspectedPresent."
-1..1			ConditionPresenceContext
-
-	
-Element:		EvaluationResultRecorded
-Based on:		EvaluationResultTopic
-Concept:		TBD
-Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-
-EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-1..1			RecordedContext
-				Members value is type ref(EvaluationResultRecorded)
-
-		Element:		ExceptionValue
-		Concept:		TBD
-		Description:	"Reason that a value associated with a test or other finding is missing."
-		Value:			CodeableConcept from ExceptionValueVS
-
-		
-Element:		LaboratoryTestResultRecorded
-Based on:		EvaluationResultRecorded
-Description:	"Measurement resulting from a laboratory analysis."
-0..*			DiagnosticService
-		
-		Element:		DiagnosticService
-		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept from DiagnosticServiceVS if covered
-
-Element:		SimplifiedLaboratoryTestResultRecorded
-Based on:		LaboratoryTestResultRecorded
-Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
-				Category is OBSCAT#laboratory
-//0..0			Focus
-0..0			Precondition
-0..0			ReferenceRange
-0..0			Members.EvaluationResultTopic
-0..0			AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
-	
-
-
-Abstract Element:	BodyStructureTopic
-Based on:		EvaluationResultTopic
-Concept:		MTH#C1268086
-Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
-Value:			CodeableConcept from AnatomicalLocationVS
-				TopicCode is MTH#C1268086
-0..1			Morphology
-
-	Element:		Morphology
-	Concept:		TBD
-	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
-	Value:			CodeableConcept
-
-	
-Element:		BodyStructurePresent
-Based on:		BodyStructureTopic
-Concept:		TBD
-Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate.
-
-Examples include tissue types, tumors, and wounds. Body structures are continuants (objects that exist over a period of time) that allow observations of the same body structure to be related to be tracked over time."
-1..1			PresenceContext
-		
-					
-					
 
 
 

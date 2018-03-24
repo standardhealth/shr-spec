@@ -1,0 +1,91 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi-statement
+Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
+Uses:			shr.core, cimi
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+
+	
+Element:		EvaluationResultRecorded
+Based on:		EvaluationResultTopic
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+
+EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+1..1			RecordedContext
+				Members value is type ref(EvaluationResultRecorded)
+
+		
+Element:		LaboratoryTestResultRecorded
+Based on:		EvaluationResultRecorded
+Description:	"Measurement resulting from a laboratory analysis."
+0..*			DiagnosticService
+		
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
+
+Element:		SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded
+Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
+				Category is OBSCAT#laboratory
+//0..0			Focus
+0..0			Precondition
+0..0			ReferenceRange
+0..0			Members.EvaluationResultTopic
+0..0			AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
+	
+
+Element:		ConditionPresenceStatement
+Based on:		ConditionTopic
+Concept:		TBD
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+
+In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource.
+
+In CIMI V0.0.4, this class would be represented as an archetype, specifically, a ClinicalStatement whose topic is ConditionAssertion and whose context is AssertionKnownOrSuspectedPresent."
+1..1			ConditionPresenceContext
+0..1			Stage
+
+		Element:		Stage
+		Concept:		MTH#C0699749
+		Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information.
+			
+		This attribute does not occur in CIMI V0.0.4 (the closest match being ConditionAssertion.diseasePhase), but is included here for consistency with FHIR and because staging is important in the context of breast cancer and cancer in general. It cannot be included in ConditionPresenceContext because the Value is an EvaluationResultRecorded, which doesn't exist in core CIMI."
+		Value:			CodeableConcept
+		0..1			StageDetail
+			
+				Element:		StageDetail
+				Concept:		TBD
+				Description:	"The full staging information."
+				Value:			ref(EvaluationResultRecorded)
+
+	
+	
+Abstract Element:	BodyStructureTopic
+Based on:		EvaluationResultTopic
+Concept:		MTH#C1268086
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
+Value:			CodeableConcept from AnatomicalLocationVS
+				TopicCode is MTH#C1268086
+0..1			Morphology
+
+	Element:		Morphology
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
+
+	
+Element:		BodyStructurePresent
+Based on:		BodyStructureTopic
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate.
+
+Examples include tissue types, tumors, and wounds. Body structures are continuants (objects that exist over a period of time) that allow observations of the same body structure to be related to be tracked over time."
+1..1			PresenceContext
+		
