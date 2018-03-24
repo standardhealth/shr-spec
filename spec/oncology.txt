@@ -41,11 +41,6 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 		NOTE: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. The CIMI clinical statement would be mapped to FHIR as a Procedure. In this case, the procedure involves chilling the specimen (the key or code) and the duration of that procedure (corresponding to PerformanceContext.duration) would be interpreted as the cold ischemic time. The drawback of this would be that the information on cold ischemic time (necessary for interpreting results) would not travel with the specimen. To provide a cutpoint between this IG and the rest of CIMI, and to avoid unnecessary complexity, an extension was introduced."
 		Value:			Quantity with units UCUM#min
 
-EntryElement:	BreastRegionalLymphNodeSpecimen
-Based on:		BreastSpecimen
-Concept:		TBD
-Description:	"The removal of regional lymph node(s) at the time of surgery of the primary site or during a separate surgical event. This model is yet to be determined."
-// To be determined
 
 EntryElement:	BreastCancerPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of the breast"
@@ -57,12 +52,12 @@ Value:			CodeableConcept from BreastCancerTypeVS
 				Category includes #disease
 				ConditionPresenceContext.Stage from BreastCancerStageVS				
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerPrognosticStage
-				FindingMethod from BreastCancerDetectionVS
+				FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
 			Concept:		TBD
-			Description:	"A description of the morphology characteristics of the cancer."
+			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
 
 EntryElement:	BreastCancerPrognosticStage
@@ -71,8 +66,9 @@ Concept:		LNC#21908-9
 Description:	"The prognostic stage of a breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). Only the prognostic stage is used in US and Canada."
 Value:			CodeableConcept from BreastCancerStageVS 
 1..1			FindingMethod from StagingMethodVS
-1..1			StageTimingPrefix from StageTimingPrefixVS
-				EvaluationComponent			
+1..1			StageTimingPrefix
+				EvaluationComponent	
+// TO DO: Change to 1..1 when compiler bug is fixed.				
 includes 0..1 	BreastCancerTCategory
 includes 0..1 	BreastCancerNCategory
 includes 0..1 	BreastCancerMCategory
@@ -84,26 +80,33 @@ includes 0..1	NuclearGrade
 includes 0..1	HistologicGrade	
 
 		Element:		StageTimingPrefix
-		Concept:		TBD
+		Concept:		SCT#260869008 "Timing of stage"
 		Description:	"Mandatory element indicating when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
-		Value:			CodeableConcept	
+		Value:			CodeableConcept	from StageTimingPrefixVS
 		
 		Element:		BreastCancerTCategory
-		Concept:		LNC#59528-0
+		Concept:		SCT#78873005 "T category"	//RMB: was LNC#78873005, which is specific to AJCC 7th edition
 		Based on:		EvaluationComponent
 		Description:	"The size and extent of the primary tumor (greatest dimension), based on criteria from the American Joint Committee on Cancer."
 		Value:			CodeableConcept from BreastCancerTCategoryVS
+		0..1			StageSuffix from BreastCancerTCategorySuffixVS 
 		0..0			ReferenceRange
 
 		Element:		BreastCancerNCategory
-		Concept:		LNC#59525-6
+		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
 		Based on:		EvaluationComponent
 		Description:	"The presence of metastases in regional lymph nodes. The node category for staging is based on criteria from the American Joint Committee on Cancer."
 		Value:			CodeableConcept from BreastCancerNCategoryVS
+		0..1			StageSuffix from BreastCancerNCategorySuffixVS
 		0..0			ReferenceRange
-
+	
+				Element:	StageSuffix
+				Concept:	TBD	
+				Description: "A suffix used in conjuction with certain breast cancer stages, based on criteria from the American Joint Committee on Cancer."
+				Value: 		CodeableConcept
+			
 		Element:		BreastCancerMCategory
-		Concept:		LNC#59522-3
+		Concept:		SCT#126926005 "M category"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
 		Based on:		EvaluationComponent
 		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body."
 		Value:			CodeableConcept from BreastCancerMCategoryVS
@@ -131,6 +134,7 @@ includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
 
+//RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
 			Concept:		SCT#371470008
 			Based on:		EvaluationComponent
@@ -139,7 +143,7 @@ includes 0..1 	MitoticCountScore
 			0..0			ReferenceRange
 
 			Element:		NuclearPleomorphismScore
-			Concept:		TBD
+			Concept:		SCT#371471007
 			Based on:		EvaluationComponent
 			Description:	"How large and varied the nuclei of the tumor cells are. Scored 1 to 3, with 3 being the most pleomorphism."
 			Value:			CodeableConcept from NuclearPleomorphismScoreVS
@@ -149,7 +153,7 @@ includes 0..1 	MitoticCountScore
 			Concept:		SCT#371472000
 			Based on:		EvaluationComponent
 			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells."
-			Value:			Quantity   // 1 to 3
+			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
 			0..0			ReferenceRange
 
 //			includes 0..1	PercentageInSituCarcinoma   // not sure where this belongs
@@ -160,14 +164,13 @@ Based on:		SimplifiedLaboratoryTestResultRecorded
 Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue"
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 
-We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-Value:			PercentageRange
-				Interpretation from PositiveNegativeVS
+We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
+Value:			CodeableConcept from PositiveNegativeVS
 				TopicCode is LNC#16112-5
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen				
 				EvaluationComponent
-//includes 0..1	NuclearPositivity
+includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 
 
@@ -178,24 +181,22 @@ Description:	"Progesterone receptor status is a factor in determining prognosis 
 
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model.
 
-We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation, based on evidence such as NuclearPositivity and AverageStainingIntensity, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-Value:			PercentageRange
-				Interpretation from PositiveNegativeVS
+WWe are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
+Value:			CodeableConcept from PositiveNegativeVS
 				TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen				
 				EvaluationComponent
-//includes 0..1	NuclearPositivity
+includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 
-/*
 		Element:		NuclearPositivity
 		Based on:		EvaluationComponent
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			PercentageRange
 		0..0			ReferenceRange
-*/			
+			
 		Element:		AverageStainingIntensity
 		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
 		Based on:		EvaluationComponent
@@ -209,10 +210,8 @@ Based on:		LaboratoryTestResultRecorded
 Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors,10 and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 
-We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The point of view expressed in this model is that positive/negative designation is an interpretation of HER2 by IHC and HER2 by ISH tests, not a direct result. This also appears to be the most consistent approach across all receptor statuses (ER, PR, and HER2)."
-0..0			Value
-0..0			ExceptionValue
-				Interpretation from PositiveNegativeEquivocalVS
+We are seeking feedback if it is better to put the positive/negative status in Value or Interpretation. The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence from HER2 by IHC and/or HER2 by ISH tests, not a direct observation."
+Value:			CodeableConcept from PositiveNegativeEquivocalVS
 				TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
 				Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
@@ -249,16 +248,17 @@ EntryElement:	HER2byISH
 Based on:		EvaluationResultRecorded
 Concept:		LNC#72383-3
 Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH)."
-				TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
-				FindingMethod from HER2ISHMethodVS
-				Interpretation from PositiveNegativeEquivocalVS
-				EvaluationComponent
+0..0		Value
+		TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
+		FindingMethod from HER2ISHMethodVS
+		Interpretation from PositiveNegativeEquivocalVS
+		EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
 includes 0..1	HER2toCEP17Ratio
-includes 0..1	Aneusomy
-includes 0..1	HeterogeneousSignals
-includes 0..1	PercentageAmplified
+//includes 0..1	Aneusomy
+//includes 0..1	HeterogeneousSignals
+//includes 0..1	PercentageAmplified
 
 		Element:		AverageHER2SignalsPerCell
 		Based on:		EvaluationComponent
@@ -281,6 +281,7 @@ includes 0..1	PercentageAmplified
 		Value:			Quantity
 		0..0			ReferenceRange
 		
+/*
 		Element:		Aneusomy
 		Based on:		EvaluationComponent
 		Concept:		CAP#30478
@@ -301,7 +302,7 @@ includes 0..1	PercentageAmplified
 		Description:	"Percentage of cells with amplified HER2 signals"
 		Value:			Quantity with units UCUM#%
 		0..0			ReferenceRange
-
+*/
 		
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimplifiedLaboratoryTestResultRecorded
@@ -357,6 +358,7 @@ Value: 			Quantity
 				Specimen is type BreastSpecimen				 
 0..0			EvaluationComponent
 	
+/*
 EntryElement: 	TumorDimensions
 Based on:		LaboratoryTestResultRecorded   /// Imaging???
 Concept:		MTH#C4086369
@@ -429,6 +431,7 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 		0..0			ReferenceRange
 
 	
+/* Out of scope for ballot
 EntryElement:	LymphaticInvolvement
 Based on:		LaboratoryTestResultRecorded
 Concept:		MTH#C0746333
@@ -447,6 +450,12 @@ Value:			CodeableConcept from PositiveNegativeVS
 includes 0..1 	LargestLymphNodeSize
 includes 0..1 	NumberOfLymphNodesInvolved
 includes 0..1 	DegreeOfLymphaticInvolvement
+
+		EntryElement:	BreastRegionalLymphNodeSpecimen
+		Based on:		BreastSpecimen
+		Concept:		TBD
+		Description:	"The removal of regional lymph node(s) at the time of surgery of the primary site or during a separate surgical event. This model is yet to be determined."
+		// To be determined
 
 		Element:		LargestLymphNodeSize
 		Based on:		EvaluationComponent
@@ -489,7 +498,6 @@ includes 0..1 	DegreeOfLymphaticInvolvement
 					DiagnosticService is #pathology
 	0..0			EvaluationComponent				
 					
-/*  Out of scope for ballot
 EntryElement:	GeneticVariant
 Based on:		LaboratoryTestResultRecorded
 Concept:		MTH#C3263354
