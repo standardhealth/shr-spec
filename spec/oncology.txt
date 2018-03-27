@@ -34,9 +34,11 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
-		Description:	"The time between the chilling of a tissue or tissue sample and the time it is warmed. 
-		NOTE: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. The CIMI clinical statement would be mapped to FHIR as a Procedure. In this case, the procedure involves chilling the specimen (the key or code) and the duration of that procedure (corresponding to PerformanceContext.duration) would be interpreted as the cold ischemic time. The drawback of this would be that the information on cold ischemic time (necessary for interpreting results) would not travel with the specimen. To provide a cutpoint between this IG and the rest of CIMI, and to avoid unnecessary complexity, an extension was introduced."
-		Value:			Quantity with units UCUM#min
+		Concept:		LNC#44778-9 
+		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed. 
+		
+		CIMI Alignment: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. That clinical statement would have to be mapped to FHIR as a Procedure, but that would be incorrect, since speciment processing should map to Specimen.processing, an array inside the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by first finding the corresponding Specimen entity, and then mapping the several CIMI instances (the Specimen and the possibly multiple SpecimenProcessingPerformed clinical statements), into one FHIR Specimen resource. To avoid this complexity, for the sake of this IG, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
+		Value:			TimePeriod
 
 
 EntryElement:	BreastCancerPresenceStatement
