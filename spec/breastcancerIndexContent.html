@@ -4,7 +4,7 @@
 <p><a href="#Purpose">Purpose</a></p>
 <p><a href="#Background">Background</a></p>
 <p><a href="#Scope">Scope</a></p>
-<p><a href="#Principles">Modeling Principles</a></p>
+<p><a href="#Principles">Modeling Approach</a></p>
 <p><a href="#Tooling">Open Source Tooling</a></p>
 <p><a href="#CIMI">Relationship to CIMI</a></p>
 <p><a href="#Contents">Implementation Guide Contents</a></p>
@@ -36,15 +36,25 @@
 <h2><a name="Scope"></a>Scope</h2>
 <p>The IG covers oncology-specific data necessary support breast cancer treatment and research, focusing first and foremost on data driving clinical decision-making for medical and surgical oncologists. The first iteration of this guide is focused on breast cancer staging. The data required for staging involves several clinical domains and specialties, including medical oncology, surgical oncology, and anatomic pathology. The <em>American Joint Commission on Cancer 8th Edition Staging Manual</em> (AJCC-8) is typically used for staging breast cancer in the US Realm. Their methodology involves not only the well-known T, N, and M elements, but also other elements influence the prognosis of breast cancer patients, including tumor grade, hormone receptor status (progesterone and estrogen), as well as human epidermal growth factor 2 (HER 2) status, among others.</p>
 <p>Over time, we expect the IG will incrementally evolve to cover a wider range of clinical domains (e.g. radiology, clinical genomics, interventional radiology), and expand its scope to include other key areas for breast cancer diagnosis and treatment (e.g. radiation therapy, chemotherapy), while supporting secondary data use in for clinical research, cancer registry reporting.</p>
-<h2><a name="Principles"></a>Modeling Principles</h2>
-<h3>Information Model</h3>
-<p>Major sources of information</p>
-<p>Harmonization methodology</p>
-<p>CAP forms SDC</p>
+<h2><a name="Principles"></a>Modeling Approach</h2>
+<h3>Major sources of information</h3>
+<p>Specifications consulted for the development of this IG include:</p>
+<ul>
+<li>American Joint Committee on Cancer (AJCC) Staging Manual (8th Edition)</li>
+<li>College of American Pathologists (CAP) Cancer Protocols</li>
+<li>North American Association of Central Cancer Registries (NAACCR) 2018 Site-Specific Data Items Manual (DRAFT)</li>
+<li>HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</li>
+<li>HL7 CDA R2 IG: Clinical Oncology Treatment Plan and Summary</li>
+</ul>
+<p>In addition to sources specifically providing clinical content related to cancer and breast cancer, from a modeling perspective, CIMI models were also used as a source.</p>
+<h3>Harmonization and Prioritization</h3>
+<p>Data elements were initially prioritized based on the identified scope. Consideration was given to existing representations of the elements across the source material, which varied in complexity from simple data elements dictionary to more well formed logical models which included relationships between concepts. Value sets for a coded elements were also compared across the sources.</p>
+<p>Differences across sources drove the development of harmonized detailed clinical models. Final decisions on the inclusion of data elements and attributes were driven by 1) their impact in driving clinical decision making for breast cancer treatment, and 2) their presence&nbsp;in multiple sources, indicative of the importance of the data element accross practice areas.</p>
 <h3>Terminology and Value Sets</h3>
-<p>Mostly local codes for now</p>
-<p>Pointers to AJCC copyrighted content</p>
-<h2><a name="Tooling"></a>Open Source Tooling Used</h2>
+<p>The terminology bindings in this implementation guide are preliminary. The primary goal was to identify and vet appropriate values for each coded data element and its attributes.</p>
+<p>For those elements for which terminology bindings exist, SNOMED-CT and LOINC were the preferred vocabularies. However, given known gaps in these vocabularies on the domain areas covered in this IG, codes from vocabularies such as ICD-O-3 and the NCI metathesaurus were used.</p>
+<p>In addition, while the AJCC staging system is recognized as one of the most widely-used standards for breast cancer staging, this guide does not include any AJCC terminology due to unresolved copyright issues. As such, <strong>elements related to staging do not currently include terminology bindings</strong>, and refer back to the staging system used for the appropriate codes. The value sets are known, and their inclusion will considerably strenghten the specification if and when copyright issues have been resolved.</p>
+<h2><a name="Tooling"></a>Open Source Tooling</h2>
 <p>The tooling used to define the models, produce the logical models and the FHIR profiles are open source tools developed as part of the <a href="http://standardhealthrecord.org/">Standard Health Record (SHR) Initiative</a>. The SHR tooling consists of several elements:</p>
 <ul>
 <li><a href="https://github.com/standardhealth/shr-cli/wiki/CIMPL-Documentation">Clinical Information Modeling and Profiling Language (CIMPL)</a>. CIMPL (pronounced "simple") is a domain-specific language designed for the task of capturing requirements in a recognizable, human-readable form and defining detailed clinical information models. It has a formal grammar defined in ANTLR4. It has three types of definitional files: data elements, value sets, and profile mappings.&nbsp;</li>
@@ -88,4 +98,4 @@
 <li><a href="modeldoc/index.html">Reference Model</a>. FHIR does not have a class hierarchy, but CIMI does. Since the breast cancer models are based on CIMI, they derive from CIMI's class hierarchy. To help view the class hierarchy, we have provided a class browser. The browser allows navigation of the class hierarchy, shows details of each class, and includes attributes and constraints, show where each constraint was introduced in the hierarchy.</li>
 </ol>
 <h2><a name="Disclaimers"></a>Disclaimers</h2>
-<p>This specification may contain and/or reference intellectual property owned by third parties ("Third Party IP"). Acceptance of the FHIR Licensing Terms does not grant any rights with respect to Third Party IP. The licensee alone is responsible for identifying and obtaining any necessary licenses or authorizations to utilize Third Party IP in connection with the specification or otherwise. Logical models related to cancer staging were based on American Joint Committee on Cancer (AJCC) version 8 staging manual. Use of this material may be subject to copyright, and require licensing from AJCC. Reference the AJCC <a href="https://cancerstaging.org/Pages/Permission-Req.aspx">Permission Requests for Cancer Staging Manual Material</a> for further details.</p>
+<p>This specification may contain and/or reference intellectual property owned by third parties ("Third Party IP"). Acceptance of the FHIR Licensing Terms does not grant any rights with respect to Third Party IP. The licensee alone is responsible for identifying and obtaining any necessary licenses or authorizations to utilize Third Party IP in connection with the specification or otherwise.</p>
