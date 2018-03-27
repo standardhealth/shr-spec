@@ -59,8 +59,15 @@
 <li>Changes to CIMI-RM subsequent to V0.0.4, to the extent those changes are known and have been approved in the CIMI Work Group.</li>
 <li>Definitions in the CIMI-RM that directly conflict with FHIR.</li>
 <li>Addition of terminology bindings that do not exist in CIMI-RM.</li>
-<li>Areas where the CIMI-RM that are so structurally different than FHIR, that mappings were difficult to define.</li>
-<li>Errors and/or apparent shortcomings in the CIMI-RM.&nbsp;</li>
+<li>Areas where the CIMI-RM that are so structurally different than FHIR, that mappings were difficult to define, such as specimen processing and attribution.</li>
+<li>Most of the specialized oncology subclasses are derived from clinical statement classes, such as BreastCancerStageRecorded is derived from EvaluationResultRecorded. To be proper CIMI, many oncology-related classes would have to define their own topics, e.g., BreastCancerStageTopic (as child of EvaluationResultTopic), and then create a new clinical statement that combines the topic and context to form the statement class, BreastCancerStageRecorded. There are several reasons this was not done in CIMI style:
+<ul>
+<li>Following the CIMI pattern by defining separate topic classes would nearly double the number of classes in the oncology logical model.</li>
+<li>Following the CIMI pattern would prevent inheritance of mappings. Mappings would have to be redefined for every clinical statement class because specialized observations (EvaluationResultRecorded) would not inherit from the base observation. This would create much, much more work, and introduce many more points of potential failure. This is a major issue with CIMI's topic-context pattern.</li>
+<li>Following the CIMI pattern would ultimately have little or no effect on the FHIR profiles</li>
+</ul>
+</li>
+<li>Errors and/or apparent shortcomings in the CIMI-RM.</li>
 </ol>
 <p>The CIMI community should also inspect the mappings between the breast cancer model and the FHIR profiles. The mappings are found on selected profile pages, on the Text Summary tab. Mappings are not part of all profiles because mappings can be inherited. For example, the mapping of breast cancer diagnosis is entirely based on the mapping found in <a href="http://build.fhir.org/ig/HL7/us-breastcancer/StructureDefinition-oncology-BreastCancerPresenceStatement.html">ConditionPresenceStatement</a>.</p>
 <h2><a name="Contents"></a>Implementation Guide Contents</h2>
@@ -75,8 +82,7 @@
 </ul>
 </li>
 <li><a href="http://build.fhir.org/ig/HL7/us-breastcancer/profiles.html">FHIR Profiles</a>. With logical models in place, they can be mapped to FHIR resources. This step requires more knowledge of FHIR than the logical model step. The result is a set of FHIR profiles, i.e., FHIR Resources that have been shaped (constrained and extended) to match the intent of the logical models. Similar to the Logical Models, the profiles have been&nbsp;separated into "Primary profiles" and "Supporting profiles".&nbsp;</li>
-<li><a href="http://build.fhir.org/ig/HL7/us-breastcancer/extensions.html">Extensions</a>.&nbsp;</li>
-<li>&nbsp;</li>
+<li><a href="http://build.fhir.org/ig/HL7/us-breastcancer/extensions.html">Extensions</a>. Extensions are new properties/attributes that do not appear in the base FHIR resources, needed to create a FHIR profile. An attempt has been made to minimize the number of extensions appearing in this IG by using Observation.component to represent dependent parts of observations, such as MitoticCountScore and TubuleFormationScore in HistologicGrade.&nbsp;</li>
 <li>Value Sets</li>
 <li>Extensions</li>
 </ol>
