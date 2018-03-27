@@ -34,9 +34,11 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
-		Description:	"The time between the chilling of a tissue or tissue sample and the time it is warmed. 
-		NOTE: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. The CIMI clinical statement would be mapped to FHIR as a Procedure. In this case, the procedure involves chilling the specimen (the key or code) and the duration of that procedure (corresponding to PerformanceContext.duration) would be interpreted as the cold ischemic time. The drawback of this would be that the information on cold ischemic time (necessary for interpreting results) would not travel with the specimen. To provide a cutpoint between this IG and the rest of CIMI, and to avoid unnecessary complexity, an extension was introduced."
-		Value:			Quantity with units UCUM#min
+		Concept:		LNC#44778-9 
+		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed. 
+		
+		CIMI Alignment: In CIMI Version 0.0.4, processing of a specimen is represented as an independent clinical statement involving a SpecimenProcessingTopic and PerformanceContext. That clinical statement would have to be mapped to FHIR as a Procedure, but that would be incorrect, since speciment processing should map to Specimen.processing, an array inside the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by first finding the corresponding Specimen entity, and then mapping the several CIMI instances (the Specimen and the possibly multiple SpecimenProcessingPerformed clinical statements), into one FHIR Specimen resource. To avoid this complexity, for the sake of this IG, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
+		Value:			TimePeriod
 
 
 EntryElement:	BreastCancerPresenceStatement
@@ -44,12 +46,11 @@ Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		ConditionPresenceStatement
 Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body.
 
-The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, which is a significant departure from CIMI. In CIMI, this would be a archetype of ClinicalStatement combining a BreastCancerConditionTopic with the ConditionPresenceContext. This would require definition of BreastCancerConditionTopic (with the addition of MorphologyBehavior) in the reference model, followed by introduction of constraints on Value, Category, Stage, and MorphologyBehavior in the corresponding archetype."
+The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, which is a departure from CIMI. In CIMI, this would be a archetype of ClinicalStatement combining a BreastCancerConditionTopic with the ConditionPresenceContext. This would require definition of BreastCancerConditionTopic in the reference model, follwed by introduction of constraints on Value, Category, Stage, and MorphologyBehavior in the corresponding archetype."
 				ConditionTopic.TopicCode from BreastCancerTypeVS
-				ConditionTopic.Category includes #disease
-				ConditionTopic.FindingMethod from BreastCancerDetectionVS
-				Stage from BreastCancerStageVS				
-				Stage.StageDetail value is type BreastCancerPrognosticStage
+				ConditionTopic.Category includes #disease			
+				Stage.StageDetail value is type BreastCancerStage
+				ConditionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -57,58 +58,56 @@ The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, w
 			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
 
-
-EntryElement:	BreastCancerPrognosticStage
+EntryElement:	BreastCancerStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
-Description:	"The prognostic stage of a breast cancer, assessed according to the standard established by American Joint Committee on Cancer (AJCC). Only the prognostic stage is used in US and Canada."
-				EvaluationResultTopic.CodeableConcept from BreastCancerStageVS 
-				EvaluationResultTopic.FindingMethod from StagingMethodVS
-1..1			StageTimingPrefix
+Description:	"The stage of a breast cancer. Different staging systems use different staging groups, so there are currently no terminology bindings associated with this value set."
+0..1			StageTimingPrefix
 				EvaluationResultTopic.EvaluationComponent			
-includes 1..1 	BreastCancerTCategory
-includes 1..1 	BreastCancerNCategory
-includes 1..1 	BreastCancerMCategory
+includes 0..1 	BreastCancerPrimaryTumorClassification
+includes 0..1 	BreastCancerRegionalNodesClassification
+includes 0..1 	BreastCancerDistantMetastasesClassification
 				Members.EvaluationResultRecorded
-includes 1..1	HER2ReceptorStatus
-includes 1..1	EstrogenReceptorStatus
-includes 1..1	ProgesteroneReceptorStatus
-includes 0..1	NuclearGrade
-includes 0..1	HistologicGrade	
+includes 0..1	HER2ReceptorStatus
+includes 0..1	EstrogenReceptorStatus
+includes 0..1	ProgesteroneReceptorStatus
+includes 0..1	DCISNuclearGrade
+includes 0..1	BreastCancerHistologicGrade	
 
 		Element:		StageTimingPrefix
 		Concept:		SCT#260869008 "Timing of stage"
-		Description:	"Mandatory element indicating when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
+		Description:	"Indicates when the staging was done, in terms of treatment landmarks, either clinical (at diagnosis prior to treatment) (c), pathologic (post-surgical) (p), post-neoadjuvant clinical (yc), or post-neoadjuvant pathologic(yp). The stage timing code is prefix on the N stage. For example, for post-neoadjuvant clinical staging, the N categories are preceded by 'yc' (e.g. ycNX)"
 		Value:			CodeableConcept	from StageTimingPrefixVS
 		
-		Element:		BreastCancerTCategory
-		Concept:		SCT#78873005 "T category"	//RMB: was LNC#78873005, which is specific to AJCC 7th edition
+		Element:		BreastCancerPrimaryTumorClassification
+		Concept:		SCT#78873005 "T category"
 		Based on:		EvaluationComponent
-		Description:	"The size and extent of the primary tumor (greatest dimension), based on criteria from the American Joint Committee on Cancer."
-		Value:			CodeableConcept from BreastCancerTCategoryVS
-		0..1			StageSuffix from BreastCancerTCategorySuffixVS 
+		Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
+		Value:			CodeableConcept
+		0..1			StageSuffix
 		0..0			ReferenceRange
 
-		Element:		BreastCancerNCategory
+		Element:		BreastCancerRegionalNodesClassification
 		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
 		Based on:		EvaluationComponent
 		Description:	"The presence of metastases in regional lymph nodes. The node category for staging is based on criteria from the American Joint Committee on Cancer."
-		Value:			CodeableConcept from BreastCancerNCategoryVS
-		0..1			StageSuffix from BreastCancerNCategorySuffixVS
+		Value:			CodeableConcept
+		0..1			StageSuffix
 		0..0			ReferenceRange
 
 				Element:	StageSuffix
 				Concept:	TBD	
-				Description: "A suffix used in conjuction with certain breast cancer stages, based on criteria from the American Joint Committee on Cancer."
+				Description: "A suffix used in conjuction with certain breast cancer stages, based on criteria defined by the staging system being used."
 				Value: 		CodeableConcept
-		Element:		BreastCancerMCategory
+				
+		Element:		BreastCancerDistantMetastasesClassification
 		Concept:		SCT#126926005 "M category"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
 		Based on:		EvaluationComponent
-		Description:	"Part of the TNM classification system representing metastases.  The system is used to describe the spread of cancer to other parts of the body."
-		Value:			CodeableConcept from BreastCancerMCategoryVS
+		Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
+		Value:			CodeableConcept
 		0..0			ReferenceRange
 
-EntryElement:	NuclearGrade
+EntryElement:	DCISNuclearGrade
 Concept:		MTH#C18513
 Based on: 		SimplifiedLaboratoryTestResultRecorded
 Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
@@ -117,7 +116,7 @@ Description:	"An evaluation of the size and shape of the nucleus in tumor cells 
 				EvaluationResultTopic.TopicCode is MTH#C18513
 0..0			EvaluationResultTopic.EvaluationComponent
 
-EntryElement:	HistologicGrade
+EntryElement:	BreastCancerHistologicGrade
 Concept:		LNC#44648-4
 Based on:		SimplifiedLaboratoryTestResultRecorded
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
