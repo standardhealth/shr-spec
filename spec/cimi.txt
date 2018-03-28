@@ -12,7 +12,7 @@ Element:		Locatable
 Concept:		TBD
 Description:	"Abstract top level class in the hierarchy. Locatable defines the idea of 'locatability in an archetyped structure'.
 
-CIMI Alignment: The Locatable class reflects CIMI's current implementation using Archetype Description Language (ADL). It's attributes (archetype_node_id, name, and archetype_details) are necessary to serialize CIMI definitions in ADL. By all rights, these attributes should be invisible in clinical models. To avoid complicating the breast cancer profiles with extensions irrelevant to the clinical content, the attributes of Locatable have been omitted."
+CIMI Alignment: The Locatable class reflects CIMI's current implementation using Archetype Description Language (ADL). Its attributes (archetype_node_id, name, and archetype_details) are necessary to serialize CIMI definitions in ADL. By all rights, these attributes should be invisible in clinical models. To avoid complicating the breast cancer profiles with extensions irrelevant to the clinical content, the attributes of Locatable have been omitted."
 
 Element:		Content
 Based on:		Locatable
@@ -53,7 +53,7 @@ Element:		IndivisibleClinicalStatement
 Based on:		ClinicalStatement
 Description:	"Represents clinical statements that cannot be further decomposed into multiple independent clinical statements, i.e., all clinical statements that are not CompoundClinicalStatements. 
 
-An indivisible clinical statement must be able to stand alone such as a systolic blood pressure measurement which can be interpreted both inside a blood pressure panel or on its own. If the statement cannot stand alone, e.g., the size of a wound, which cannot exist outside the context of the wound itself, then the Component class should be used instead."
+An indivisible clinical statement must be able to stand alone, such as a systolic blood pressure measurement, which can be interpreted both inside a blood pressure panel or on its own. If the statement cannot stand alone, e.g., the size of a wound, which cannot exist outside the context of the wound itself, then the Component class should be used instead."
 	
 	
 Element:		StatementTopic
@@ -61,7 +61,7 @@ Based on:		Locatable
 Concept:		TBD
 Description:	"Compositional and reusable grouping of clinical statement attributes that make up the clinical focus of a statement. 
 
-CStatementTopic class attributes are aligned with SNOMED CT Concept Model attributes when such an overlap exists. Note that this class does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded).
+StatementTopic class attributes are aligned with SNOMED CT Concept Model attributes when such an overlap exists. Note that this class does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded).
 
 CIMI Alignment: StatementTopic had an attribute called 'key' in CIMI V0.0.4, but CIMI is renaming it 'TopicCode', as represented here."
 1..1			TopicCode
@@ -81,7 +81,7 @@ Based on:		Locatable
 Concept:		TBD
 Description:	"Compositional and reusable grouping of clinical statement attributes that provides the context for the topic of a clinical statement. 
 
-The StatementContext class aligns with the SNOMED CT Situations with Explicit Context. The StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information. It also often holds provenance information relevant to the context of the clinical statement. It is important to note that by default the context applies to the conjunction of the attribute specified in the statement. For instance, if a clinical statement has a topic describing a rash on left arm and a context of 'absent', then the statement states that the subject of interest did not have a rash on the left arm but might have had one on the right arm.
+The StatementContext class aligns with the SNOMED CT Situations with Explicit Context (SWEC) Concept Model. The StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information. It also often holds provenance information relevant to the context of the clinical statement. It is important to note that by default the context applies to the conjunction of the attribute specified in the statement. For instance, if a clinical statement has a topic describing a rash on left arm and a context of 'absent', then the statement states that the subject of interest did not have a rash on the left arm but might have had one on the right arm.
 
 CIMI Alignment: ContextCode is the new CIMI name for the attribute formerly called 'type' in CIMI V0.0.4. The attribute 'temporalContext' that appeared in CIMI V0.0.4 is no longer part of CIMI."
 1..1			ContextCode
@@ -100,9 +100,9 @@ Based on:		StatementContext
 Concept:		SCT#410514004
 Description:	"The FindingContext class provides the context for the EvaluationResultTopic and AssertionTopic in a clinical statement. 
 
-For instance, a statement about findings may state that the finding was observed present or absent. This class aligns with the SNOMED Situation with Explicit Context.The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc.
+For instance, a statement about findings may state that the finding was observed to be present or absent. This class aligns with the SNOMED Situation with Explicit Context.The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc.
 
-CIMI Alignment: In CIMI Version 0.0.4, FindingContext included a 'status' attribute. However, there are several problems with this. (1) To align with FHIR, the datatype of status should be Concept, not Attribution. (2) In FHIR, different types of status with different shades of meaning are found in different subclasses, for example, clinicalStatus and verificationStatus in Condition, and status in Observation. (3) Status will not be uniform in meaning across all CIMI finding contexts. For example, in GoalContext, the relevant status might be the progress toward the goal, not the same meaning as the status of an EvaluationResult."
+CIMI Alignment: In CIMI Version 0.0.4, FindingContext included a 'status' attribute. However, there are several problems with this. (1) To align with FHIR, the datatype of status should be Concept, not Attribution. (2) In FHIR, different types of status with different shades of meaning are found in different subclasses, for example, clinicalStatus and verificationStatus in Condition, and status in Observation. (3) Status will not be uniform in meaning across all CIMI finding contexts. For example, in GoalContext, the relevant status might be the progress toward the goal, which does not have the same meaning as the status of an EvaluationResult."
 
 Element:		EvaluationResultContext
 Based on:		FindingContext
@@ -122,7 +122,7 @@ CIMI Alignment: This class was recently added to CIMI (after Version 0.0.4)."
 	Element:		PresenceContext
 	Based on:		AssertionContext
 	Concept:		SCT#410515003
-	Description:	"PresenceContext indicates the finding in question exists or is present to some level of certainty. 
+	Description:	"PresenceContext indicates that the finding in question exists or is present to some level of certainty. 
 	
 	For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present.
 	
@@ -145,7 +145,7 @@ CIMI Alignment: This class was recently added to CIMI (after Version 0.0.4)."
 			Concept:	TBD
 			Description:	"The degree of confidence in a conclusion or assertion.
 			
-			CIMI Alignment: This attribute aligns with KnownOrSuspectedPresent.certainty, in CIMI V0.0.4, but with the recent realignment of CIMI classes, this attribute is attached to the correct class, PresenceContext."
+			CIMI Alignment: This attribute aligns with KnownOrSuspectedPresent.certainty in CIMI V0.0.4, but with the recent realignment of CIMI classes, this attribute is attached to the correct class, PresenceContext."
 			Value:		CodeableConcept
 	
 	Element:		RecordedContext
@@ -153,7 +153,7 @@ CIMI Alignment: This class was recently added to CIMI (after Version 0.0.4)."
 	Concept:		TBD
 	Description:	"Context for an evaluation result, used to indicate an evaluation has been made. 
 	
-	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to a clinical notes.
+	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to clinical notes.
 	
 	CIMI Alignment: The RecordedContext class did not exist in CIMI Version 0.0.4, but CIMI has recently added it."
 					ContextCode is SCT#424975005 "Record Entity" 
@@ -172,7 +172,7 @@ CIMI Alignment: This class was recently added to CIMI (after Version 0.0.4)."
 		Concept:		TBD
 		Description:	"Reason that a value associated with a test or other finding is missing.
 		
-		CIMI Alignment: This attribute corresponds to EvaluationResultTopic.exceptionValue, but has been moved from topic to context because missing values are only relevant when they should be recorded, but are not. The value set binding extends the set of FHIR's required data absent values, and with additional concepts from CIMI."
+		CIMI Alignment: This attribute corresponds to EvaluationResultTopic.exceptionValue, but has been moved from topic to context because missing values are only relevant when they should be recorded, but are not. The value set binding extends the set of FHIR's required data absent values, with additional concepts from CIMI."
 		Value:			CodeableConcept from ExceptionValueVS
 	
 		Element:		RelevantTime
@@ -200,12 +200,12 @@ CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, descri
 		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a finding.
 		
-		CIMI Alignment: The value set binding has been chosen to align with FHIR. (Note: It is not clear if Interpretation belongs in FindingTopic, rather than a context class, but that is how CIMI has modeled it.)"
+		CIMI Alignment: The value set binding has been chosen to align with FHIR. (Note: it is not clear if Interpretation belongs in FindingTopic, rather than a context class, but that is how CIMI has modeled it.)"
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 
 		Element:		FindingMethod
 		Concept:		TBD
-		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle.
+		Description:	"The technique used to create the finding; for example, the specific imaging technique, lab test code, or assessment vehicle.
 		
 		CIMI Alignment: In CIMI Version 0.0.4, this attribute was called 'method'. The value set binding reflects CIMI's preference for LOINC codes."
 		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/observation-codes
@@ -213,29 +213,29 @@ CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, descri
 Abstract Element: AssertionTopic
 Based on:		FindingTopic
 Concept:		TBD
-Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a ConditionPresenceStatement, the Value represents the type of condition found.
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance; for a ConditionPresenceStatement, the Value represents the type of condition found.
 
-CIMI Alignment: In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus properly only applies in the PresenceContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
+CIMI Alignment: In CIMI V0.0.4, this class was called Assertion, but CIMI recently decided to change the name to AssertionTopic, as anticipated here. In CIMI V0.0.4, Assertion defines three attributes: dateAsserted, verificationStatus, and findingMethod. VerificationStatus only properly applies in the PresenceContext context, and can be found there. FindingMethod more properly belongs in FindingTopic, and can be found there."
 Value:			0..1  CodeableConcept
 
 		
 Element:		EvaluationResultTopic
 Based on:		FindingTopic
 Concept:		MTH#C1554188
-Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). 
+Description:	"The base class, independent of context, for evaluations (measurements, tests, or questions) and a value containing the result (answer). 
 
 The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
 CIMI Alignment:
-1) In CIMI Version 0.0.4, LaboratoryTestResult.specimen is 0..* but that cardinality makes it impossible to map to FHIR Observation, where specimen is 0..1. The cardinality of Specimen has been changed to 0..1 to enable FHIR mapping.
-2) In CIMI Version 0.0.4, Findings (including EvaluationResult and LaboratoryTestResult) do not have related ('has-member') observations, nor components (sub-observations). These features of FHIR Observations were found to be very useful in modeling breast cancer pathology, and are included here. This represents a significant departure from the CIMI model. CompoundClinicalStatement has not been used to represent panel-like findings, because of the complexity of mapping this class to FHIR.
-3) In CIMI Version 0.0.4, allowable datatype for result (aka Value) includes EmbeddedContent,  GpsLocation,  Multimedia,  ParsableContent, and other types not allowed in a FHIR Observation. To make mapping feasible, the types of Value were restricted to only the allowable FHIR datatypes.
-4) ExceptionValue has been moved to the RecordedContext, because it only is relevant when a value is supposed to be recorded, but is not.
+1) In CIMI  V0.0.4, LaboratoryTestResult.specimen is 0..* but that cardinality makes it impossible to map to FHIR Observation, where specimen is 0..1. The cardinality of Specimen has been changed to 0..1 to enable FHIR mapping.
+2) In CIMI V0.0.4, Findings (including EvaluationResult and LaboratoryTestResult) do not have related ('has-member') observations, nor components (sub-observations). These features of FHIR Observations were found to be very useful in modeling breast cancer pathology, and are included here. This represents a significant departure from the CIMI model. CompoundClinicalStatement has not been used to represent panel-like findings, because of the complexity of mapping this class to FHIR.
+3) In CIMI V0.0.4, allowable datatypes for result (aka Value) include EmbeddedContent,  GpsLocation,  Multimedia,  ParsableContent, and other types not allowed in a FHIR Observation. To make mapping feasible, the types of Value were restricted to only the allowable FHIR datatypes.
+4) ExceptionValue has been moved to the RecordedContext, because it is only relevant when a value is supposed to be recorded, but is not.
 5) The cardinality of FindingMethod has been changed from 0..* to 0..1 to make it possible to map to FHIR, where Observation.method is 0..1.
 6) The class PhysicalEvaluationResult has been united with this class, and the body location (AnatomicalLocation) has been added to this class. This is because bodySite is part of Observation, and it cannot be profiled out of EvaluationResult and then re-included in PhysicalEvaluationResult.
 7) The cardinality of AnatomicalLocation has been changed from 0..* to 0..1 to make it possible to map to FHIR, where Observation.bodySite is 0..1.
 8) The attribute evaluationDate has been moved to RecordedContext, because it only applies to evaluations that have been done.
-9) The attributes device, evaluationProcedure have been removed for brevity, since they are not used in the current IG."
+9) The attributes device and evaluationProcedure have been removed for brevity, since they are not used in the current IG."
 
 Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
@@ -253,7 +253,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Rati
 		
 		Element:		Precondition
 		Concept:		TBD
-		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. 
+		Description:	"A description of the conditions or context of an observation; for example, under sedation, fasting or post-exercise. 
 		
 		Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 		Value:			CodeableConcept
@@ -298,7 +298,7 @@ Based on:		AssertionTopic
 Concept:		MTH#C0348080
 Description:	"Representation of a condition, independent of context of being present, absent, risk, expectation etc. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, etc. 
 
-CIMI Alignment: In CIMI Version 0.0.4, this class was called ConditionAssertion, but CIMI has recently changed it to ConditionTopic. ConditionAssertion had properties associated with the presence of the condition, including severity, dueTo, diseasePhase, and more. In the current logical model, properties associated with condition occurrence have been moved to ConditionPresenceContext. The value set binding of Value is required to map to US-Core."
+CIMI Alignment: In CIMI  V0.0.4, this class was called ConditionAssertion, but CIMI has recently changed it to ConditionTopic. ConditionAssertion had properties associated with the presence of the condition, including severity, dueTo, diseasePhase, and more. In the current logical model, properties associated with condition occurrence have been moved to ConditionPresenceContext. The value set binding of Value is required to map to US-Core."
 Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 				TopicCode is MTH#C0348080
 1..*			Category from ConditionCategoryVS
@@ -309,7 +309,7 @@ Based on:		PresenceContext
 Concept:		TBD
 Description:	"The context for a condition that is known, suspected, or possibly present.
 
-CIMI Alignment: In CIMI Version 0.0.4, this class was called AssertionKnownOrSuspectedPresent. The corresponding CIMI class is ungoing a name change to include the word 'StatementContext' and remove the word 'Assertion'. The presence of terminology bindings (necessary to align with FHIR clinicalStatus, severity, and criticality) means that this class cannot be defined entirely within the CIMI reference model. The constraints could only exist in an archetype derived from the reference model class. The logical model here represents both the class structure and the terminology bindings."
+CIMI Alignment: In CIMI V0.0.4, this class was called AssertionKnownOrSuspectedPresent. The corresponding CIMI class is undergoing a name change to include the word 'StatementContext' and remove the word 'Assertion'. The presence of terminology bindings (necessary to align with FHIR clinicalStatus, severity, and criticality) means that this class cannot be defined entirely within the CIMI reference model. The constraints could only exist in an archetype derived from the reference model class. The logical model here represents both the class structure and the terminology bindings."
 
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 				VerificationStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
@@ -329,7 +329,7 @@ CIMI Alignment: In CIMI Version 0.0.4, this class was called AssertionKnownOrSus
 			Concept:		MTH#C0277793
 			Description:	"The beginning or first appearance of a mental or physical disorder.
 			
-			CIMI Alignment: This attribute aligns with FHIR Condition.onset, and with dateOfOnset and ageAtOnset in CIMI Version 0.0.4 but includes additional datatypes corresponding to FHIR"
+			CIMI Alignment: This attribute aligns with FHIR Condition.onset and with dateOfOnset and ageAtOnset in CIMI V0.0.4, but includes additional datatypes corresponding to FHIR"
 			Value:			dateTime or Age or TimePeriod or Range or string
 
 			Element:		PresentOnAdmission
@@ -363,7 +363,7 @@ CIMI Alignment: In CIMI V0.0.4, Entity was a subclass of Party. Party is part of
 Element:		AnatomicalLocation
 Based on:		Entity
 Concept:		MTH#C1545955
-Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces, for example, right elbow, or left ventricle of the heart.
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart.
 
 CIMI Alignment: In CIMI Version 0.0.4, AnatomicalLocation has no parent class. This appears to have been an oversight, and the parent should have been Entity, as modeled here."
 Value:			CodeableConcept from AnatomicalLocationVS
