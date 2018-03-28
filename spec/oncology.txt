@@ -46,11 +46,14 @@ Concept:		SCT#126926005 "Neoplasm of the breast"
 Based on:		ConditionPresenceStatement
 Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body.
 
-The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, which is a departure from CIMI. In CIMI, this would be a archetype of ClinicalStatement combining a BreastCancerConditionTopic with the ConditionPresenceContext. This would require definition of BreastCancerConditionTopic in the reference model, follwed by introduction of constraints on Value, Category, Stage, and MorphologyBehavior in the corresponding archetype."
-				ConditionTopic.TopicCode from BreastCancerTypeVS
-				ConditionTopic.Category includes #disease			
+The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, which is a departure from CIMI. In CIMI, this would be a archetype of ClinicalStatement combining a BreastCancerConditionTopic with the ConditionPresenceContext. This would require definition of BreastCancerConditionTopic in the reference model, follwed by introduction of constraints on Value, Category, Stage, and MorphologyBehavior in the corresponding archetype.
+
+CIMI Alignment (and question for reviewers): The Topic of this statement is 'Neoplasm of the breast', not 'Assertion', with the logic that the topic of the statement is more specific than 'Assertion'.  The result (the value) gives the particular type (histologic type) of the condition. Does this make sense?"
+				ConditionTopic.TopicCode is SCT#126926005 "Neoplasm of the breast"
+				ConditionTopic from BreastCancerTypeVS		
 				Stage.StageDetail value is type BreastCancerStage
 				ConditionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
+				ConditionTopic.AnatomicalLocationOrCode value is type AnatomicalLocation //BreastSite
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -214,7 +217,6 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				EvaluationResultTopic value is type CodeableConcept
 				EvaluationResultTopic.CodeableConcept from PositiveNegativeEquivocalVS
 				EvaluationResultTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
-				EvaluationResultTopic.Category is OBSCAT#laboratory
 				DiagnosticService is #pathology
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 0..0			EvaluationResultTopic.Precondition
@@ -224,9 +226,9 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				Members.EvaluationResultRecorded
 includes 0..*	HER2byIHC
 includes 0..*	HER2byISH
-				
+
 EntryElement:	HER2byIHC
-Based on:		EvaluationResultRecorded
+Based on:		LaboratoryTestResultRecorded
 Concept:		LNC#72383-3
 Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)."
 				EvaluationResultTopic value is type CodeableConcept
@@ -245,7 +247,7 @@ includes 0..1	CompleteMembraneStainingPercent
 		0..0			ReferenceRange
 		
 EntryElement:	HER2byISH
-Based on:		EvaluationResultRecorded
+Based on:		LaboratoryTestResultRecorded
 Concept:		LNC#72383-3
 Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH)."
 0..0			EvaluationResultTopic.Value
