@@ -41,14 +41,14 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 
 
 EntryElement:	BreastCancerPresenceStatement
-Concept:		SCT#126926005 "Neoplasm of the breast"
+Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Based on:		ConditionPresenceStatement
 Description:	"FindingTopic or diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body.
 
 The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, which is a departure from CIMI. In CIMI, this would be a archetype of ClinicalStatement combining a BreastCancerConditionTopic with the ConditionPresenceContext. This would require definition of BreastCancerConditionTopic in the reference model, follwed by introduction of constraints on Value, Category, Stage, and MorphologyBehavior in the corresponding archetype.
 
 CIMI Alignment (and question for reviewers): The Topic of this statement is 'Neoplasm of the breast', not 'Assertion', with the logic that the topic of the statement is more specific than 'Assertion'.  The result (the value) gives the particular type (histologic type) of the condition. Does this make sense?"
-				ConditionTopic.TopicCode is SCT#126926005 "Neoplasm of the breast"
+				ConditionTopic.TopicCode is SCT#126926005 "Neoplasm of breast (disorder)"
 				ConditionTopic from BreastCancerTypeVS		
 				Stage.StageDetail value is type BreastCancerStage
 				ConditionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
@@ -63,10 +63,13 @@ CIMI Alignment (and question for reviewers): The Topic of this statement is 'Neo
 EntryElement:	BreastCancerStage
 Based on:		EvaluationResultRecorded  // maps to FHIR Observation
 Concept:		LNC#21908-9
-Description:	"The stage of a breast cancer. Different staging systems use different staging groups, so there are currently no terminology bindings associated with this value set."
+Description:	"The stage of a breast cancer. Different staging systems use different staging groups, so there are currently no terminology bindings associated with this class."
 0..1			StageTimingPrefix
 				EvaluationResultTopic.TopicCode is LNC#21908-9
-				EvaluationResultTopic value is type CodeableConcept
+				EvaluationResultTopic value is type CodeableConcept  // the stage 
+0..0			EvaluationResultTopic.AnatomicalLocation
+0..0			EvaluationResultTopic.Specimen
+0..0			EvaluationResultTopic.ReferenceRange
 				EvaluationResultTopic.EvaluationComponent			
 includes 0..1 	BreastCancerPrimaryTumorClassification
 includes 0..1 	BreastCancerRegionalNodesClassification
@@ -153,7 +156,9 @@ includes 0..1 	MitoticCountScore
 			Element:		MitoticCountScore
 			Concept:		SCT#371472000
 			Based on:		EvaluationComponent
-			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells."
+			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells.
+			
+			We are seeking feedback on the value of representing the mitotic rate as a value rather than coded ranges."
 			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
 			0..0			ReferenceRange
 
@@ -195,7 +200,9 @@ includes 0..1	AverageStainingIntensity
 		Element:		NuclearPositivity
 		Based on:		EvaluationComponent
 		Concept:		TBD
-		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
+		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor.
+		
+		We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
 		Value:			PercentageRange
 		0..0			ReferenceRange
 			
@@ -222,6 +229,7 @@ We are seeking feedback if it is better to put the positive/negative status in V
 0..0			EvaluationResultTopic.ReferenceRange
 0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 0..0			EvaluationResultTopic.FindingMethod
+0..0 			EvaluationComponent
 				Members.EvaluationResultRecorded
 includes 0..*	HER2byIHC
 includes 0..*	HER2byISH
@@ -235,6 +243,10 @@ Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)."
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2IHCMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
+				DiagnosticService is #pathology
+0..0 			EvaluationResultTopic.AnatomicalLocation
+0..0			EvaluationResultTopic.Precondition
+				EvaluationResultTopic.Specimen is type BreastSpecimen
 				EvaluationResultTopic.EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
 
@@ -253,6 +265,10 @@ Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH).
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
 				EvaluationResultTopic.FindingMethod from HER2ISHMethodVS
 				EvaluationResultTopic.Interpretation from PositiveNegativeEquivocalVS
+				DiagnosticService is #pathology
+0..0 			EvaluationResultTopic.AnatomicalLocation
+0..0			EvaluationResultTopic.Precondition
+				EvaluationResultTopic.Specimen is type BreastSpecimen
 				EvaluationResultTopic.EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
