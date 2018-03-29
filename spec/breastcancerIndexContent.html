@@ -26,6 +26,7 @@
 <li>Is the way the ballot material is presented suitable and useful? If not, what type of format(s) would be more informative?</li>
 <li>To the best of our knowledge, this is the first time that a single ballot contains CIMI-style models, FHIR logical models, and FHIR Profiles, all related to each other. As such, we are interest in whether the voters find such an approach useful.</li>
 </ol>
+<p>&nbsp;</p>
 <h2><a name="Purpose"></a>Purpose</h2>
 <p>The Breast Cancer Interoperability FHIR Implementation Guide (IG) contains a subset of logical models for breast cancer focused on data elements used for breast cancer staging. FHIR profiles are provided as an example physical representation of the logical models. This IG also serves as an experimental pilot for the Clinical Information Modeling Initiative (CIMI), being the first specification to reach ballot presenting a combination ofCIMI-style models, FHIR logical models, and FHIR Profiles, all related to each other.</p>
 <h2><a name="Background"></a>Background</h2>
@@ -37,3 +38,86 @@
 <h2><a name="Contents"></a>Implementation Guide Contents</h2>
 <p>The IG contains several different elements, accessed using the top level navigation tabs:</p>
 <ol>
+<li><a href="logical.html">Logical Models</a>. The objective of logical models is to help gather and interpret requirements from stakeholders, particularly clinicians, but also registries, researchers, and others. The logical models document the requirements without the added complication of alignment with FHIR. The breast cancer logical models use reproducible patterns established by CIMI. Things to note:
+<ul>
+<li>The only thing that makes the logical models "FHIR Logical Models" is the use of the StructureDefinition resource as a formal representation. They could just as easily be captured in other formalisms, such as Unified Modeling Language (UML) or Archetype Description Language (ADL).</li>
+<li>The logical models are separated into "Primary logical models" and "Supporting logical models". The primary models deal directly with breast cancer domain, while the supporting models deal with sub-elements and higher level (parent) models.</li>
+<li>Each logical model appears on a separate page, which looks something like the documentation of a FHIR resource, including attributes, cardinality, datatype, and terminology bindings.</li>
+<li>Due to current limitations in the FHIR IG publishing tool, when a property's type is another logical model, that type is displayed as a canonical URL and is not linked to the corresponding logical model page. Future versions of the publishing tool are expected to address this.</li>
+</ul>
+</li>
+<li><a href="profiles.html">FHIR Profiles</a>. With logical models in place, they can be mapped to FHIR resources. This step requires more knowledge of FHIR than the logical model step. The result is a set of FHIR profiles, i.e., FHIR Resources that have been shaped (constrained and extended) to match the intent of the logical models. Similar to the Logical Models, the profiles have beenseparated into "Primary profiles" and "Supporting profiles".</li>
+<li><a href="extensions.html">Extensions</a>. Extensions are new properties/attributes that do not appear in the base FHIR resources, needed to create a FHIR profile. An attempt has been made to minimize the number of extensions appearing in this IG by using Observation.component to represent dependent parts of observations, such as MitoticCountScore and TubuleFormationScore in HistologicGrade.</li>
+<li><a href="valuesets.html">Value Sets</a>. Value sets are the enumeration values for coded attribues. Due to copyright restrictions on AJCC-derived content, certain critical value sets have been redacted, diminishing the usefulness of this specification.</li>
+<li><a href="codesystems.html">Code Systems</a>. All value sets require a code system. Value sets that are not drawn from standard terminology, such as locally-defined value sets, do not have a natural code system. FHIR overcomes this by generating a custom code system for each locally-defined value set.</li>
+<li><a href="downloads.html">Downloads</a>. Formal class definitions, in StructureDefinition form, can be downloaded here.</li>
+<li><a href="modeldoc/index.html">Reference Model</a>. FHIR does not have a class hierarchy, but CIMI does. Since the breast cancer models are based on CIMI, they derive from CIMI's class hierarchy. To help view the class hierarchy, we have provided a class browser. The browser allows navigation of the class hierarchy, shows details of each class, and includes attributes and constraints, show where each constraint was introduced in the hierarchy.</li>
+</ol>
+<h2><a name="Principles"></a>Modeling Approach</h2>
+<h3>Major sources of information</h3>
+<p>Specifications consulted for the development of this IG include:</p>
+<ul>
+<li>American Joint Committee on Cancer (AJCC) Staging Manual (8th Edition)</li>
+<li>College of American Pathologists (CAP) Cancer Protocols</li>
+<li>North American Association of Central Cancer Registries (NAACCR) 2018 Site-Specific Data Items Manual (DRAFT)</li>
+<li>HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</li>
+<li>HL7 CDA R2 IG: Clinical Oncology Treatment Plan and Summary</li>
+</ul>
+<p>In addition to sources specifically providing clinical content related to cancer and breast cancer, from a modeling perspective, CIMI models were also used as a source.</p>
+<h3>Harmonization and Prioritization</h3>
+<p>Data elements were initially prioritized based on the identified scope. Consideration was given to existing representations of the elements across the source material, which varied in complexity from simple data elements dictionary to more well formed logical models which included relationships between concepts. Value sets for a coded elements were also compared across the sources.</p>
+<p>Differences across sources drove the development of harmonized detailed clinical models. Final decisions on the inclusion of data elements and attributes were driven by 1) their impact in driving clinical decision making for breast cancer treatment, and 2) their presence&nbsp;in multiple sources, indicative of the importance of the data element accross practice areas.</p>
+<h3>Terminology and Value Sets</h3>
+<p>The terminology bindings in this implementation guide are preliminary. The primary goal was to identify and vet appropriate values for each coded data element and its attributes.</p>
+<p>For those elements for which terminology bindings exist, SNOMED-CT and LOINC were the preferred vocabularies. However, given known gaps in these vocabularies on the domain areas covered in this IG, codes from vocabularies such as ICD-O-3 and the NCI metathesaurus were used.</p>
+<p>In addition, while the AJCC staging system is recognized as one of the most widely-used standards for breast cancer staging, this guide does not include any AJCC terminology due to unresolved copyright issues. As such, <strong>elements related to staging do not currently include terminology bindings</strong>, and refer back to the staging system used for the appropriate codes. The value sets are known, and their inclusion will considerably strenghten the specification if and when copyright issues have been resolved.</p>
+<h2><a name="Tooling"></a>Open Source Tooling</h2>
+<p>The tooling used to define the models, produce the logical models and the FHIR profiles are open source tools developed as part of the <a href="http://standardhealthrecord.org/">Standard Health Record (SHR) Initiative</a>. The SHR tooling consists of several elements:</p>
+<ul>
+<li><a href="https://github.com/standardhealth/shr-cli/wiki/CIMPL-Documentation">Clinical Information Modeling and Profiling Language (CIMPL)</a>. CIMPL (pronounced "simple") is a domain-specific language designed for the task of capturing requirements in a recognizable, human-readable form and defining detailed clinical information models. It has a formal grammar defined in ANTLR4. It has three types of definitional files: data elements, value sets, and profile mappings.&nbsp;</li>
+<li><a href="https://github.com/standardhealth/shr-cli">Command Line Interface (CLI)</a>. CLI is the computer program that parses CIMPL files and produces outputs including CIMCORE, FHIR logical models, FHIR Profiles, and other artifacts.</li>
+<li><a href="https://github.com/standardhealth/shr-cli/wiki/CIMCORE-Documentation">Clinical Information Modeling COmputable REpresentation (CIMCORE)</a>. CIMCORE is a computable health care modeling representation in JSON, expressing the class hierarchy, modeling constraints, value sets, and mappings. CIMCORE can be thought of as the "compiled form" of CIMPL, but it is explicitly designed for simplicity and cross-language interoperability. It is used as the central representation from which the various outputs (profiles, logical models, reference model browser) are produced.</li>
+</ul>
+<p>The final form of the Implementation Guide (the html pages you see here) was produced using the standard FHIR Implementation Guide Publisher (IGPub).&nbsp;</p>
+<h2><a name="CIMI"></a>Relationship to CIMI</h2>
+<h3>CIMI Conformance</h3>
+<p>The breast cancer model presented here has NOT been approved by CIMI Work Group. While a serious attempt has been made to align to the CIMI Reference Model (CIMI-RM), the breast cancer model departs from the CIMI-RM in significant ways (see <a href="#CIMI">Relationship to CIMI</a>, below). Moreover, CIMI is still actively evolving in significant ways, making it difficult to even define "CIMI Conformance" at this point. It is hoped that the breast cancer model will inform future CIMI developments, both in terms of how it uses, and diverges, from the current CIMI model.</p>
+<p>To the extent possible, the breast cancer staging model has been based on the CIMI Reference Model (CIMI-RM). The last "official" release of the CIMI-RM was Version 0.0.4, for the January 2018 ballot. The CIMI-RM is currently undergoing significant revisions as part of ongoing development and ballot reconciliation.</p>
+<p>While a serious attempt has been made to align to the CIMI-RM, it is not possible to say to what extent this model is "CIMI compliant" due to ongoing CIMI changes. Deviations from CIMI-RM are called out in the documentation of specific classes. These may be indicators where FHIR and CIMI might have to be more closely aligned. There are several areas and reasons the breast cancer model deviates from the CIMI-RM (Version 0.0.4):</p>
+<ol>
+<li>Incorporation of changes to CIMI-RM subsequent to V0.0.4, to the extent those changes are known and have been approved in the CIMI Work Group.</li>
+<li>Areas where CIMI-RM conflicts with FHIR in ways that make mapping impossible, such as where CIMI-RM allows an attribute to be optional, but FHIR requires it.</li>
+<li>Addition of terminology bindings that do not exist in CIMI-RM.</li>
+<li>Areas where the CIMI-RM that are so structurally different than FHIR, that mappings were difficult to define, such as specimen processing and attribution.</li>
+<li>To address errors and/or apparent shortcomings in the CIMI-RM.</li>
+</ol>
+<p>In addition, most of the oncology subclasses are derived in a way that may not be considered "textbook CIMI". For example, BreastCancerStage is a child of EvaluationResultRecorded, which is a child of ClinicalStatement. CIMI topic-context pattern would require up to three classes: (1) a BreastCancerStageTopic class inheriting from EvaluationResultTopic, (2) a BreastCancerStageContext inheriting from RecordedContext (if required), and (3) a class or archetype that combines this topic and context into a clinical statement that represents the BreastCancerStage. There are several reasons the breast cancer model departed from this CIMI pattern:</p>
+<ul>
+<li>Defining separate topic classes (and potentially new context classes) would roughly double the number of classes in the oncology logical model.</li>
+<li>This pattern prevents inheritance of mappings. With the tool set used to produce this IG, mappings defined for a parent class automatically apply to child classes. As a result, most classes do not require separate mappings. This is very efficient. But, following CIMI's topic-context pattern rigorously, separate mappings would have to be redefined for every clinical statement class, because all statements would inherit from ClinicalStatement. For example, HistologicGrade would not inherit from EvaluationResultRecorded, and so the mapping of EvaluationResultRecorded to FHIR Observation would not apply. This would have created much more work, and many additional points of potential failure.</li>
+<li>Following this part of the CIMI pattern ultimately has little or no effect on the FHIR profiles.</li>
+</ul>
+<p>Finally, the breast cancer models have not yet been serialized in the "gold standard" CIMI manner, as Basic Metamodel (BMM) and Archetype Description Language (ADL) files. There is ongoing work to try and accomplish that. For now, the models are presented as FHIR logical models, using FHIR StructureDefinitions.</p>
+<h2><a name="Disclaimers"></a>Disclaimers</h2>
+<p>This specification may contain and/or reference intellectual property owned by third parties ("Third Party IP"). Acceptance of the FHIR Licensing Terms does not grant any rights with respect to Third Party IP. The licensee alone is responsible for identifying and obtaining any necessary licenses or authorizations to utilize Third Party IP in connection with the specification or otherwise.</p>
+<p>Any actions, claims or suits brought by a third party resulting from a&nbsp;breach of any Third Party IP right by the Licensee remains the Licensee&rsquo;s liability.&nbsp;Following is a non-exhaustive list of third-party terminologies that may require a separate license:</p>
+<table>
+<tbody>
+<tr>
+<td>Terminology</td>
+<td>Owner/Contact</td>
+</tr>
+<tr>
+<td>SNOMED CT</td>
+<td><a href="https://www.snomed.org/snomed-ct/get-snomed-ct">SNOMED International</a></td>
+</tr>
+<tr>
+<td>LOINC</td>
+<td><a href="https://loinc.org/license/">Regenstrief Institute</a></td>
+</tr>
+<tr>
+<td>ICD-O-3</td>
+<td><a href="http://www.who.int/classifications/icd/adaptations/oncology/en/">World Health Organization</a></td>
+</tr>
+</tbody>
+</table>
