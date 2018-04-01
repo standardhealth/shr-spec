@@ -104,12 +104,14 @@ For instance, a statement about findings may state that the finding was observed
 
 CIMI Alignment: In CIMI V0.0.4, FindingContext included a 'status' attribute. However, there are several problems with this. (1) To align with FHIR, the datatype of status should be Concept, not Attribution. (2) In FHIR, different types of status with different shades of meaning are found in different subclasses, for example, clinicalStatus and verificationStatus in Condition, and status in Observation. (3) Status will not be uniform in meaning across all CIMI finding contexts. For example, in GoalContext, the relevant status might be the progress toward the goal, which does not have the same meaning as the status of an EvaluationResult."
 
+
 Element:		EvaluationResultContext
 Based on:		FindingContext
 Concept:		TBD
 Description:	"The parent class of contexts that can associate with EvaluationResultTopic and its subclasses.
 
 CIMI Alignment: This class was recently added to CIMI (after V0.0.4)"
+
 
 Element:		AssertionContext
 Based on:		FindingContext
@@ -128,10 +130,16 @@ CIMI Alignment: This class was recently added to CIMI (after V0.0.4)."
 	
 	CIMI Alignment: In CIMI V0.0.4, there were two classes, KnownOrSuspectedPresent and AssertionKnownOrSuspectedPresent. CIMI has recently decided to combine these classes and rename it PresenceContext, as represented here."
 					ContextCode from PresenceContextVS
+	1..1			AssertedResult  
 	1..1			VerificationStatus			
 	0..1			Onset
 	0..1			Abatement
 	0..1			Certainty
+	
+			Element:		AssertedResult
+			Concept:		TBD
+			Description:	"The code representing the thing being asserted."
+			Value:			CodeableConcept
 	
 			Element:	VerificationStatus
 			Concept:	TBD
@@ -156,10 +164,25 @@ CIMI Alignment: This class was recently added to CIMI (after V0.0.4)."
 	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to clinical notes.
 	
 	CIMI Alignment: The RecordedContext class did not exist in CIMI V0.0.4, but CIMI has recently added it."
-					ContextCode is SCT#424975005 "Record Entity" 
-	1..1			FindingStatus
+					ContextCode is SCT#424975005 "Record Entity"
+	0..1			RecordedResult
 	0..1			ExceptionValue
+	0..1			Interpretation
+	1..1			FindingStatus
 	0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+	
+		Element:		RecordedResult
+		Concept:		TBD
+		Description:	"The finding itself, such as the blood pressure value recorded."
+		Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+		
+				
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding.
+		
+		CIMI Alignment: The value set binding has been chosen to align with FHIR. Interpretation has been put into the finding result, rather than the finding topic, contrary to how CIMI has modeled it."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 
 		Element:		FindingStatus
 		Concept:		TBD
@@ -192,16 +215,8 @@ Description:	"Base class - independent of context - for all kinds of determinati
 
 The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 
-CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. Here, result is represented by EvaluationResultTopic.Value and AssertionTopic.Value. Description and Multimedia have been omitted for brevity."
+CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. The model assumes the result of the finding, and interpretationof that result, are not part of the topic (the question), but part of the result (the answer), and therefore appears in the context (RecordedContext and PresenceContext). Description and Multimedia have been omitted for brevity."
 0..1			FindingMethod
-0..1			Interpretation
-		
-		Element:		Interpretation
-		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a finding.
-		
-		CIMI Alignment: The value set binding has been chosen to align with FHIR. (Note: it is not clear if Interpretation belongs in FindingTopic, rather than a context class, but that is how CIMI has modeled it.)"
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 
 		Element:		FindingMethod
 		Concept:		TBD
@@ -237,7 +252,6 @@ CIMI Alignment:
 8) The attribute evaluationDate has been moved to RecordedContext, because it only applies to evaluations that have been done.
 9) The attributes device and evaluationProcedure have been removed for brevity, since they are not used in the current IG."
 
-Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
 0..1			Specimen
