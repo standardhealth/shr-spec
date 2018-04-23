@@ -1,6 +1,13 @@
 Grammar:	Map 5.1
-Namespace:	shr.entity
+Namespace:	cimi.entity
 Target:		FHIR_STU_3
+
+	
+AnatomicalLocation maps to BodySite:
+	Value maps to code
+	Laterality maps to qualifier (slice on = coding.code)
+	AnatomicalDirection maps to qualifier
+
 
 Patient maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient:
 	Person.ActiveFlag maps to active
@@ -62,11 +69,11 @@ Organization maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-org
 Group maps to Group:
 	ActiveFlag maps to active
 	Type maps to type
-	Definitional maps to actual
+	Actual maps to actual
 	constrain code to 0..0
 	Title maps to name
 	GroupCharacteristic maps to characteristic.value[x]
-	GroupCharacteristic.TopicCode maps to characteristic.code
+	GroupCharacteristic.GroupCharacteristicCode maps to characteristic.code
 	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
 	GroupCharacteristic.TimePeriod maps to characteristic.period
 	Member.Value maps to member.entity
@@ -104,26 +111,19 @@ Medication maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medic
 	LotNumber maps to package.batch.lotNumber
 	ExpirationDate maps to package.batch.expirationDate
 	Package maps to package.container
-
-BodySite maps to BodySite:
-	Value maps to code
-	Laterality maps to qualifier (slice on = coding.code)
-	Directionality maps to qualifier
-	PortionTotality	maps to qualifier
-	Details maps to description	
 	
 Specimen maps to Specimen:
 	AccessionIdentifier maps to accessionIdentifier
-	Status maps to status
+	SpecimenStatus maps to status
 	Type maps to type
-	Subject maps to subject
+	SubjectOfInformation maps to subject  
 	SourceSpecimen maps to parent
 	ReceivedTime maps to receivedTime
-	SpecimenCollectionPerformed.AmountOrSize maps to collection.quantity
-	SpecimenCollectionPerformed.BodySite maps to collection.bodySite
-	SpecimenCollectionPerformed.ProcedurePerformedContext.OccurrenceTimeOrPeriod maps to collection.collected[x]
-	SpecimenCollectionPerformed.ProcedurePerformedContext.Participant.Entity maps to collection.collector
-	SpecimenCollectionPerformed.ProcedurePerformedContext.Method maps to collection.method
+//	SpecimenCollectionPerformed.AmountOrSize maps to collection.quantity
+//	SpecimenCollectionPerformed.BodySite maps to collection.bodySite
+//	SpecimenCollectionPerformed.ProcedurePerformedContext.OccurrenceTimeOrPeriod maps to collection.collected[x]
+//	SpecimenCollectionPerformed.ProcedurePerformedContext.Participant.Entity maps to collection.collector
+//	SpecimenCollectionPerformed.ProcedurePerformedContext.Method maps to collection.method
 //	SpecimenCollectionPerformed.ProcedurePerformedContext.RelatedRequest maps to request
 	SpecimenContainer.Identifier maps to container.identifier
 	SpecimenContainer.Details maps to container.description
@@ -131,3 +131,29 @@ Specimen maps to Specimen:
 	SpecimenContainer.Capacity maps to container.capacity
 	SpecimenContainer.SpecimenQuantity maps to container.specimenQuantity
 	SpecimenContainer.Additive maps to container.additive[x]
+
+Annotation maps to Annotation:
+	Value maps to text
+	Author maps to author[x]
+	OccurrenceTime maps to time
+	
+Identifier maps to Identifier:
+	Value maps to value
+	Purpose maps to use
+	Type maps to type
+	CodeSystem maps to system 
+	EffectiveTimePeriod maps to period
+	Issuer maps to assigner
+	
+Signature maps to Signature:
+	SignatureType maps to type
+	CreationTime maps to when
+	Signatory maps to who[x]
+	OnBehalfOf maps to onBehalfOf[x]
+	ContentType maps to contentType
+	BinaryData maps to blob	
+	
+Device maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-device:
+	Type maps to type
+	DeviceUdi maps to udi.carrierHRF
+	VendorModelNumber maps to model

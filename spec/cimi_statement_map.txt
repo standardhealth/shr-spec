@@ -1,0 +1,62 @@
+Grammar:	Map 5.1
+Namespace:	cimi.statement
+Target:		FHIR_STU_3
+
+
+EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+	EvaluationResultTopic.Category maps to category
+	EvaluationResultTopic.FindingMethod maps to method
+	EvaluationResultTopic.TopicCode maps to code
+	EvaluationResultTopic.AnatomicalLocation maps to bodySite
+	EvaluationResultTopic.Specimen maps to specimen
+	EvaluationResultRecordedContext.ResultValue maps to value[x]
+	EvaluationResultRecordedContext.ExceptionValue maps to dataAbsentReason
+	EvaluationResultRecordedContext.Interpretation maps to interpretation
+	EvaluationResultRecordedContext.RelevantTime maps to effective[x]
+	EvaluationResultRecordedContext.FindingStatus maps to status
+	EvaluationResultTopic.ReferenceRange maps to referenceRange
+	EvaluationResultTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
+	EvaluationResultTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
+	EvaluationResultTopic.ReferenceRange.Type maps to referenceRange.type
+	EvaluationResultTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
+	EvaluationResultTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age
+//	fix related.type to #has-member
+	EvaluationResultTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	EvaluationResultTopic.EvaluationComponent._Concept maps to component.code
+	EvaluationResultTopic.EvaluationComponent.Value maps to component.value[x]
+	EvaluationResultTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	EvaluationResultTopic.EvaluationComponent.Interpretation maps to component.interpretation
+	EvaluationResultTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
+//	EvaluationResultTopic.Members.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+
+PanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+	fix related.type to #has-member
+	PanelTopic.Members.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	
+SimplifiedLaboratoryTestResultRecorded:
+	constrain related to 0..0  // no Members (not a panel)
+
+
+ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
+//	_Entry.RelatedEncounter maps to context
+//	_Entry.Informant maps to asserter
+//	_Entry.Author maps to recorder (not until FHIR 3.1)
+//	Subject maps to subject
+//	_Entry.CreationTime maps to assertedDate
+	ConditionTopic.Category maps to category
+	ConditionTopic.TopicCode maps to code
+	ConditionPresenceContext.ClinicalStatus maps to clinicalStatus
+	ConditionPresenceContext.VerificationStatus maps to verificationStatus
+	ConditionPresenceContext.Onset maps to onset[x]
+	ConditionPresenceContext.Abatement maps to abatement[x]
+	constrain bodySite to 0..0
+	ConditionPresenceContext.Severity maps to severity
+	ConditionPresenceContext.Stage maps to stage
+	ConditionPresenceContext.Stage.CodeableConcept maps to stage.summary
+	ConditionPresenceContext.Stage.StageDetail maps to stage.assessment
+
+
+ConditionAbsenceStatement maps to Basic:
+// There is no mechanism in FHIR (not Condition, not Observation) to say "Patient does not have Condition X"
+

@@ -1,0 +1,83 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi.statement
+Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
+Uses:			shr.core, cimi.core, cimi.topic, cimi.context, cimi.entity
+
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+
+Element:		ClinicalStatement
+Based on:		InformationEntry
+Concept:		TBD
+Description: 	"A special type of information entry consisting of a topic and a context. 
+The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
+1..1			StatementTopic
+1..1			StatementContext
+0..1			Encounter
+
+
+Element:		EvaluationResultRecorded
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+				StatementTopic is type EvaluationResultTopic
+				StatementContext is type EvaluationResultRecordedContext
+
+Element:		PanelRecorded
+Based on:		LaboratoryTestResultRecorded
+				StatementTopic is type PanelTopic
+				
+
+Element:		LaboratoryTestResultRecorded
+Based on:		EvaluationResultRecorded
+Description:	"Measurement resulting from a laboratory analysis. The category is fixed to 'laboratory' to align with US-Core."
+0..*			DiagnosticService
+				EvaluationResultTopic.Category is OBSCAT#laboratory
+
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
+
+		
+	
+Element:		SimplifiedLaboratoryTestResultRecorded
+Based on:		LaboratoryTestResultRecorded
+Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
+0..0			EvaluationResultTopic.Precondition
+0..0			EvaluationResultTopic.ReferenceRange
+0..0			Members
+0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
+	
+
+
+EntryElement:		ConditionPresenceStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+
+In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource."
+				StatementTopic is type ConditionTopic
+				StatementContext is type ConditionPresenceContext				
+
+
+EntryElement:	ConditionAbsenceStatement
+Based on:		ClinicalStatement
+Concept:		MTH#C0277541  "no disease present"
+Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
+				StatementTopic is type ConditionTopic
+				StatementContext is type AbsenceContext					
+				
+				
+EntryElement:	ClinicalNote
+Based on:		ClinicalStatement
+Concept:		MTH#C0747978 "Progress Note"
+Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
+				StatementTopic is type FindingTopic
+				StatementContext is type RecordedContext
+1..1			StatementTopic.Details   // change to "description" to synch with CIMI

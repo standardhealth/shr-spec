@@ -1,0 +1,133 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi.topic
+Description:	"The Topic Core package contains the top-level specializations of the Statement Topic class, namely, the FindingTopic, ActionTopic (ProcedureTopic), and EventTopic classes."
+Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.entity, cimi.statement
+
+Element:		StatementTopic
+Based on:		NonIndependent
+Concept:		TBD
+Description:	"Compositional and reusable grouping of clinical statement attributes that make up the clinical focus of a statement. 
+
+StatementTopic class attributes are aligned with SNOMED CT Concept Model attributes when such an overlap exists. Note that this class does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded)."
+1..1			TopicCode
+
+		Element:		TopicCode	
+		Concept:		TBD
+		Description:	"The concept representing the finding or action that is the topic of the statement. 
+		
+		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic independent of the context of the action or the finding."
+		Value:			CodeableConcept
+
+Abstract Element:	ActionTopic
+Based on:			StatementTopic
+Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
+0..*				Category
+
+Element: 		FindingTopic
+Based on:		StatementTopic
+Concept:		TBD
+Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. 
+
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+
+CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. The model assumes the result of the finding, and interpretationof that result, are not part of the topic (the question), but part of the result (the answer), and therefore appears in the context (RecordedContext and PresenceContext)."
+0..1			FindingMethod
+0..1			Details
+
+		Element:		FindingMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding; for example, the specific imaging technique, lab test code, or assessment vehicle.
+		
+		CIMI Alignment: In CIMI V0.0.4, this attribute was called 'method'. The value set binding reflects CIMI's preference for LOINC codes."
+		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/observation-codes
+
+
+Element:		PanelTopic
+Based on:		EvaluationResultTopic  // or FindingTopic??? But if FindingTopic, mapping isn't available
+Concept:		TBD
+Description:	"The base topic for collections of independent findings."
+1..1			Members
+
+		Element:		Members
+		Concept:		TBD
+		Description:	"Members represent the elements of a group of a related but independent evaluations. 
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		Value:			0..* ref(EvaluationResultRecorded)   //FindingStatement?
+
+
+Abstract Element: AssertionTopic
+Based on:		FindingTopic
+Concept:		TBD
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
+Value:			0..1  CodeableConcept
+		
+Element:		EvaluationResultTopic
+Based on:		FindingTopic
+Concept:		MTH#C1554188
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Value:			0..1 (Quantity or CodeableConcept or string or boolean or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
+1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+1..1			TopicCode
+0..1			EvaluationMethod
+0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
+0..1			ref(Device)
+0..1			ref(Specimen)
+0..1			Details
+0..*			Precondition
+0..*			ReferenceRange  // applies to a quantitative measurement only
+0..* 			EvaluationComponent
+
+	Element:		EvaluationMethod
+	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
+	Value:			CodeableConcept should be from http://loinc.org
+//
+	Element:		EvaluationComponent
+	Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
+	Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
+	0..1			ExceptionValue
+	0..1			Interpretation
+	0..*			ReferenceRange
+		
+		Element:		Precondition
+		Concept:		TBD
+		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
+		Value:			CodeableConcept
+		
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			Range   // TODO: align this with FHIR
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			ApplicableSubpopulation
+		0..1			ApplicableAgeRange
+		
+				Element:	ApplicableSubpopulation
+				Concept:	MTH#C0039309 "Target Population"
+				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
+				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
+		
+				Element:	ApplicableAgeRange
+				Concept:	TBD
+				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
+				Value:		Range
+
+				
+Element:		ConditionTopic
+Based on:		AssertionTopic
+Concept:		MTH#C0348080
+Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. "
+Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+1..*			Category from ConditionCategoryVS
+0..*			AnatomicalLocation
+
+/* 
+TODO:
+Need to add Cause or Precursor (another condition that leads to the current condition) - relate to Wound cause, for example
+Associate the condition with Evidence, such as Observations, Tests, Imaging Results
+Provide for Progress Notes (complex type with text, date, author)
+Link to Related Medications
+*/
+
+
+
+
