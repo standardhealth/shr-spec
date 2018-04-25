@@ -27,15 +27,19 @@ EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition
 	EvaluationResultTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
 	EvaluationResultTopic.EvaluationComponent.Interpretation maps to component.interpretation
 	EvaluationResultTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
-//	EvaluationResultTopic.Members.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+//	EvaluationResultTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 
 
 PanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
 	fix related.type to #has-member
-	PanelTopic.Members.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+NonLabPanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+	fix related.type to #has-member
+	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 	
 SimplifiedLaboratoryTestResultRecorded:
-	constrain related to 0..0  // no Members (not a panel)
+	constrain related to 0..0  // no PanelMembers (not a panel)
 
 
 ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
@@ -46,11 +50,12 @@ ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefiniti
 //	_Entry.CreationTime maps to assertedDate
 	ConditionTopic.Category maps to category
 	ConditionTopic.TopicCode maps to code
+	constrain bodySite to 0..0
+	ConditionTopic.AnatomicalLocation maps to http://hl7.org/fhir/StructureDefinition/condition-targetBodySite 
 	ConditionPresenceContext.ClinicalStatus maps to clinicalStatus
 	ConditionPresenceContext.VerificationStatus maps to verificationStatus
 	ConditionPresenceContext.Onset maps to onset[x]
 	ConditionPresenceContext.Abatement maps to abatement[x]
-	constrain bodySite to 0..0
 	ConditionPresenceContext.Severity maps to severity
 	ConditionPresenceContext.Stage maps to stage
 	ConditionPresenceContext.Stage.CodeableConcept maps to stage.summary

@@ -1,30 +1,13 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.entity
 Description:	"The namespace containing definitions for basic classes in CIMI."
-Uses:			shr.core, cimi.core, cimi.context
+Uses:			shr.core, cimi.core, cimi.context, cimi.element
 
 
 Element:			EntityOrRole
 Based on:			Independent
 Description:		"Parent class entity and role."
 //Identifier
-
-Element:		Identifier
-Concept:		MTH#C0600091
-Description:	"A unique string that identifies a specific person or thing."
-Value:			string  // or id or code or CodeableConcept?
-0..1			Purpose from http://hl7.org/fhir/ValueSet/identifier-use
-0..1			Type from http://hl7.org/fhir/ValueSet/identifier-type if covered
-0..1			CodeSystem
-0..1			EffectiveTimePeriod
-0..1			Issuer
-
-		
-		Element:		Issuer
-		Concept:		TBD
-		Description:	"An organization who issues a qualification, identifier, or license."
-		Value:			ref(Organization)
-
 
 
 Element:		Role
@@ -358,52 +341,6 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 		Value:			CodeableConcept
 
 
-// FHIR Complex Datatypes that reference Entities
-		
-		
-Element:		Annotation
-Concept:		TBD
-Description:	"An added or follow-up note, often after the fact, that contains metadata about who made the statement and when."
-Value:			string  // change to language-text
-1..1			Author
-1..1			OccurrenceTime
-
-	Element:		Author
-	Concept:		TBD
-	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
-	//Value:		string or ref(EntityOrRole)
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
-
-
-
-
-
-Element:	Signature
-Concept:	TBD
-Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
-1..*		SignatureType from http://hl7.org/fhir/ValueSet/signature-type if covered
-1..1		CreationTime
-1..1		Signatory
-0..1		OnBehalfOf
-0..1		ContentType
-0..1		BinaryData
-
-	Element:   	 	SignatureType
-	Concept:        MTH#C0332307
-	Description:    "Type of signature"
-	Value:          Coding
-
-	Element:		Signatory
-	Concept:		TBD
-	Description:	"The party signing."
-	Value:			uri or ref(Entity)
-
-	Element:		OnBehalfOf
-	Concept:		TBD
-	Description:	"The party represented by the actual participant."
-	Value:			uri or ref(Organization)
-	
-	
 
 EntryElement:	Person
 Based on:		Entity
@@ -473,8 +410,6 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			boolean
 
-	
-
 	Element:		Deceased
 	Concept:		MTH#C0011065
 	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
@@ -543,25 +478,6 @@ Description:    "A social or legal structure formed by human beings."
 	Concept:		TBD
 	Description:	"The larger entity that this is a portion of."
 	Value:			ref(Entity)
-	
-Element:		AnatomicalLocation
-Based on:		Entity
-Concept:		MTH#C1545955
-Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
-Value:			CodeableConcept from AnatomicalLocationVS
-0..1 			Laterality
-0..1			AnatomicalDirection
-
-
-	Element:		Laterality
-	Concept:		MTH#C0925205 "Anatomical laterality"
-	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/bodysite-laterality
-
-	Element:		AnatomicalDirection
-	Concept:		NCI#C99074
-	Description:	"Anatomical location or specimen further detailing directionality."
-	Value:			CodeableConcept from AnatomicalDirectionVS
 
 
 Element:		Location
@@ -667,8 +583,6 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 	
 // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
 // BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollectionAction breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
-
-
 
 		Element:		Capacity
 		Concept:		TBD

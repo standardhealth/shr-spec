@@ -1,0 +1,86 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi.element
+Description:	"The Element Package defines reusable data elements that are used across multiple packages."
+Uses:			shr.core, shr.base, cimi.core, cimi.entity
+
+
+		
+Element:		Annotation
+Concept:		TBD
+Description:	"An added or follow-up note, often after the fact, that contains metadata about who made the statement and when."
+Value:			string  // change to language-text
+1..1			Author
+1..1			OccurrenceTime
+
+	Element:		Author
+	Concept:		TBD
+	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
+	//Value:		string or ref(EntityOrRole)
+	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
+
+
+Element:	Signature
+Concept:	TBD
+Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
+1..*		SignatureType from http://hl7.org/fhir/ValueSet/signature-type if covered
+1..1		CreationTime
+1..1		Signatory
+0..1		OnBehalfOf
+0..1		ContentType
+0..1		BinaryData
+
+	Element:   	 	SignatureType
+	Concept:        MTH#C0332307
+	Description:    "Type of signature"
+	Value:          Coding
+
+	Element:		Signatory
+	Concept:		TBD
+	Description:	"The party signing."
+	Value:			uri or ref(Entity)
+
+	Element:		OnBehalfOf
+	Concept:		TBD
+	Description:	"The party represented by the actual participant."
+	Value:			uri or ref(Organization)
+	
+	
+
+Element:		RouteIntoBody
+Concept:		MTH#C0013153
+Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
+Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
+
+Element:		AnatomicalLocation
+Concept:		MTH#C1545955
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
+Value:			CodeableConcept from AnatomicalLocationVS
+0..1 			Laterality
+0..1			AnatomicalDirection
+
+
+	Element:		Laterality
+	Concept:		MTH#C0925205 "Anatomical laterality"
+	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/bodysite-laterality
+
+	Element:		AnatomicalDirection
+	Concept:		NCI#C99074
+	Description:	"Anatomical location or specimen further detailing directionality."
+	Value:			CodeableConcept from AnatomicalDirectionVS
+	
+Element:		Identifier
+Concept:		MTH#C0600091
+Description:	"A unique string that identifies a specific person or thing."
+Value:			string  // or id or code or CodeableConcept?
+0..1			Purpose from http://hl7.org/fhir/ValueSet/identifier-use
+0..1			Type from http://hl7.org/fhir/ValueSet/identifier-type if covered
+0..1			CodeSystem
+0..1			EffectiveTimePeriod
+0..1			Issuer
+
+		
+		Element:		Issuer
+		Concept:		TBD
+		Description:	"An organization who issues a qualification, identifier, or license."
+		Value:			ref(Organization)

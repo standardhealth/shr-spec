@@ -1,17 +1,17 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.allergy
 Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.adverse, shr.condition, shr.medication
+Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element
 
 CodeSystem:     SCT = http://snomed.info/sct
-
+CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
 
 Element:		AdverseSensitivityToSubstanceTopic
 Based on:		AssertionTopic
 Concept:		TBD	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
 1..1			AllergenIrritant
-1..1			Subject // constrain cardinality to match FHIR
+//1..1			SubjectOfInformation // constrain cardinality to match FHIR
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 
@@ -22,18 +22,18 @@ Description:	"Context for adverse sensitivities that are known or suspected to e
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
 1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..*			AdverseReaction
 0..1			MostRecentOccurrenceTime
+0..*			AdverseReaction
 
 		Element:		SubstanceCategory
 		Concept:		TBD
 		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
 		Value:			code
 
-		Element:		VerificationStatus
-		Concept:		TBD
-		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			code
+//		Element:		VerificationStatus
+//		Concept:		TBD
+//		Description:	"Whether an assessment has been confirmed by testing or observation."
+//		Value:			code
 
 		Element:		MostRecentOccurrenceTime
 		Concept:		TBD
@@ -64,19 +64,33 @@ Description:	"Context for adverse sensitivities that are known or suspected to e
 //--------------- Instantiations -------------------
 
 EntryElement:	AdverseSensitivityToSubstance
-Based on:		AdverseSensitivityToSubstanceTopic
+Based on:		ClinicalStatement
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-1..1			AdverseSensitivityPresenceContext
-				
+				StatementTopic is type AdverseSensitivityToSubstanceTopic
+				StatementContext is type AdverseSensitivityPresenceContext
+
 			
 EntryElement:	NoAdverseSensitivityToSubstance
-Based on:		AdverseSensitivityToSubstanceTopic
+Based on:		ClinicalStatement
 Concept:		MTH#C4508987 "No Allergy [to substance]"
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. NoAllergyToSubstance is not an assertion because the value (a code representing a substance) does not carry the complete meaning."
-1..1			AbsenceContext
+				StatementTopic is type AdverseSensitivityToSubstanceTopic
+				StatementContext is type AbsenceContext
 
-/*
+//EntryElement:	NoKnownDrugAllergy
+//Based on:		NoAdverseSensitivityToSubstance	
+//				AllergenIrritant is SCT#409137002
+//				SubstanceCategory is CAT#medication
+
+/*				
+NoKnownFoodAllergy:
+	fix code to SCT#429625007
+
+NoKnownEnvironmentalAllergy:
+	fix code to SCT#428607008	
+				
+
 EntryElement:	NoKnownAllergy
 Based on:		AdverseSensitivityToSubstanceTopic
 Concept:		MTH#C0262580

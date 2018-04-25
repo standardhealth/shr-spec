@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.statement
 Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
-Uses:			shr.core, cimi.core, cimi.topic, cimi.context, cimi.entity
+Uses:			shr.core, cimi.core, cimi.element, cimi.topic, cimi.context, cimi.entity
 
 
 CodeSystem:     SCT = http://snomed.info/sct
@@ -28,11 +28,33 @@ EvaluationResultRecorded has a value representing the result (answer), or an Exc
 				StatementTopic is type EvaluationResultTopic
 				StatementContext is type EvaluationResultRecordedContext
 
+
+Element:		CodedEvaluationResultRecorded
+Based on:		EvaluationResultRecorded
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed whose answer is expressed as a code."
+				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
+0..0			EvaluationResultTopic.ReferenceRange
+				
+				
+Element:		NonLabCodedEvaluationResultRecorded
+Based on:		CodedEvaluationResultRecorded
+Description:	"A coded finding not based on a sample or measurement device."
+0..0			EvaluationResultTopic.Device
+0..0			EvaluationResultTopic.Specimen
+
+			
 Element:		PanelRecorded
 Based on:		LaboratoryTestResultRecorded
 				StatementTopic is type PanelTopic
-				
 
+Element:		NonLabPanelRecorded
+Based on:		EvaluationResultRecorded
+				StatementTopic is type PanelTopic
+0..0			PanelTopic.Device
+0..0			PanelTopic.Specimen
+0..0			PanelTopic.ReferenceRange			
+				
 Element:		LaboratoryTestResultRecorded
 Based on:		EvaluationResultRecorded
 Description:	"Measurement resulting from a laboratory analysis. The category is fixed to 'laboratory' to align with US-Core."
@@ -45,18 +67,17 @@ Description:	"Measurement resulting from a laboratory analysis. The category is 
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
 		
-	
 Element:		SimplifiedLaboratoryTestResultRecorded
 Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
 0..0			EvaluationResultTopic.Precondition
 0..0			EvaluationResultTopic.ReferenceRange
-0..0			Members
+0..0			PanelMembers
 0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 	
 
 
-EntryElement:		ConditionPresenceStatement
+EntryElement:	ConditionPresenceStatement
 Based on:		ClinicalStatement
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
