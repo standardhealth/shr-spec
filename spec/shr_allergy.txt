@@ -6,11 +6,11 @@ Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement,
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
 
-Element:		AdverseSensitivityToSubstanceTopic
+Element:		AdverseSensitivityTopic
 Based on:		AssertionTopic
 Concept:		TBD	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-1..1			AllergenIrritant
+0..1			AllergenIrritant
 //1..1			SubjectOfInformation // constrain cardinality to match FHIR
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
@@ -53,7 +53,7 @@ Description:	"Context for adverse sensitivities that are known or suspected to e
 				Element:	AllergenIrritant	
 				Concept:	TBD
 				Description:"A substance that causes an allergic reaction or irritation."
-				Value:		CodeableConcept from AllergenIrritantVS
+				Value:		CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-substance
 		
 				Element:	Manifestation
 				Concept:	MTH#C1280464
@@ -67,33 +67,42 @@ EntryElement:	AdverseSensitivityToSubstance
 Based on:		ClinicalStatement
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-				StatementTopic is type AdverseSensitivityToSubstanceTopic
+				StatementTopic is type AdverseSensitivityTopic
 				StatementContext is type AdverseSensitivityPresenceContext
+1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
+				StatementTopic.TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
 
 			
 EntryElement:	NoAdverseSensitivityToSubstance
 Based on:		ClinicalStatement
 Concept:		MTH#C4508987 "No Allergy [to substance]"
-Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. NoAllergyToSubstance is not an assertion because the value (a code representing a substance) does not carry the complete meaning."
-				StatementTopic is type AdverseSensitivityToSubstanceTopic
+Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
+				StatementTopic is type AdverseSensitivityTopic
 				StatementContext is type AbsenceContext
+				StatementTopic.TopicCode from NoKnownAllergyVS
 
-//EntryElement:	NoKnownDrugAllergy
-//Based on:		NoAdverseSensitivityToSubstance	
-//				AllergenIrritant is SCT#409137002
-//				SubstanceCategory is CAT#medication
+EntryElement:	NoKnownDrugAllergy
+Based on:		NoAdverseSensitivityToSubstance
+				AdverseSensitivityTopic.TopicCode is SCT#409137002 "No known drug allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#medication
 
-/*				
-NoKnownFoodAllergy:
-	fix code to SCT#429625007
+EntryElement:	NoKnownFoodAllergy
+Based on:		NoAdverseSensitivityToSubstance	
+				AdverseSensitivityTopic.TopicCode is SCT#429625007  "No known food allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#food
 
-NoKnownEnvironmentalAllergy:
-	fix code to SCT#428607008	
-				
+EntryElement:	NoKnownFoodAllergy
+Based on:		NoAdverseSensitivityToSubstance	
+				AdverseSensitivityTopic.TopicCode is SCT#428607008 "No known environmental allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant 
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#environment	
 
 EntryElement:	NoKnownAllergy
-Based on:		AdverseSensitivityToSubstanceTopic
+Based on:		NoAdverseSensitivityToSubstance	
 Concept:		MTH#C0262580
-Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors. NoKnownAllergy is an assertion because the code, such as 'No known food allergy' carries the complete meaning."
-Value:			CodeableConcept from NoKnownAllergyVS
-*/
+Description:	"Express no known allergies or hypersensitivity to any food, drug, biologic, or environmental substance."
+				AdverseSensitivityTopic.TopicCode is SCT#716186003 "No known allergy (situation)" 
+0..0			AdverseSensitivityTopic.AllergenIrritant 
+0..0			AdverseSensitivityTopic.SubstanceCategory
