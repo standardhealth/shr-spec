@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.core
 Description:	"The namespace containing definitions for basic classes in CIMI."
-Uses:			shr.core, cimi.entity
+Uses:			shr.core, cimi.element, cimi.entity
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 //
@@ -13,9 +13,9 @@ Based on:		Locatable
 Description:	"Base class for classes in CIMI that include enough context to stand alone. Analogous to FHIR's DomainResource."
 
 
-Element:		NonIndependent
+Element:		NonIndependent   // aka data element
 Based on:		Locatable
-Description:	"Base class for classes in CIMI that do not have enough context to stand alone. These elements can be used to create classes by composition."
+Description:	"Parent for classes in CIMI that do not have enough context to stand alone. These reusable building blocks/data elements can be used to create classes by composition."
 
 Element:		DataType
 Based on:		NonIndependent
@@ -31,18 +31,54 @@ Based on:		Content
 Concept:		MTH#C1705654
 Description:	"An entry in a patient record or in a report, generally used for the documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
 0..1			SubjectOfInformation
+0..*			Annotation
+0..1			RecordStatus
+0..1			Recorded
+0..1			Signed
+0..*			Cosigned
+0..*			Verified
 
 	Element:		SubjectOfInformation
 	Description:	"The person or thing that this entry relates to, usually the Person of Record. However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, finding, condition, or intervention.
 	In contrast to CIMI, the SubjectOfInformation is not a Participation. There's no action to participate in. Participant has extra unnecessary attributes, onBehalfOf."
 	Value:			ref(EntityOrRole) //ref(Patient) or ref(Group) or ref(Device) or ref(Location) or ref(RelatedPerson) or ref(Organization)
-	0..1		RelationshipToSubjectOrRecord
+	0..1			RelationshipToSubjectOrRecord
 	
-		Element:	RelationshipToSubjectOrRecord
-		Description: "The relationship of the SubjectOfInformation to the subject of record."
-		Value:		CodeableConcept
+		Element:		RelationshipToSubjectOrRecord
+		Description: 	"The relationship of the SubjectOfInformation to the subject of record."
+		Value:			CodeableConcept
 
-Element:		Encounter
-Based on:		InformationEntry
-Concept:		TBD
-Description:	"An abstract class that represents an encounter class. This class has been temporarily stubbed out."
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Value:			CodeableConcept
+
+	Element:    	Informant
+	Concept:        MTH#C0449416
+	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
+	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
+	
+	Element:		Recorded
+	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
+	Value:			Attribution
+	
+	Element:		Signed
+	Description:	"Provenance information specific to the signing of the clinical statement."
+	Value:			Attribution
+
+	Element:		Cosigned
+	Description:	"Provenance information specific to the cosigning of the clinical statement."
+	Value:			Attribution
+
+	Element:		Verified
+	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
+	Value:			Attribution
+		
+		Element:		Attribution
+		Description:	"Information ascribing the record to a particular contributor or responsible person."
+		1..1			EntityOrRole
+		0..1			RecordedOn
+		0..1			Signature
+
+			Element:		RecordedOn
+			Description:	"The time of the attribution action."
+			Value:			instant
