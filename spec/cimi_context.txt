@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.context
 Description:	"The Context Package defines the high-level clinical statement context classes. Three types of contexts are currently defined in CIMI (1) Finding Contexts, (2) Action Contexts, and (3) Event Concepts. Finding contexts are used to specify whether a finding was observed to be present or absent. Action contexts are used to specify whether a clinical activity was performed, ordered, planned, or perhaps not performed. The Event context is experimental and has not yet been formally modeled."
-Uses:			shr.core, shr.base, cimi.core, cimi.element, cimi.topic, cimi.statement, cimi.entity, shr.entity
+Uses:			shr.core, shr.base, cimi.core, cimi.element, cimi.topic, cimi.statement, cimi.entity, cimi.encounter, shr.entity
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 //
@@ -11,18 +11,12 @@ Concept:		TBD
 Description:	"Compositional and reusable grouping of clinical statement attributes that provides the context for the topic of a clinical statement. 
 The StatementContext class aligns with the SNOMED CT Situations with Explicit Context (SWEC) Concept Model. The StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information. It also often holds provenance information relevant to the context of the clinical statement. It is important to note that by default the context applies to the conjunction of the attribute specified in the statement. For instance, if a clinical statement has a topic describing a rash on left arm and a context of 'absent', then the statement states that the subject of interest did not have a rash on the left arm but might have had one on the right arm."
 1..1			ContextCode
-0..1			Encounter
 
 		Element:		ContextCode	
 		Concept:		TBD
 		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc.
 		Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC."
 		Value:			CodeableConcept	
-		
-		Element:		Encounter
-		Based on:		InformationEntry
-		Concept:		TBD
-		Description:	"An abstract class that represents an encounter class. This class has been temporarily stubbed out."
 
 Element:			ActionContext
 Based on:			StatementContext
@@ -40,6 +34,7 @@ Concept:		TBD
 Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
 1..1			OccurrenceTimeOrPeriod  // when the action took place
 0..*			Participant
+0..1			Encounter
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
 0..1			BasedOn
@@ -112,7 +107,7 @@ Description:	"An order for something to take place."
 0..1			ExpectedPerformerType
 0..1			ExpectedPerformer
 0..1			ExpectedMethod 
-0..1 			Priority should be from http://hl7.org/fhir/ValueSet/request-priority
+0..1 			PriorityRank should be from http://hl7.org/fhir/ValueSet/request-priority
 0..1			PerformerInstructions
 0..1			PatientInstructions	
 0..1			CommunicationMethod
@@ -167,6 +162,7 @@ Element:		FindingContext
 Based on:		StatementContext
 Concept:		SCT#410514004
 Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context."
+0..1			Encounter
 
 
 Element:		AssertionContext
@@ -186,11 +182,11 @@ For example, if the finding involves a myocardial infarction, the presence conte
 0..1			Abatement
 0..1			Certainty
 	
-			Element:	VerificationStatus
-			Concept:	TBD
-			Description: "Whether an assessment has been confirmed by testing or observation.
+			Element:		VerificationStatus
+			Concept:		TBD
+			Description:	"Whether an assessment has been confirmed by testing or observation.
 			CIMI Alignment: This attribute corresponds to FindingContext.status, but has been defined to align with FHIR. In AllergyIntolerance, the type is code."
-			Value:		CodeableConcept	
+			Value:			CodeableConcept	
 
 			Element:		Onset
 			Concept:		MTH#C0277793
@@ -202,15 +198,16 @@ For example, if the finding involves a myocardial infarction, the presence conte
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 			
-			Element:	Certainty
-			Concept:	TBD
+			Element:		Certainty
+			Concept:		TBD
 			Description:	"The degree of confidence in a conclusion or assertion."
-			Value:		CodeableConcept
+			Value:			CodeableConcept
 
 Element:		ConditionPresenceContext
 Based on:		PresenceContext
 Concept:		TBD
 Description:	"The context for a condition that is known, suspected, or possibly present."
+// TBD: Subject is a required field -- does it come from SubjectOfInformation or PersonOfRecord? Or both (one overriding the other?)
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
