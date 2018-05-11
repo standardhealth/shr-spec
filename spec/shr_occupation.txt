@@ -6,47 +6,44 @@ Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statemen
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org 
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 //
-EntryElement:	OccupationalData
+EntryElement:	OccupationalDataSummaryPanel
 Concept:		LNC#74165-2
 Based on:		NonLabPanelRecorded
 Description:	"Current and past activities for profit, wages, salary, or as a service to others."
-0..0			EvaluationResultRecordedContext.ResultValue
 				PanelTopic.TopicCode is LNC#74165-2
+				PanelTopic.Category is OBSCAT#social-history
+				PanelTopic.EvaluationComponent
+includes 0..1 	CurrentEmploymentStatus
 				PanelTopic.PanelMembers.EvaluationResultRecorded
-includes 0..1	EmploymentStatus
-includes 0..1	UsualWork
+includes 0..1	UsualOccupation
 includes 0..*	PastOrPresentJob
-includes 0..*	CombatZoneHazardousDutyPeriod
+includes 0..1	MilitaryServiceHistory
 
-EntryElement:	EmploymentStatus
-Based on:		NonLabCodedEvaluationResultRecorded
-Concept:		MTH#C0242271  // LNC#74165-2?
-Description:	"A person’s current economic relationship to a job, for example, employed (currently working for compensation), unemployed (i.e., searching for work for compensation), or not in the labor force (e.g., student, homemaker, not seeking work). Employment status is not the same as classification of work. The relevant time is when the status was effective (not when the information was gathered). For example, if the status is 'retired' then the relevant time is the retirement date."
-				EvaluationResultRecordedContext.ResultValue could be from http://hl7.org/fhir/ValueSet/employment-status-odh 
-				EvaluationResultTopic.TopicCode is MTH#C0242271
+
+		Element:		CurrentEmploymentStatus
+		Based on:		CodedEvaluationComponent
+		Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
+		Description:	"A person’s current economic relationship to a job, for example, employed (currently working for compensation), unemployed (i.e., searching for work for compensation), or not in the labor force (e.g., student, homemaker, not seeking work). Employment status is not the same as classification of work. The relevant time is when the status was effective (not when the information was gathered). For example, if the status is 'retired' then the relevant time is the retirement date."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/employment-status-odh 
+
 				
-EntryElement:	UsualWork
+EntryElement:	UsualOccupation
 Based on:		NonLabCodedEvaluationResultRecorded
 Concept:		LNC#21843-8
 Description:	"The type of work a person has held for the longest amount of time during his or her life, regardless of the occupation currently held and regardless of whether or not it has been held for a continuous time."
-				EvaluationResultRecordedContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
+				EvaluationResultRecordedContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
+				EvaluationResultTopic.Category is OBSCAT#social-history
 				EvaluationResultTopic.EvaluationComponent
 includes 0..1 	Industry
-includes 0..1	Occupation
 includes 0..1	TotalDuration
-
-	Element:		Occupation
-	Based on:		EvaluationComponent
-	Concept:		LNC#21843-8 // LNC#74287-4?
-	Description:	"A person's work or business"
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
 	
 	Element:		Industry
-	Based on:		EvaluationComponent
+	Based on:		CodedEvaluationComponent
 	Concept:		TBD
 	Description:	"A particular form or branch of economic or commercial activity."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/industry-cdc-census-2010
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/industry-cdc-census-2010  // defined in FHIR 3.2 and not found in 3.0.1
 					
 	Element:		TotalDuration
 	Based on:		EvaluationComponent
@@ -61,6 +58,8 @@ Based on:		NonLabCodedEvaluationResultRecorded
 Concept:		LNC#21843-8
 Description:	"A single job, past or present. The relevant time is the period the job was held."
 0..0			EvaluationResultRecordedContext.ResultValue
+0..0			EvaluationResultRecordedContext.ExceptionValue
+				EvaluationResultTopic.Category is OBSCAT#social-history
 0..1			Employer // not an evaluation component because the value is a reference to Person or Organization
 				EvaluationResultTopic.EvaluationComponent
 includes 0..1	Occupation
@@ -74,39 +73,47 @@ includes 0..1	WorkDaysPerWeek
 includes 0..1	WorkHoursPerDay
 
 	Element:		Employer
-	Concept:		MTH#C1274022
+	Concept:		MTH#C1274022  // currently unmapped because this is an extension
 	Description:	"A person or organization that hires the services of another."
 	Value:			ref(Person) or ref(Organization)
 	
+	Element:		Occupation
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#21843-8 // LNC#74287-4
+	Description:	"A person's work or business"
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010	// VS defined in FHIR 3.2 and not found in 3.0.1
+	
 	Element:		JobClassification
-	Based on:		EvaluationComponent
+	Based on:		CodedEvaluationComponent
 	Concept:		MTH#C0681111
 	Description:	"The classification of a person's job (one job) as defined by compensation and sector (e.g. paid, unpaid, self-employed, government, etc.). This is different from employment status: a person who is a volunteer (work classification) may have chosen not to be in the labor force (employment status)."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-classification-odh
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-classification-odh  // VS defined in FHIR 3.2 and not found in 3.0.1
 					
 	Element:		SupervisoryLevel
-	Based on:		EvaluationComponent
+	Based on:		CodedEvaluationComponent
 	Concept:		TBD
 	Description:	"The amount of supervisory or management responsibilities of a person at one job. For military jobs, pay grade is used as a proxy because it can be interpreted across branches of service. A change in supervisory level is considered a new job."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/supervisory-level-odh-us		
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/supervisory-level-odh-us	 // VS defined in FHIR 3.2 and not found in 3.0.1	
 	
 	Element:		JobDuty
 	Based on:		EvaluationComponent
 	Concept:		TBD
 	Description:	"A regular action performed at a single job."
 	Value:			string
+	0..0			ReferenceRange
 	
 	Element:		OccupationalHazard
 	Based on:		EvaluationComponent
 	Concept:		MTH#C0337074
 	Description:	"A hazard that is specific to a person's work or work environment for a single job and with which the person might come in contact. A hazard is a source of potential harm to an individual's physical or mental health (e.g., biological, chemical, physical, psychological, radiological)."
 	Value:			string
+	0..0			ReferenceRange
 					
 	Element:		WorkSchedule
 	Based on:		EvaluationComponent
 	Concept:		MTH#C0237852
 	Description:	"A person's typical arrangement of working hours for one job."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-schedule-odh
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-schedule-odh // defined in FHIR 3.2 and not found in 3.0.1
 
 	// Should be part of WorkSchedule, but we cannot add components to components (FHIR limitation)
 			Element:		WorkDaysPerWeek
@@ -120,60 +127,57 @@ includes 0..1	WorkHoursPerDay
 			Concept:		TBD
 			Description:	"The number of hours worked in a day or shift at one job by a person. For those working a split shift (divided into two parts that are separated by an interval longer than a normal rest period), it is the total of both periods of time in a shift."
 			Value:			Quantity with units UCUM#h
-			
-EntryElement:	CombatZoneHazardousDutyPeriod
-Based on:		EvaluationResultRecorded
-Concept:		LNC#87511-2
-Description:	"A time period of combat zone duty. The time period does not necessarily correspond to the time period of a job; for example, a soldier may be deployed into a combat zone for 1 year out of 4 years of service."
-				EvaluationResultRecordedContext.ResultValue value is type TimePeriod
-				EvaluationResultTopic.TopicCode is LNC#87511-2
-				
-		
-EntryElement:	MilitaryService
-Concept:		MTH#C3714797
-Based on:		NonLabPanelRecorded
+	
+
+EntryElement:	MilitaryServiceHistory
+Based on:		NonLabCodedEvaluationResultRecorded
 Description:	"History of service in the US military."
-0..0			EvaluationResultRecordedContext.ResultValue
-				PanelTopic.TopicCode is MTH#C3714797
-0..0			PanelTopic.EvaluationComponent
-				PanelTopic.PanelMembers.EvaluationResultRecorded
+				EvaluationResultTopic.Category is OBSCAT#social-history
+				EvaluationResultTopic.TopicCode is MTH#C3714797
+				EvaluationResultTopic.EvaluationComponent
 includes 1..1	MilitaryStatus
 includes 0..1 	MilitaryServiceDischargeStatus
 includes 0..1	MilitaryBranch
 includes 0..*	MilitaryServiceEra
 includes 0..1	ServiceConnectedDisability
-//ncludes 0..1	TBD "MilitaryRank"
-
+//includes 0..1	TBD "MilitaryRank"
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Based on:		NonLabCodedEvaluationResultRecorded
+	Based on:		CodedEvaluationComponent
 	Description:	"The current connection to the US military."
-					EvaluationResultRecordedContext.ResultValue from MilitaryStatusVS
+	Value:			CodeableConcept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
 	Concept:		TBD
-	Based on:		NonLabCodedEvaluationResultRecorded
+	Based on:		CodedEvaluationComponent
 	Description:	"How the subject was formally discharged from the US Military."
-					EvaluationResultRecordedContext.ResultValue from MilitaryServiceDischargeStatusVS
+	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Based on:		NonLabCodedEvaluationResultRecorded
+	Based on:		CodedEvaluationComponent
 	Description:	"The branch of the US military that the subject has served."
-					EvaluationResultRecordedContext.ResultValue from USMilitaryBranchVS
+	Value:			CodeableConcept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
 	Concept:		TBD
-	Based on:		NonLabCodedEvaluationResultRecorded
+	Based on:		CodedEvaluationComponent
 	Description:	"The time period of US military service."
-					EvaluationResultRecordedContext.ResultValue from MilitaryServiceEraVS
+	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
+	Based on:		EvaluationComponent
 	Concept:		TBD
-	Based on:		EvaluationResultRecorded
 	Description:	"Percentage disability resulting from US Military Service."
-					EvaluationResultRecordedContext.ResultValue value is type Quantity
-//					EvaluationResultRecordedContext.ResultValue.Value.Units.Coding is UCUM#%
+	Value:			Quantity with units UCUM#%
+	0..0			ReferenceRange
+
+	Element:		CombatZoneHazardousDutyPeriod
+	Based on:		EvaluationComponent
+	Concept:		LNC#87511-2
+	Description:	"A time period of combat zone duty. The time period does not necessarily correspond to the time period of a job; for example, a soldier may be deployed into a combat zone for 1 year out of 4 years of service."
+	Value:			TimePeriod
+	0..0			ReferenceRange
 
 
