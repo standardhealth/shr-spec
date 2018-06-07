@@ -1,21 +1,21 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.entity
 Description:	"The namespace containing definitions for basic classes in CIMI."
-Uses:			shr.core, cimi.core, cimi.context, cimi.element
+Uses:			shr.core, cimi.core, cimi.context, cimi.element, cimi.statement
 
 
-Element:			EntityOrRole
+Abstract Element:			EntityOrRole
 Based on:			Independent
 Description:		"Parent class entity and role."
 //Identifier
 
 
-Element:		Role
+Abstract Element:		Role
 Based on:		EntityOrRole
 Description:	"Capacity in which an actor is involved in an activity. For instance, 'attending physician'. Note that attributes of the actor (an entity) that remain constant regardless of the role the actor plays should be part of the entity and not the role. For instance, a person may be a practitioner and a patient. In both cases their date of birth will be the same and thus such information should not be part of the role."
 
 
-Element:		Entity
+Abstract Element:		Entity
 Based on:		EntityOrRole
 Concept:		TBD
 Description:	"Root class for entities such as people, organizations, and devices that have a separately identifiable existence."
@@ -619,5 +619,12 @@ Description:	"Direct container of specimen (tube&#47;slide, etc.)"
 		Description:	"The sequence number for this specimen in a collection of specimens."
 		Value:			CodeableConcept
 		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
+
+
+Element:			MaterializedAssertion
+Based on:			Entity
+Description:		"A thing whose existence is implied by an assertion of presence. For example, a wound presence assertion implies there is a physical wound that exists. Observation of a tumor implies there is a tumor that exists. Assertion of a condition in a patient implies there is one more countable instance (case) of that condition in the world. The MaterializedAssertion allows one to refer to the implied entity as an actual entity. In other words, MaterializedAssertion represents the reification of a clinical statement. 
+CIMI Alignment: not part of CIMI."
+Value:				ref(ConditionPresenceStatement)
 
 

@@ -18,11 +18,11 @@ Based on:		AnatomicalLocation
 Description:	"A body site specific to the breast structure."
 Value:			CodeableConcept from BreastSiteVS
 0..1			ClockDirection
-0..1			DistanceToNipple
+0..1			DistanceFromBreastSiteToNipple
 0..0			AnatomicalDirection
 
-		Element:		DistanceToNipple
-		Description:	"The body site location in relation to the nipple."
+		Element:		DistanceFromBreastSiteToNipple
+		Description:	"Distance between the feature of interest (e.g., the tumor) and the nipple."
 		Value:			Quantity with units UCUM#cm
 
 		
@@ -131,7 +131,9 @@ Based on:		SimplifiedLaboratoryTestResultRecorded
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 				EvaluationResultRecordedContext.ResultValue.CodeableConcept from NottinghamCombinedGradeVS
+				EvaluationResultRecordedContext.ExceptionValue from NottinghamNullVS
 				EvaluationResultTopic.TopicCode is LNC#44648-4
+
 				EvaluationResultTopic.Specimen is type BreastSpecimen
 				DiagnosticService is #pathology
 				EvaluationResultTopic.EvaluationComponent
@@ -142,24 +144,27 @@ includes 0..1 	MitoticCountScore
 
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
-			Concept:		SCT#371470008
+			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
 			Based on:		CodedEvaluationComponent
 			Description:	"A comparison between structures formed by the tumor cells and those formed by normal cells. Scored 1 to 3 with 3 being the most abnormal."
 			Value:			CodeableConcept from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
+							ExceptionValue from NottinghamNullVS
 
 			Element:		NuclearPleomorphismScore
-			Concept:		SCT#371471007
+			Concept:		LNC#44645-0
 			Based on:		CodedEvaluationComponent
 			Description:	"How large and varied the nuclei of the tumor cells are. Scored 1 to 3, with 3 being the most pleomorphism."
 			Value:			CodeableConcept from NuclearPleomorphismScoreVS
+							ExceptionValue from NottinghamNullVS
 
 			Element:		MitoticCountScore
-			Concept:		SCT#371472000
+			Concept:		LNC#85300-2
 			Based on:		CodedEvaluationComponent
-			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells.
-			
-			We are seeking feedback on the value of representing the mitotic rate as a value rather than coded ranges."
+			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells. We are seeking feedback on the value of representing the mitotic rate as a value rather than coded ranges."
 			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
+							ExceptionValue from NottinghamNullVS
+
+
 
 //			includes 0..1	PercentageInSituCarcinoma   // not sure where this belongs
 
@@ -218,7 +223,6 @@ includes 0..1	AverageStainingIntensity
 		Description:	"The degree or magnitude of staining (nuclear positivity) across cells in the specimen."
 		Value:			CodeableConcept from StainingIntensityVS
 
-				
 EntryElement:	HER2ReceptorStatus
 Based on:		PanelRecorded
 Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
@@ -247,7 +251,7 @@ Description:	"HER2 receptor status as determined by Immunohistochemistry (IHC)."
 				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 				EvaluationResultRecordedContext.ResultValue.CodeableConcept from HER2byIHCScoreVS
 				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
-				EvaluationResultTopic.FindingMethod from HER2IHCMethodVS
+0..0			EvaluationResultTopic.FindingMethod
 				EvaluationResultRecordedContext.Interpretation from PositiveNegativeEquivocalVS
 				DiagnosticService is #pathology
 0..0 			EvaluationResultTopic.AnatomicalLocation
@@ -265,10 +269,10 @@ includes 0..1	CompleteMembraneStainingPercent
 		
 EntryElement:	HER2byISH
 Based on:		LaboratoryTestResultRecorded
-Concept:		LNC#72383-3
+Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
 Description:	"HER2 receptor status as determined by In Situ Hybridization (ISH)."
 0..0			EvaluationResultRecordedContext.ResultValue.Value
-				EvaluationResultTopic.TopicCode is LNC#72383-3 "HER2 Presence in Tissue by Immunoassay"
+				EvaluationResultTopic.TopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
 				EvaluationResultTopic.FindingMethod from HER2ISHMethodVS
 				EvaluationResultRecordedContext.Interpretation from PositiveNegativeEquivocalVS
 				DiagnosticService is #pathology
@@ -501,7 +505,6 @@ Value:			CodeableConcept from PositiveNegativeVS
 1..1			BodySite from LymphSystemSubdivisionVS 
 				DiagnosticService is #pathology
 0..0			Focus
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
 0..0			DeltaFlag
@@ -555,7 +558,6 @@ Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 				Focus.CodeableConcept from GeneIdentifierVS
 				DiagnosticService is #genetics
-0..0			Evidence
 0..0			Precondition
 0..0			ReferenceRange
 0..0			DeltaFlag
@@ -595,13 +597,11 @@ includes 1..1	BRCA2Variant
 	Value:			CodeableConcept from PositiveNegativeVS
 					Focus.CodeableConcept is HGNC#BRCA2Gene
 
-*/
 
-
-/*
 FHIR Genomics:
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
 */
+

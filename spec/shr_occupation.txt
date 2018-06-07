@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.occupation
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity
+Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
@@ -14,6 +14,8 @@ Based on:		NonLabPanelRecorded
 Description:	"Current and past activities for profit, wages, salary, or as a service to others."
 				PanelTopic.TopicCode is LNC#74165-2
 				PanelTopic.Category is OBSCAT#social-history
+0..0			PanelTopic.AnatomicalLocation
+0..0			PanelTopic.FindingMethod		
 				PanelTopic.EvaluationComponent
 includes 0..1 	CurrentEmploymentStatus
 				PanelTopic.PanelMembers.EvaluationResultRecorded
@@ -116,17 +118,17 @@ includes 0..1	WorkHoursPerDay
 	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-schedule-odh // defined in FHIR 3.2 and not found in 3.0.1
 
 	// Should be part of WorkSchedule, but we cannot add components to components (FHIR limitation)
-			Element:		WorkDaysPerWeek
-			Based on:		EvaluationComponent
-			Concept:		TBD // not MTH#C3699549 hours work per week
-			Description:	"The typical number of days worked in a week by a person at one job."
-			Value:			Quantity with units UCUM#d
+	Element:		WorkDaysPerWeek
+	Based on:		EvaluationComponent
+	Concept:		TBD // not MTH#C3699549 hours work per week
+	Description:	"The typical number of days worked in a week by a person at one job."
+	Value:			Quantity with units UCUM#d
 							
-			Element:		WorkHoursPerDay
-			Based on:		EvaluationComponent
-			Concept:		TBD
-			Description:	"The number of hours worked in a day or shift at one job by a person. For those working a split shift (divided into two parts that are separated by an interval longer than a normal rest period), it is the total of both periods of time in a shift."
-			Value:			Quantity with units UCUM#h
+	Element:		WorkHoursPerDay
+	Based on:		EvaluationComponent
+	Concept:		TBD
+	Description:	"The number of hours worked in a day or shift at one job by a person. For those working a split shift (divided into two parts that are separated by an interval longer than a normal rest period), it is the total of both periods of time in a shift."
+	Value:			Quantity with units UCUM#h
 	
 
 EntryElement:	MilitaryServiceHistory

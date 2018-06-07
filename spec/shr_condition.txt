@@ -1,0 +1,66 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.condition
+Description:	"The SHR Condition domain contains definitions used to capture assessments, diagnoses, and judgments related to problems reported or experienced by a subject."
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+
+CodeSystem:		SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+
+//
+Abstract Element:	BodyStructureTopic
+Based on:		ConditionTopic
+Concept:		MTH#C1268086
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
+Value:			CodeableConcept from AnatomicalLocationVS
+				TopicCode is MTH#C1268086
+0..1			Morphology
+
+	Element:		Morphology
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
+
+	
+EntryElement:	BodyStructurePresenceStatement
+Based on:		ConditionPresenceStatement  // maybe AssertionOfPresenceStatement rather than calling a body structure a condition?
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+				StatementTopic is type BodyStructureTopic
+
+
+EntryElement:	BodyStructureAbsenceStatement  // AssertionOfAbsenceStatement?
+Based on:		ConditionAbsenceStatement
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+				StatementTopic is type BodyStructureTopic
+
+
+EntryElement:	DiseaseProgression
+Based on:		EvaluationResultRecorded
+Concept:		MTH#C0421176 "Progression"
+Description:	"A finding related to the current trend of a particular existing disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
+				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
+				EvaluationResultRecordedContext.ResultValue from ProgressionVS
+				EvaluationResultTopic.TopicCode is MTH#C0421176 "Progression"
+0..*			ProgressionEvidence
+// "ProgressionEvidence" is somewhat related to two existing attributes: ObservationCategory and EvaluationMethod
+//    * ObservationCategory has values imaging, laboratory, procedure, survey, exam, therapy. It represents the source of the observation
+//    * EvalutionMethod represents the test or procedure used to generate the result; it is typically a LOINC code (0..1)
+				EvaluationResultTopic.Focus.CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+0..0			EvaluationResultTopic.Specimen
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.Precondition
+0..0			EvaluationResultTopic.ReferenceRange  // applies to a quantitative measurement only			
+
+
+		Element:		ProgressionEvidence
+		Description:	"The type of evidence considered in determining disease progression."
+		Value:			CodeableConcept from ProgressionEvidenceVS	
+
+
+
+		
+//
+
+
+		

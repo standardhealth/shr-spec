@@ -1,6 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
+Uses:			cimi.element
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
@@ -701,46 +702,19 @@ Description:    "An address for a place in the USA, conforming to US mail postal
 	Description:	"A state or territory in the USA expressed by 2-letter US Postal code."
 	//Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
 
-//-------------------  Human Name ------------------
-// Defines a human name element
 
 Element:   		HumanName
+Based on:		PersonName
 Concept: 		MTH#C1547383
-Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)."
-Value:			string
-0..1    		HumanNamePrefix
-0..*    		GivenName
+Description:	"The CIMI person name, constrained to map correctly to FHIR."
+0..0			MiddleName
 0..1    		FamilyName
-0..*    		HumanNameSuffix
-0..1 			Purpose from http://hl7.org/fhir/ValueSet/name-use
-0..1 			EffectiveTimePeriod
-
-		Element:    	GivenName
-		Concept:		LNC#45392-8, SCT#408677003
-		Description:    "A set of names given to a person at birth, but not including the family name. In western cultures, this property would contain the 'first' and 'middle' names. Note that in some cultures, the given name is placed after the family name. Also note this property contains multiple elements, so it can handle those situations where a person has more than one 'middle' name. (Source: HL7 V3)."
-		Value:          string
-
-		Element:    	FamilyName
-		Concept:		LNC#45394-4
-		Description:    "The portion of a person's name that reflects the genealogy of the person. In western cultures, this is the 'last' name. In eastern cultures, the family name appears before the person's given name(s). In some cultures (e.g. Eritrea) the family name of a son is the first name of his father. (Source: HL7 V3)."
-		Value:          string
-
-		Element:    	HumanNamePrefix
-		Concept:		MTH#C3476361
-		Description:    "Contains a set of honorific terms that typically appear before a person's name, for example Mr., Mrs., Dr., etc. Prefixes have a strong association to the immediately following name part. (Source: HL7 V3)."
-		Value:          string  // punting on value set - there is little value in standardizing this element
-
-		Element:    	HumanNameSuffix
-		Concept:		LNC#45395-1, SCT#715196001
-		Description:    "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name."
-		Value:          string
-
-	
+				Purpose from http://hl7.org/fhir/ValueSet/name-use
+				
 Element:		BodyPosition
 Concept:		MTH#C1262869
 Description:	"The position or physical attitude of the body."
 Value:			CodeableConcept from BodyPositionVS
-
 
 Element:		Details
 Concept: 		MTH#C0947611

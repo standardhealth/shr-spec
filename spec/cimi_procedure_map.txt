@@ -1,0 +1,77 @@
+Grammar:	Map 5.1
+Namespace:	cimi.procedure
+Target:		FHIR_STU_3
+
+
+ProcedurePerformedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
+	ProcedureTopic.TopicCode maps to code
+	ProcedureTopic.SubjectOfInformation maps to subject
+	ProcedureTopic.Category maps to category
+	constrain notDone to 0..0
+	constrain notDoneReason to 0..0
+	ProcedureTopic.AnatomicalLocation maps to bodySite
+	ProcedureTopic.PartOfProcedure maps to partOf
+	ProcedureTopic.Annotation maps to note
+	ProcedurePerformedContext.Encounter maps to context
+	ProcedurePerformedContext.Reason maps to reasonCode
+	ProcedurePerformedContext.OccurrenceTimeOrPeriod maps to performed[x]
+	ProcedurePerformedContext.FHIRProcedureParticipant maps to performer
+	ProcedurePerformedContext.FHIRProcedureParticipant.Value maps to performer.actor
+	ProcedurePerformedContext.FHIRProcedureParticipant.ParticipationType maps to performer.role
+	ProcedurePerformedContext.FHIRProcedureParticipant.OnBehalfOf maps to performer.onBehalfOf
+	ProcedurePerformedContext.Status maps to status
+// TODO  The following statement is failing it might be a bug
+//	ProcedurePerformedContext.Method maps to http://hl7.org/fhir/StructureDefinition/procedure-method
+	ProcedurePerformedContext.RelatedRequest.Value maps to basedOn
+//	ProcedurePerformedContext.RelatedPlan maps to definition
+	ProcedurePerformedContext.Outcome maps to outcome
+	ProcedurePerformedContext.Facility maps to location
+
+
+ProcedureNotPerformedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
+	ProcedureTopic.TopicCode maps to code
+	ProcedureTopic.SubjectOfInformation maps to subject
+	ProcedureTopic.Category maps to category
+// TODO the following is causing a crash
+//	fix notDone to true
+	NotPerformedContext.Reason maps to notDoneReason
+	ProcedureTopic.AnatomicalLocation maps to bodySite
+	ProcedureTopic.PartOfProcedure maps to partOf
+	ProcedureTopic.Annotation maps to note
+	constrain performed[x] to 0..0
+	constrain performer to 0..0
+	fix status to http://hl7.org/fhir/event-status#suspended // FHIR is lacking a not-done status (see Gforge issue #14256)
+//	NotPerformedContext.Encounter maps to context
+	NotPerformedContext.RelatedRequest.Value maps to basedOn
+//	NotPerformedContext.RelatedPlan maps to definition
+	constrain outcome to 0..0
+	constrain location to 0..0
+
+SurgicalProcedurePerformedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
+	SurgicalProcedureTopic.DirectSite maps to http://hl7.org/fhir/StructureDefinition/procedure-targetBodySite
+	SurgicalProcedureTopic.IndirectSite maps to http://hl7.org/fhir/StructureDefinition/procedure-approachBodySite
+	SurgicalProcedureTopic.SurgicalApproach maps to http://hl7.org/fhir/StructureDefinition/procedure-approachBodySite
+
+
+ProcedureRequestedStatement maps to ProcedureRequest:
+	_Entry.CreationTime maps to authoredOn
+	Signed.Value.EntityOrRole maps to requester
+	ProcedureTopic.TopicCode maps to code
+	ProcedureTopic.Category maps to category
+	constrain doNotPerform to 0..0  // 
+	ProcedureTopic.SubjectOfInformation maps to subject
+	ProcedureTopic.AnatomicalLocation maps to bodySite
+	ProcedureRequestedContext.Encounter maps to context
+	ProcedureRequestedContext.Reason maps to reasonCode
+	ProcedureRequestedContext.Status maps to status
+	ProcedureRequestedContext.RequestIntent maps to intent
+	ProcedureRequestedContext.ExpectedPerformanceTime maps to occurrence[x]
+	ProcedureRequestedContext.ExpectedPerformerType maps to performerType
+	ProcedureRequestedContext.ExpectedPerformer maps to performer
+	ProcedureRequestedContext.PriorityRank  maps to priority
+
+/*
+ProcedureRequestedAgainst maps to ProcedureRequest:
+	fix doNotPerform to true
+*/	
+	

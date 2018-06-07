@@ -4,7 +4,7 @@ Description:	"The namespace containing definitions for basic classes in CIMI."
 Uses:			shr.core, cimi.element, cimi.entity
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-//
+
 Element:		Locatable 
 Description:	"Abstract top level class in the CIMI hierarchy. The Locatable class reflects CIMI's implementation using Archetype Description Language (ADL). Its attributes (archetype_node_id, name, and archetype_details) are necessary to serialize CIMI definitions in ADL, but have no clinical relevance. To avoid complicating the profiles with irrelevant extensions, the attributes of Locatable have been omitted."
 
@@ -33,12 +33,12 @@ Description:	"An entry in a patient record or in a report, generally used for th
 0..*			Annotation
 0..1			RecordStatus
 0..1			Recorded
-0..1			Signed
+0..1			Signed  // Author
 0..*			Cosigned
 0..*			Verified
 
 	Element:		SubjectOfInformation
-	Description:	"The person or thing that this entry relates to, usually the Person of Record (see Entry). However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, finding, condition, or intervention.
+	Description:	"The person or thing that this entry relates to, usually the Person of Record (see Entry). However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, behavior, finding, condition, wound, or intervention.
 	CIMI alignment: SubjectOfInformation is not a Participation -- unlike CIMI. There's no action to participate in. Participant has extra unnecessary attributes, such as 'onBehalfOf'."
 	Value:			ref(EntityOrRole) // ref(Patient) or ref(Group) or ref(Device) or ref(Location) or ref(RelatedPerson) or ref(Organization)
 	0..1			RelationshipToSubjectOrRecord
@@ -51,11 +51,12 @@ Description:	"An entry in a patient record or in a report, generally used for th
 	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
 	Value:			CodeableConcept
 
+/*	
 	Element:    	Informant
 	Concept:        MTH#C0449416
 	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
 	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
-	
+*/	
 	Element:		Recorded
 	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
 	Value:			Attribution

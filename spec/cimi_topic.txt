@@ -21,7 +21,9 @@ StatementTopic class attributes are aligned with SNOMED CT Concept Model attribu
 Abstract Element:	ActionTopic
 Based on:			StatementTopic
 Description:		"An entry related to an action or intervention, whether potential or actual, past or future. An intervention is an action addressing a undesired health state, behavior, risk, or goal."
-0..*				Category
+0..1				Category
+
+
 
 Element: 		FindingTopic
 Based on:		StatementTopic
@@ -63,10 +65,11 @@ Description:	"The base topic for conditions, allergies, adverse events, etc. The
 Element:		EvaluationResultTopic
 Based on:		FindingTopic
 Concept:		MTH#C1554188
-Description:	"The base class, independent of context for evaluations (measurements, tests, or questions) and a value containing the result (answer). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			EvaluationMethod
-0..1			AnatomicalLocation  // TODO: Change to code to align with FHIR??
+0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
+0..1			Focus
 0..1			ref(Device)
 0..1			ref(Specimen)
 0..1			Details
@@ -77,7 +80,11 @@ Description:	"The base class, independent of context for evaluations (measuremen
 	Element:		EvaluationMethod
 	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
 	Value:			CodeableConcept should be from http://loinc.org
-//
+//	
+	Element:		Focus
+	Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
+	Value:			CodeableConcept or ref(EntityOrRole)
+
 	Element:		EvaluationComponent
 	Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
 	Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
@@ -120,10 +127,13 @@ Description:	"The base class, independent of context for evaluations (measuremen
 Element:		ConditionTopic
 Based on:		AssertionTopic
 Concept:		MTH#C0348080
-Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. "
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. 
+CIMI deviation: AnatomicalLocation is included here, rather than being a property of FindingSiteAssertionTopic, since it is a common property of conditions. Severity, diseasePhase, periodicity, and other properites of an actual observed condition belong in ConditionPresenceContext. "
+				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
+
+
 
 /* 
 TODO:
