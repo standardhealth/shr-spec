@@ -21,7 +21,7 @@ Concept:		TBD
 Description:	"Root class for entities such as people, organizations, and devices that have a separately identifiable existence."
 
 EntryElement:	Patient
-Based on:		Entity
+Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
 1..1			ref(Person)
@@ -137,7 +137,7 @@ Description:	"A person in the role of a patient, including extended demographic 
 
 
 EntryElement:	Practitioner
-Based on:		Entity
+Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 1..1			ref(Person)
@@ -166,7 +166,7 @@ Description:	"A person who practices a healing art."
 
 
 EntryElement:	RelatedPerson
-Based on:		Entity
+Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
 0..1			ref(Person)
 0..1			RelationshipType
@@ -178,9 +178,19 @@ Description:	"A person in a role defined in relationship to a patient"
 	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
 	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
 
-	
-EntryElement:	Group
+Element:		PatientPractitionerOrRelatedPerson
 Based on:		Entity
+Description:	"A choice of Patient, Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
+Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
+
+Element:		PractitionerOrRelatedPerson
+Based on:		Role
+Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
+Value:			ref(Practitioner) or ref(RelatedPerson)
+
+
+EntryElement:	Group
+Based on:		EntityOrRole
 Concept:		MTH#C0441833
 Description:	"A set of entities (personnel, material, or places) to be considered together. May be a pool of like-type resources, a team, or combination of personnel, material and places."
 0..1			ActiveFlag

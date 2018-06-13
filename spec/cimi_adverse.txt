@@ -1,23 +1,23 @@
-Grammar:	DataElement 5.0
-Namespace:	shr.adverse
-Description:		"The SHR Adverse domain contains definitions for describing adverse events and adverse reactions."
-Uses:				shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.allergy, shr.medication, shr.device, shr.research, shr.procedure
+Grammar:		DataElement 5.0
+Namespace:		cimi.adverse
+Description:	"The CIMI Adverse domain contains definitions for describing adverse events and adverse reactions."
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity, shr.research
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
-
-//
 
 Element:		AdverseEventTopic
 Based on:		AssertionTopic
 Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
-Value:			0..1 CodeableConcept from MedDRAVS
-0..1			Details
-0..1			ref(AssociatedStudy)
+				TopicCode from MedDRAVS
+0..1			AssociatedStudy
+
+		Element:		AssociatedStudy
+		Description:	"The related clinical trial or other formal study."
+		Value:			ref(Study)
 
 Element:		AdverseEventPresenceContext
 Based on:		PresenceContext
 Description:	"The context for an adverse event that is known, suspected, or possibly occurred."
-
 1..1			AdverseEventGrade
 0..1			SeriousAdverseEvent
 //0..1			TBD "PatternOfEvent"  // from STDM
@@ -45,7 +45,7 @@ Description:	"The context for an adverse event that is known, suspected, or poss
 	Element:		AdverseEventAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
-	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionTopic)  // some substance or intervention, should be restricted to PerformedContext (but there's no way to do that)
+	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionPerformedStatement)
 	1..1			Certainty
 	0..1			RouteIntoBody
 	
@@ -53,27 +53,29 @@ Description:	"The context for an adverse event that is known, suspected, or poss
 	Concept:		TBD
 	Description:	"The action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
 	1..1			Details
-	0..1			ref(MedicationChange)
+	// TEMPORARY 0..1			ref(MedicationChange)
 
 
 //---------------- Instantiations --------------
 
-EntryElement:	NoAdverseEvent
-Based on:		AdverseEventTopic
+EntryElement:	NoAdverseEventStatement
+Based on:		ClinicalStatement
 Concept:		MTH#C1963761  "No adverse event"
 Description:	"Documentation of a situation where no adverse event has been detected or is known."
-0..0			Value
-1..1			AbsenceContext   // Non-occurrence context?
+				StatementTopic is type AdverseEventTopic
+				StatementContext is type AbsenceContext  // Non-occurrence context?
 
-
-EntryElement:	AdverseEvent
-Based on:		AdverseEventTopic
+EntryElement:	AdverseEventPresenceStatement
+Based on:		ClinicalStatement
 Concept:		MTH#C0877248
 Description:	"The topic (independent of context) for any unfavorable and unintended sign, symptom, disease, or other medical occurrence with a temporal association with the use of a medical product, procedure or other therapy, or in conjunction with a research study, regardless of causal relationship. EXAMPLE(S): back pain, headache, pulmonary embolism, death. An AdverseEvent may also document a causal relationship to an intervention is at least a reasonable possibility i.e., the relationship cannot be ruled out."
-1..1			AdverseEventPresenceContext
+//				Signed.Value.EntityOrRole is type Role  // to facilitate mapping to FHIR, which allows Patient, Practitioner, or RelatedPerson as 
+				StatementTopic is type AdverseEventTopic
+				StatementContext is type AdverseEventPresenceContext 
+		 
 
-EntryElement:	ToxicReaction // In truth, this should be a filter on AdverseEvent, not a separate class
-Based on:		AdverseEvent
+EntryElement:	ToxicReaction // In truth, this should be a filter on AdverseEventPresenceStatement, not a separate class
+Based on:		AdverseEventPresenceStatement
 Concept:		MTH#C0542243
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
-1..1			AdverseEventPresenceContext.AdverseEventGrade from ToxicReactionVS  // restricted to grade 3, 4 or 5
+				AdverseEventPresenceContext.AdverseEventGrade from ToxicReactionVS  // restricted to grade 3, 4 or 5

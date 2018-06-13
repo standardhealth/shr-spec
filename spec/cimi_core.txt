@@ -30,6 +30,7 @@ Based on:		Content
 Concept:		MTH#C1705654
 Description:	"An entry in a patient record or in a report, generally used for the documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
 1..1			SubjectOfInformation
+0..1			SourceOfInformation
 0..*			Annotation
 0..1			RecordStatus
 0..1			Recorded
@@ -51,12 +52,13 @@ Description:	"An entry in a patient record or in a report, generally used for th
 	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
 	Value:			CodeableConcept
 
-/*	
-	Element:    	Informant
+	
+	Element:    	SourceOfInformation
 	Concept:        MTH#C0449416
 	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
-*/	
+	Value:			ref(EntityOrRole) //string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
+	0..1			RelationshipToSubjectOrRecord
+	
 	Element:		Recorded
 	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
 	Value:			Attribution
