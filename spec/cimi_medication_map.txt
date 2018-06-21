@@ -1,0 +1,55 @@
+Grammar:	Map 5.1
+Namespace:	cimi.medication
+Target:		FHIR_STU_3
+
+Dosage maps to Dosage:
+	DoseAmount maps to dose[x]
+	TimingOfDoses maps to timing
+	AsNeededIndicator maps to asNeeded[x]
+	DoseInstructionsText maps to text
+	AdditionalDoseInstruction maps to additionalInstruction
+	RouteIntoBody maps to route
+	AdministrationMethod maps to method
+	AdministrationBodySite maps to site
+	MaximumDosePerTimePeriod maps to maxDosePerPeriod
+
+MedicationUsedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+	SourceOfInformation.Value maps to informationSource
+	_Entry.CreationTime maps to dateAsserted  // date asserted and date recorded may not be the same
+	constrain reasonNotTaken to 0..0
+	constrain dosage to 0..1
+	MedicationUseTopic.Dosage maps to dosage
+	MedicationUseTopic.Medication maps to medication[x]
+	MedicationUseTopic.Category maps to category
+	fix taken to #y
+	PerformedContext.Reason maps to reasonCode
+	PerformedContext.OccurrenceTimeOrPeriod maps to effective[x]
+	PerformedContext.Status maps to status
+
+MedicationNotUsedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+	SourceOfInformation.Value maps to informationSource
+	_Entry.CreationTime maps to dateAsserted
+	MedicationUseTopic.Medication maps to medication[x]
+	MedicationUseTopic.Category maps to category
+	fix taken to #n
+	constrain dosage to 0..0
+	NotPerformedContext.Reason maps to reasonNotTaken
+	NotPerformedContext.NonOccurrenceTimeOrPeriod maps to effective[x]
+	
+MedicationDispenseRequestedStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	MedicationDispenseTopic.Medication maps to medication[x]
+	MedicationDispenseTopic.NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	MedicationDispenseTopic.QuantityPerDispense maps to dispenseRequest.quantity
+	MedicationDispenseTopic.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	constrain dosageInstruction to 0..1
+	MedicationDispenseTopic.Dosage maps to dosageInstruction
+	RequestedContext.Reason maps to reasonCode
+	RequestedContext.Status maps to status
+	RequestedContext.ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
+	RequestedContext.PriorityRank maps to priority
+	RequestedContext.PerformerInstructions maps to note.text
+	RequestedContext.ExpectedPerformer[Organization] maps to dispenseRequest.performer
+	constrain note to 0..1
+
+
+	

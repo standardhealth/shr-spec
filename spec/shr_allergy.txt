@@ -11,7 +11,6 @@ Based on:		AssertionTopic
 Concept:		TBD	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
 0..1			AllergenIrritant
-//1..1			SubjectOfInformation // constrain cardinality to match FHIR
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 
@@ -67,6 +66,9 @@ EntryElement:	AdverseSensitivityToSubstance
 Based on:		ClinicalStatement
 Concept:		SCT#420134006 "Propensity to adverse reactions"	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
+1..1			SubjectOfInformation value is type ref(Patient)
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+				Signed.Attribution.EntityOrRole is type PatientOrPractitioner  // to facilitate mapping to FHIR, which only allows Patient or Practitioner as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
 				StatementTopic is type AdverseSensitivityTopic
 				StatementContext is type AdverseSensitivityPresenceContext
 1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
@@ -77,6 +79,9 @@ EntryElement:	NoAdverseSensitivityToSubstance
 Based on:		ClinicalStatement
 Concept:		MTH#C4508987 "No Allergy [to substance]"
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
+1..1			SubjectOfInformation value is type ref(Patient)
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+				Signed.Attribution.EntityOrRole is type PatientOrPractitioner
 				StatementTopic is type AdverseSensitivityTopic
 				StatementContext is type AbsenceContext
 				StatementTopic.TopicCode from NoKnownAllergyVS
