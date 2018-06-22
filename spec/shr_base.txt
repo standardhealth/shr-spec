@@ -1,18 +1,14 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
-Description:	"The SHR Base domain contains definitions for basic classes in SHR, including the base Entry and Any. The classes below Any are are Finding, Action, and Entity."
-Uses:			shr.core, shr.finding, shr.action, shr.entity, shr.encounter, shr.device
+Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
+Uses:			shr.core, cimi.entity, cimi.statement
 
-
-Abstract Element:	Any 
-Concept:			TBD
-Description:		"The top level class in the hierarchy"
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 Element: 		Entry
-Based on:		Any
 Concept:		MTH#C1705654
 Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
-1..1			ShrId
+0..1			ShrId
 1..1			EntryId
 0..1			PersonOfRecord
 0..1			Version
@@ -23,6 +19,8 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 0..1			Language
 0..*			SecurityLabel
 0..*			Tag
+0..*			DerivedFrom
+				Version value is type id
 
 	Element:		ShrId
 	Concept:		TBD
@@ -33,10 +31,10 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:        MTH#C0600091
 	Description:    "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
 	Value:          id
-	
+
 	Element:		PersonOfRecord
 	Concept:		TBD
-	Description:	"The person this record belongs to."
+	Description:	"The person this entry belongs to."
 	Value:			ref(Patient)
 	
 	Element:		EntryType  // Would EntryClass be clearer?
@@ -49,39 +47,6 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description:	"The most recent date the entry was changed."
 	Value:			instant
 
-	Element:		Language
-	Concept:		MTH#C0023008
-	Description: 	"A human language, spoken or written."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages if covered
-	
-
-	Element:		Attribution
-	Concept:		TBD
-	Description:	"Who the entry is attributed to, for example, the informer (information source), the recorder, the verifier, the responsible person, etc."
-	1..1			ref(Role)
-	1..1			ParticipationType
-		
-	
-	Element:		SecurityLabel
-	Concept:		TBD
-	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
-	Value:			Coding
-	
-	Element:		Tag
-	Concept:		TBD
-	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
-	Value:			Coding
-	
-
-Abstract Element:	Content
-Based on:		Any
-Concept:		TBD
-Description:	"An item that can constitute the payload of an Entry, aka an EntryElement."
-0..1			RelatedEncounter
-0..1			Author
-0..1			Informant
-//0..*			Attribution
-
 	Element:		Narrative
 	Concept:		TBD
 	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
@@ -93,37 +58,27 @@ Description:	"An item that can constitute the payload of an Entry, aka an EntryE
 			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
 	
-	Element:		RelatedEncounter
+	Element:		SecurityLabel
 	Concept:		TBD
-	Description:	"If content was generated during a patient encounter, related encounter is the encounter where the information was gained."
-	Value:			ref(EncounterPerformed)
+	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
+	Value:			Coding
 	
-	Element:    	Informant
-	Concept:        MTH#C0449416
-	Description:    "The person or entity that provided the information in the entry, as distinct from who created the entry, e.g. the subject (patient), medical professional, family member, device or software program."
-	//Value:	        string or ref(Party) 
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(Participant) or ref(RelatedPerson) or ref(Organization)
-	
-	Element:		Author
+	Element:		Tag
 	Concept:		TBD
-	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
-	//Value:		string or ref(Party)
-	Value:			string or ref(Patient) or ref(Group) or ref(Device) or ref(Participant) or ref(RelatedPerson) or ref(Organization)
+	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
+	Value:			Coding
 	
-	Element:		Subject
+	Element:		DerivedFrom
 	Concept:		TBD
-	Description:	"The person or thing that this entry relates to, usually the Person of Record. However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, finding, condition, or intervention."
-	Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Location) or ref(RelatedPerson) or ref(Organization)
-
+	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
+	Value:			ref(ClinicalStatement)
 	
-
+		
 /*
-
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
 	Description:    "A unique, persistent, permanent identifier for a health record."
 	Value:          id
-
 */
 
 

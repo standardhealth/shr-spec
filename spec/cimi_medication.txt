@@ -1,0 +1,195 @@
+Grammar:		DataElement 5.0
+Namespace:		cimi.medication
+Description:	"The CIMI Medication domain contains definitions related to medications taken, or not taken, by the person of record, both currently and in the past."
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+
+/* Taking out for now since the Planned context has not been defined
+EntryElement:	MedicationRegimen   // Definitional 
+Concept:		MTH#C0237125
+Description:	"Defines a specific application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
+1..*			MedicationUsePlanned
+*/
+
+Element:		MedicationTopic
+Based on:		ActionTopic
+Concept:		TBD
+Description:	"Base class for actions involving medications, independent of context."
+1..1			Medication
+0..1			Dosage
+
+	Element:		Dosage
+	Concept:		MTH#C0178602
+	Description:	"The dosage of the medication, prescribed or taken."
+	1..1			DoseAmount
+	1..1			TimingOfDoses
+	1..1			AsNeededIndicator
+	0..1			DoseInstructionsText
+	0..*			AdditionalDoseInstruction from http://hl7.org/fhir/ValueSet/additional-instruction-codes
+	0..1			RouteIntoBody
+	0..1			AdministrationMethod from http://hl7.org/fhir/ValueSet/administration-method-codes
+	0..1			AdministrationBodySite
+	0..1			MaximumDosePerTimePeriod
+
+		Element:		DoseAmount
+		Concept:		TBD
+		Description:	"The amount of medication taken per dose, as a quantity or range."
+		Value:			SimpleQuantity or Range
+
+		Element:		TimingOfDoses
+		Concept:		TBD
+		Description:	"When doses of medication should be administered."
+		Value:			Timing
+
+		Element:		AsNeededIndicator
+		Concept:		MTH#C1883728
+		Description:	"Indicates the pre-condition under which the drug or intervention should be used."
+		Value:			boolean or CodeableConcept could be from http://hl7.org/fhir/ValueSet/medication-as-needed-reason
+		
+		Element:		DoseInstructionsText
+		Concept:		TBD
+		Description:	"The directions (signetur) on the drug prescription or dispensing record."
+		Value:			string
+
+		Element:		AdditionalDoseInstruction
+		Concept:		MTH#C1644714
+		Description:	"Supplemental instructions - e.g. 'with meals'."
+		Value:			CodeableConcept
+
+		Element:		AdministrationMethod
+		Concept:		MTH#C1547585
+		Description:	"Technique for administering medication."
+		Value:			CodeableConcept
+
+		Element:		AdministrationBodySite
+		Concept:		MTH#C0229986
+		Description:	"The anatomic site at which medical intervention is applied."
+		Value:			AnatomicalLocation
+
+		Element:		MaximumDosePerTimePeriod
+		Concept:		TBD
+		Description:	"The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
+		Value:			Ratio
+
+EntryElement:	MedicationDispenseTopic
+Concept:		TBD
+Based on:		MedicationTopic
+Description:	"The action of ordering and deliving a medication to the party responsible for administering the medication."
+0..1			NumberOfRefillsAllowed
+0..1			QuantityPerDispense
+0..1			SupplyDuration
+
+	Element:		NumberOfRefillsAllowed
+	Concept:		TBD
+	Description:	"The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
+	Value:			positiveInt  // should be unsignedInt, but that causes a mapping error in FHIR 3.0
+
+	Element:		QuantityPerDispense
+	Concept:		TBD
+	Description:	"The amount that is to be dispensed for one fill."
+	Value:			SimpleQuantity
+
+	Element:		SupplyDuration
+	Concept:		TBD
+	Description:	"Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
+	Value: 			Duration
+	
+	
+Element:		MedicationUseTopic
+Based on:		MedicationTopic
+Concept:		TBD
+Description:	"A course or dose of medication for a patient, independent of context of being recommended, used, or not used. Medication use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
+
+	
+EntryElement:	MedicationUsedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A record of the use of a medication."
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPersonOrOrganization
+				StatementTopic is type MedicationUseTopic
+0..1			MedicationUseTopic.Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
+				StatementContext is type PerformedContext
+				PerformedContext.Status from http://hl7.org/fhir/ValueSet/medication-statement-status
+0..0			PerformedContext.Method // because of Dosage.Method				
+
+EntryElement:	MedicationAdherenceStatement  // This could be attached to MedicationUsed directly as an extension, but modeling as an observation avoids creating an extension
+Based on:		CodedEvaluationResultRecorded
+Concept:		MTH#C2364172
+Description:	"The degree (frequency) that the stated treatment plan, prescription, or protocol was followed. A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
+				EvaluationResultRecordedContext.ResultValue from QualitativeFrequencyVS
+				EvaluationResultTopic.TopicCode is MTH#C2364172
+				EvaluationResultTopic.Focus value is type ref(EntityOrRole)
+				EvaluationResultTopic.Focus.EntityOrRole is type ref(Medication)
+0..*			MedicationNonAdherenceReason 
+
+		Element:	 	MedicationNonAdherenceReason
+		Description:	"Reason that patient did not adhere to a medication regimen."
+		Value:			CodeableConcept from MedicationNonAdherenceReasonVS
+
+
+EntryElement:	MedicationNotUsedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A record of a medication NOT used. Although usually not required, a medication not used is sometimes reported when deviating from normal expectation or care plan."
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPersonOrOrganization
+				StatementTopic is type MedicationUseTopic
+0..1			MedicationUseTopic.Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category		
+0..0			MedicationUseTopic.Dosage	
+				StatementContext is type NotPerformedContext
+				NotPerformedContext.Reason from MedicationNotUsedReasonVS
+	
+				
+EntryElement:	MedicationDispenseRequestedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"An order for a medication to be dispensed and instructions for use."
+				StatementTopic is type MedicationDispenseTopic
+				StatementContext is type RequestedContext
+				RequestedContext.Status from http://hl7.org/fhir/ValueSet/medication-request-status
+				RequestedContext.PriorityRank from http://hl7.org/fhir/ValueSet/medication-request-priority
+				
+EntryElement:	MedicationNotPrescribedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"A record of a medication NOT being prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
+				StatementTopic is type MedicationDispenseTopic
+				StatementContext is type RequestedAgainstContext
+				RequestedAgainstContext.Reason from MedicationNotUsedReasonVS
+
+Element:		MedicationDispensedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
+				StatementTopic is type MedicationDispenseTopic
+				StatementContext is type PerformedContext
+					
+Element:		MedicationNotDispensedStatement
+Based on:		ClinicalStatement
+Concept:		TBD
+Description:	"Indicates that a medication product has NOT been dispensed for a named person/patient. This may be a result of the timing out of an order or detection of pharmacist of duplicate prescription or other reason."
+				StatementTopic is type MedicationDispenseTopic
+				StatementContext is type NotPerformedContext
+
+EntryElement:	MedicationChangeStatement
+Based on:		ClinicalStatement
+Concept:		MTH#C0554834
+Description:	"Description of a modification or change of a medication or dosage."
+				StatementTopic is type MedicationChangeTopic
+				StatementContext is type PerformedContext
+				PerformedContext.Reason from MedicationChangeReasonVS   // why was the medication changed?
+
+Element:		MedicationChangeTopic
+Based on:		ActionTopic
+1..1			Type from MedicationChangeTypeVS  //"Whether the change is a dose change, switch to a new medication, or discontinuation."
+0..*			MedicationBeforeChange   //might be more than one
+0..*			MedicationAfterChange
+
+		Element:		MedicationBeforeChange
+		Concept:		TBD
+		Description:	"The medication taken, prior to the change."
+		Value:			ref(MedicationDispenseRequestedStatement) or ref(MedicationUsedStatement)
+		
+		Element:		MedicationAfterChange
+		Concept:		TBD
+		Description:	"The medication taken, prior to the change."
+		Value:			ref(MedicationDispenseRequestedStatement) or ref(MedicationUsedStatement)
+
