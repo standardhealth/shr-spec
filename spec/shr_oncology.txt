@@ -10,8 +10,6 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
-//
-
 
 EntryElement:	BreastSite
 Based on:		AnatomicalLocation
@@ -41,8 +39,6 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 		CIMI Alignment: In CIMI Version 0.0.4, specimen processing is represented as a 'SpecimenProcessingPerformed' clinical statement, mapped to FHIR Procedure. However, specimen processing should actually map to Specimen.processing, part of the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by (1) finding the corresponding Specimen entity, and (2) mapping the content of (possibly multiple) SpecimenProcessingPerformed into the FHIR Specimen resource. To avoid this complexity, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
 		Value:			TimePeriod
 
-
-
 EntryElement:	BreastCancerPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Based on:		ConditionPresenceStatement
@@ -59,7 +55,6 @@ The BreastCancerPresenceStatement is a subclass of ConditionPresenceStatement, w
 			Concept:		TBD
 			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
-
 
 EntryElement:	BreastCancerStage
 Based on:		PanelRecorded  // maps to FHIR Observation
@@ -82,7 +77,6 @@ includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
 includes 0..1	DCISNuclearGrade
 includes 0..1	BreastCancerHistologicGrade	
-
 
 		Element:		StageTimingPrefix
 		Concept:		SCT#260869008 "Timing of stage"
@@ -140,7 +134,6 @@ includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
 
-
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
 			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
@@ -162,9 +155,6 @@ includes 0..1 	MitoticCountScore
 			Description:	"How fast the tumor cells are growing and dividing, determined from the number of mitotic cells present. Scored 1 to 3, with 3 being the most mitotic cells. We are seeking feedback on the value of representing the mitotic rate as a value rather than coded ranges."
 			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
 							ExceptionValue from NottinghamNullVS
-
-
-
 //			includes 0..1	PercentageInSituCarcinoma   // not sure where this belongs
 
 EntryElement:	EstrogenReceptorStatus
@@ -231,7 +221,6 @@ We are seeking feedback if it is better to put the positive/negative status in V
 				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 				EvaluationResultRecordedContext.ResultValue.CodeableConcept from PositiveNegativeEquivocalVS
 				PanelTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
-//				Subject value is type ref(Patient)				
 				DiagnosticService is #pathology
 				PanelTopic.Specimen is type BreastSpecimen
 0..0			PanelTopic.Precondition
