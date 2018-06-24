@@ -1,116 +1,66 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.condition
-Description:	"The SHR Condition domain contains basic definitions used to capture information about problems, concerns, complaints, and disorders."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity
+Description:	"The SHR Condition domain contains definitions used to capture assessments, diagnoses, and judgments related to problems reported or experienced by a subject."
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		SCT = http://snomed.info/sct
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+
+//
+Abstract Element:	BodyStructureTopic
+Based on:		ConditionTopic
+Concept:		MTH#C1268086
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
+Value:			CodeableConcept from AnatomicalLocationVS
+				TopicCode is MTH#C1268086
+0..1			Morphology
+
+	Element:		Morphology
+	Concept:		TBD
+	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
+	Value:			CodeableConcept
 
 	
-EntryElement:	ConditionAbsent
-Based on:		Observation
-Concept:		MTH#C0277541  "no disease present"
-Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
-				ObservationCode is MTH#C027754
+EntryElement:	BodyStructurePresenceStatement
+Based on:		ConditionPresenceStatement  // maybe AssertionOfPresenceStatement rather than calling a body structure a condition?
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+				StatementTopic is type BodyStructureTopic
 
 
-EntryElement:	Condition
-Based on:		SpecializedFinding
-Concept:		MTH#C0348080
-Description:	"A disorder, abnormality, problem, injury, complaint, risk, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. A ConditionPresent finding implies the existence of a condition as an entity. 'Condition' is interpreted broadly to cover states of existence - things the patient is or has."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
-1..*			Category from ConditionCategoryVS
-1..1			Subject // cardinality constraint due to FHIR
-1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
-0..*			BodySiteOrCode
-0..1			Onset
-0..1			Abatement
-0..1			WhenClinicallyRecognized
-0..1			Preexisting
-0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
-0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..1			Stage  // TODO: Remove? Create separate observation?
+EntryElement:	BodyStructureAbsenceStatement  // AssertionOfAbsenceStatement?
+Based on:		ConditionAbsenceStatement
+Concept:		TBD
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+				StatementTopic is type BodyStructureTopic
 
-/* 
-TODO:
-Need to add Cause or Precursor (another condition that leads to the current condition) - relate to Wound cause, for example
-Associate the condition with Evidence, such as Observations, Tests, Imaging Results
-Provide for Progress Notes (complex type with text, date, author)
-Link to Related Medications
-*/
 
-			Element:		ClinicalStatus
-			Concept:		TBD
-			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
-			Value:			code
-
-			Element:		Onset
-			Concept:		MTH#C0277793
-			Description:	"The beginning or first appearance of a mental or physical disorder."
-			Value:			GeneralizedTemporalContext
-
-			Element:		WhenClinicallyRecognized
-			Concept:		TBD
-			Description:	"The time at which a condition or condition was first identified in a healthcare context."
-			Value:			GeneralizedTemporalContext
-
-			Element:		Preexisting
-			Concept:		TBD
-			Description:	"If the problem or condition existed before the current episode of care."
-			Value:			CodeableConcept from YesNoUnknownVS
-
-			Element:		Abatement
-			Concept:		MTH#C1880019
-			Description:	"The end, remission or resolution."
-			Value:			GeneralizedTemporalContext
-
-			Element:		Severity
-			Concept:		MTH#C0392364
-			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept 
-
-			Element:		Criticality
-			Concept:		MTH#C3858539 "Criticality"
-			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			code
-
-			Element:		Stage
-			Concept:		MTH#C0699749
-			Description:	"The relative advancement in the course of a disease."
-			Value:			CodeableConcept
-
-			
 EntryElement:	DiseaseProgression
-Based on:		Observation
+Based on:		EvaluationResultRecorded
 Concept:		MTH#C0421176 "Progression"
-Description:	"A finding related to the current trend of a disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the AssessmentFocus as a reference to a Condition."
-Value:			CodeableConcept from ProgressionVS
-				ObservationCode is MTH#C0421176 "Progression"
-				FocalSubject should be from ConditionVS
-				FocalSubjectReference value is type ref(Condition)
-0..*			Evidence from ProgressionEvidenceTypeVS
-
-// Examples of how to specialize Condition
-
-EntryElement:		AcademicProblem
-Concept:			MTH#C0000873
-Based on:			Condition
-Description:		"A problem with learning or behavior in a learning environment."
-Value:				CodeableConcept from TBD "AcademicProblemVS"
-0..0				BodySite
+Description:	"A finding related to the current trend of a particular existing disease. This concept is most often used for chronic and incurable diseases where the status and trendline of the disease is an important determinant of therapy and prognosis. The specific disorder being evaluated must be cited in the Focus_Reference or Focus_CodeableConcept as a reference to a Condition."
+				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
+				EvaluationResultRecordedContext.ResultValue from ProgressionVS
+				EvaluationResultTopic.TopicCode is MTH#C0421176 "Progression"
+0..*			ProgressionEvidence
+// "ProgressionEvidence" is somewhat related to two existing attributes: ObservationCategory and EvaluationMethod
+//    * ObservationCategory has values imaging, laboratory, procedure, survey, exam, therapy. It represents the source of the observation
+//    * EvalutionMethod represents the test or procedure used to generate the result; it is typically a LOINC code (0..1)
+				EvaluationResultTopic.Focus.CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+0..0			EvaluationResultTopic.Specimen
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.Precondition
+0..0			EvaluationResultTopic.ReferenceRange  // applies to a quantitative measurement only			
 
 
-EntryElement:		Injury
-Concept:			MTH#C3263722
-Based on:			Condition
-Description:		"Damage inflicted on the body by an external force."
-0..1				Setting   // where injury happened (work, home, school)
-0..1				Location  // where (on earth) did the injury happen
-
-EntryElement:		MentalHealthCondition
-Based on:			Condition
-Concept:			MTH#C1446377
-Description:		"A condition relating to a person’s psychological and emotional well-being."
-Value:				CodeableConcept from DSMVS
+		Element:		ProgressionEvidence
+		Description:	"The type of evidence considered in determining disease progression."
+		Value:			CodeableConcept from ProgressionEvidenceVS	
 
 
+
+		
+//
+
+
+		

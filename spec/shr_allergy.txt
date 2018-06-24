@@ -1,37 +1,38 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.allergy
 Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, including allergies and intolerances."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.adverse, shr.condition, shr.medication
+Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element
 
 CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
 
-		
-EntryElement:	AllergyIntolerance
-Based on:		SpecializedFinding
-Concept:		SCT#420134006 "Propensity to adverse reactions"	
+Element:		AdverseSensitivityTopic
+Based on:		AssertionTopic
+Concept:		TBD	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-Value:			CodeableConcept from AllergenIrritantVS
-1..1			Subject // constrain cardinality to match FHIR
-0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+0..1			AllergenIrritant
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
-1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
-0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-0..*			AdverseReaction
-0..1			Onset
-0..1			Abatement
-0..1			MostRecentOccurrenceTime
 
+
+Element:		AdverseSensitivityPresenceContext
+Based on:		PresenceContext
+Description:	"Context for adverse sensitivities that are known or suspected to exist."
+0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
+0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+0..1			MostRecentOccurrenceTime
+0..*			AdverseReaction
 
 		Element:		SubstanceCategory
 		Concept:		TBD
 		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
 		Value:			code
 
-		Element:		VerificationStatus
-		Concept:		TBD
-		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			code
+//		Element:		VerificationStatus
+//		Concept:		TBD
+//		Description:	"Whether an assessment has been confirmed by testing or observation."
+//		Value:			code
 
 		Element:		MostRecentOccurrenceTime
 		Concept:		TBD
@@ -51,25 +52,62 @@ Value:			CodeableConcept from AllergenIrritantVS
 				Element:	AllergenIrritant	
 				Concept:	TBD
 				Description:"A substance that causes an allergic reaction or irritation."
-				Value:		CodeableConcept from AllergenIrritantVS
+				Value:		CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-substance
 		
 				Element:	Manifestation
 				Concept:	MTH#C1280464
 				Description:	"A sign or symptom of an underlying condition."
 				Value:		CodeableConcept from ManifestationVS
-				
-			
-EntryElement:	NoAllergyToSubstance
-Based on:		Observation
-Concept:		MTH#C4508987 "No Allergy [to substance]"
-Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. NoAllergyToSubstance is not an assertion because the value (a code representing a substance) does not carry the complete meaning."
-Value:			CodeableConcept from AllergenIrritantVS
-				ObservationCode is MTH#C4508987 "No Allergy [to substance]"
 
+				
+//--------------- Instantiations -------------------
+
+EntryElement:	AdverseSensitivityToSubstance
+Based on:		ClinicalStatement
+Concept:		SCT#420134006 "Propensity to adverse reactions"	
+Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
+1..1			SubjectOfInformation value is type ref(Patient)
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+				Signed.Attribution.EntityOrRole is type PatientOrPractitioner  // to facilitate mapping to FHIR, which only allows Patient or Practitioner as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
+				StatementTopic is type AdverseSensitivityTopic
+				StatementContext is type AdverseSensitivityPresenceContext
+1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
+				StatementTopic.TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
+
+			
+EntryElement:	NoAdverseSensitivityToSubstance
+Based on:		ClinicalStatement
+Concept:		MTH#C4508987 "No Allergy [to substance]"
+Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
+1..1			SubjectOfInformation value is type ref(Patient)
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+				Signed.Attribution.EntityOrRole is type PatientOrPractitioner
+				StatementTopic is type AdverseSensitivityTopic
+				StatementContext is type AbsenceContext
+				StatementTopic.TopicCode from NoKnownAllergyVS
+
+EntryElement:	NoKnownDrugAllergy
+Based on:		NoAdverseSensitivityToSubstance
+				AdverseSensitivityTopic.TopicCode is SCT#409137002 "No known drug allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#medication
+
+EntryElement:	NoKnownFoodAllergy
+Based on:		NoAdverseSensitivityToSubstance	
+				AdverseSensitivityTopic.TopicCode is SCT#429625007  "No known food allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#food
+
+EntryElement:	NoKnownFoodAllergy
+Based on:		NoAdverseSensitivityToSubstance	
+				AdverseSensitivityTopic.TopicCode is SCT#428607008 "No known environmental allergy (situation)"
+0..0			AdverseSensitivityTopic.AllergenIrritant 
+0..0			AdverseSensitivityTopic.SubstanceCategory //is CAT#environment	
 
 EntryElement:	NoKnownAllergy
-Based on:		Assertion
+Based on:		NoAdverseSensitivityToSubstance	
 Concept:		MTH#C0262580
-Description:	"Express no known allergies to broad classes: anything, animals, drugs, foods, or environmental factors. NoKnownAllergy is an assertion because the code, such as 'No known food allergy' carries the complete meaning."
-Value:			CodeableConcept from NoKnownAllergyVS
-
+Description:	"Express no known allergies or hypersensitivity to any food, drug, biologic, or environmental substance."
+				AdverseSensitivityTopic.TopicCode is SCT#716186003 "No known allergy (situation)" 
+0..0			AdverseSensitivityTopic.AllergenIrritant 
+0..0			AdverseSensitivityTopic.SubstanceCategory

@@ -1,0 +1,222 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.sexualhealth
+Description:	"The SHR Sex domain contains definitions related to the sexual health and behavior of the person of record."
+Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.medication
+
+CodeSystem: 	LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+//
+
+EntryElement:	PregnancyIntention
+Concept:		TBD
+Based on:		QuestionAnswerRecorded
+Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
+Value:			CodeableConcept from YesNoUnknownVS
+				TopicCode is LNC#64631-5
+
+EntryElement:	SexualIdentity
+Concept:		TBD
+Based on:		QuestionAnswerRecorded
+Description:	"Information on gender identity and sexual orientation."
+				TopicCode is TBD#TBD
+				PanelMembers.EvaluationTopic
+includes 0..1 	GenderIdentity
+includes 0..1	SexualOrientation
+
+	EntryElement:	GenderIdentity
+	Concept:		MTH#C0017249
+	Based on:		QuestionAnswerRecorded
+	Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
+	Value:			CodeableConcept from GenderIdentityVS 
+					TopicCode is MTH#C0017249
+
+	EntryElement:	SexualOrientation
+	Concept:		MTH#C0205949
+	Based on:		QuestionAnswerRecorded
+	Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
+	Value:			CodeableConcept from SexualOrientationVS
+					TopicCode is MTH#C0205949
+
+
+EntryElement:	SexualBehavior
+Concept:		MTH#C1314687
+Based on:		QuestionAnswerRecorded
+Description:	"Experience with sexual intercourse."
+0..0			Value
+				TopicCode is MTH#C1314687
+				PanelMembers.EvaluationTopic 
+includes 1..*	SexualActivity
+includes 0..1	NumberOfSexualPartnersPastYear
+includes 0..*	IntercourseDifficulty
+
+	EntryElement:	SexualActivity
+	Concept:		MTH#C0241028
+	Based on:		QuestionAnswerRecorded
+	Description:	"Characterization of the sexual activity of the subject."
+	Value:			CodeableConcept from SexualActivityVS
+	1..1			TopicCode is TBD#TBD
+
+	EntryElement:	NumberOfSexualPartnersPastYear
+	Concept:		MTH#C0556468
+	Based on:		QuestionAnswerRecorded
+	Description:	"Number of sexual partners in past year."
+	Value:			Quantity with units UCUM#1 // can use > or < modifiers
+
+	EntryElement:	IntercourseDifficulty
+	Concept:		TBD
+	Based on:		QuestionAnswerRecorded
+	Description:	"Condition affecting sexual intercourse."
+	Value:			CodeableConcept from IntercourseDifficultyVS
+
+	
+EntryElement:	ContraceptivesUsed
+Concept:		TBD
+Description:	"How frequently the subject and partner uses contraceptives, and if so, what contraceptive methods used."
+Based on:		QuestionAnswerRecorded
+Value:			CodeableConcept from QualitativeFrequencyVS
+				PanelMembers.EvaluationTopic
+includes 0..*	ContraceptiveMethodUsed
+
+EntryElement:	ContraceptiveMethodUsed
+Based on:		QuestionAnswerRecorded
+Concept:		MTH#C0700589
+Description:	"A method contraception used (or not) by the subject."
+Value:			CodeableConcept from ContraceptiveMethodVS
+				TopicCode is MTH#C0700589
+				EvaluationComponent
+includes 0..1 	ContraceptiveMethodFrequency
+includes 0..*	ContraceptiveMethodReason
+includes 0..*	ContraceptiveNotUsedReason
+
+		Element:		ContraceptiveMethodFrequency
+		Based on:		EvaluationComponent
+		Concept:		TBD
+		Description:	"How often the contraceptive method is used by the subject."
+		Value:			CodeableConcept from QualitativeFrequencyVS
+
+		Element:		ContraceptiveMethodReason
+		Based on:		EvaluationComponent
+		Concept:		TBD
+		Description: 	"Reason for using a particular contraceptive."
+		Value:			CodeableConcept from ContraceptiveMethodReasonVS
+						
+		Element:		ContraceptiveNotUsedReason
+		Concept:		TBD
+		Based on:		EvaluationComponent
+		Description:	"If not using a method of contraception, why."
+		Value:			CodeableConcept from ContraceptiveNotUsedReasonVS
+
+						
+Abstract Element:	ContraceptiveTopic
+Based on:		MedicationTopic
+Concept:		TBD
+Description:	"A contraceptive for a patient, independent of context of being recommended, used, or not used."
+Value:			CodeableConcept from ContraceptiveMethodVS
+
+						
+EntryElement:	ContraceptiveMethodRequested
+Based on:		ContraceptiveTopic
+Concept:		TBD
+Description:	"The contraceptive method(s) proposed, recommended or prescribed by a provider, after counseling and assessment."
+1..1			RequestedContext 
+				RequestedContext.Reason from ContraceptiveMethodReasonVS 
+/*1..1			Dispensed // Not sure about this
+
+		Element:		Dispensed
+		Concept:		TBD
+		Description:	"Whether an item, such as a medication or device, was given to a subject."
+		Value:			CodeableConcept from YesNoUnknownVS
+*/
+EntryElement:	ContraceptiveMethodRequestedAgainst
+Concept:		TBD
+Based on:		ContraceptiveTopic
+Description:	"The contraceptive method(s) recommended or prescribed by a provider, after counseling and assessment."
+Value:			CodeableConcept from ContraceptiveMethodVS
+1..1			RequestedAgainstContext 
+				RequestedAgainstContext.Reason from ContraceptiveNotUsedReasonVS
+
+
+EntryElement:	PregnancyHistory
+Concept:		MTH#C0032967
+Based on:		QuestionAnswerRecorded
+Description:	"Information about current and past pregnancies."
+0..0			Value
+				TopicCode is LNC#10163-4
+				PanelMembers.EvaluationTopic
+includes 0..1	CurrentPregnancyStatus
+includes 0..1	NumberOfPreviousPregnancies
+includes 0..1	NumberOfLivingChildren
+
+	EntryElement:	CurrentPregnancyStatus
+	Concept:		MTH#C0552579
+	Based on:		QuestionAnswerRecorded
+	Description:	"Whether or not the subject is currently pregnant."
+	Value:			CodeableConcept from YesNoUnknownVS
+					TopicCode is LNC#82810-3
+
+	EntryElement:	NumberOfPreviousPregnancies
+	Concept:		MTH#C0422807
+	Based on:		QuestionAnswerRecorded
+	Description:	"Number of previous pregnancies."
+					TopicCode is LNC#75201-4
+
+	EntryElement:	NumberOfLivingChildren
+	Concept:		MTH#C2229975
+	Based on:		QuestionAnswerRecorded
+	Description:	"Number of living children."
+					TopicCode is LNC#11638-4
+
+					
+EntryElement:	HIVScreeningTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of a HIV Screening Test. Results will be in an accompanying observation."
+1..1			TopicCode from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+
+EntryElement:	HIVSupplementalTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
+1..1			TopicCode from HIVSupplementalTestCodeVS
+
+EntryElement:	HIVScreeningTestRequested
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a rapid HIV screening test."
+1..1			TopicCode from HIVScreeningTestCodeVS
+
+EntryElement:	HIVSupplementalTestRequested
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a confirmatory or additional test for HIV infection."
+1..1			TopicCode from HIVSupplementalTestCodeVS
+
+					
+/*
+
+Postmenopausal Status:
+□ Prior bilateral oophorectomy
+□ Age ≥ 60 years
+□ Age < 60 years and no menses for ≥ 1 year with FSH and estradiol levels within postmenopause range
+
+
+
+
+EntryElement:	PreviousPregnancyDetails
+Concept:		TBD
+Description:	"The details of a previous pregnancy."
+1..1			PregnancyOrdinal
+1..1			PregnancyOutcome
+DeliveryDate
+GestationalAge
+DurationOfLabor
+BirthWeight
+GenderOfBaby
+TypeOfDelivery
+AnesthesiaType
+PlaceOfDelivery
+DurationOfBreastFeeding
+Complications   CodeableConcept from CommonPregnancyComplicationVS
+Comorbidities
+*/
