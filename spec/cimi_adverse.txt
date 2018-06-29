@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.adverse
 Description:	"The CIMI Adverse domain contains definitions for describing adverse events and adverse reactions."
-Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity, shr.research
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity, shr.research, cimi.medication
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
 
@@ -28,7 +28,7 @@ Description:	"An entry in the patient record documenting an untoward or unexpect
 	Element:		CausalAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
-	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionPerformedStatement)
+	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(Medication) or ref(MedicationUsedStatement) or ref(Device) //ref(ActionPerformedStatement)
 	1..1			CauseCategory 
 	1..1			Certainty
 	0..1			RouteIntoBody  // aka exposure route
@@ -61,13 +61,13 @@ Description:	"An instance of a negative response to a substance."
 		Value:		CodeableConcept from ManifestationVS
 		0..1		Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
 
-
 //---------------- Instantiations --------------
 		 
 EntryElement:	AdverseReactionPresenceStatement
 Based on:		ClinicalStatement
 				StatementTopic is type AdverseReactionTopic
 				StatementContext is type PresenceContext
+//				AdverseReactionTopic.CausalAttribution value is type CodeableConcept  // mapping to FHIR
 
 
 EntryElement:	ToxicEventEntry // In truth, this should be a filter on AdverseEventPresenceStatement, not a separate class

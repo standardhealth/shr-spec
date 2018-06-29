@@ -6,24 +6,50 @@ Target:		FHIR_STU_3
 AdverseSensitivityToSubstanceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance:
 	SubjectOfInformation maps to patient
 	SourceOfInformation.Value maps to asserter 
-//	_Entry.Author maps to recorder
 	Signed.Value.EntityOrRole maps to recorder 
 	_Entry.CreationTime maps to assertedDate
 	AdverseSensitivityTopic.AllergenIrritant maps to code
 	AdverseSensitivityTopic.Type maps to type
 	AdverseSensitivityTopic.SubstanceCategory maps to category
-/*
 	AdverseSensitivityPresenceContext.VerificationStatus maps to verificationStatus
 	AdverseSensitivityPresenceContext.ClinicalStatus maps to clinicalStatus
 	AdverseSensitivityPresenceContext.Criticality maps to criticality
 	AdverseSensitivityPresenceContext.Onset maps to onset[x]
 	AdverseSensitivityPresenceContext.MostRecentOccurrenceTime maps to lastOccurrence
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.Severity maps to reaction.severity
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.RouteIntoBody maps to reaction.exposureRoute
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.AllergenIrritant maps to reaction.substance
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.Manifestation maps to reaction.manifestation
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.PresenceContext.Details maps to reaction.description
-	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.PresenceContext.OccurrenceTime maps to reaction.onset
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.Manifestation.Severity maps to reaction.severity
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.CausalAttribution.RouteIntoBody maps to reaction.exposureRoute
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.CausalAttribution maps to reaction.substance
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.Manifestation.Value maps to reaction.manifestation
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.Details maps to reaction.description
+	AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.PresenceContext.Onset maps to reaction.onset
+
+/*
+
+EntryElement:	AdverseReactionPresenceStatement
+Based on:		ClinicalStatement
+				StatementTopic is type AdverseReactionTopic
+				StatementContext is type PresenceContext
+
+Element:		AdverseReactionTopic
+Based on:		AssertionTopic
+Description:	"An instance of a negative response to a substance."
+0..*			Manifestation
+0..*			CausalAttribution
+
+		Element:	Manifestation
+		Concept:	MTH#C1280464
+		Description:	"A sign or symptom of an underlying condition."
+		Value:		CodeableConcept from ManifestationVS
+		0..1		Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
+
+	Element:		CausalAttribution
+	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
+	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
+	Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(ActionPerformedStatement)
+	1..1			CauseCategory 
+	1..1			Certainty
+	0..1			RouteIntoBody  // aka exposure route
+
 */
 
 NoAdverseSensitivityToSubstanceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance:
