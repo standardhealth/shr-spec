@@ -18,63 +18,84 @@ The ClinicalStatement class provides the core pattern for more specific clinical
 1..1			StatementTopic
 1..1			StatementContext
 
-Abstract Element:	ActionPerformedStatement
+Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
-Description:		"Abstract class representing performance of any type of action."
+Description:		"Abstract class representing any type of action, independent of context."
 					StatementTopic is type ActionTopic
+
+Abstract Element:	ActionPerformedStatement
+Based on:			ActionStatement
+Description:		"Abstract class representing performance of any type of action."
 					StatementContext is type PerformedContext
 
 Abstract Element:	ActionRequestedStatement
-Based on:			ClinicalStatement
+Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action."
-					StatementTopic is type ActionTopic
 					StatementContext is type RequestedContext
 
 Abstract Element:	ActionNotPerformedStatement
-Based on:			ClinicalStatement
+Based on:			ActionStatement
 Description:		"Abstract class representing non-performance of any type of action."
-					StatementTopic is type ActionTopic
 					StatementContext is type NotPerformedContext
 
 Abstract Element:	ActionRequestedAgainstStatement
-Based on:			ClinicalStatement
+Based on:			ActionStatement
 Description:		"Abstract class representing a request to not perform any type of action."
-					StatementTopic is type ActionTopic
 					StatementContext is type RequestedAgainstContext
+
 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
-				StatementTopic is type FindingTopic
-				StatementContext is type FindingContext
+					StatementTopic is type FindingTopic
+					StatementContext is type FindingContext
 
-Element:		EvaluationResultRecorded
-Based on:		ClinicalStatement
+Abstract Element:	AssertionStatement
+Based on:			FindingStatement
+Description:		"A clinical statement that asserts presence or absence."
+
+Abstract Element:	AssertionPresenceStatement
+Based on:			AssertionStatement
+Description:		"Statement that a finding is present."
+					StatementContext is type PresenceContext
+
+Abstract Element:	AssertionAbsenceStatement
+Based on:			AssertionStatement
+Description:		"Statement that a finding is absent."
+					StatementContext is type AbsenceContext
+
+Abstract Element:	FindingRecordedStatement
+Based on:			FindingStatement
+Description:		"Finding that has been made and recorded, such as an observation or question answered."
+					StatementContext is type RecordedContext
+
+EntryElement:	EvaluationResultRecorded   // TODO: should we stop using the word "Statement" in class names, or carry through with Statement everywhere, or allow some inconsistency? 
+Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 				StatementTopic is type EvaluationResultTopic
 				StatementContext is type EvaluationResultRecordedContext
 
-Element:		CodedEvaluationResultRecorded
+EntryElement:	CodedEvaluationResultRecorded
 Based on:		EvaluationResultRecorded
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed whose answer is expressed as a code."
 				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 0..0			EvaluationResultTopic.ReferenceRange
 		
-Element:		NonLabCodedEvaluationResultRecorded
+EntryElement:	NonLabCodedEvaluationResultRecorded
 Based on:		CodedEvaluationResultRecorded
 Description:	"A coded finding not based on a sample or measurement device."
 0..0			EvaluationResultTopic.Device
 0..0			EvaluationResultTopic.Specimen
 
 			
-Element:		PanelRecorded
+EntryElement:	PanelRecorded
 Based on:		LaboratoryTestResultRecorded
 				StatementTopic is type PanelTopic
 
-Element:		NonLabPanelRecorded
+EntryElement:	NonLabPanelRecorded
 Based on:		EvaluationResultRecorded
 				StatementTopic is type PanelTopic
 0..0			EvaluationResultRecordedContext.ResultValue  // this might have to be on a class by class basis
@@ -83,7 +104,7 @@ Based on:		EvaluationResultRecorded
 0..0			PanelTopic.Specimen
 0..0			PanelTopic.ReferenceRange			
 				
-Element:		LaboratoryTestResultRecorded
+EntryElement:	LaboratoryTestResultRecorded
 Based on:		EvaluationResultRecorded
 Description:	"Measurement resulting from a laboratory analysis. The category is fixed to 'laboratory' to align with US-Core."
 0..*			DiagnosticService
@@ -95,7 +116,7 @@ Description:	"Measurement resulting from a laboratory analysis. The category is 
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
 		
-Element:		SimplifiedLaboratoryTestResultRecorded
+EntryElement:	SimplifiedLaboratoryTestResultRecorded
 Based on:		LaboratoryTestResultRecorded
 Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
 0..0			EvaluationResultTopic.Precondition
@@ -103,29 +124,23 @@ Description:	"The usual case for a test result from a pathology lab, based on a 
 0..0			PanelMembers
 0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
 
-
 EntryElement:	ConditionPresenceStatement
-Based on:		ClinicalStatement
+Based on:		AssertionPresenceStatement
 Concept:		TBD
-Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
-
-In CIMI terms, it is an archetype of ClinicalStatement that combines a ConditionTopic with the ConditionPresenceContext context. The core attributes of ClinicalStatement are not included here because of mapping difficulties to FHIR DomainResource."
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				StatementTopic is type ConditionTopic
 				StatementContext is type ConditionPresenceContext
 				SubjectOfInformation value is type ref(Patient)
 
 EntryElement:	ConditionAbsenceStatement
-Based on:		ClinicalStatement
+Based on:		AssertionAbsenceStatement
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
 				StatementTopic is type ConditionTopic
-				StatementContext is type AbsenceContext
 				
 EntryElement:	ClinicalNote
-Based on:		ClinicalStatement
+Based on:		FindingRecordedStatement
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
-				StatementTopic is type FindingTopic
-				StatementContext is type RecordedContext
 1..1			StatementTopic.Details   // change to "description" to synch with CIMI
