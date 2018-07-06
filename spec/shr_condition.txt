@@ -11,9 +11,9 @@ Abstract Element:	BodyStructureTopic
 Based on:		ConditionTopic
 Concept:		MTH#C1268086
 Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
-Value:			CodeableConcept from AnatomicalLocationVS
-				TopicCode is MTH#C1268086
+0..1			Identifier
 0..1			Morphology
+1..*			AnatomicalLocation
 
 	Element:		Morphology
 	Concept:		TBD
@@ -22,7 +22,7 @@ Value:			CodeableConcept from AnatomicalLocationVS
 
 	
 EntryElement:	BodyStructurePresenceStatement
-Based on:		ConditionPresenceStatement  // maybe AssertionOfPresenceStatement rather than calling a body structure a condition?
+Based on:		ConditionPresenceStatement
 Concept:		TBD
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
 				StatementTopic is type BodyStructureTopic
@@ -31,9 +31,8 @@ Description:	"Presence of a distinct anatomical or pathological morphological fe
 EntryElement:	BodyStructureAbsenceStatement  // AssertionOfAbsenceStatement?
 Based on:		ConditionAbsenceStatement
 Concept:		TBD
-Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+Description:	"Absence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
 				StatementTopic is type BodyStructureTopic
-
 
 EntryElement:	DiseaseProgression
 Based on:		EvaluationResultRecorded
@@ -43,7 +42,7 @@ Description:	"A finding related to the current trend of a particular existing di
 				EvaluationResultRecordedContext.ResultValue from ProgressionVS
 				EvaluationResultTopic.TopicCode is MTH#C0421176 "Progression"
 0..*			ProgressionEvidence
-// "ProgressionEvidence" is somewhat related to two existing attributes: ObservationCategory and EvaluationMethod
+//    "ProgressionEvidence" is somewhat related to two existing attributes: ObservationCategory and FindingMethod
 //    * ObservationCategory has values imaging, laboratory, procedure, survey, exam, therapy. It represents the source of the observation
 //    * EvalutionMethod represents the test or procedure used to generate the result; it is typically a LOINC code (0..1)
 				EvaluationResultTopic.Focus.CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 

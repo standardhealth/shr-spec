@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.medication
 Description:	"The CIMI Medication domain contains definitions related to medications taken, or not taken, by the person of record, both currently and in the past."
-Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.encounter
 
 /* Taking out for now since the Planned context has not been defined
 EntryElement:	MedicationRegimen   // Definitional 
@@ -99,6 +99,7 @@ Based on:		MedicationTopic
 Concept:		TBD
 Description:	"A course or dose of medication for a patient, independent of context of being recommended, used, or not used. Medication use can be reported, directly observed, or inferred from clinical events associated with orders, prescriptions written, pharmacy dispensings, procedural administrations, and other patient-reported information."
 
+
 Element:		MedicationChangeTopic
 Based on:		ActionTopic
 1..1			Type from MedicationChangeTypeVS  //"Whether the change is a dose change, switch to a new medication, or discontinuation."
@@ -128,14 +129,14 @@ Description:	"A record of the use of a medication."
 0..0			PerformedContext.Method // because of Dosage.Method				
 
 EntryElement:	MedicationAdherenceStatement  // This could be attached to MedicationUsed directly as an extension, but modeling as an observation avoids creating an extension
-Based on:		CodedEvaluationResultRecorded
+Based on:		SimpleCodedNonLaboratoryEvaluationResultRecorded
 Concept:		MTH#C2364172
 Description:	"The degree (frequency) that the stated treatment plan, prescription, or protocol was followed. A statement of the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency."
 				EvaluationResultRecordedContext.ResultValue from QualitativeFrequencyVS
 				EvaluationResultTopic.TopicCode is MTH#C2364172
 				EvaluationResultTopic.Focus value is type ref(EntityOrRole)
 				EvaluationResultTopic.Focus.EntityOrRole is type ref(Medication)
-0..*			MedicationNonAdherenceReason 
+0..*			MedicationNonAdherenceReason
 
 		Element:	 	MedicationNonAdherenceReason
 		Description:	"Reason that patient did not adhere to a medication regimen."

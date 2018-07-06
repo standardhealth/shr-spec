@@ -18,6 +18,8 @@ The ClinicalStatement class provides the core pattern for more specific clinical
 1..1			StatementTopic
 1..1			StatementContext
 
+//---------- Actions --------------
+
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action, independent of context."
@@ -43,86 +45,175 @@ Based on:			ActionStatement
 Description:		"Abstract class representing a request to not perform any type of action."
 					StatementContext is type RequestedAgainstContext
 
+//-------------Findings------------
 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
 					StatementTopic is type FindingTopic
-					StatementContext is type FindingContext
 
-Abstract Element:	AssertionStatement
-Based on:			FindingStatement
-Description:		"A clinical statement that asserts presence or absence."
+/*
+[Entry]ShrId
+[Entry]EntryId
+[Entry]PersonOfRecord
+[Entry]Version
+[Entry]EntryType
+[Entry]CreationTime
+[Entry]LastUpdated
+[Entry]Narrative
+[Entry]Language
+[Entry]SecurityLabel
+[Entry]Tag
+[Entry]DerivedFrom
+[InformationEntry]SubjectOfInformation
+[InformationEntry]SourceOfInformation
+[InformationEntry]Annotation
+[InformationEntry]RecordStatus
+[InformationEntry]Recorded (who-when)
+[InformationEntry]Signed (who-when)
+[InformationEntry]Cosigned (who-when)
+[InformationEntry]Verified (who-when)
+FindingTopic.FindingMethod
+FindingTopic.Details
+*/
 
-Abstract Element:	AssertionPresenceStatement
-Based on:			AssertionStatement
-Description:		"Statement that a finding is present."
-					StatementContext is type PresenceContext
-
-Abstract Element:	AssertionAbsenceStatement
-Based on:			AssertionStatement
-Description:		"Statement that a finding is absent."
-					StatementContext is type AbsenceContext
-
-Abstract Element:	FindingRecordedStatement
-Based on:			FindingStatement
-Description:		"Finding that has been made and recorded, such as an observation or question answered."
-					StatementContext is type RecordedContext
-
-EntryElement:	EvaluationResultRecorded   // TODO: should we stop using the word "Statement" in class names, or carry through with Statement everywhere, or allow some inconsistency? 
+EntryElement:	EvaluationResultRecorded   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 				StatementTopic is type EvaluationResultTopic
 				StatementContext is type EvaluationResultRecordedContext
+				SubjectOfInformation value is type ref(Patient)  // FHIR to align with US Core Result
+// shr-cli bug: Signed.Value.EntityOrRole crashes
+				Signed.Attribution.EntityOrRole is type PatientOrPractitionerOrRelatedPersonOrOrganization // mapped to performer (who made the observation)
+/* 
+ Here's a list of all the attributes of EvaluationResultRecorded. 
+ To keep things straight, always consider the constraints on each element in this order:
+	// ClinicalStatement
+		SubjectOfInformation
+		SourceOfInformation
+		Annotation
+		RecordStatus
+		Recorded
+		Signed  // aka Author
+		Cosigned
+		Verified
+	// Topic	
+		EvaluationResultTopic.TopicCode
+		EvaluationResultTopic.FindingMethod
+		EvaluationResultTopic.Details
+		EvaluationResultTopic.Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+		EvaluationResultTopic.AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
+		EvaluationResultTopic.Focus
+		EvaluationResultTopic.ref(Device)
+		EvaluationResultTopic.ref(Specimen)
+		EvaluationResultTopic.DiagnosticService
+		EvaluationResultTopic.Precondition
+		EvaluationResultTopic.ReferenceRange
+		EvaluationResultTopic.EvaluationComponent
+		EvaluationResultTopic.PanelMembers
+		EvaluationResultTopic.EvaluationComponent.ComponentResultValue
+		EvaluationResultTopic.EvaluationComponent.ExceptionValue
+		EvaluationResultTopic.EvaluationComponent.Interpretation
+		EvaluationResultTopic.EvaluationComponent.ReferenceRange
+	// Context	
+		EvaluationResultRecordedContext.ContextCode is SCT#424975005 "Record Entity"
+		EvaluationResultRecordedContext.Interpretation
+		EvaluationResultRecordedContext.FindingStatus
+		EvaluationResultRecordedContext.RelevantTime  
+		EvaluationResultRecordedContext.Encounter
+		EvaluationResultRecordedContext.ResultValue
+		EvaluationResultRecordedContext.ExceptionValue
+		EvaluationResultRecordedContext.DeltaFlag
+*/
 
-EntryElement:	CodedEvaluationResultRecorded
+//  Non-Laboratory Results
+
+EntryElement:	NonLaboratoryEvaluationResultRecorded
 Based on:		EvaluationResultRecorded
+Description:	"An observation not based on a specimen."
+0..0			EvaluationResultTopic.Specimen
+0..0			EvaluationResultTopic.DiagnosticService
+
+EntryElement:	SimpleNonLaboratoryEvaluationResultRecorded
+Based on:		NonLaboratoryEvaluationResultRecorded
+Description:	"An observation having no components or panel members"
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.PanelMembers
+
+EntryElement:	CodedNonLaboratoryEvaluationResultRecorded
+Based on:		NonLaboratoryEvaluationResultRecorded
 Concept:		TBD
-Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed whose answer is expressed as a code."
+Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
 				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 0..0			EvaluationResultTopic.ReferenceRange
-		
-EntryElement:	NonLabCodedEvaluationResultRecorded
-Based on:		CodedEvaluationResultRecorded
-Description:	"A coded finding not based on a sample or measurement device."
-0..0			EvaluationResultTopic.Device
-0..0			EvaluationResultTopic.Specimen
 
-			
-EntryElement:	PanelRecorded
-Based on:		LaboratoryTestResultRecorded
-				StatementTopic is type PanelTopic
+EntryElement:	SimpleCodedNonLaboratoryEvaluationResultRecorded
+Based on:		CodedNonLaboratoryEvaluationResultRecorded
+Description:	"An observation whose result is a code, and also having no components or panel members"
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.PanelMembers
 
-EntryElement:	NonLabPanelRecorded
-Based on:		EvaluationResultRecorded
-				StatementTopic is type PanelTopic
-0..0			EvaluationResultRecordedContext.ResultValue  // this might have to be on a class by class basis
+EntryElement:	ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		NonLaboratoryEvaluationResultRecorded
+Description:	"An observation with components, but without a result value or panel members."
+0..0			EvaluationResultRecordedContext.ResultValue
 0..0			EvaluationResultRecordedContext.ExceptionValue
-0..0			PanelTopic.Device
-0..0			PanelTopic.Specimen
-0..0			PanelTopic.ReferenceRange			
-				
-EntryElement:	LaboratoryTestResultRecorded
+0..0			EvaluationResultTopic.PanelMembers
+0..0			EvaluationResultTopic.ReferenceRange
+
+EntryElement:	PanelOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		NonLaboratoryEvaluationResultRecorded
+Description:	"An observation with panel members, but without a result value or components."
+0..0			EvaluationResultRecordedContext.ResultValue
+0..0			EvaluationResultRecordedContext.ExceptionValue
+0..0			EvaluationResultTopic.ReferenceRange
+0..0			EvaluationResultTopic.EvaluationComponent
+1..1			EvaluationResultTopic.PanelMembers
+
+// Laboratory Measurements and Results
+
+EntryElement:	LaboratoryEvaluationResultRecorded
 Based on:		EvaluationResultRecorded
-Description:	"Measurement resulting from a laboratory analysis. The category is fixed to 'laboratory' to align with US-Core."
-0..*			DiagnosticService
+Description:	"A coded finding based on a specimen collected from a patient."
+1..1			EvaluationResultTopic.Specimen
+0..0			EvaluationResultTopic.AnatomicalLocation  // AnatomicalLocation is where the Specimen was collected
 				EvaluationResultTopic.Category is OBSCAT#laboratory
 
-		Element:		DiagnosticService
-		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
-		Value:			CodeableConcept from DiagnosticServiceVS if covered
-
-		
-EntryElement:	SimplifiedLaboratoryTestResultRecorded
-Based on:		LaboratoryTestResultRecorded
-Description:	"The usual case for a test result from a pathology lab, based on a specimen taken from a patient. Note that the body site is not explicit here; it is part of the specimen resource associated with the lab result."
-0..0			EvaluationResultTopic.Precondition
+EntryElement:	CodedLaboratoryEvaluationResultRecorded
+Based on:		LaboratoryEvaluationResultRecorded
+Description:	"A coded finding from a laboratory test."
+				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
 0..0			EvaluationResultTopic.ReferenceRange
-0..0			PanelMembers
-0..0			EvaluationResultTopic.AnatomicalLocation // AnatomicalLocation is covered in the Specimen collection
+
+EntryElement:	SimpleLaboratoryEvaluationResultRecorded
+Based on:		LaboratoryEvaluationResultRecorded
+Description:	"A coded finding from a laboratory test without further panel members or components."
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.PanelMembers
+
+EntryElement:	SimpleCodedLaboratoryEvaluationResultRecorded
+Based on:		CodedLaboratoryEvaluationResultRecorded
+Description:	"A coded finding from a laboratory test without further panel members or components."
+0..0			EvaluationResultTopic.EvaluationComponent
+0..0			EvaluationResultTopic.PanelMembers
+
+//---------- Assertions -------------
+
+Abstract Element:	AssertionStatement
+Based on:			FindingStatement
+Description:		"A clinical statement that asserts presence or absence."
+
+Abstract Element:	AssertionPresenceStatement  // AssertPresence
+Based on:			AssertionStatement
+Description:		"Statement that a finding is present."
+					StatementContext is type PresenceContext
+
+Abstract Element:	AssertionAbsenceStatement  // AssertAbsence
+Based on:			AssertionStatement
+Description:		"Statement that a finding is absent."
+					StatementContext is type AbsenceContext
 
 EntryElement:	ConditionPresenceStatement
 Based on:		AssertionPresenceStatement
@@ -140,7 +231,8 @@ Description:	"A finding that a condition is or was not present in the subject at
 				StatementTopic is type ConditionTopic
 				
 EntryElement:	ClinicalNote
-Based on:		FindingRecordedStatement
+Based on:		FindingStatement
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
+				StatementContext is type RecordedContext
 1..1			StatementTopic.Details   // TODO: change to "description" to synch with CIMI

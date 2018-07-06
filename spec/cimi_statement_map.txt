@@ -4,43 +4,46 @@ Target:		FHIR_STU_3
 
 
 EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
-	EvaluationResultTopic.Category maps to category
-	EvaluationResultTopic.FindingMethod maps to method
+	SubjectOfInformation maps to subject
+//	SourceOfInformation maps to extension
+//	Annotation maps to extension
+//	RecordStatus maps to extension
+	Recorded.Value.RecordedOn maps to issued // not sure this is correct mapping
+	Signed.Value.EntityOrRole maps to performer   // not sure this is correct mapping
+//	Cosigned maps to extension
+//	Verified maps to extension
 	EvaluationResultTopic.TopicCode maps to code
+	EvaluationResultTopic.FindingMethod maps to method
+	EvaluationResultTopic.Details maps to comment
+	EvaluationResultTopic.Category maps to category
 	EvaluationResultTopic.AnatomicalLocation maps to bodySite
+//	EvaluationResultTopic.Focus maps to extension (until FHIR 4) Note that http://hl7.org/fhir/StructureDefinition/observation-focal-subject is a CodeableConcept
+	EvaluationResultTopic.Device maps to device
 	EvaluationResultTopic.Specimen maps to specimen
-	EvaluationResultRecordedContext.ResultValue maps to value[x]
-	EvaluationResultRecordedContext.ExceptionValue maps to dataAbsentReason
-	EvaluationResultRecordedContext.Interpretation maps to interpretation
-	EvaluationResultRecordedContext.RelevantTime maps to effective[x]
-	EvaluationResultRecordedContext.FindingStatus maps to status
+//	EvaluationResultTopic.Precondition maps to extension
 	EvaluationResultTopic.ReferenceRange maps to referenceRange
 	EvaluationResultTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
 	EvaluationResultTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
 	EvaluationResultTopic.ReferenceRange.Type maps to referenceRange.type
 	EvaluationResultTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
-	EvaluationResultTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age
-//	fix related.type to #has-member
+	EvaluationResultTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age	
+//	EvaluationResultTopic.DiagnosticService maps to extension
 	EvaluationResultTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
 	EvaluationResultTopic.EvaluationComponent._Concept maps to component.code
 	EvaluationResultTopic.EvaluationComponent.ComponentResultValue maps to component.value[x]
 	EvaluationResultTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
 	EvaluationResultTopic.EvaluationComponent.Interpretation maps to component.interpretation
 	EvaluationResultTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
-//	EvaluationResultTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-
-
-PanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
 	fix related.type to #has-member
-	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-
-NonLabPanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
-	fix related.type to #has-member
-	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-	
-SimplifiedLaboratoryTestResultRecorded:
-	constrain related to 0..0  // no PanelMembers (not a panel)
-
+	EvaluationResultTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+//	EvaluationResultRecordedContext.ContextCode maps to nothing // drop
+	EvaluationResultRecordedContext.ResultValue maps to value[x]
+	EvaluationResultRecordedContext.ExceptionValue maps to dataAbsentReason
+	EvaluationResultRecordedContext.Interpretation maps to interpretation
+	EvaluationResultRecordedContext.FindingStatus maps to status
+	EvaluationResultRecordedContext.RelevantTime maps to effective[x]
+	EvaluationResultRecordedContext.Encounter maps to context
+	EvaluationResultRecordedContext.DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
 
 ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
 	_Entry.CreationTime maps to assertedDate

@@ -11,12 +11,13 @@ Concept:		TBD
 Description:	"Compositional and reusable grouping of clinical statement attributes that provides the context for the topic of a clinical statement. 
 The StatementContext class aligns with the SNOMED CT Situations with Explicit Context (SWEC) Concept Model. The StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information. It also often holds provenance information relevant to the context of the clinical statement. It is important to note that by default the context applies to the conjunction of the attribute specified in the statement. For instance, if a clinical statement has a topic describing a rash on left arm and a context of 'absent', then the statement states that the subject of interest did not have a rash on the left arm but might have had one on the right arm."
 1..1			ContextCode
+0..1			Encounter  // clinical statements are often associated with specific encounters
 
 		Element:		ContextCode	
 		Concept:		TBD
 		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc.
 		Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC."
-		Value:			CodeableConcept	
+		Value:			CodeableConcept
 
 Element:			ActionContext
 Based on:			StatementContext
@@ -33,8 +34,7 @@ Based on:		ActionContext
 Concept:		TBD
 Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
 1..1			OccurrenceTimeOrPeriod  // when the action took place
-0..*			Participant
-0..1			Encounter
+0..*			Participant		
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
 0..*			RelatedRequest
@@ -102,7 +102,6 @@ Concept:		MTH#C1705178
 Based on:		ActionContext
 Description:	"An order for something to take place."
 1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status
-0..1			Encounter   // encounter when the request was made
 1..1			RequestIntent
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
@@ -163,7 +162,6 @@ Element:		FindingContext
 Based on:		StatementContext
 Concept:		SCT#410514004
 Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context."
-0..1			Encounter
 
 
 Element:		AssertionContext
@@ -189,12 +187,12 @@ For example, if the finding involves a myocardial infarction, the presence conte
 			Value:			CodeableConcept	
 
 			Element:		Onset
-			Concept:		MTH#C0277793
+			Concept:		LNC#85585-8
 			Description:	"The beginning or first appearance of a mental or physical disorder."
 			Value:			dateTime or Age or TimePeriod or Range or string
 			
 			Element:		Abatement
-			Concept:		MTH#C1880019
+			Concept:		LNC#88878-4
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 			
@@ -226,7 +224,7 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 			Value:			date
 
 			Element:		Preexisting
-			Concept:		TBD
+			Concept:		LNC#89251-3
 			Description:	"If the problem or condition existed before the current episode of care."
 			Value:			CodeableConcept from YesNoUnknownVS
 
@@ -251,17 +249,13 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 					Description:	"The full staging information"
 					Value:			ref(EvaluationResultRecorded)
 					
-	
-	
 	Element:		RecordedContext
 	Based on:		FindingContext
 	Concept:		TBD
-	Description:	"Context for recording a finding, usually a Panel, used to indicate an evaluation has been made. 
-	
-	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to clinical notes."
+	Description:	"Context for recording a finding, used to indicate an evaluation has been made."
 					ContextCode is SCT#424975005 "Record Entity"
 	0..1			Interpretation
-	1..1			FindingStatus  // why not in FindingContext?
+	1..1			FindingStatus
 	0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 	
 		Element:		Interpretation
