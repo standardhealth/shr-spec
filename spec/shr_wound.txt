@@ -1,5 +1,5 @@
 Grammar:	DataElement 5.0
-Namespace:	shr.skin
+Namespace:	shr.wound
 Description: "SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
 Uses:  		shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
 
@@ -7,8 +7,7 @@ CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-/* Wound Assessment Panel
-LOINC 39135-9
+/* LOINC Wound Assessment Panel (LOINC 39135-9)
 See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive
 
 	39135-9  	Wound assessment panel	O	 	 
@@ -64,12 +63,12 @@ See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive
 ==========================
 
 Wound ASSERTION -- ONE ASSERTION PER WOUND
+ 0..1    72300-7  	Wound type	R	 
  0..1    89251-3  	Condition present on admission		 	 
  0..1    11373-8  	Injury cause
  0..1 	 85585-8  	Date of Onset of Impairment		 	{mm/dd/yyyy} 		 	 
  0..1    88878-4  	Date of condition abatement		 	{mm/dd/yyyy} 
- 1..1    81666-0  	Wound number [Identifier]		 	 
- 0..1    72300-7  	Wound type	R	 	
+ 1..1    81666-0  	Wound number [Identifier]		 	 	
  1..1?   89252-1  	Episode of Wound (aka ClinicalStatus) 		 	 
  1..1	 72369-2  	Anatomical Location 
  0..1 	72527-5  	Pressure ulcer stage NPUAP
@@ -84,9 +83,12 @@ Wound ASSESSMENT PANEL (MULTIPLE PANELS PER WOUND)
 Components:
 0..1    72301-5  	Description of Periwound
 0..*    89250-5  	Device or anatomic structure visible in wound
+1..1	72298-3  	Presence of Tunneling of Wound	R	
+1..1	72295-9  	Presence of Undermining of Wound	R	
+1..1	89259-6  	Presence of wound exudate	
 MemberObservations:
 	0..*    89254-7 	Wound bed appearance observation
-	0..*    xxxx  		Wound color observation
+	0..*    xxxx  		Wound bed color observation
 	0..1?   89256-2  	Wound edge observation
 	0..*    89257-0  	Wound tunneling observation
 	0..*    89258-8  	Wound undermining observation
@@ -95,11 +97,11 @@ MemberObservations:
 
 ===========================
 
-Observation:  89254-7 Wound bed observation
+Observation:  89254-7 Wound bed appearance observation
  	        COMPONENT:      72371-8  	Appearance of Wound base (bed)	R	 	 
  	        COMPONENT:      72370-0  	Area of wound bed appearance/Entire ​Area of wound bed 	C	 	% 
 
-Observation: xxxx  Wound color observation
+Observation: xxxx  Wound bed color observation
  	        COMPONENT:      39132-6  	Color of Wound base	O	 	 
  	        COMPONENT:      89255-4  	Wound bed area identified by color/​Area of wound bed		 	% 
 
@@ -107,18 +109,15 @@ Observation: 89256-2  Wound edge observation
  	         COMPONENT:      72304-9  	Edge of wound description	O	 	 
  	         COMPONENT:      39133-4  	Color of Wound edge	O	
 	 	 
-Observation: 89257-0  	Wound tunneling observation 		 	 
- 	        COMPONENT:      72298-3  	Tunneling of Wound	R	 	 
+Observation: 89257-0  	Wound tunneling observation 		 	  	 
  	        COMPONENT:      72296-7  	Tunneling [Length] of Wound	C	 	cm 
  	        COMPONENT:      72297-5  	Tunneling clock position of Wound	C	
 
-Observation: 89258-8  	Wound undermining observation 		 	 
- 	        COMPONENT:   72295-9  	Undermining of Wound	R	 	 
+Observation: 89258-8  	Wound undermining observation 		 	  	 
  	        COMPONENT:   72293-4  	Undermining [Length] of Wound	C	 	cm 
  	        COMPONENT:   72294-2  	Undermining clock position of Wound	C	 
 
-Observation: 72292-6  	Wound exudate observation 	 
- 	        COMPONENT:     89259-6  	Presence of wound exudate		 	 
+Observation: 72292-6  	Wound exudate observation 	 	 	 
  	        COMPONENT:     39116-9  	Drainage amount of Wound	C	 	 
  	        COMPONENT:     72288-4  	Odor of Exudate from wound	O	 	 
  	        COMPONENT:     72289-2  	Color of Exudate from wound	R	 	 
@@ -135,9 +134,9 @@ Observation: 72287-6  	Wound size observation
 Abstract Element:	WoundTopic
 Based on:		BodyStructureTopic
 Description:	"A topic concerning a wound, independent of context of being present or absent."
-				TopicCode from http://loinc.org/LL2215-3 if covered  // 72300-7 Wound type	
+1..1			TopicCode from http://loinc.org/LL2215-3 if covered  // 72300-7 Wound type	
 1..1			Category is OBSCAT#exam
-				Identifier is type WoundNumber // 81666-0  	Wound number [Identifier]
+1..1			Identifier is type WoundNumber // 81666-0  	Wound number [Identifier]
 				Morphology from WoundMorphologyVS
 				ConditionCause is type InjuryCause  // 11373-8  "Injury cause"
 1..1			AnatomicalLocation				
@@ -199,15 +198,15 @@ Description:	"Documents the absence of a wounds of a particular type at a given 
 
 // This is the main event
 EntryElement:	WoundEvaluationSummaryPanel
-Based on:		NonLaboratoryEvaluationResultRecorded
+Based on:		NonLaboratoryObservation
 Concept:		LNC#54574-9
 Description:	"Group of observations regarding the properties and severity of a wound."
 				StatementTopic is type WoundEvaluationResultTopic
-				StatementContext is type WoundEvaluationResultRecordedContext
+				StatementContext is type WoundObservationContext
 
 
-Abstract Element:	WoundEvaluationResultRecordedContext
-Based on:			EvaluationResultRecordedContext
+Abstract Element:	WoundObservationContext
+Based on:			ObservationContext
 Description:		"Context for recording wound assessments."
 					Interpretation is type WoundAssessmentInterpretation
 					DeltaFlag is type WoundTrend
@@ -240,7 +239,7 @@ includes 0..*	VisibleInternalStructure  //89250-5  Device or anatomic structure 
 includes 0..1	PresenceOfWoundTunneling  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
 includes 0..1	PresenceOfWoundUndermining // 72295-9  	Undermining of Wound	R
 includes 0..1	PresenceOfWoundExudate // 89259-6  	Presence of wound exudate	
-				PanelMembers.EvaluationResultRecorded
+				PanelMembers.Observation
 includes 0..*	WoundBedAppearanceObservation  //89254-7 	Wound bed appearance observation
 includes 0..*	WoundBedColorObservation  // xxxx  Wound color observation
 includes 0..1	WoundEdgeObservation   //  89256-2  Wound edge observation
@@ -284,7 +283,7 @@ includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
 
 // LOINC: The wound bed panel has to be factored in a way that the percentages pair unambiguously with the color/appearances. It should be a set of 2-tuples (pairs). The way it is done in LOINC doesn't allow pairing 
 EntryElement: 	WoundBedAppearanceObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89254-7
 Description:	""
 				EvaluationResultTopic.EvaluationComponent
@@ -304,7 +303,7 @@ includes 1..1	WoundBedAppearancePercentage
 		Value:			Percentage  // quantity with units?  Quantity with units UCUM#% 
 
 EntryElement: 	WoundBedColorObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		TBD
 Description:	"Color of part or all of the wound base (bed), and the percentage of the area with that color."
 				EvaluationResultTopic.EvaluationComponent
@@ -326,7 +325,7 @@ includes 1..1	WoundBedColorAreaPercentage
 		Value:			Percentage  // quantity with units?
 
 EntryElement:	WoundEdgeObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
 				EvaluationResultTopic.EvaluationComponent
@@ -348,7 +347,7 @@ includes 0..1	WoundEdgeColor
 		Value:			CodeableConcept could be from http://loinc.org/LL2338-3	
 
 EntryElement:	WoundTunnelingObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89257-0
 Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
 				EvaluationResultTopic.EvaluationComponent
@@ -373,7 +372,7 @@ includes 0..1	WoundTunnelClockDirection
 
 
 EntryElement:	WoundUnderminingObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89258-8
 Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
 		 		EvaluationResultTopic.EvaluationComponent
@@ -394,7 +393,7 @@ includes 0..1	WoundUnderminingClockDirection
 		Value:			CodeableConcept from ClockDirectionVS
 
 EntryElement:	WoundExudateObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
 				EvaluationResultTopic.EvaluationComponent
@@ -430,7 +429,7 @@ includes 1..1	ExudateAppearance
 
 
 EntryElement:	WoundSizeObservation
-Based on:		ComponentOnlyNonLaboratoryEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
 				EvaluationResultTopic.EvaluationComponent

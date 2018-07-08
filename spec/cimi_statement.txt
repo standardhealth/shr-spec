@@ -77,18 +77,18 @@ FindingTopic.FindingMethod
 FindingTopic.Details
 */
 
-EntryElement:	EvaluationResultRecorded   // TODO: be consistent, or stop using the word "Statement" in class names 
+EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-EvaluationResultRecorded has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 				StatementTopic is type EvaluationResultTopic
-				StatementContext is type EvaluationResultRecordedContext
+				StatementContext is type ObservationContext
 				SubjectOfInformation value is type ref(Patient)  // FHIR to align with US Core Result
 // shr-cli bug: Signed.Value.EntityOrRole crashes
 				Signed.Attribution.EntityOrRole is type PatientOrPractitionerOrRelatedPersonOrOrganization // mapped to performer (who made the observation)
 /* 
- Here's a list of all the attributes of EvaluationResultRecorded. 
+ Here's a list of all the attributes of Observation. 
  To keep things straight, always consider the constraints on each element in this order:
 	// ClinicalStatement
 		SubjectOfInformation
@@ -118,83 +118,83 @@ EvaluationResultRecorded has a value representing the result (answer), or an Exc
 		EvaluationResultTopic.EvaluationComponent.Interpretation
 		EvaluationResultTopic.EvaluationComponent.ReferenceRange
 	// Context	
-		EvaluationResultRecordedContext.ContextCode is SCT#424975005 "Record Entity"
-		EvaluationResultRecordedContext.Interpretation
-		EvaluationResultRecordedContext.FindingStatus
-		EvaluationResultRecordedContext.RelevantTime  
-		EvaluationResultRecordedContext.Encounter
-		EvaluationResultRecordedContext.ResultValue
-		EvaluationResultRecordedContext.ExceptionValue
-		EvaluationResultRecordedContext.DeltaFlag
+		ObservationContext.ContextCode is SCT#424975005 "Record Entity"
+		ObservationContext.Interpretation
+		ObservationContext.FindingStatus
+		ObservationContext.RelevantTime  
+		ObservationContext.Encounter
+		ObservationContext.ResultValue
+		ObservationContext.ExceptionValue
+		ObservationContext.DeltaFlag
 */
 
 //  Non-Laboratory Results
 
-EntryElement:	NonLaboratoryEvaluationResultRecorded
-Based on:		EvaluationResultRecorded
+EntryElement:	NonLaboratoryObservation
+Based on:		Observation
 Description:	"An observation not based on a specimen."
 0..0			EvaluationResultTopic.Specimen
 0..0			EvaluationResultTopic.DiagnosticService
 
-EntryElement:	SimpleNonLaboratoryEvaluationResultRecorded
-Based on:		NonLaboratoryEvaluationResultRecorded
+EntryElement:	SimpleNonLaboratoryObservation
+Based on:		NonLaboratoryObservation
 Description:	"An observation having no components or panel members"
 0..0			EvaluationResultTopic.EvaluationComponent
 0..0			EvaluationResultTopic.PanelMembers
 
-EntryElement:	CodedNonLaboratoryEvaluationResultRecorded
-Based on:		NonLaboratoryEvaluationResultRecorded
+EntryElement:	CodedNonLaboratoryObservation
+Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
-				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
+				ObservationContext.ResultValue value is type CodeableConcept
 0..0			EvaluationResultTopic.ReferenceRange
 
-EntryElement:	SimpleCodedNonLaboratoryEvaluationResultRecorded
-Based on:		CodedNonLaboratoryEvaluationResultRecorded
+EntryElement:	SimpleCodedNonLaboratoryObservation
+Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
 0..0			EvaluationResultTopic.EvaluationComponent
 0..0			EvaluationResultTopic.PanelMembers
 
-EntryElement:	ComponentOnlyNonLaboratoryEvaluationResultRecorded
-Based on:		NonLaboratoryEvaluationResultRecorded
+EntryElement:	ComponentOnlyNonLaboratoryObservation
+Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
-0..0			EvaluationResultRecordedContext.ResultValue
-0..0			EvaluationResultRecordedContext.ExceptionValue
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
 0..0			EvaluationResultTopic.PanelMembers
 0..0			EvaluationResultTopic.ReferenceRange
 
-EntryElement:	PanelOnlyNonLaboratoryEvaluationResultRecorded
-Based on:		NonLaboratoryEvaluationResultRecorded
+EntryElement:	PanelOnlyNonLaboratoryObservation
+Based on:		NonLaboratoryObservation
 Description:	"An observation with panel members, but without a result value or components."
-0..0			EvaluationResultRecordedContext.ResultValue
-0..0			EvaluationResultRecordedContext.ExceptionValue
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
 0..0			EvaluationResultTopic.ReferenceRange
 0..0			EvaluationResultTopic.EvaluationComponent
 1..1			EvaluationResultTopic.PanelMembers
 
 // Laboratory Measurements and Results
 
-EntryElement:	LaboratoryEvaluationResultRecorded
-Based on:		EvaluationResultRecorded
+EntryElement:	LaboratoryObservation
+Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
 1..1			EvaluationResultTopic.Specimen
 0..0			EvaluationResultTopic.AnatomicalLocation  // AnatomicalLocation is where the Specimen was collected
 				EvaluationResultTopic.Category is OBSCAT#laboratory
 
-EntryElement:	CodedLaboratoryEvaluationResultRecorded
-Based on:		LaboratoryEvaluationResultRecorded
+EntryElement:	CodedLaboratoryObservation
+Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
-				EvaluationResultRecordedContext.ResultValue value is type CodeableConcept
+				ObservationContext.ResultValue value is type CodeableConcept
 0..0			EvaluationResultTopic.ReferenceRange
 
-EntryElement:	SimpleLaboratoryEvaluationResultRecorded
-Based on:		LaboratoryEvaluationResultRecorded
+EntryElement:	SimpleLaboratoryObservation
+Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
 0..0			EvaluationResultTopic.EvaluationComponent
 0..0			EvaluationResultTopic.PanelMembers
 
-EntryElement:	SimpleCodedLaboratoryEvaluationResultRecorded
-Based on:		CodedLaboratoryEvaluationResultRecorded
+EntryElement:	SimpleCodedLaboratoryObservation
+Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
 0..0			EvaluationResultTopic.EvaluationComponent
 0..0			EvaluationResultTopic.PanelMembers
