@@ -11,12 +11,13 @@ Concept:		TBD
 Description:	"Compositional and reusable grouping of clinical statement attributes that provides the context for the topic of a clinical statement. 
 The StatementContext class aligns with the SNOMED CT Situations with Explicit Context (SWEC) Concept Model. The StatementContext provides the expressivity required to specify that an act was performed or not performed or that a finding was asserted to be present or absent for the given subject of information. It also often holds provenance information relevant to the context of the clinical statement. It is important to note that by default the context applies to the conjunction of the attribute specified in the statement. For instance, if a clinical statement has a topic describing a rash on left arm and a context of 'absent', then the statement states that the subject of interest did not have a rash on the left arm but might have had one on the right arm."
 1..1			ContextCode
+0..1			Encounter  // clinical statements are often associated with specific encounters
 
 		Element:		ContextCode	
 		Concept:		TBD
 		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc.
 		Attribute aligns with the SNOMED CT Situation with Explicit Context (SWEC) Concept Model context attributes: 'Finding context (attribute)' (SCTID: 408729009) and 'Procedure context (attribute)' (SCTID: 408730004). The range allowed for this attribute shall be consistent with the SNOMED CT concept model specification for SWEC."
-		Value:			CodeableConcept	
+		Value:			CodeableConcept
 
 Element:			ActionContext
 Based on:			StatementContext
@@ -33,8 +34,7 @@ Based on:		ActionContext
 Concept:		TBD
 Description:	"ActionContext indicating actual performance or execution of a healthcare-related action, e.g., 3rd dose of Hepatitis B vaccine administered on Dec 4th 2012, appendectomy performed today."
 1..1			OccurrenceTimeOrPeriod  // when the action took place
-0..*			Participant
-0..1			Encounter
+0..*			Participant		
 1..1			Status should be from http://hl7.org/fhir/ValueSet/event-status  
 0..1			Method
 0..*			RelatedRequest
@@ -102,7 +102,6 @@ Concept:		MTH#C1705178
 Based on:		ActionContext
 Description:	"An order for something to take place."
 1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status
-0..1			Encounter   // encounter when the request was made
 1..1			RequestIntent
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
@@ -163,7 +162,6 @@ Element:		FindingContext
 Based on:		StatementContext
 Concept:		SCT#410514004
 Description:	"The base class for representing the ontological status of a finding, e.g., present, absent, goal, risk, expectation, etc. This class aligns with the SNOMED Situation with Explicit Context."
-0..1			Encounter
 
 
 Element:		AssertionContext
@@ -175,7 +173,6 @@ Element:		PresenceContext
 Based on:		AssertionContext
 Concept:		SCT#410515003
 Description:	"PresenceContext indicates that the finding in question exists or is present to some level of certainty. 
-	
 For example, if the finding involves a myocardial infarction, the presence context implies that cardiac arrest has (or may have) taken place. Note that the name Presence is used rather than Present to prevent confusion with the temporal meaning of present."
 				ContextCode from PresenceContextVS
 1..1			VerificationStatus			
@@ -190,12 +187,12 @@ For example, if the finding involves a myocardial infarction, the presence conte
 			Value:			CodeableConcept	
 
 			Element:		Onset
-			Concept:		MTH#C0277793
+			Concept:		LNC#85585-8
 			Description:	"The beginning or first appearance of a mental or physical disorder."
 			Value:			dateTime or Age or TimePeriod or Range or string
 			
 			Element:		Abatement
-			Concept:		MTH#C1880019
+			Concept:		LNC#88878-4
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 			
@@ -208,7 +205,6 @@ Element:		ConditionPresenceContext
 Based on:		PresenceContext
 Concept:		TBD
 Description:	"The context for a condition that is known, suspected, or possibly present."
-// TBD: Subject is a required field -- does it come from SubjectOfInformation or PersonOfRecord? Or both (one overriding the other?)
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
@@ -227,7 +223,7 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 			Value:			date
 
 			Element:		Preexisting
-			Concept:		TBD
+			Concept:		LNC#89251-3 "Condition present on admission"
 			Description:	"If the problem or condition existed before the current episode of care."
 			Value:			CodeableConcept from YesNoUnknownVS
 
@@ -250,24 +246,20 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 					Element:		StageDetail
 					Concept:		TBD
 					Description:	"The full staging information"
-					Value:			ref(EvaluationResultRecorded)
+					Value:			ref(Observation)
 					
-	
-	
 	Element:		RecordedContext
 	Based on:		FindingContext
 	Concept:		TBD
-	Description:	"Context for recording a finding, usually a Panel, used to indicate an evaluation has been made. 
-	
-	For example, measurement of blood pressure that has been made simply exists (although the value can be present or absent, accurate or inaccurate). The RecordedContext indicates the information presented stands on its own as presented. It can also apply to clinical notes."
+	Description:	"Context for recording a finding, used to indicate an evaluation has been made."
 					ContextCode is SCT#424975005 "Record Entity"
 	0..1			Interpretation
-	1..1			FindingStatus  // why not in FindingContext?
+	1..1			FindingStatus
 	0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 	
 		Element:		Interpretation
 		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a finding."
+		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 	
 		Element:		FindingStatus
@@ -282,13 +274,15 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 		
-	Element:		EvaluationResultRecordedContext
+	Element:		ObservationContext
 	Based on:		RecordedContext
 	Concept:		TBD
 	Description:	"Context for recording an evaluation result, used to indicate an evaluation has been made."
 	0..1			ResultValue
 	0..1			ExceptionValue from ExceptionValueVS if covered
 	0..1			DeltaFlag
+	0..1			Issued
+	0..*			Observer
 
 		Element:		ResultValue
 		Concept:		TBD
@@ -305,13 +299,20 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from DeltaFlagVS
 				
-	
+		Element:		Issued
+		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+		Value:			instant
+
+		Element:		Observer
+		Description:	"The person or organization who observed or informed the reporter about the characteristic, potentially the clinician, the patient, or a related person."
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
+
 	Element:		AbsenceContext
-	Based on:		FindingContext
+	Based on:		AssertionContext
 	Concept:		TBD
 	Description:	"Indicates the finding in question is either known absent (ruled out), not suspected, or unknown."
 					ContextCode from AbsenceContextVS
-			
+	
 	Element:		AtRiskContext
 	Based on:		FindingContext
 	Concept:		SCT#410519009

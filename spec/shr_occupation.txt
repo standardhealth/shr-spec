@@ -1,28 +1,39 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.occupation
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element
+Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
-//
+
 EntryElement:	OccupationalDataSummaryPanel
 Concept:		LNC#74165-2
-Based on:		NonLabPanelRecorded
-Description:	"Current and past activities for profit, wages, salary, or as a service to others."
-				PanelTopic.TopicCode is LNC#74165-2
-				PanelTopic.Category is OBSCAT#social-history
-0..0			PanelTopic.AnatomicalLocation
-0..0			PanelTopic.FindingMethod		
-				PanelTopic.EvaluationComponent
+Based on:		Observation
+Description:	"Current and past activities forDe- profit, wages, salary, or as a service to others."
+				ObservationTopic.TopicCode is LNC#74165-2
+				ObservationTopic.Category is OBSCAT#social-history
+				ObservationTopic.EvaluationComponent
 includes 0..1 	CurrentEmploymentStatus
-				PanelTopic.PanelMembers.EvaluationResultRecorded
+				ObservationTopic.PanelMembers.Observation
 includes 0..1	UsualOccupation
 includes 0..*	PastOrPresentJob
 includes 0..1	MilitaryServiceHistory
-
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Device
+0..0			ObservationTopic.Specimen
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.ReferenceRange
+0..0			ObservationTopic.DiagnosticService
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+0..0			ObservationContext.Interpretation
+0..0			ObservationContext.RelevantTime  
+0..0			ObservationContext.Encounter
+0..0			ObservationContext.DeltaFlag
 
 		Element:		CurrentEmploymentStatus
 		Based on:		CodedEvaluationComponent
@@ -32,14 +43,26 @@ includes 0..1	MilitaryServiceHistory
 
 				
 EntryElement:	UsualOccupation
-Based on:		NonLabCodedEvaluationResultRecorded
+Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21843-8
 Description:	"The type of work a person has held for the longest amount of time during his or her life, regardless of the occupation currently held and regardless of whether or not it has been held for a continuous time."
-				EvaluationResultRecordedContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
-				EvaluationResultTopic.Category is OBSCAT#social-history
-				EvaluationResultTopic.EvaluationComponent
+				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
+				ObservationTopic.Category is OBSCAT#social-history
+				ObservationTopic.EvaluationComponent
 includes 0..1 	Industry
 includes 0..1	TotalDuration
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.ReferenceRange
+0..0			ObservationTopic.PanelMembers
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+0..0			ObservationContext.Interpretation
+0..0			ObservationContext.RelevantTime  
+0..0			ObservationContext.Encounter
+0..0			ObservationContext.DeltaFlag
 	
 	Element:		Industry
 	Based on:		CodedEvaluationComponent
@@ -56,14 +79,12 @@ includes 0..1	TotalDuration
 	
 
 EntryElement:	PastOrPresentJob
-Based on:		NonLabCodedEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#21843-8
 Description:	"A single job, past or present. The relevant time is the period the job was held."
-0..0			EvaluationResultRecordedContext.ResultValue
-0..0			EvaluationResultRecordedContext.ExceptionValue
-				EvaluationResultTopic.Category is OBSCAT#social-history
-0..1			Employer // not an evaluation component because the value is a reference to Person or Organization
-				EvaluationResultTopic.EvaluationComponent
+				ObservationTopic.Category is OBSCAT#social-history
+0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
+				ObservationTopic.EvaluationComponent
 includes 0..1	Occupation
 includes 0..1	Industry
 includes 0..1	JobClassification
@@ -73,12 +94,24 @@ includes 0..*	OccupationalHazard
 includes 0..1	WorkSchedule
 includes 0..1	WorkDaysPerWeek
 includes 0..1	WorkHoursPerDay
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.ReferenceRange
+0..0			ObservationTopic.PanelMembers
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+0..0			ObservationContext.Interpretation
+0..0			ObservationContext.Encounter
+0..0			ObservationContext.DeltaFlag
 
 	Element:		Employer
+	Based on:		Role
 	Concept:		MTH#C1274022  // currently unmapped because this is an extension
 	Description:	"A person or organization that hires the services of another."
 	Value:			ref(Person) or ref(Organization)
-	
+
 	Element:		Occupation
 	Based on:		CodedEvaluationComponent
 	Concept:		LNC#21843-8 // LNC#74287-4
@@ -132,17 +165,26 @@ includes 0..1	WorkHoursPerDay
 	
 
 EntryElement:	MilitaryServiceHistory
-Based on:		NonLabCodedEvaluationResultRecorded
+Based on:		ComponentOnlyNonLaboratoryObservation
 Description:	"History of service in the US military."
-				EvaluationResultTopic.Category is OBSCAT#social-history
-				EvaluationResultTopic.TopicCode is MTH#C3714797
-				EvaluationResultTopic.EvaluationComponent
+				ObservationTopic.Category is OBSCAT#social-history
+				ObservationTopic.TopicCode is MTH#C3714797
+				ObservationTopic.EvaluationComponent
 includes 1..1	MilitaryStatus
 includes 0..1 	MilitaryServiceDischargeStatus
 includes 0..1	MilitaryBranch
 includes 0..*	MilitaryServiceEra
 includes 0..1	ServiceConnectedDisability
 //includes 0..1	TBD "MilitaryRank"
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Device
+0..0			ObservationTopic.Precondition
+0..0			ObservationContext.Interpretation
+0..0			ObservationContext.RelevantTime  
+0..0			ObservationContext.Encounter
+0..0			ObservationContext.DeltaFlag
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416

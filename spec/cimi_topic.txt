@@ -24,88 +24,65 @@ Description:		"An entry related to an action or intervention, whether potential 
 0..1				Category
 
 
-
 Element: 		FindingTopic
 Based on:		StatementTopic
 Concept:		TBD
 Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. 
-
-The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
-
-CIMI Alignment: In CIMI V0.0.4, FindingTopic has four attributes: result, description, multimedia, and intepretation. The model assumes the result of the finding, and interpretationof that result, are not part of the topic (the question), but part of the result (the answer), and therefore appears in the context (RecordedContext and PresenceContext)."
+The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			FindingMethod
 0..1			Details
+0..*			Media
 
 		Element:		FindingMethod
 		Concept:		TBD
-		Description:	"The technique used to create the finding; for example, the specific imaging technique, lab test code, or assessment vehicle.
-		
-		CIMI Alignment: In CIMI V0.0.4, this attribute was called 'method'. The value set binding reflects CIMI's preference for LOINC codes."
-		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/observation-codes
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
+		Value:			CodeableConcept should be from http://loinc.org
 
 
-Element:		PanelTopic
-Based on:		EvaluationResultTopic  // or FindingTopic??? But if FindingTopic, mapping isn't available
-Concept:		TBD
-Description:	"The base topic for collections of independent findings."
-1..1			PanelMembers
-
-		Element:		PanelMembers
-		Concept:		TBD
-		Description:	"PanelMember represent the elements of a group of a related but independent evaluations. 
-		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
-		0..* 			ref(EvaluationResultRecorded)   //FindingStatement?
-
-
-Element: 		AssertionTopic
-Based on:		FindingTopic
-Concept:		TBD
-Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
-
-Element:		EvaluationResultTopic
+Element:		ObservationTopic
+// All attributes of observation are defined at this level. Any subclass uses subtractive methods to define relevant attributes
 Based on:		FindingTopic
 Concept:		MTH#C1554188
 Description:	"The base class, independent of context for evaluations (measurements, tests, or questions). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-0..1			EvaluationMethod
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
 0..1			Focus
 0..1			ref(Device)
 0..1			ref(Specimen)
-0..1			Details
 0..*			Precondition
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
+0..1			PanelMembers
+0..*			DiagnosticService
 
-	Element:		EvaluationMethod
-	Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-	Value:			CodeableConcept should be from http://loinc.org
-//	
-	Element:		Focus
-	Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
-	Value:			CodeableConcept or ref(EntityOrRole)
+		Element:		Focus
+		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
+		Value:			CodeableConcept or Identifier or ref(EntityOrRole)
 
-	Element:		EvaluationComponent
-	Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
-	0..1 			ComponentResultValue
-	0..1			ExceptionValue
-	0..1			Interpretation
-	0..*			ReferenceRange
+		Element:		EvaluationComponent
+		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
+		Value:			(Quantity or CodeableConcept or string or Range or Ratio or Media or time or dateTime or TimePeriod or IntegerQuantity)
+		0..1			ExceptionValue
+		0..1			Interpretation
+		0..*			ReferenceRange	
+		
+		Element:		CodedEvaluationComponent
+		Based on:		EvaluationComponent
+		Description:	"An evaluation component whose value is a code (concept)."
+		Value:			CodeableConcept
+		0..0			ReferenceRange 
 
-		Element:		ComponentResultValue
-		Description:	"The actual value of the component finding."
-		Value:			(Quantity or CodeableConcept or string or Range or Ratio or Attachment or time or dateTime or TimePeriod or IntegerQuantity)
-	
-	Element:		CodedEvaluationComponent
-	Based on:		EvaluationComponent
-	Description:	"An evaluation component whose value is a code (concept)."
-					ComponentResultValue value is type CodeableConcept
-	0..0			ReferenceRange 
+		Element:		PanelMembers
+		Concept:		TBD
+		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
+			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		0..* 			ref(Observation)
+
 		
 		Element:		Precondition
 		Concept:		TBD
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
-		Value:			CodeableConcept or ref(EvaluationResultRecorded)
+		Value:			CodeableConcept or ref(Observation)
 		
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
@@ -125,7 +102,17 @@ Description:	"The base class, independent of context for evaluations (measuremen
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
 
-				
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
+
+
+Element: 		AssertionTopic
+Based on:		FindingTopic
+Concept:		TBD
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
+
 Element:		ConditionTopic
 Based on:		AssertionTopic
 Concept:		MTH#C0348080
@@ -134,16 +121,14 @@ CIMI deviation: AnatomicalLocation is included here, rather than being a propert
 				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
+0..*			ConditionCause
+
+		Element:	ConditionCause
+		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
+		Value:		CodeableConcept or ref(Entity) or ref(ClinicalStatement)
+		// probably other attributes needed, such as likelihood or type of cause
 
 
-
-/* 
-TODO:
-Need to add Cause or Precursor (another condition that leads to the current condition) - relate to Wound cause, for example
-Associate the condition with Evidence, such as Observations, Tests, Imaging Results
-Provide for Progress Notes (complex type with text, date, author)
-Link to Related Medications
-*/
 
 
 

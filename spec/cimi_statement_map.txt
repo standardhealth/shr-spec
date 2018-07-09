@@ -3,49 +3,52 @@ Namespace:	cimi.statement
 Target:		FHIR_STU_3
 
 
-EvaluationResultRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
-	EvaluationResultTopic.Category maps to category
-	EvaluationResultTopic.FindingMethod maps to method
-	EvaluationResultTopic.TopicCode maps to code
-	EvaluationResultTopic.AnatomicalLocation maps to bodySite
-	EvaluationResultTopic.Specimen maps to specimen
-	EvaluationResultRecordedContext.ResultValue maps to value[x]
-	EvaluationResultRecordedContext.ExceptionValue maps to dataAbsentReason
-	EvaluationResultRecordedContext.Interpretation maps to interpretation
-	EvaluationResultRecordedContext.RelevantTime maps to effective[x]
-	EvaluationResultRecordedContext.FindingStatus maps to status
-	EvaluationResultTopic.ReferenceRange maps to referenceRange
-	EvaluationResultTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
-	EvaluationResultTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
-	EvaluationResultTopic.ReferenceRange.Type maps to referenceRange.type
-	EvaluationResultTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
-	EvaluationResultTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age
-//	fix related.type to #has-member
-	EvaluationResultTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
-	EvaluationResultTopic.EvaluationComponent._Concept maps to component.code
-	EvaluationResultTopic.EvaluationComponent.ComponentResultValue maps to component.value[x]
-	EvaluationResultTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
-	EvaluationResultTopic.EvaluationComponent.Interpretation maps to component.interpretation
-	EvaluationResultTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
-//	EvaluationResultTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-
-
-PanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+Observation maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
+	SubjectOfInformation maps to subject
+//	SourceOfInformation.Value maps to performer  //  Why doesn't this work???
+//	Annotation maps to extension
+//	RecordStatus maps to extension
+//	Cosigned maps to extension
+//	Verified maps to extension
+	ObservationTopic.TopicCode maps to code
+	ObservationTopic.FindingMethod maps to method
+	ObservationTopic.Details maps to comment
+//	ObservationTopic.Media maps to extension
+	ObservationTopic.Category maps to category
+	ObservationTopic.AnatomicalLocation maps to bodySite
+//	ObservationTopic.Focus maps to extension (until FHIR 4) Note that http://hl7.org/fhir/StructureDefinition/observation-focal-subject is a CodeableConcept
+	ObservationTopic.Device maps to device
+	ObservationTopic.Specimen maps to specimen
+//	ObservationTopic.Precondition maps to extension
+	ObservationTopic.ReferenceRange maps to referenceRange
+	ObservationTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
+	ObservationTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
+	ObservationTopic.ReferenceRange.Type maps to referenceRange.type
+	ObservationTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
+	ObservationTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age	
+//	ObservationTopic.DiagnosticService maps to extension
+	ObservationTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	ObservationTopic.EvaluationComponent._Concept maps to component.code
+	ObservationTopic.EvaluationComponent.Value maps to component.value[x]
+	ObservationTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	ObservationTopic.EvaluationComponent.Interpretation maps to component.interpretation
+	ObservationTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
 	fix related.type to #has-member
-	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-
-NonLabPanelRecorded maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:
-	fix related.type to #has-member
-	PanelTopic.PanelMembers.EvaluationResultRecorded maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-	
-SimplifiedLaboratoryTestResultRecorded:
-	constrain related to 0..0  // no PanelMembers (not a panel)
-
+	ObservationTopic.PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+//	ObservationContext.ContextCode maps to nothing // drop
+	ObservationContext.ResultValue maps to value[x]
+	ObservationContext.ExceptionValue maps to dataAbsentReason
+	ObservationContext.Interpretation maps to interpretation
+	ObservationContext.Issued maps to issued
+	ObservationContext.FindingStatus maps to status
+	ObservationContext.RelevantTime maps to effective[x]
+	ObservationContext.Encounter maps to context
+	ObservationContext.DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
 
 ConditionPresenceStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
-	_Entry.CreationTime maps to assertedDate
+//	_Entry.CreationTime maps to assertedDate  // why doesn't this work?
 	SubjectOfInformation maps to subject
-	SourceOfInformation.Value maps to asserter 
+//	SourceOfInformation.Value maps to asserter    // why doesn't this work?
 	ConditionTopic.Category maps to category
 	ConditionTopic.TopicCode maps to code
 	constrain bodySite to 0..0

@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:			cimi.element
+Uses:			cimi.element, cimi.topic
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
@@ -49,9 +49,9 @@ Based on:		Quantity
 Concept:		MTH#C0012751
 Description:	"The measure of space separating two objects or points."
 				Units with Coding from UnitsOfLengthVS
-				
+
 Element:		Duration
-Based on:		Quantity
+Based on:		SimpleQuantity
 Concept:		MTH#C0449238
 Description:	"The length of time that something continues."
 				Units with Coding from TimeUnitOfMeasureVS
@@ -65,7 +65,7 @@ Description:	"Representation of an amount of currency or monetary value."
 
 //------------- Complex data types in FHIR 3.0 ---------------
 
-Element:		Attachment
+Element:		Media
 Based on:		EmbeddedContent
 Concept:		TBD
 Description:	"A file that contains audio, video, image, or similar content."
@@ -113,6 +113,11 @@ Description:	"A file that contains audio, video, image, or similar content."
 	Description:    "The point in time when the information was recorded in the system of record."
 	Value:          dateTime  // we can map to instant from dateTime
 
+	Element:		PhotographicImage
+	Based on:		Media
+	Concept:		LNC#72170-4
+	Value:			code from ImageMimeTypeVS if covered
+
 
 //---- Coding departs from CIMI to align with FHIR
 
@@ -153,18 +158,18 @@ Description:	"A set of codes drawn from different coding systems, representing t
 Element:		Range
 Concept:		TBD
 Description:	"An interval defined by a quantitative upper and/or lower bound. One of the two bounds must be specified, and the lower bound must be less than the upper bound. When Quantities are specified, the units of measure must be the same."
-0..1			LowerBound value is type SimpleQuantity
-0..1			UpperBound value is type SimpleQuantity
+0..1			LowerBound
+0..1			UpperBound
 
 	Element:		LowerBound
 	Concept:		TBD
 	Description:	"The lower limit on a range"
-	Value:			Quantity  // or decimal or unsignedInt or integer 
+	Value:			SimpleQuantity  // or decimal or unsignedInt or integer 
 
 	Element:		UpperBound
 	Concept:		TBD
 	Description:	"The upper limit on a quantitative value."
-	Value:			Quantity  // or decimal or unsignedInt or integer 
+	Value:			SimpleQuantity  // or decimal or unsignedInt or integer 
 
 	
 Element:		Ratio
@@ -358,9 +363,6 @@ Value:		string
 	Description:	"The number of sample points at each time point. If this value is greater than one, then the dimensions will be interlaced - all the sample points for a point in time will be recorded at once."
 	Value:		positiveInt
 	
-	
-		
-
 Element:   		Address
 Concept:		MTH#C0682130
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)."
@@ -447,9 +449,10 @@ Description:	"A range of non-negative integers. One of the two bounds must be pr
 */
 
 Element:		DurationRange
+Based on:		Range
 Description:	"A range of durations."
-0..1			LowerBound value is type Duration
-0..1			UpperBound value is type Duration
+				LowerBound value is type Duration
+				UpperBound value is type Duration
 	
 Element:		Statistic
 Based on: 		Quantity
@@ -472,12 +475,7 @@ Based on:		SimpleQuantity
 Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units.Coding is UCUM#%
-				
-	Element:		PercentageRange
-	Based on:		Range
-	Description:	"A range of percentage values."
-	0..1			LowerBound value is type Percentage
-	0..1			UpperBound value is type Percentage	
+
 
 Element:		Likelihood
 Concept:		MTH#C0033204
@@ -489,47 +487,44 @@ Concept:		TBD
 Description:	"A qualitative (subjective) likelihood."
 Value:			CodeableConcept from QualitativeLikelihoodVS
 
-
 Element:		Length
-//Based on:		EvaluationComponent
+Based on:		Quantity
 Concept:		MTH#C1444754
 Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Width
-//Based on:		EvaluationComponent
-Concept:		MTH#C0487742
-Description:	"The measurement or extent of something from side to side."
-Value:			Quantity with units UCUM#TBD
+				Units with Coding from UnitsOfLengthVS
 
 Element:		Depth
-//Based on:		EvaluationComponent
-Concept:		MTH#C0205125
+Based on:		EvaluationComponent
+Concept:		SCT#131197000 "Depth (qualifier value)"
 Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
-Value:			Quantity with units UCUM#TBD
+Value:			Quantity with units UCUM#cm
 
+Element:		Area
+Based on:		EvaluationComponent
+Concept:		SCT#42798000 "Area (qualifier value)"
+Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
+Value:			Quantity with units UCUM#cm2
+
+Element:		ClockDirection
+Based on:		CodedEvaluationComponent
+Concept:		LNC#72294-2
+Description:	"A direction indicated by an angle relative to 12 o'clock."
+Value:			CodeableConcept from ClockDirectionVS
+
+
+/*
 Element:		Volume
-//Based on:		EvaluationComponent
+Based on:		???
 Concept:		MTH#C0449468
 Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
 Value:			Quantity with units UCUM#TBD
 
-Element:		Area
-//Based on:		EvaluationComponent
-Concept:		MTH#C0205146
-Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
-Value:			Quantity with units UCUM#TBD
-
 Element:		Circumference
-//Based on:		EvaluationComponent
+Based on:		???
 Concept:		MTH#C0332520
 Description:	"The length of such a boundary line of a figure, area, or object."
+*/
 
-Element:		ClockDirection
-//Based on:		EvaluationComponent
-Concept:		LNC#72294-2
-Description:	"A direction indicated by an angle relative to 12 o'clock."
-Value:			CodeableConcept from ClockDirectionVS
 
 
 // --------------- Times and Time TimePeriods ----------------
@@ -541,13 +536,6 @@ Value:			CodeableConcept from QualitativeDateTimeVS
 
 
 // -----------  Age --------------------------
-
-Element:		AgeRange
-Concept:		TBD
-Description:	"A quantitative range of ages. One of the two ages must be specified."
-// Since Lower and Upper bounds in Range are based on SimpleQuantity and Age is based on Quantity, there is no way to make AgeRange a subtype of Range
-0..1			UpperBound value is type Age
-0..1			LowerBound value is type Age
 
 Element:		AgeGroup
 Concept:		MTH#C0027362
@@ -629,14 +617,6 @@ Based on:		OccurrenceTimeOrPeriod
 Concept:		TBD
 Description:	"The point in time in which something happens."
 Value:			dateTime
-
-/* Not used
-Element:		OccurrenceDate
-Based on:		OccurrenceTimeOrPeriod
-Concept:		TBD
-Description:	"The date when something happens."
-Value:			date
-*/
 
 Element:		OccurrencePeriod
 Based on:		OccurrenceTimeOrPeriod
