@@ -259,7 +259,7 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 	
 		Element:		Interpretation
 		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a finding."
+		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 	
 		Element:		FindingStatus
@@ -281,6 +281,8 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 	0..1			ResultValue
 	0..1			ExceptionValue from ExceptionValueVS if covered
 	0..1			DeltaFlag
+	0..1			Issued
+	0..*			Observer
 
 		Element:		ResultValue
 		Concept:		TBD
@@ -297,7 +299,14 @@ Description:	"The context for a condition that is known, suspected, or possibly 
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from DeltaFlagVS
 				
-	
+		Element:		Issued
+		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+		Value:			instant
+
+		Element:		Observer
+		Description:	"The person or organization who observed or informed the reporter about the characteristic, potentially the clinician, the patient, or a related person."
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
+
 	Element:		AbsenceContext
 	Based on:		AssertionContext
 	Concept:		TBD
