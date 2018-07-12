@@ -8,18 +8,19 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-EntryElement:	OccupationalDataSummaryPanel
-Concept:		LNC#74165-2
-Based on:		Observation
-Description:	"Current and past activities forDe- profit, wages, salary, or as a service to others."
-				ObservationTopic.TopicCode is LNC#74165-2
+EntryElement:	OccupationalDataSummary
+Concept:		LNC#74166-0
+Based on:		Observation  // Overall outer container could be a Composition. 
+Description:	"Current and past activities for profit, wages, salary, or as a service to others."
+				ObservationTopic.TopicCode is LNC#74166-0
 				ObservationTopic.Category is OBSCAT#social-history
-				ObservationTopic.EvaluationComponent
-includes 0..1 	CurrentEmploymentStatus
+0..0			ObservationTopic.EvaluationComponent
 				ObservationTopic.PanelMembers.Observation
+includes 0..* 	HistoryOfEmploymentStatus
+includes 0..*	DateOfRetirement
+includes 0..*	CombatZonePeriod 
 includes 0..1	UsualOccupation
-includes 0..*	PastOrPresentJob
-includes 0..1	MilitaryServiceHistory
+includes 0..*	PastOrPresentOccupation
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
@@ -31,26 +32,64 @@ includes 0..1	MilitaryServiceHistory
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 0..0			ObservationContext.Interpretation
+0..0			ObservationContext.RelevantTime 
+0..0			ObservationContext.DeltaFlag
+
+EntryElement:	HistoryOfEmploymentStatus
+Based on:		SimpleCodedNonLaboratoryObservation
+Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
+Description:	"A person’s state of being employed during the time period specified. 
+Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
+				ObservationContext.ResultValue value is type CodeableConcept
+				ObservationContext.ResultValue from http://hl7.org/fhir/ValueSet/employment-status-odh
+
+EntryElement:	DateOfRetirement
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#87510-4 "Date of Retirement"
+Description:	"If present, the patient is retired, and this observation records the retirement date.  This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
+				ObservationContext.ResultValue value is type dateTime
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.ReferenceRange
+0..0			ObservationTopic.PanelMembers
+0..0			ObservationContext.ExceptionValue
+0..0			ObservationContext.Interpretation
 0..0			ObservationContext.RelevantTime  
 0..0			ObservationContext.Encounter
 0..0			ObservationContext.DeltaFlag
 
-		Element:		CurrentEmploymentStatus
-		Based on:		CodedEvaluationComponent
-		Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
-		Description:	"A person’s current economic relationship to a job, for example, employed (currently working for compensation), unemployed (i.e., searching for work for compensation), or not in the labor force (e.g., student, homemaker, not seeking work). Employment status is not the same as classification of work. The relevant time is when the status was effective (not when the information was gathered). For example, if the status is 'retired' then the relevant time is the retirement date."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/employment-status-odh 
-
+EntryElement:	CombatZonePeriod
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#87511-2
+Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
+				ObservationContext.ResultValue value is type TimePeriod
+0..0			ObservationTopic.FindingMethod
+0..0			ObservationTopic.AnatomicalLocation
+0..0			ObservationTopic.Focus
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.ReferenceRange
+0..0			ObservationTopic.PanelMembers
+0..0			ObservationContext.ExceptionValue
+0..0			ObservationContext.Interpretation
+0..0			ObservationContext.RelevantTime  
+0..0			ObservationContext.Encounter
+0..0			ObservationContext.DeltaFlag
 				
 EntryElement:	UsualOccupation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21843-8
-Description:	"The type of work a person has held for the longest amount of time during his or her life, regardless of the occupation currently held and regardless of whether or not it has been held for a continuous time."
+Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
+// We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
+//				SubjectOfInformation value is type PatientOrRelatedPerson  // could be a relative
 				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
 				ObservationTopic.Category is OBSCAT#social-history
 				ObservationTopic.EvaluationComponent
-includes 0..1 	Industry
-includes 0..1	TotalDuration
+includes 1..1 	UsualIndustry 
+includes 0..1	UsualOccupationDuration 
+1..1			ObservationContext.RelevantTime 
+				ObservationContext.RelevantTime value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
@@ -60,110 +99,120 @@ includes 0..1	TotalDuration
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 0..0			ObservationContext.Interpretation
-0..0			ObservationContext.RelevantTime  
 0..0			ObservationContext.Encounter
 0..0			ObservationContext.DeltaFlag
 	
-	Element:		Industry
+/* UsualOccupation is in the value element
+	Element:		UsualOccupation
 	Based on:		CodedEvaluationComponent
-	Concept:		TBD
-	Description:	"A particular form or branch of economic or commercial activity."
+	Concept:		LNC#21843-8 "History of Usual Occupation" // Occupation is LNC#74287-4
+	Description:	"A person's work or business"
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010	// VS defined in FHIR 3.2 and not found in 3.0.1
+*/
+	Element:		UsualIndustry
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#21844-6 "History of Usual industry"
+	Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation. For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction."  // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
 	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/industry-cdc-census-2010  // defined in FHIR 3.2 and not found in 3.0.1
-					
-	Element:		TotalDuration
+
+	Element:		UsualOccupationDuration
 	Based on:		EvaluationComponent
-	Concept:		TBD
+	Concept:		LNC#74163-7 "Usual occupation duration"
 	Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
 	Value:			Quantity   //  with units from http://hl7.org/fhir/ValueSet/units-of-time
-					Quantity.Units from http://hl7.org/fhir/ValueSet/units-of-time
+					Quantity.Units with units UCUM#a
 	
 
-EntryElement:	PastOrPresentJob
-Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#21843-8
+EntryElement:	PastOrPresentOccupation
+Based on:		CodedNonLaboratoryObservation
+Concept:		LNC#11341-5 "History of Occupation"
 Description:	"A single job, past or present. The relevant time is the period the job was held."
+//				SubjectOfInformation value is type PatientOrRelatedPerson   // must map to subject
+				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
 				ObservationTopic.Category is OBSCAT#social-history
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				ObservationTopic.EvaluationComponent
-includes 0..1	Occupation
-includes 0..1	Industry
-includes 0..1	JobClassification
+includes 0..1	PastOrPresentIndustry
+includes 0..1	WorkClassification
 includes 0..1	SupervisoryLevel
 includes 0..*	JobDuty
 includes 0..*	OccupationalHazard
 includes 0..1	WorkSchedule
-includes 0..1	WorkDaysPerWeek
-includes 0..1	WorkHoursPerDay
+includes 0..1	WeeklyWorkDays
+includes 0..1	DailyWorkHours
+1..1			ObservationContext.RelevantTime 
+				ObservationContext.RelevantTime value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
-0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 0..0			ObservationContext.Interpretation
 0..0			ObservationContext.Encounter
 0..0			ObservationContext.DeltaFlag
 
+// Question -- organization only, or person or organization
 	Element:		Employer
 	Based on:		Role
-	Concept:		MTH#C1274022  // currently unmapped because this is an extension
+	Concept:		SCT#394571004 "Employer (person)"
 	Description:	"A person or organization that hires the services of another."
 	Value:			ref(Person) or ref(Organization)
 
-	Element:		Occupation
+	Element:		PastOrPresentIndustry
 	Based on:		CodedEvaluationComponent
-	Concept:		LNC#21843-8 // LNC#74287-4
-	Description:	"A person's work or business"
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010	// VS defined in FHIR 3.2 and not found in 3.0.1
-	
-	Element:		JobClassification
+	Concept:		LNC#86188-0 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/industry-cdc-census-2010  // defined in FHIR 3.2 and not found in 3.0.1
+
+	Element:		WorkClassification
 	Based on:		CodedEvaluationComponent
-	Concept:		MTH#C0681111
-	Description:	"The classification of a person's job (one job) as defined by compensation and sector (e.g. paid, unpaid, self-employed, government, etc.). This is different from employment status: a person who is a volunteer (work classification) may have chosen not to be in the labor force (employment status)."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-classification-odh  // VS defined in FHIR 3.2 and not found in 3.0.1
+	Concept:		LNC#85104-8 "Compensation and sector employment type"
+	Description:	"Employment attributes for a given job. 
+	This specifies information about the worker’s job, such as self-employed or unpaid, and is similar to the U.S. Bureau of Labor Statistics ‘class of worker’ and the International Labor Organization ‘classification of status in employment’. Knowing a patient is self-employed, for example, can assist in discussing return-to-work options."
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-classification-odh  
 					
 	Element:		SupervisoryLevel
 	Based on:		CodedEvaluationComponent
-	Concept:		TBD
-	Description:	"The amount of supervisory or management responsibilities of a person at one job. For military jobs, pay grade is used as a proxy because it can be interpreted across branches of service. A change in supervisory level is considered a new job."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/supervisory-level-odh-us	 // VS defined in FHIR 3.2 and not found in 3.0.1	
+	Concept:		LNC#87707-6
+	Description:	"The supervisory or management responsibilities for an individual’s job. For military jobs, this is pay grade."
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/supervisory-level-odh-us	 
 	
 	Element:		JobDuty
 	Based on:		EvaluationComponent
-	Concept:		TBD
-	Description:	"A regular action performed at a single job."
+	Concept:		LNC#63761-1
+	Description:	"Regular actions performed at work. A person may have the occupation of 'construction laborer' and his specific job duty to carry construction supplies."
 	Value:			string
 	0..0			ReferenceRange
 	
 	Element:		OccupationalHazard
 	Based on:		EvaluationComponent
-	Concept:		MTH#C0337074
-	Description:	"A hazard that is specific to a person's work or work environment for a single job and with which the person might come in contact. A hazard is a source of potential harm to an individual's physical or mental health (e.g., biological, chemical, physical, psychological, radiological)."
+	Concept:		LNC#87729-0
+	Description:	"Actual contact or interaction with a specific hazard that increases an individual’s risk of a detrimental physical or mental health outcome (e.g., ingestion or inhalation of a toxic chemical). Information on an exposure may include the measurement of duration/intensity of contact or interaction with the specific hazard."
 	Value:			string
 	0..0			ReferenceRange
 					
 	Element:		WorkSchedule
-	Based on:		EvaluationComponent
-	Concept:		MTH#C0237852
-	Description:	"A person's typical arrangement of working hours for one job."
-	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-schedule-odh // defined in FHIR 3.2 and not found in 3.0.1
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#74159-5
+	Description:	"An individual's typical arrangement of working hours for an occupation. For example, work schedule may capture that an individual typically works a regular day shift, evening shift, or night shift. It can also specify if an individual has another type of schedule, such as a rotating shift, split shift, etc."
+	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/work-schedule-odh 
 
-	// Should be part of WorkSchedule, but we cannot add components to components (FHIR limitation)
-	Element:		WorkDaysPerWeek
+	Element:		WeeklyWorkDays
 	Based on:		EvaluationComponent
-	Concept:		TBD // not MTH#C3699549 hours work per week
-	Description:	"The typical number of days worked in a week by a person at one job."
+	Concept:		LNC#74160-3
+	Description:	"The typical number of days per week that a person spends performing their duties for work.  This information is most useful coupled with daily work hours and helps to reveal compressed schedules or a 7-day work-week."
 	Value:			Quantity with units UCUM#d
+	0..0			ReferenceRange
 							
-	Element:		WorkHoursPerDay
+	Element:		DailyWorkHours
 	Based on:		EvaluationComponent
-	Concept:		TBD
-	Description:	"The number of hours worked in a day or shift at one job by a person. For those working a split shift (divided into two parts that are separated by an interval longer than a normal rest period), it is the total of both periods of time in a shift."
+	Concept:		LNC#87512-0
+	Description:	"The typical number of hours in a day that a person spends performing their duties for work.  This information is most useful coupled with weekly work days and helps to reveal compressed schedules, long work hours, and overtime."
 	Value:			Quantity with units UCUM#h
-	
+	0..0			ReferenceRange
 
+/*
 EntryElement:	MilitaryServiceHistory
 Based on:		ComponentOnlyNonLaboratoryObservation
 Description:	"History of service in the US military."
@@ -217,11 +266,6 @@ includes 0..1	ServiceConnectedDisability
 	Value:			Quantity with units UCUM#%
 	0..0			ReferenceRange
 
-	Element:		CombatZoneHazardousDutyPeriod
-	Based on:		EvaluationComponent
-	Concept:		LNC#87511-2
-	Description:	"A time period of combat zone duty. The time period does not necessarily correspond to the time period of a job; for example, a soldier may be deployed into a combat zone for 1 year out of 4 years of service."
-	Value:			TimePeriod
-	0..0			ReferenceRange
+*/
 
 
