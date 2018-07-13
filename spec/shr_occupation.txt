@@ -82,9 +82,10 @@ Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21843-8
 Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
 // We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
-//				SubjectOfInformation value is type PatientOrRelatedPerson  // could be a relative
 				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
 				ObservationTopic.Category is OBSCAT#social-history
+				ObservationTopic.Focus value is type CodeableConcept
+				ObservationTopic.Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype				
 				ObservationTopic.EvaluationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
@@ -92,7 +93,6 @@ includes 0..1	UsualOccupationDuration
 				ObservationContext.RelevantTime value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
-0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
@@ -119,18 +119,17 @@ includes 0..1	UsualOccupationDuration
 	Based on:		EvaluationComponent
 	Concept:		LNC#74163-7 "Usual occupation duration"
 	Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
-	Value:			Quantity   //  with units from http://hl7.org/fhir/ValueSet/units-of-time
-					Quantity.Units with units UCUM#a
+	Value:			Quantity with units UCUM#a
 	
-
 EntryElement:	PastOrPresentOccupation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#11341-5 "History of Occupation"
 Description:	"A single job, past or present. The relevant time is the period the job was held."
-//				SubjectOfInformation value is type PatientOrRelatedPerson   // must map to subject
 				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
 				ObservationTopic.Category is OBSCAT#social-history
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
+				ObservationTopic.Focus value is type CodeableConcept
+				ObservationTopic.Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
 				ObservationTopic.EvaluationComponent
 includes 0..1	PastOrPresentIndustry
 includes 0..1	WorkClassification
