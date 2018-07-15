@@ -6,7 +6,8 @@
 <li><a href="#Background">Background</a></li>
 <li><a href="#Scope">Scope</a></li>
 <li><a href="#Contents">Implementation Guide Contents</a></li>
-<li><a href="#Principles">Modeling Approach</a></li>
+<li><a href="#Modeling">Modeling Approach</a></li>
+<li><a href="#Terminology">Terminology Approach</a></li>
 <li><a href="#Tooling">Open Source Tooling</a></li>
 <li><a href="#CIMI">Relationship to CIMI</a></li>
 <li><a href="#Disclaimers">Disclaimers</a></li>
@@ -53,24 +54,67 @@
 <li><a href="downloads.html">Downloads</a>. Formal class definitions, in StructureDefinition form, can be downloaded here.</li>
 <li><a href="modeldoc/index.html">Reference Model</a>. FHIR does not have a class hierarchy, but CIMI does. Since the breast cancer models are based on CIMI, they derive from CIMI's class hierarchy. To help view the class hierarchy, we have provided a class browser. The browser allows navigation of the class hierarchy, shows details of each class, and includes attributes and constraints that show where each constraint was introduced in the hierarchy.</li>
 </ol>
-<h2><a name="Principles"></a>Modeling Approach</h2>
+<h2><a name="Modeling"></a>Modeling Approach</h2>
 <h3>Major sources of information</h3>
 <p>Specifications consulted for the development of this IG include:</p>
 <ul>
-<li>American Joint Committee on Cancer (AJCC) Staging Manual (8th Edition)</li>
-<li>College of American Pathologists (CAP) Cancer Protocols</li>
-<li>North American Association of Central Cancer Registries (NAACCR) 2018 Site-Specific Data Items Manual (DRAFT)</li>
-<li>HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</li>
-<li>HL7 CDA R2 IG: Clinical Oncology Treatment Plan and Summary</li>
+<li><a href="https://cancerstaging.us10.list-manage.com/subscribe?u=e4fcf2de02afbcaa9a2820fea&amp;id=08450ea96e">American Joint Committee on Cancer (AJCC) Staging Manual (8th Edition)</a></li>
+<li>College of American Pathologists (CAP) Cancer Protocols:
+<ul>
+<li><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-invasive-18protocol-4100.pdf">Protocol for the Examination of Specimens From Patients With<br />Invasive Carcinoma of the Breast</a></li>
+<li><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-dcis-18protocol-4100.pdf">Protocol for the Examination of Specimens From Patients With Ductal</a><br /><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-dcis-18protocol-4100.pdf">Carcinoma In Situ (DCIS) of the Breast</a></li>
 </ul>
-<p>In addition to sources specifically providing clinical content related to cancer and breast cancer, from a modeling perspective, CIMI models were also used as a source.</p>
-<h3>Harmonization and Prioritization</h3>
+</li>
+<li><a href="https://www.naaccr.org/SSDI/SSDI-Manual.pdf?v=1531675132">North American Association of Central Cancer Registries (NAACCR) 2018 Site-Specific Data Items Manual (May 2018) (Breast Cancer Section)</a></li>
+<li><a href="http://www.hl7.org/implement/standards/product_brief.cfm?product_id=383">HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</a></li>
+<li><a href="http://www.hl7.org/implement/standards/product_brief.cfm?product_id=327">HL7 CDA R2 IG: Clinical Oncology Treatment Plan and Summary</a></li>
+<li><a href="https://www.cdisc.org/standards/therapeutic-areas/breast-cancer">CDISC Therapeutic Area Users Guide - Breast Cancer (TAUG-BrCa)</a></li>
+</ul>
+<p>In addition to sources specifically providing clinical content related to cancer and breast cancer, from a modeling perspective, CIMI and FHIR models were also used as a source.</p>
 <p>Data elements were initially prioritized based on the identified scope. Consideration was given to existing representations of the elements across the source material, which varied in complexity from a simple data element dictionary to more well-formed logical models which included relationships between concepts. Value sets for coded elements were also compared across the sources.</p>
 <p>Differences across sources drove the development of harmonized detailed clinical models. Final decisions on the inclusion of data elements and attributes were driven by 1) their impact in driving clinical decision making for breast cancer treatment, and 2) their presence in multiple sources, indicative of the importance of the data element across practice areas.</p>
-<h3>Terminology and Value Sets</h3>
-<p>The terminology bindings in this implementation guide are preliminary. The primary goal was to identify and vet appropriate values for each coded data element and its attributes.</p>
-<p>For those elements for which terminology bindings exist, SNOMED-CT and LOINC were the preferred vocabularies. However, given known gaps in these vocabularies on the domain areas covered in this IG, codes from vocabularies such as ICD-O-3 and the NCI metathesaurus were used.</p>
-<p>In addition, while the AJCC staging system is recognized as one of the most widely-used standards for breast cancer staging, this guide does not include any AJCC terminology due to unresolved copyright issues. As such, <strong>elements related to staging do not currently include terminology bindings</strong>, and refer back to the staging system used for the appropriate codes. The value sets are known, and their inclusion would considerably strengthen the specification, if and when copyright issues have been resolved.</p>
+<h3>Logical Modeling</h3>
+<p>The intention of a logical model is to represent the structure of the model without implementation-specific considerations. The logical model can then be transformed into one or more implementable forms, for example, V2 messages, FHIR profies, C-CDA templates, etc. In theory, this allows logical model retain its value, while implementation fashions come and go.</p>
+<p>Of course, the logical model itself must be implemented in some concrete form. In this case, the logical model has been implemented in two formats: FHIR StructureDefinition and Archetype Description Language/Basic Meta Model (ADL/BMM). The latter is the current preferred format for CIMI conformance purposes. Only the FHIR StructureDefinitions are included in the ballot package.</p>
+<h4>Class Hierarchy</h4>
+<p>The logical model itself can be described as an object-oriented class hierarchy, with domain-specific classes defined by progressive specialization of more generic parents. For example, a BreastSpecimen is defined by the following class hierarchy:</p>
+<ul>
+<li>Locatable* &gt; Independent &gt; EntityOrRole &gt; Entity &gt; Specimen &gt; BreastSpecimen</li>
+</ul>
+<p>A typical observation, such as BreastCancerHistologicGrade is defined in the following hierarchy:</p>
+<ul>
+<li>
+<div>
+<div><span>Locatable &gt; Independent &gt; Content &gt; InformationEntry &gt;&nbsp;</span>ClinicalStatement &gt; FindingStatement &gt; Observation &gt; LaboratoryObservation &gt;&nbsp;CodedLaboratoryObservation &gt;&nbsp;BreastCancerHistologicGrade</div>
+</div>
+</li>
+</ul>
+<div>
+<div>
+<p><span>(note: CIMI uses the term "EvaluationResultRecorded", we have adopted the more concise term, "Observation".)</span></p>
+</div>
+<div><span>This class hierarchy is a central feature of CIMI.&nbsp;</span><span>To describe the CIMI modeling approach is beyond the scope of this IG, and the reader is referred to&nbsp;<a href="http://wiki.hl7.org/images/e/e6/2007-01_CIMI_Modeling%2C_Architecture_Methodology_and_Style_Guide_.pdf">CIMI Modeling&nbsp;Architecture, Methodology &amp; Style Guide</a>. However, it is important to understand a central CIMI tenet called the Topic-Context pattern.&nbsp;</span></div>
+<h4>The CIMI Topic-Context Pattern</h4>
+<p>CIMI develops several class hierarchies. The first is the ClinicalStatement hierarchy (for example, the BreastCancerHistologicGrade hierarchy, above). A clinical statement represents a fact, opinion, or observation that relates to a patient, for example, "the patient has a diagnosis of congestive heart failure" or "patient has an order for physical therapy" [<a href="https://issues.osehra.org/secure/attachment/15835/cimi_modeling_quality_guide.pdf">CIMI Modeling and Quality Guide</a>].&nbsp;</p>
+<p>To construct any clinical statement, it is necessary to first define a topic and a context. The topic is the clinical entity being described by the Clinical Statement, for example, a laboratory test. The context describes the circumstance (similar to V3 mood) applied to the topic. For example, we can speak of "blood pressure of 120/80" as an observation or a goal. Both the topic and context are defined in class hierarchies of their own.</p>
+<p>For the BreastCancerHistologicGrade, the topic hierarchy is as follows:</p>
+<div>
+<ul>
+<li><span>Locatable &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementTopic &gt;&nbsp;FindingTopic &gt;&nbsp;ObservationTopic &gt; LaboratoryObservationTopic</li>
+</ul>
+<div>The context hierarchy for the same observation is as follows:</div>
+<div>
+<ul>
+<li><span>Locatable &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementContext &gt;&nbsp;FindingContext &gt;&nbsp;RecordedContext &gt;&nbsp;ObservationContext</li>
+</ul>
+<div>The construction of BreastCancerHistologicGrade requires the three hierarchies, ClinicalStatement, Topic, and Context, involving 17 classes in all, to come together to form the observation.</div>
+</div>
+</div>
+<h2><a name="Terminology"></a>Terminology Approach</h2>
+<p>The implementation guide supplies terminology bindings drawn primarily from LOINC and SNOMED-CT. Lab tests are identified by LOINC codes, where available, while coded answers have primarily been drawn from SNOMED-CT. An exception to this rule is where LOINC is used to identify a test and LOINC specifies a normative answer set, in which case, the normative answers were used.</p>
+<p>While the AJCC staging system is recognized as one of the most widely-used standards for breast cancer staging, this guide does not include any AJCC terminology due to unresolved copyright issues. As such, <strong>elements related to staging do not currently include required terminology bindings</strong>, and refer back to the staging system used for the appropriate codes. The value sets are known, and their inclusion would considerably strengthen the specification.</p>
+<p>Both FHIR and CIMI structurally separates missing value reasons (exception values) from answer sets. For example, FHIR uses two attributes, Observation.value and Observation.dataAbsentReason. For this reason, when LOINC answer lists included missing value explanations, those answers were separated and placed in a separate value set.&nbsp;However, we note that LOINC answer sets are not very consistent with regard to missing value reasons, and possibly incomplete. This leaves open a question on what a cross-cutting normative set of missing value reasons or exception values might be.</p>
+<p>Where terminology gaps were identified, requests for terminology additions have been initiated. For the purposes of this IG, gaps have been covered either with local codes, or codes from NCI metathesaurus.</p>
 <h2><a name="Tooling"></a>Open Source Tooling</h2>
 <p>The tools used to define the models and produce the logical models and the FHIR profiles are open source, developed as part of the <a href="http://standardhealthrecord.org/">Standard Health Record (SHR) Initiative</a>. The SHR tooling consists of several elements:</p>
 <ul>
@@ -106,3 +150,4 @@
 </tr>
 </tbody>
 </table>
+<div><span>*The top-level class, Locatable, reflects CIMI's <em>implementation</em> of logical models in ADL. Although it is necessary to serialize CIMI definitions in ADL, it has no clinical relevance, and in the opinion of the current authors, does not belong in a logical healthcare model.</span></div>
