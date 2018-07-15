@@ -107,7 +107,6 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 		ObservationTopic.Focus
 		ObservationTopic.ref(Device)
 		ObservationTopic.ref(Specimen)
-		ObservationTopic.DiagnosticService
 		ObservationTopic.Precondition
 		ObservationTopic.ReferenceRange
 		ObservationTopic.EvaluationComponent
@@ -133,7 +132,6 @@ EntryElement:	NonLaboratoryObservation
 Based on:		Observation
 Description:	"An observation not based on a specimen."
 0..0			ObservationTopic.Specimen
-0..0			ObservationTopic.DiagnosticService
 
 EntryElement:	SimpleNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
@@ -176,27 +174,26 @@ Description:	"An observation with panel members, but without a result value or c
 EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
-1..1			ObservationTopic.Specimen
-0..0			ObservationTopic.AnatomicalLocation  // AnatomicalLocation is where the Specimen was collected
-				ObservationTopic.Category is OBSCAT#laboratory
+				ObservationTopic is type LaboratoryObservationTopic
+
 
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
 				ObservationContext.ResultValue value is type CodeableConcept
-0..0			ObservationTopic.ReferenceRange
+0..0			LaboratoryObservationTopic.ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			ObservationTopic.EvaluationComponent
-0..0			ObservationTopic.PanelMembers
+0..0			LaboratoryObservationTopic.EvaluationComponent
+0..0			LaboratoryObservationTopic.PanelMembers
 
 EntryElement:	SimpleCodedLaboratoryObservation
 Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			ObservationTopic.EvaluationComponent
-0..0			ObservationTopic.PanelMembers
+0..0			LaboratoryObservationTopic.EvaluationComponent
+0..0			LaboratoryObservationTopic.PanelMembers
 
 //---------- Assertions -------------
 
