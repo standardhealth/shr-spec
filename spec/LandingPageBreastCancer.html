@@ -24,10 +24,9 @@
 <h3>Questions for Commenters</h3>
 <p>The sponsoring work groups and the Cancer Interoperability Group are seeking both general and specific comments regarding this material.</p>
 <ol>
+<li>The authors have concerns about the complexity of the CIMI model, which forms the basis of the breast cancer logical models. These concerns are discussed further in the&nbsp;<a href="#Modeling">Modeling Approach</a> section. We are seeking comment on whether to continue with CIMI, push the CIMI group to a simpler approach, or take another approach entirely.</li>
 <li>Is the content dealing with breast cancer staging complete and correct from a clinical point of view?</li>
-<li>Are there other initiatives or projects that also deal with cross-cutting data standards for breast cancer that should be taken into account?</li>
-<li>Is the way the ballot material is presented suitable and useful? If not, what type of format(s) would be more informative?</li>
-<li>To the best of our knowledge, this is the first time that a single ballot contains CIMI-style models, FHIR logical models, and FHIR Profiles, all related to each other. As such, we are interest in whether the voters find such an approach useful.&nbsp;</li>
+<li>To the best of our knowledge, this is the first time that a single ballot contains CIMI-style models, FHIR logical models, and FHIR Profiles, all related to each other. As such, we are interest in whether the voters find such an approach useful.</li>
 </ol>
 <h2><a name="Purpose"></a>Purpose</h2>
 <p>The Breast Cancer Interoperability FHIR Implementation Guide (IG) contains a subset of logical models for breast cancer focused on data elements used for breast cancer staging. FHIR profiles are provided as an example physical representation of the logical models. This IG also serves as an experimental pilot for the Clinical Information Modeling Initiative (CIMI), presenting a combination of CIMI-derived models, FHIR logical models, and FHIR Profiles.</p>
@@ -81,33 +80,32 @@
 <ul>
 <li>Locatable* &gt; Independent &gt; EntityOrRole &gt; Entity &gt; Specimen &gt; BreastSpecimen</li>
 </ul>
-<p>A typical observation, such as BreastCancerHistologicGrade is defined in the following hierarchy:</p>
+<p>A typical observation, such as BreastCancerHistologicGrade, is defined in the following hierarchy:</p>
 <ul>
 <li>
 <div>
-<div><span>Locatable &gt; Independent &gt; Content &gt; InformationEntry &gt;&nbsp;</span>ClinicalStatement &gt; FindingStatement &gt; Observation &gt; LaboratoryObservation &gt;&nbsp;CodedLaboratoryObservation &gt;&nbsp;BreastCancerHistologicGrade</div>
+<div><span>Locatable* &gt; Independent &gt; Content &gt; InformationEntry &gt;&nbsp;</span>ClinicalStatement &gt; FindingStatement &gt; Observation &gt; LaboratoryObservation &gt;&nbsp;CodedLaboratoryObservation &gt;&nbsp;BreastCancerHistologicGrade</div>
 </div>
 </li>
 </ul>
 <div>
 <div>
-<p><span>(note: CIMI uses the term "EvaluationResultRecorded", we have adopted the more concise term, "Observation".)</span></p>
+<p><span>(note: While CIMI uses the term "EvaluationResultRecorded", we have adopted the more concise term, "Observation".)</span></p>
 </div>
-<div><span>This class hierarchy is a central feature of CIMI.&nbsp;</span><span>To describe the CIMI modeling approach is beyond the scope of this IG, and the reader is referred to&nbsp;<a href="http://wiki.hl7.org/images/e/e6/2007-01_CIMI_Modeling%2C_Architecture_Methodology_and_Style_Guide_.pdf">CIMI Modeling&nbsp;Architecture, Methodology &amp; Style Guide</a>. However, it is important to understand a central CIMI tenet called the Topic-Context pattern.&nbsp;</span></div>
+<div><span>This class hierarchy is a central feature of CIMI.&nbsp;</span><span>To fully describe the CIMI modeling approach is beyond the scope of this IG, and the reader is referred to&nbsp;<a href="http://wiki.hl7.org/images/e/e6/2007-01_CIMI_Modeling%2C_Architecture_Methodology_and_Style_Guide_.pdf">CIMI Modeling&nbsp;Architecture, Methodology &amp; Style Guide</a>. However, it is important to understand a central CIMI tenet, the Topic-Context pattern.&nbsp;</span></div>
 <h4>The CIMI Topic-Context Pattern</h4>
-<p>CIMI develops several class hierarchies. The first is the ClinicalStatement hierarchy (for example, the BreastCancerHistologicGrade hierarchy, above). A clinical statement represents a fact, opinion, or observation that relates to a patient, for example, "the patient has a diagnosis of congestive heart failure" or "patient has an order for physical therapy" [<a href="https://issues.osehra.org/secure/attachment/15835/cimi_modeling_quality_guide.pdf">CIMI Modeling and Quality Guide</a>].&nbsp;</p>
-<p>To construct any clinical statement, it is necessary to first define a topic and a context. The topic is the clinical entity being described by the Clinical Statement, for example, a laboratory test. The context describes the circumstance (similar to V3 mood) applied to the topic. For example, we can speak of "blood pressure of 120/80" as an observation or a goal. Both the topic and context are defined in class hierarchies of their own.</p>
-<p>For the BreastCancerHistologicGrade, the topic hierarchy is as follows:</p>
-<div>
+<p>CIMI develops several class hierarchies. The first is the ClinicalStatement hierarchy, exemplified by the BreastCancerHistologicGrade hierarchy, above. A clinical statement represents a fact, opinion, or observation that relates to a patient, for example, "the patient has a diagnosis of congestive heart failure" or "patient has an order for physical therapy" [<a href="https://issues.osehra.org/secure/attachment/15835/cimi_modeling_quality_guide.pdf">CIMI Modeling and Quality Guide</a>].&nbsp;</p>
+<p>However, ClinicalStatement is not the only class needed to construct a clinical statement. The clinical statement itself has no clinical content; to gain content, the ClinicalStatement class must reference a topic and a context. The topic is the clinical entity being described by the Clinical Statement, for example, a laboratory test. The context describes the circumstance applied to the topic. For example, we can speak of "blood pressure of 120/80" as an observation or a goal; similarly, we can speak of a procedure as recommended, ordered, planned, performed, or not performed. Both the topic and context are defined in class hierarchies of their own. For example, for the BreastCancerHistologicGrade, the topic hierarchy is as follows:</p>
 <ul>
-<li><span>Locatable &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementTopic &gt;&nbsp;FindingTopic &gt;&nbsp;ObservationTopic &gt; LaboratoryObservationTopic</li>
+<li><span>Locatable* &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementTopic &gt;&nbsp;FindingTopic &gt;&nbsp;ObservationTopic &gt; LaboratoryObservationTopic</li>
 </ul>
-<div>The context hierarchy for the same observation is as follows:</div>
-<div>
+The context hierarchy for the same observation is as follows:
 <ul>
-<li><span>Locatable &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementContext &gt;&nbsp;FindingContext &gt;&nbsp;RecordedContext &gt;&nbsp;ObservationContext</li>
+<li><span>Locatable* &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementContext &gt;&nbsp;FindingContext &gt;&nbsp;RecordedContext &gt;&nbsp;ObservationContext</li>
 </ul>
-<div>The construction of BreastCancerHistologicGrade requires the three hierarchies, ClinicalStatement, Topic, and Context, involving 17 classes in all, to come together to form the observation.</div>
+<p>It is important to understand the both the benefits and costs of this design choice. Separating topic and context increases consistency and reuse. For example, the same procedure topic can be used whether the context is recommending the procedure, planning the procedure, or performing the procedure. In addition, by reusing the contexts, each recommendation will have the same set of recommendation-related attributes, courtesy of the shared context. The same is true for each plan or performance, regardless of topic.</p>
+<p>Under the topic-context pattern, creating one new domain class can require creating multiple classes. For example, the BreastCancerStage observation requires two new classes: a BreastCancerStageTopic class, where the StageTiming attribute is added, and the BreastCancerStage class itself, which extends and constrains Observation. In the ADL/BMM serialization, the BreastCancerStageTopic properties would form a new class in the BMM, extending the reference model, and the terminology and other constraints would be applied in an archetype. Modelers must weave three threads together form new classes. It is possible that the right user-friendly tooling could mitigate the resulting "what-goes-where?" and "what-comes-from-where?" problems, but it is difficult to imagine how tooling could decide which of the three hierarchies should be extended. Even in CIMI circles, this is frequently a gray area.&nbsp;</p>
+<p>Exploration of alternatives is beyond the scope of this IG, but we briefly method that there is a potential simplification that could retain the key benefits of the topic-context pattern, while greatly simplifying the class hierarchy by eliminating the separate topic and context hierarchies. This involves extending the clinical statement hierarchy with classes that represent different contexts, creating, for example, OrderedStatement, ActionPerformedStatement, ActionNotPerformedStatement, ObservationStatement, etc. This approach creates a fixed set of classes from which all other classes derive.</p>
 </div>
 </div>
 <h2><a name="Terminology"></a>Terminology Approach</h2>
@@ -124,9 +122,10 @@
 </ul>
 <p>The final form of the Implementation Guide (the html pages you see here) was produced using the standard FHIR Implementation Guide Publisher (IGPub).</p>
 <h2><a name="CIMI"></a>Relationship to CIMI</h2>
-<p>The breast cancer model presented here has not yet been approved by the CIMI Work Group. While a serious attempt has been made to align to the CIMI Reference Model (CIMI-RM), the CIMI-RM itself is actively evolving. The last "official" release of the CIMI-RM was Version 0.0.4, for the January 2018 ballot. There are still outstanding issues remaining from that ballot, as well as ongoing discussions and demonstration projects in the CIMI Work Group, that will lead to future changes in the CIMI-RM. The breast cancer models incorporate some changes found in a July 2018 unofficial CIMI release.</p>
+<p>The Clinical Information Modeling Initiative (CIMI) is an HL7 Work Group that is producing detailed clinical information models to enable interoperability of health care information systems. The goal of CIMI is to create a shared repository of detailed clinical information models, all based on the same core reference model and data types, with formal bindings to standard coded terminologies. CIMI models are logical abstractions, independent of any specific programming language, implementation technology, or type of database.</p>
+<p>The current breast cancer model is proffered as an example of a CIMI model, however, it has not yet been approved by the CIMI Work Group. While a serious attempt has been made to align to the CIMI Reference Model (CIMI-RM), the CIMI-RM itself is actively evolving. The last "official" release of the CIMI-RM was Version 0.0.4, for the January 2018 ballot. There are still outstanding issues remaining from that ballot, and ongoing discussions and proof-of-concept demonstrations, that will undoubtably lead to future changes in the CIMI-RM. The breast cancer models incorporate some changes found in a July 2018 unofficial CIMI release.</p>
 <p>Some known CIMI differences are called out in the documentation of specific classes. One notable difference is that FHIR data types are used, to simplify mapping and profile generation.</p>
-<p>It is our goal to eventually achieve CIMI conformance, but the definition of conformance to CIMI is still being refined. One current aspect of CIMI Conformance is the requirement to serialize domain logical models into Basic Metamodel (BMM) and Archetype Description Language (ADL) files. While those "gold standard" model format was generated and submitted to the CIMI Work Group for validation, that serialization has not included in the ballot because it is not relevant to FHIR. Since this is a FHIR IG, the models are presented as FHIR logical models and FHIR profiles, both using FHIR StructureDefinitions.</p>
+<p>While the goal is to eventually achieve CIMI conformance, at present there is no official definition of CIMI conformance, nor adequate testing tools to help achieve it. One certain aspect of CIMI Conformance is the requirement to serialize domain logical models into Basic Metamodel (BMM) and Archetype Description Language (ADL) files. While that "gold standard" model format of the breast cancer logical models was generated and will be submitted to the CIMI Work Group, that serialization has not included in the ballot because it is not relevant to FHIR. The models here are presented as FHIR logical models and FHIR profiles, both using FHIR StructureDefinition resources.</p>
 <h2><a name="Disclaimers"></a>Disclaimers</h2>
 <p>This specification may contain and/or reference intellectual property owned by third parties ("Third Party IP"). Acceptance of the FHIR Licensing Terms does not grant any rights with respect to Third Party IP. The licensee alone is responsible for identifying and obtaining any necessary licenses or authorizations to utilize Third Party IP in connection with the specification or otherwise.</p>
 <p>Any actions, claims or suits brought by a third party resulting from a breach of any Third Party IP right by the Licensee remains the Licensee&rsquo;s liability. Following is a non-exhaustive list of third-party terminologies that may require a separate license:</p>
@@ -150,4 +149,5 @@
 </tr>
 </tbody>
 </table>
-<div><span>*The top-level class, Locatable, reflects CIMI's <em>implementation</em> of logical models in ADL. Although it is necessary to serialize CIMI definitions in ADL, it has no clinical relevance, and in the opinion of the current authors, does not belong in a logical healthcare model.</span></div>
+<p></p>
+<div><span>*The top-level class, Locatable, reflects CIMI's <em>implementation</em> of logical models in ADL. Although the Locatable class is necessary to serialize CIMI definitions in ADL, it has no clinical relevance whatsoever, and in the opinion of the current authors, does not belong in a logical healthcare model.</span></div>
