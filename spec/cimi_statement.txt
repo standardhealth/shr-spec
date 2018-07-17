@@ -15,116 +15,242 @@ Based on:		InformationEntry
 Concept:		TBD
 Description: 	"A special type of information entry consisting of a topic and a context. 
 The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
-1..1			StatementTopic
-1..1			StatementContext
+0..1			Encounter  // clinical statements are often associated with specific encounters
 
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action, independent of context."
-					StatementTopic is type ActionTopic
+0..*				Reason
+
+	Element:		Reason
+	Concept:		MTH#C0566251
+	Description:	"The justification for an action or non-action, conclusion, opinion, etc."
+	Value:			string or CodeableConcept or ref(ClinicalStatement)
 
 Abstract Element:	ActionPerformedStatement
 Based on:			ActionStatement
 Description:		"Abstract class representing performance of any type of action."
-					StatementContext is type PerformedContext
+1..1				OccurrenceTimeOrPeriod  // when the action took place
+0..*				Participant		
+1..1				Status should be from http://hl7.org/fhir/ValueSet/event-status  
+0..1				Method
+0..*				RelatedRequest
+//0..1				EnactsPlan
+//0..1				FulfillsOrder
+0..1				ref(Facility)
+0..1				Outcome  // e.g., AdverseEvent
+
+		Element:		Participant
+		Concept:		MTH#C1550369
+		Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
+		Value:			ref(EntityOrRole)
+		0..1 			ParticipationType  // role
+		0..1			ParticipationPeriod
+		0..1			OnBehalfOf
+		
+			Element:		ParticipationType
+			Concept:		MTH#C1553854
+			Description:	"The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
+			Value:			CodeableConcept from FHIR/v3-ParticipationType
+			
+			Element:		ParticipationPeriod
+			Concept:		TBD
+			Description:	"The point in time or span of time the participant is involved."
+			Value:			TimePeriod
+	
+		Element:		Method
+		Concept:		TBD
+		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
+		Value:			CodeableConcept  // TODO: limit to a procedure code
+		
+		Element:		RelatedRequest
+		Concept:		TBD
+		Description:	"The proposal, order, or plan that is partly or wholly fulfilled by the performance of this act."
+		Value:			ref(ActionRequestedStatement)  
+		
+	/*	
+		Element:		EnactsPlan
+		Concept:		TBD
+		Description:	"The plan that is partly or wholly enacted by the performance of this act."
+		Value:			ref(ActionRequestedStatement)
+
+		Element:		FulfillsOrder
+		Concept:		TBD
+		Description:	"The order that is partly or wholly enacted by the performance of this act."
+		Value:			ref()
+	*/	
+		Element:		Outcome
+		Concept:		TBD
+		Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."
+		Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/procedure-outcome
+		0..*			ref(ClinicalStatement)
+
 
 Abstract Element:	ActionRequestedStatement
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action."
-					StatementContext is type RequestedContext
+1..1			Status should be from http://hl7.org/fhir/ValueSet/request-status
+1..1			RequestIntent
+0..1			ExpectedPerformanceTime
+0..1			ExpectedPerformerType
+0..1			ExpectedPerformer
+0..1			ExpectedMethod 
+0..1 			PriorityRank should be from http://hl7.org/fhir/ValueSet/request-priority
+0..1			PerformerInstructions
+0..1			PatientInstructions	
+0..1			CommunicationMethod
+
+		Element:		RequestIntent	
+		Concept:		TBD
+		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
+		Value:			code from http://hl7.org/fhir/ValueSet/request-intent
+		
+		Element:		ExpectedPerformanceTime
+		Concept:		TBD
+		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Value:			dateTime or date or TimePeriod or Timing
+
+		Element:		ExpectedPerformerType
+		Concept:		TBD
+		Description:	"What type of party should carry out the testing."
+		Value:			CodeableConcept // what ValueSet??
+
+		Element:		ExpectedPerformer
+		Concept:		TBD
+		Description:	"Who should carry out the tests. For example, the patient or caregiver."
+		Value:			ref(Entity) or ref(Organization)
+		
+		Element:		ExpectedMethod
+		Concept:		TBD
+		Description:	"The method that should be used to carry out the action."
+		Value:			ref(Method)
+
+		Element:		PerformerInstructions
+		Concept:		TBD
+		Description:	"Information for the performer of the test, if needed."
+		Value:			string
+
+		Element:		PatientInstructions
+		Concept:		TBD
+		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
+		Value:			string
+		
+		Element:		CommunicationMethod
+		Concept:		TBD
+		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
+		Value:			CodeableConcept
+
 
 Abstract Element:	ActionNotPerformedStatement
 Based on:			ActionStatement
 Description:		"Abstract class representing non-performance of any type of action."
-					StatementContext is type NotPerformedContext
+0..1				RelatedRequest 
+1..1				NonOccurrenceTimeOrPeriod
 
 Abstract Element:	ActionRequestedAgainstStatement
 Based on:			ActionStatement
 Description:		"Abstract class representing a request to not perform any type of action."
-					StatementContext is type RequestedAgainstContext
 
 //-------------Findings------------
 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
-					StatementTopic is type FindingTopic
 
-/*
-[Entry]ShrId
-[Entry]EntryId
-[Entry]PersonOfRecord
-[Entry]Version
-[Entry]EntryType
-[Entry]CreationTime
-[Entry]LastUpdated
-[Entry]Narrative
-[Entry]Language
-[Entry]SecurityLabel
-[Entry]Tag
-[Entry]DerivedFrom
-[InformationEntry]SubjectOfInformation
-[InformationEntry]SourceOfInformation
-[InformationEntry]Annotation
-[InformationEntry]RecordStatus
-[InformationEntry]Recorded (who-when)
-[InformationEntry]Signed (who-when)
-[InformationEntry]Cosigned (who-when)
-[InformationEntry]Verified (who-when)
-FindingTopic.FindingMethod
-FindingTopic.Details
-*/
 
 EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-				StatementTopic is type ObservationTopic
-				StatementContext is type ObservationContext
 				SubjectOfInformation value is type ref(Patient)  // FHIR to align with US Core Result
 				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
-/* 
- Here's a list of all the attributes of Observation. 
- To keep things straight, always consider the constraints on each element in this order:
-	// ClinicalStatement
-		SubjectOfInformation
-		SourceOfInformation
-		Annotation
-		RecordStatus
-		Recorded
-		Signed  // aka Author
-		Cosigned
-		Verified
-	// Topic	
-		ObservationTopic.TopicCode
-		ObservationTopic.FindingMethod
-		ObservationTopic.Details
-		ObservationTopic.Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-		ObservationTopic.AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
-		ObservationTopic.Focus
-		ObservationTopic.ref(Device)
-		ObservationTopic.ref(Specimen)
-		ObservationTopic.Precondition
-		ObservationTopic.ReferenceRange
-		ObservationTopic.EvaluationComponent
-		ObservationTopic.PanelMembers
-		ObservationTopic.EvaluationComponent.Value
-		ObservationTopic.EvaluationComponent.ExceptionValue
-		ObservationTopic.EvaluationComponent.Interpretation
-		ObservationTopic.EvaluationComponent.ReferenceRange
-	// Context	
-		ObservationContext.ContextCode is SCT#424975005 "Record Entity"
-		ObservationContext.Interpretation
-		ObservationContext.FindingStatus
-		ObservationContext.RelevantTime  
-		ObservationContext.Encounter
-		ObservationContext.ResultValue
-		ObservationContext.ExceptionValue
-		ObservationContext.DeltaFlag
-*/
+0..1			ResultValue
+0..1			ExceptionValue from ExceptionValueVS if covered
+0..1			DeltaFlag
+0..1			Issued
+0..*			Observer
+1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
+0..1			Focus
+0..1			ref(Device)
+0..1			ref(Specimen)
+0..*			Precondition
+0..*			ReferenceRange  // applies to a quantitative measurement only
+0..* 			EvaluationComponent
+0..1			PanelMembers
+
+		Element:		Focus
+		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
+		Value:			CodeableConcept or Identifier or ref(EntityOrRole)
+
+		Element:		EvaluationComponent
+		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
+		Value:			(Quantity or CodeableConcept or string or Range or Ratio or Media or time or dateTime or TimePeriod or IntegerQuantity)
+		0..1			ExceptionValue from ExceptionValueVS if covered
+		0..1			Interpretation
+		0..*			ReferenceRange	
+		
+		Element:		CodedEvaluationComponent
+		Based on:		EvaluationComponent
+		Description:	"An evaluation component whose value is a code (concept)."
+		Value:			CodeableConcept
+		0..0			ReferenceRange 
+
+		Element:		PanelMembers
+		Concept:		TBD
+		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
+			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		0..* 			ref(Observation)
+
+		Element:		Precondition
+		Concept:		TBD
+		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
+		Value:			CodeableConcept or ref(Observation)
+		
+		Element:		ReferenceRange
+		Concept:		MTH#C0883335
+		Description:	"The usual or acceptable range for a test result."
+		Value:			Range   // TODO: align this with FHIR
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			ApplicableSubpopulation
+		0..1			ApplicableAgeRange
+		
+				Element:	ApplicableSubpopulation
+				Concept:	MTH#C0039309 "Target Population"
+				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
+				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
+		
+				Element:	ApplicableAgeRange
+				Concept:	TBD
+				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
+				Value:		Range
+
+		Element:		ResultValue
+		Concept:		TBD
+		Description:	"The finding itself, such as the blood pressure value recorded."
+		Value:			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+		
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept
+		
+		Element:		DeltaFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			CodeableConcept from DeltaFlagVS
+				
+		Element:		Issued
+		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+		Value:			instant
+
+		Element:		Observer
+		Description:	"The person or organization who observed or informed the reporter about the characteristic, potentially the clinician, the patient, or a related person."
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
+
 
 //  Non-Laboratory Results
 
@@ -204,12 +330,39 @@ Description:		"A clinical statement that asserts presence or absence."
 Abstract Element:	AssertionPresenceStatement  // AssertPresence
 Based on:			AssertionStatement
 Description:		"Statement that a finding is present."
-					StatementContext is type PresenceContext
+					ContextCode from PresenceContextVS
+1..1				VerificationStatus			
+0..1				Onset
+0..1				Abatement
+0..1				Certainty
+	
+			Element:		VerificationStatus
+			Concept:		TBD
+			Description:	"Whether an assessment has been confirmed by testing or observation.
+			CIMI Alignment: This attribute corresponds to FindingContext.status, but has been defined to align with FHIR. In AllergyIntolerance, the type is code."
+			Value:			CodeableConcept	
+
+			Element:		Onset
+			Concept:		LNC#85585-8
+			Description:	"The beginning or first appearance of a mental or physical disorder."
+			Value:			dateTime or Age or TimePeriod or Range or string
+			
+			Element:		Abatement
+			Concept:		LNC#88878-4
+			Description:	"The end, remission or resolution."
+			Value:			dateTime or Age or boolean or TimePeriod or Range or string
+			
+			Element:		Certainty
+			Concept:		TBD
+			Description:	"The degree of confidence in a conclusion or assertion."
+			Value:			CodeableConcept
+
+
 
 Abstract Element:	AssertionAbsenceStatement  // AssertAbsence
 Based on:			AssertionStatement
 Description:		"Statement that a finding is absent."
-					StatementContext is type AbsenceContext
+					ContextCode from AbsenceContextVS
 
 EntryElement:	ConditionPresenceStatement
 Based on:		AssertionPresenceStatement
@@ -217,8 +370,52 @@ Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				StatementTopic is type ConditionTopic
-				StatementContext is type ConditionPresenceContext
 				SubjectOfInformation value is type ref(Patient)
+1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
+0..1			WhenClinicallyRecognized
+0..1			Preexisting
+0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
+0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+0..1			Stage
+
+			Element:		ClinicalStatus
+			Concept:		TBD
+			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+			Value:			code
+
+			Element:		WhenClinicallyRecognized
+			Concept:		TBD
+			Description:	"The time at which a condition or condition was first identified in a healthcare context."
+			Value:			date
+
+			Element:		Preexisting
+			Concept:		LNC#89251-3 "Condition present on admission"
+			Description:	"If the problem or condition existed before the current episode of care."
+			Value:			CodeableConcept from YesNoUnknownVS
+
+			Element:		Severity
+			Concept:		MTH#C0392364
+			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
+			Value: 			CodeableConcept 
+
+			Element:		Criticality
+			Concept:		MTH#C3858539 "Criticality"
+			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
+			Value:			code
+
+			Element:		Stage
+			Concept:		MTH#C0699749
+			Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information."
+			Value:			CodeableConcept
+			0..1			StageDetail
+			
+					Element:		StageDetail
+					Concept:		TBD
+					Description:	"The full staging information"
+					Value:			ref(Observation)
+
+
+
 
 EntryElement:	ConditionAbsenceStatement
 Based on:		AssertionAbsenceStatement
@@ -230,5 +427,49 @@ EntryElement:	ClinicalNote
 Based on:		FindingStatement
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
-				StatementContext is type RecordedContext
-1..1			StatementTopic.Details   // TODO: change to "description" to synch with CIMI
+				ContextCode is SCT#424975005 "Record Entity"
+1..1			Details   // TODO: change to "description" to synch with CIMI
+0..1			Interpretation
+1..1			FindingStatus
+0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+	
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
+	
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
+
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses.
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
+
+
+Element:		AbsenceStatement
+Based on:		AssertionStatement
+Concept:		TBD
+Description:	"Indicates the finding in question is either known absent (ruled out), not suspected, or unknown."
+	
+	
+Element:		AtRiskStatement
+Based on:		FindingStatement
+Concept:		SCT#410519009
+Description:	"At risk indicates the finding should be interpreted as a future possibility or expectation."
+				ContextCode from AtRiskContextVS
+
+Element:		ExpectationStatement
+Based on:		FindingStatement
+Concept:		SCT#410517006
+Description:	"A context indicating the finding is an expectation, prognosis, or likely outcome."
+				ContextCode from ExpectationContextVS				
+
+Element:		GoalStatement
+Based on:		FindingStatement
+Concept:		SCT#410518001
+Description:	"A hypothetical or future finding that represents an objective or goal."
+				ContextCode from GoalContextVS
