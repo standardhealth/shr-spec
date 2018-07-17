@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.immunization
 Description:	"The SHR Immunization domain contains definitions related to vaccinations, whether they are received, recommended, missing, or refused."
-Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.medication, cimi.procedure
+Uses:  			shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.medication, cimi.procedure
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
@@ -33,46 +33,43 @@ Description:	"Describes the event of a patient being administered a vaccination 
 
 
 EntryElement:	ImmunizationGiven
-Based on:		ActionPerformedStatement  
-// Note: Can't inherit from MedicationUsedStatement because in that class, PerformedContext.Status is bound to http://hl7.org/fhir/ValueSet/medication-statement-status in that class, can't be overriden to http://hl7.org/fhir/ValueSet/immunization-status
+Based on:		ProcedurePerformedStatement  
+// Note: Can't inherit from MedicationUsedStatement because Status is bound to http://hl7.org/fhir/ValueSet/medication-statement-status in that class, can't be overriden to http://hl7.org/fhir/ValueSet/immunization-status
 Concept:		MTH#C0580520
 Description:	"A vaccination administered to the subject."
 				SourceOfInformation value is type AnyPersonOrOrganization
 				StatementTopic is type ImmunizationTopic
-				PerformedContext is type ProcedurePerformedContext
-				ProcedurePerformedContext.Status from http://hl7.org/fhir/ValueSet/immunization-status
-				ProcedurePerformedContext.OccurrenceTimeOrPeriod value is type dateTime
-
+				Status from http://hl7.org/fhir/ValueSet/immunization-status
+				OccurrenceTimeOrPeriod value is type dateTime
 /*
 EntryElement:	ImmunizationNotGiven
-Based on:		ImmunizationActionTopic
+Based on:		ProcedureNotPerformedStatement
 Concept:		TBD
 Description:	"An immunization that was not given to the subject."
-1..1			NotPerformedContext 
-//				NotPerformedContext.NonOccurrenceTimeOrPeriod value is type date
-				NotPerformedContext.Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
+				ImmunizationActionTopic
+//				NonOccurrenceTimeOrPeriod value is type date
+				Reason from http://hl7.org/fhir/ValueSet/no-immunization-reason
 
 EntryElement:	ImmunizationRequested
-Based on:		ImmunizationActionTopic
+Based on:		ProcedureRequestedStatement
 Concept:		TBD
 Description:	"An immunization that is proposed or planned for the subject."
-1..1			RequestedContext
-				// Need reason value set for RequestedContext.Reason
+				StatementTopic is type ImmunizationActionTopic
+				// Need reason value set for Reason
 
 EntryElement:	ImmunizationRequestedAgainst
-Based on:		ImmunizationActionTopic
+Based on:		ProcedureRequestedAgainstStatement
 Concept:		TBD
 Description:	"An immunization that is specifically not recommended, perhaps contraindicated for the individual."
-1..1			RequestedAgainstContext
-//				RequestedAgainstContext.Reason from ...
-				// TODO: Need value set for RequestedAgainst reasons
+				StatementTopic is type ImmunizationActionTopic
+				Reason from ...  // TODO: Need value set for RequestedAgainst reasons
 
 */
 /* Example of detailed profile - Comment out for now
 
 EntryElement:	ZostavaxImmunizationAdministered
 Concept:		TBD
-Based on:		ImmunizationAdministered
+Based on:		ImmunizationGiven
 				Vaccine is CVX#36 "VZIG"
 1..1			AgeOfSubjectAtTimeOfEvent // extension particular to this vaccination - should be >60 to qualify for reimbursement
 

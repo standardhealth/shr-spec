@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.occupation
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter
+Uses:  			shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
@@ -41,78 +41,78 @@ includes 0..*	PastOrPresentOccupation
 0..0			ObservationTopic.Specimen
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.RelevantTime 
-0..0			ObservationContext.DeltaFlag
+0..0			ResultValue
+0..0			ExceptionValue
+0..0			Interpretation
+0..0			RelevantTime 
+0..0			DeltaFlag
 
 EntryElement:	HistoryOfEmploymentStatus
 Based on:		SimpleCodedNonLaboratoryObservation
 Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
 Description:	"A person’s state of being employed during the time period specified. 
 Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
-				ObservationContext.ResultValue value is type CodeableConcept
-				ObservationContext.ResultValue from http://hl7.org/fhir/ValueSet/employment-status-odh
+				ResultValue value is type CodeableConcept
+				ResultValue from http://hl7.org/fhir/ValueSet/employment-status-odh
 
 EntryElement:	DateOfRetirement
 Based on:		SimpleNonLaboratoryObservation
 Concept:		LNC#87510-4 "Date of Retirement"
 Description:	"If present, the patient is retired, and this observation records the retirement date.  This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
-				ObservationContext.ResultValue value is type dateTime
+				ResultValue value is type dateTime
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
-0..0			ObservationContext.ExceptionValue
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.RelevantTime  
-0..0			ObservationContext.Encounter
-0..0			ObservationContext.DeltaFlag
+0..0			ExceptionValue
+0..0			Interpretation
+0..0			RelevantTime  
+0..0			Encounter
+0..0			DeltaFlag
 
 EntryElement:	CombatZonePeriod
 Based on:		SimpleNonLaboratoryObservation
 Concept:		LNC#87511-2
 Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
-				ObservationContext.ResultValue value is type TimePeriod
+				ResultValue value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
-0..0			ObservationContext.ExceptionValue
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.RelevantTime  
-0..0			ObservationContext.Encounter
-0..0			ObservationContext.DeltaFlag
+0..0			ExceptionValue
+0..0			Interpretation
+0..0			RelevantTime  
+0..0			Encounter
+0..0			DeltaFlag
 				
 EntryElement:	UsualOccupation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21843-8
 Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
 // We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
-				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
+				ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010 // defined in FHIR 3.2 and not found in 3.0.1
 				ObservationTopic.Category is OBSCAT#social-history
 				ObservationTopic.Focus value is type CodeableConcept
 				ObservationTopic.Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype				
 				ObservationTopic.EvaluationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
-1..1			ObservationContext.RelevantTime 
-				ObservationContext.RelevantTime value is type TimePeriod
+1..1			RelevantTime 
+				RelevantTime value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.Encounter
-0..0			ObservationContext.DeltaFlag
+0..0			ResultValue
+0..0			ExceptionValue
+0..0			Interpretation
+0..0			Encounter
+0..0			DeltaFlag
 	
 /* UsualOccupation is in the value element
 	Element:		UsualOccupation
@@ -137,7 +137,7 @@ EntryElement:	PastOrPresentOccupation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#11341-5 "History of Occupation"
 Description:	"A single job, past or present. The relevant time is the period the job was held."
-				ObservationContext.ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
+				ResultValue could be from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010
 				ObservationTopic.Category is OBSCAT#social-history
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				ObservationTopic.Focus value is type CodeableConcept
@@ -151,18 +151,18 @@ includes 0..*	OccupationalHazard
 includes 0..1	WorkSchedule
 includes 0..1	WeeklyWorkDays
 includes 0..1	DailyWorkHours
-1..1			ObservationContext.RelevantTime 
-				ObservationContext.RelevantTime value is type TimePeriod
+1..1			RelevantTime 
+				RelevantTime value is type TimePeriod
 0..0			ObservationTopic.FindingMethod
 0..0			ObservationTopic.AnatomicalLocation
 0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Precondition
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.PanelMembers
-0..0			ObservationContext.ExceptionValue
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.Encounter
-0..0			ObservationContext.DeltaFlag
+0..0			ExceptionValue
+0..0			Interpretation
+0..0			Encounter
+0..0			DeltaFlag
 
 // Question -- organization only, or person or organization
 	Element:		Employer
@@ -241,10 +241,10 @@ includes 0..1	ServiceConnectedDisability
 0..0			ObservationTopic.Focus
 0..0			ObservationTopic.Device
 0..0			ObservationTopic.Precondition
-0..0			ObservationContext.Interpretation
-0..0			ObservationContext.RelevantTime  
-0..0			ObservationContext.Encounter
-0..0			ObservationContext.DeltaFlag
+0..0			Interpretation
+0..0			RelevantTime  
+0..0			Encounter
+0..0			DeltaFlag
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416

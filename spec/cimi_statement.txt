@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.statement
 Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
-Uses:			shr.core, cimi.core, cimi.element, cimi.topic, cimi.context, cimi.entity
+Uses:			shr.core, cimi.core, cimi.element, cimi.topic,  cimi.entity
 
 
 CodeSystem:     SCT = http://snomed.info/sct
@@ -14,14 +14,19 @@ Element:		ClinicalStatement
 Based on:		InformationEntry
 Concept:		TBD
 Description: 	"A special type of information entry consisting of a topic and a context. 
-The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model. A clinical statement is composed of the StatementTopic class (grouping of attributes for capturing information about a procedure or a clinical finding) and the StatementContext class (grouping of attributes providing the context for the statement topic such as whether a procedure was performed, requested, not performed or whether a finding is suspected present or absent in the patient). At the archetype level, the topic and context components are coordinated to form the clinical statement. For instance, the composition of the ProcedureTopic with the NotPerformed context indicates that the given procedure was not performed."
+The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model."
+1..1			ContextCode
 0..1			Encounter  // clinical statements are often associated with specific encounters
+
+		Element:		ContextCode
+		Description:	"Code representing the sense in which the statement is interpreted, for example, the degree of presence in a PresenceStatement."
+		Value:			CodeableConcept
 
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
-Description:		"Abstract class representing any type of action, independent of context."
+Description:		"Abstract class representing any type of action."
 0..*				Reason
 
 	Element:		Reason
@@ -269,7 +274,7 @@ EntryElement:	CodedNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
-				ObservationContext.ResultValue value is type CodeableConcept
+				ResultValue value is type CodeableConcept
 0..0			ObservationTopic.ReferenceRange
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
@@ -281,16 +286,16 @@ Description:	"An observation whose result is a code, and also having no componen
 EntryElement:	ComponentOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
+0..0			ResultValue
+0..0			ExceptionValue
 0..0			ObservationTopic.PanelMembers
 0..0			ObservationTopic.ReferenceRange
 
 EntryElement:	PanelOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with panel members, but without a result value or components."
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
+0..0			ResultValue
+0..0			ExceptionValue
 0..0			ObservationTopic.ReferenceRange
 0..0			ObservationTopic.EvaluationComponent
 1..1			ObservationTopic.PanelMembers
@@ -306,7 +311,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
-				ObservationContext.ResultValue value is type CodeableConcept
+				ResultValue value is type CodeableConcept
 0..0			LaboratoryObservationTopic.ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
@@ -339,7 +344,7 @@ Description:		"Statement that a finding is present."
 			Element:		VerificationStatus
 			Concept:		TBD
 			Description:	"Whether an assessment has been confirmed by testing or observation.
-			CIMI Alignment: This attribute corresponds to FindingContext.status, but has been defined to align with FHIR. In AllergyIntolerance, the type is code."
+			CIMI Alignment: This attribute has been defined to align with FHIR. In AllergyIntolerance, the type is code."
 			Value:			CodeableConcept	
 
 			Element:		Onset

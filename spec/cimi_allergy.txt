@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.allergy
 Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, particularly, allergies and intolerances."
-Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.adverse
+Uses:			shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.adverse
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
@@ -19,9 +19,20 @@ Description:	"A finding related to the presence or absence of an individual's ri
 				Description:"A substance that causes an allergic reaction or irritation."
 				Value:		CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-substance
 
-Element:		AdverseSensitivityPresenceContext
-Based on:		PresenceContext
-Description:	"Context for adverse sensitivities that are known or suspected to exist."
+
+//--------------- Instantiations -------------------
+
+EntryElement:	AdverseSensitivityToSubstanceStatement
+Based on:		ClinicalStatement
+Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
+Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
+1..1			SubjectOfInformation value is type ref(Patient)
+				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+				Signed.Attribution.EntityOrRole is type PatientOrPractitioner  // to facilitate mapping to FHIR, which only allows Patient or Practitioner as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
+				StatementTopic is type AdverseSensitivityTopic
+1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
+				StatementTopic.TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
+// not needed			AdverseReactionPresenceStatement.AdverseReactionTopic.CausalAttribution value is type CodeableConcept
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
 1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
@@ -42,33 +53,15 @@ Description:	"Context for adverse sensitivities that are known or suspected to e
 		Concept:		TBD
 		Description:	"The time of the last or latest of a series of events."
 		Value:			dateTime
-
-				
-//--------------- Instantiations -------------------
-
-EntryElement:	AdverseSensitivityToSubstanceStatement
-Based on:		ClinicalStatement
-Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
-Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-1..1			SubjectOfInformation value is type ref(Patient)
-				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
-				Signed.Attribution.EntityOrRole is type PatientOrPractitioner  // to facilitate mapping to FHIR, which only allows Patient or Practitioner as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
-				StatementTopic is type AdverseSensitivityTopic
-				StatementContext is type AdverseSensitivityPresenceContext
-1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
-				StatementTopic.TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
-// not needed			AdverseSensitivityPresenceContext.AdverseReactionPresenceStatement.AdverseReactionTopic.CausalAttribution value is type CodeableConcept
-
 			
 EntryElement:	NoAdverseSensitivityToSubstanceStatement
-Based on:		ClinicalStatement
+Based on:		AssertionAbsenceStatement
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
 1..1			SubjectOfInformation value is type ref(Patient)
 				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				Signed.Attribution.EntityOrRole is type PatientOrPractitioner
 				StatementTopic is type AdverseSensitivityTopic
 				AdverseSensitivityTopic.TopicCode is SCT#716186003 "No known allergy (situation)"
-				StatementContext is type AbsenceContext
 				StatementTopic.TopicCode from NoKnownAllergyVS
 
 EntryElement:	NoKnownDrugAllergyStatement

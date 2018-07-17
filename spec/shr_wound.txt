@@ -1,7 +1,7 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.wound
 Description: "SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
-Uses:  		shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
+Uses:  		shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
@@ -133,7 +133,7 @@ Observation: 72287-6  	Wound size observation
 
 Abstract Element:	WoundTopic
 Based on:		BodyStructureTopic
-Description:	"A topic concerning a wound, independent of context of being present or absent."
+Description:	"A topic concerning a wound of being present or absent."
 1..1			TopicCode from http://loinc.org/LL2215-3 if covered  // 72300-7 Wound type	
 1..1			Category is OBSCAT#exam
 1..1			Identifier is type WoundNumber // 81666-0  	Wound number [Identifier]
@@ -158,8 +158,12 @@ Description:	"A topic concerning a wound, independent of context of being presen
 		Value: 		CodeableConcept should be from http://loinc.org/LL4936-2 
 
 
-Abstract Element:	WoundPresenceContext
-Based on:		ConditionPresenceContext
+EntryElement:	WoundPresenceStatement
+Based on:		BodyStructurePresenceStatement
+Concept:		SCT#416462003 "Wound (disorder)"
+Description:	"A determination that a wound that exists at a particular body site. Multiple wound assessments can be associated with a single wound."
+// LOINC: Some of the features of a wound are recorded once, such as the cause, onset, presence on admission, etc. These should be part of the initial assertion that a wound exists. Other parts of the LOINC panel are observed repeatedly throughout the treatment of the wound. These are part of the wound evaluation. These parts can be linked by wound number or direct references in the model.
+				BodyStructureTopic is type WoundTopic
 				Onset value is type dateTime  // 85585-8  Date of Onset {mm/dd/yyyy} 
 				Abatement value is type dateTime // 88878-4 Date of abatement {mm/dd/yyyy}
 				ClinicalStatus is type EpisodeOfWound // 89252-1  	Episode of Wound (aka ClinicalStatus) 
@@ -167,6 +171,7 @@ Based on:		ConditionPresenceContext
 0..0			Severity  // not sure if this should be prohibited, but it is not part of LOINC panel
 0..0			Criticality
 0..0			Certainty
+
 
 		Element:	PressureUlcerStageNPUAP
 		Based on:	Stage
@@ -179,14 +184,6 @@ Based on:		ConditionPresenceContext
 		Concept:	LNC#89252-1 "Episode of Wound"
 		Value: 		code from http://hl7.org/fhir/ValueSet/condition-clinical  // wrong value set, preferred is LL4937-0
 
-
-EntryElement:	WoundPresenceStatement
-Based on:		BodyStructurePresenceStatement
-Concept:		SCT#416462003 "Wound (disorder)"
-Description:	"A determination that a wound that exists at a particular body site. Multiple wound assessments can be associated with a single wound."
-// LOINC: Some of the features of a wound are recorded once, such as the cause, onset, presence on admission, etc. These should be part of the initial assertion that a wound exists. Other parts of the LOINC panel are observed repeatedly throughout the treatment of the wound. These are part of the wound evaluation. These parts can be linked by wound number or direct references in the model.
-				BodyStructureTopic is type WoundTopic
-				ConditionPresenceContext is type WoundPresenceContext
 
 /* Hold off for now
 EntryElement:	WoundAbsenceStatement
@@ -202,16 +199,10 @@ Based on:		NonLaboratoryObservation
 Concept:		LNC#54574-9
 Description:	"Group of observations regarding the properties and severity of a wound."
 				StatementTopic is type WoundEvaluationResultTopic
-				StatementContext is type WoundObservationContext
-
-
-Abstract Element:	WoundObservationContext
-Based on:			ObservationContext
-Description:		"Context for recording wound assessments."
-					Interpretation is type WoundAssessmentInterpretation
-					DeltaFlag is type WoundTrend
-0..0				ResultValue
-0..0				ExceptionValue
+				Interpretation is type WoundAssessmentInterpretation
+				DeltaFlag is type WoundTrend
+0..0			ResultValue
+0..0			ExceptionValue
 
 		Element:		WoundAssessmentInterpretation
 		Based on:		Interpretation
@@ -228,7 +219,7 @@ Description:		"Context for recording wound assessments."
 
 Abstract Element: WoundEvaluationResultTopic
 Based on:		ObservationTopic
-Description:	"Topic for wound assessments, independent of context."
+Description:	"Topic for wound assessments."
 				TopicCode is LNC#54574-9
 0..0			ReferenceRange
  				Focus value is type Identifier  // WoundNumber

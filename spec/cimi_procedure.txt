@@ -1,14 +1,14 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.procedure
 Description:	"The CIMI procedure domain contains contexts, topics, and statements related to procedures."
-Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+Uses:  			shr.core, shr.base, cimi.core, cimi.element,  cimi.topic, cimi.statement, cimi.entity
 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 Element:		ProcedureTopic
 Based on:		ActionTopic
 Concept:		TBD
-Description:	"Description of a healthcare procedure, independent of action context. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
+Description:	"Description of a healthcare procedure. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
 1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			AnatomicalLocation
 0..1			PartOf value is type ref(ProcedurePerformedStatement)
@@ -121,18 +121,17 @@ Description:	"A surgical action, independent of action context."
 
 Element:		SpecimenCollectionTopic
 Based on:		ProcedureTopic
-Description:	"Base class for actions related to the collection of a specimen, independent of context."
+Description:	"Base class for actions related to the collection of a specimen."
 0..*			AmountOrSize
 
 	Element:		AmountOrSize
 	Description:	"The quantity of specimen collected"
-	Value:			SimpleQuantity	
+	Value:			SimpleQuantity
 
-//  Specialized Contexts for Procedures
-
-Element:		ProcedurePerformedContext
-Based on:		PerformedContext
-Description:	"The performed context with constraints applicable to procedures."
+EntryElement:	ProcedurePerformedStatement
+Based on:		ActionPerformedStatement
+1..1			SubjectOfInformation value is type ref(Patient)
+				StatementTopic is type ProcedureTopic
 				Participant.OnBehalfOf value is type ref(Organization)
 				Status must be from http://hl7.org/fhir/ValueSet/event-status
 //				Participant.EntityOrRole is type ref(Practitioner)
@@ -149,53 +148,34 @@ Description:	"The performed context with constraints applicable to procedures."
 //		0..1			ParticipationPeriod
 //		0..1			OnBehalfOf
 
-
 		Element:		OutputFinding
 		Description:	"Patient findings documented during the performance of the procedure."
 		Value:			ref(FindingStatement)
 
-Element:		ProcedureNotPerformedContext
-Based on:		NotPerformedContext
-Description:	"The not performed context with constraints applicable to procedures, namely, the request must be a procedure request."
-				RelatedRequest value is type ref(ProcedureRequestedStatement)
-
-Element:		ProcedureRequestedContext
-Based on:		RequestedContext
-Description:	"The requested context with additional constraints applicable to procedures."
-				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
-				Status must be from http://hl7.org/fhir/ValueSet/request-status
-	
-// Statements derived from Procedure Topics and Contexts
-
-EntryElement:	ProcedurePerformedStatement
-Based on:		ActionPerformedStatement
-1..1			SubjectOfInformation value is type ref(Patient)
-				StatementTopic is type ProcedureTopic
-				StatementContext is type ProcedurePerformedContext
 
 EntryElement:	ProcedureNotPerformedStatement
 Based on:		ActionNotPerformedStatement
 1..1			SubjectOfInformation value is type ref(Patient)
 				StatementTopic is type ProcedureTopic
-				StatementContext is type ProcedureNotPerformedContext
-0..1			ProcedureNotPerformedContext.Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
+				RelatedRequest value is type ref(ProcedureRequestedStatement)
+0..1			Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
 
 EntryElement:	ProcedureRequestedStatement
 Based on:		ActionRequestedStatement
 1..1			SubjectOfInformation value is type ref(Patient)
+				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
+				Status must be from http://hl7.org/fhir/ValueSet/request-status
 				StatementTopic is type ProcedureTopic
-				StatementContext is type ProcedureRequestedContext
 
 EntryElement:	ProcedureRequestedAgainstStatement
 Based on:		ActionRequestedAgainstStatement
 1..1			SubjectOfInformation value is type ref(Patient)
 				StatementTopic is type ProcedureTopic
-				StatementContext is type RequestedAgainstContext				
 
 EntryElement:	SpecimenCollectionPerformedStatement
 Based on:		ProcedurePerformedStatement
-				StatementTopic is type SpecimenCollectionTopic
 0..1			AnatomicalLocation  // FHIR limits Specimen.collection.bodySite to 0..1
+				StatementTopic is type SpecimenCollectionTopic
 
 EntryElement:	SpecimenCollectionRequestedStatement
 Based on:		ProcedureRequestedStatement
