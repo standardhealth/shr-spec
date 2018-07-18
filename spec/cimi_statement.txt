@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.statement
 Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
-Uses:			shr.core, cimi.core, cimi.element, cimi.topic,  cimi.entity
+Uses:			shr.core, cimi.core, cimi.element, cimi.topic,  cimi.entity, cimi.encounter
 
 
 CodeSystem:     SCT = http://snomed.info/sct
@@ -16,17 +16,21 @@ Concept:		TBD
 Description: 	"A special type of information entry consisting of a topic and a context. 
 The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model."
 1..1			ContextCode
+1..1			StatementTopic
 0..1			Encounter  // clinical statements are often associated with specific encounters
 
 		Element:		ContextCode
 		Description:	"Code representing the sense in which the statement is interpreted, for example, the degree of presence in a PresenceStatement."
 		Value:			CodeableConcept
 
+
+
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action."
+					StatementTopic is type ActionTopic
 0..*				Reason
 
 	Element:		Reason
@@ -163,20 +167,35 @@ Description:		"Abstract class representing a request to not perform any type of 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
+0..1				Interpretation
+1..1				FindingStatus
+0..1				RelevantTime   // CIMI's ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 
+		Element:		Interpretation
+		Concept:		MTH#C0420833
+		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
+	
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
 
-EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
-Based on:		FindingStatement
-Concept:		TBD
-Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-				SubjectOfInformation value is type ref(Patient)  // FHIR to align with US Core Result
-				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
-0..1			ResultValue
-0..1			ExceptionValue from ExceptionValueVS if covered
-0..1			DeltaFlag
-0..1			Issued
-0..*			Observer
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses.
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
+
+Element: 		AssertionTopic
+Based on:		FindingTopic
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
+
+Element:		ObservationTopic
+// All attributes of observation are defined at this level. Any subclass uses subtractive methods to define relevant attributes
+Based on:		FindingTopic
+Concept:		MTH#C1554188
+Description:	"The base class, independent of context for evaluations (measurements, tests, or questions). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
 0..1			Focus
@@ -186,6 +205,20 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
 0..1			PanelMembers
+
+EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
+Based on:		FindingStatement
+Concept:		TBD
+Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+				SubjectOfInformation value is type ref(Patient)  // FHIR to align with US Core Result
+				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
+				StatementTopic is type ObservationTopic
+0..1			ResultValue
+0..1			ExceptionValue from ExceptionValueVS if covered
+0..1			DeltaFlag
+0..1			Issued
+0..*			Observer
 
 		Element:		Focus
 		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
@@ -434,26 +467,6 @@ Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
 				ContextCode is SCT#424975005 "Record Entity"
 1..1			Details   // TODO: change to "description" to synch with CIMI
-0..1			Interpretation
-1..1			FindingStatus
-0..1			RelevantTime   // ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
-	
-		Element:		Interpretation
-		Concept:		MTH#C0420833
-		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
-	
-		Element:		FindingStatus
-		Concept:		TBD
-		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
-		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
-
-		Element:		RelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the finding addresses.
-		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
-
 
 Element:		AbsenceStatement
 Based on:		AssertionStatement
