@@ -1,66 +1,45 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.behavior
 Description:	"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
-Uses:			shr.core, shr.base, shr.finding, shr.action, shr.entity, shr.environment, shr.medication, shr.encounter, shr.allergy, shr.procedure
+Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
+
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-Element: BehavioralTopic
+
+Element: 		BehavioralTopic
 Concept:		MTH#C0004927
-Based on:		EvaluationTopic
+Based on:		AssertionTopic
 Description:	"Topic for observable responses, actions, or activities of the subject, independent of context. Can be used to assert or deny behaviors."
-				Category includes LNC#54511-1 "Behavior"
-				EvaluationComponent
-0..*			ReasonForBehavior  // behaviors have motivations
-0..1			ReadinessToChange
-0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
+				TopicCode should be from BehaviorFindingVS
+				Category is LNC#54511-1 "Behavior"
 
-
-EntryElement:	BehavioralGoal
-Based on:		BehavioralTopic
-Concept:		TBD
-Description:	"A goal involving a behavior or activity, such as walking 5000 steps per day."
-1..1			GoalContext
-				Category includes LNC#54511-1 "Behavior"
 
 EntryElement:	BehaviorAbsent
-Based on:		BehavioralTopic
+Based on:		ClinicalStatement
 Concept:		TBD
 Description:	"A statement about a response, action, or activity not demonstrated by the subject."
-				
+				StatementTopic is type BehaviorTopic
+				StatementContext is type AbsenceContext
+
 EntryElement: 	BehaviorPresent
-Based on:		BehavioralTopic
+Based on:		ClinicalStatement
 Concept:		MTH#C0004927
 Description:	"A statement about observable responses, actions, or activities of the subject."
-1..1			PresenceContext
-				Category includes LNC#54511-1 "Behavior"
-				EvaluationComponent
-0..*			ReasonForBehavior  // behaviors have motivations
-0..1			ReadinessToChange
-0..*			Outcome // adverse event, elevated risk, etc., as well as when the impact occurred, severity, and other aspects
-
-	Element:		ReasonForBehavior
-	Based on:		EvaluationComponent
-	Concept:		TBD
-	Description:	"Why the behavior has taken or is taking place."
-	Value:			CodeableConcept
-
-	Element:		ReadinessToChange
-	Based on:		EvaluationComponent
-	Concept:		TBD
-	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
-	Value:			CodeableConcept from QualitativeLikelihoodVS
+				StatementTopic is type BehaviorTopic
+				StatementContext is type PresenceContext
 
 
-EntryElement:	SubstanceUse
-Based on:		BehaviorPresent
+EntryElement:	SubstanceUsePresent
+Based on:		ConditionPresent   // MedicationUse
 Concept:		MTH#C024251
-Description:	"AssertionTopic concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
-Value:			CodeableConcept from SubstanceOfAbuseVS
-				Category includes MTH#C024251 "Substance Use"
+Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
+				TopicCode should be from SubstanceAbuseVS
+Status
+	CodeableConcept from SubstanceOfAbuseVS  	312417001
 0..1	FrequencyOfUse
 0..1	ExposureRoute
 0..1	ExposureMethod
@@ -72,12 +51,16 @@ Value:			CodeableConcept from SubstanceOfAbuseVS
 		Description:	"A description of the frequency of substance use."
 		Value:			CodeableConcept could be from SemiquantitativeFrequencyVS	
 
+
+
+
 EntryElement:   IntravenousDrugUse
-Based on:       SubstanceUse
+Based on:       SubstanceUsePresent
 Concept:        MTH#C0242566
 Description:    "Records whether the subject injects recreational drugs."
 1..1            ExposureRoute is MTH#C1522726 "Intravenous route"
 1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
+
 
 EntryElement:	NicotineUse
 Based on:		SubstanceUse
@@ -120,112 +103,127 @@ Based on:		ProcedurePerformed
 Description:	"The treatment program used to address a substance abuse problem."
 				TopicCode from SubstanceAbuseTreatmentTypeVS
 	
+//--------------------------
 
-EntryElement:	Religion
-Concept:		LNC#81364-2
-Based on:		BehaviorPresent
-Description:	"The affiliation of the person with a recognized religious group. "
-Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
-				PanelMembers.EvaluationTopic
-includes 0..1	ReligiousPracticeStatus
+EntryElement:	ReligionInformation
+Concept:		
+Based on:		ComponentOnlyNonLaboratoryObservation
+				ObservationTopic.EvaluationComponent
+includes 0..*	ReligiousAffiliation
+includes 0..1	DegreeOfReligiousObservance
 includes 0..*	ReligiousRestriction
 includes 0..1	ReligiousCongregation
 
-EntryElement:	ReligiousPracticeStatus
-Based on:		BehaviorPresent
-Concept:		TBD
-Description:	"The extent to which the religious practice is actively followed."
-Value:			CodeableConcept from  ReligiousPracticeStatusVS
+	Element:		ReligiousAffiliation
+	Based on:		CodedEvaluationComponent
+	Concept:		SCT#160538000
+	Description:	"The affiliation of the person with a recognized religious group." 
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/v3-ReligiousAffiliation
+
+	Element:		DegreeOfReligiousObservance
+	Based on:		CodedEvaluationComponent
+	Concept:		SCT#160553008
+	Description:	"The extent to which the religious practice is actively followed."
+	Value:			CodeableConcept from ReligiousObservanceLevelVS
+
+	Element:		ReligiousRestriction
+	Concept:		TBD
+	Based on:		CodedEvaluationComponent
+	Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
+	Value:			CodeableConcept from ReligiousRestrictionVS
+
+	Element:		ReligiousCongregation
+	Concept:		TBD
+	Based on:		EvaluationComponent
+	Description:	"A group of place of religious practice."
+	Value:			string
+
+//------------------------
+
+EntryElement:	Nutrition
+Based on:		Observation
+Concept:		
+Description:	"Quality of nutrition."
+Value:			CodeableConcept from PerformanceGradingScaleVS
+				ObservationTopic.EvaluationComponent
+includes 0..*	DietFollowed
+includes 0..1	HasSufficientFood
+includes 0..1	DietNutritionConcern
 
 
-EntryElement:	ReligiousRestriction
-Concept:		TBD
-Based on:		BehaviorPresent
-Description:	"Any restriction on that derives from religion and may impact medical treatment, other than dietary (handled elsewhere)."
-Value:			CodeableConcept from ReligiousRestrictionVS
-
-EntryElement:	ReligiousCongregation
-Concept:		TBD
-Based on:		BehaviorPresent
-Description:	"A group of place of religious practice."
-Value:			string
-
-		
 EntryElement:	DietFollowed
 Concept:		TBD
 Based on:		QuestionAnswerRecorded
 Description:	"A type of nutritional plan followed by the subject."
 Value:			CodeableConcept from DietFollowedVS if covered
-				Category includes #nutrition
+				Category is LNC#54511-1 "Behavior"
 
 EntryElement:	HasSufficientFood
 Based on:		QuestionAnswerRecorded
 Concept:		TBD
 Description:	"Frequency that the person of record unable to obtain food to stay hunger."
 Value:			CodeableConcept from QualitativeFrequencyVS
-				Category includes #nutrition
+				Category is LNC#54511-1 "Behavior"
 
 EntryElement:	DietNutritionConcern
 Based on:		QuestionAnswerRecorded
 Concept:		TBD
 Description:	"An anxiety or worry about the diet or nutritional intake of the subject."
 Value:			CodeableConcept from DietNutritionConcernVS
-				Category includes #nutrition
+				Category is LNC#54511-1 "Behavior"
 
-
-EntryElement:	SleepQualityPanel
-Based on:		EvaluationResultRecorded
+EntryElement:	SleepQuality
+Based on:		Observation
 Concept:		LNC#28323-4
-Description:	"Self-reported sleep quality."
+Description:	"Quality of sleep."
 Value:			CodeableConcept from PerformanceGradingScaleVS
-				PanelMembers.EvaluationTopic
+				ObservationTopic.EvaluationComponent
 includes 0..*	SleepQualityCause
 includes 0..1	TroubleFallingAsleep
 includes 0..1	TroubleStayingAsleep
 includes 0..1	WakeFeelingRested
 includes 0..1	HoursSleepPerNight
 
-EntryElement:	SleepQualityCause
-Based on:		EvaluationResultRecorded
-Concept:		TBD
-Description:	"Reason for poor sleep quality."
-Value:			CodeableConcept from SleepQualityCauseVS
+	EntryElement:	SleepQualityCause
+	Based on:		CodedEvaluationComponent
+	Concept:		TBD
+	Description:	"Reason for poor sleep quality."
+	Value:			CodeableConcept from SleepQualityCauseVS
 
-EntryElement:	TroubleFallingAsleep
-Based on:		QuestionAnswerRecorded
-Concept:		TBD
-Description:	"How often the subject has trouble falling asleep."
-Value:			CodeableConcept from QualitativeFrequencyVS
-				Category includes #sleep
-	
-EntryElement:	TroubleStayingAsleep
-Based on:		QuestionAnswerRecorded
-Concept:		TBD
-Description:	"How often the subject has trouble staying asleep."
-Value:			CodeableConcept from QualitativeFrequencyVS
-				Category includes #sleep
+	EntryElement:	TroubleFallingAsleep
+	Based on:		CodedEvaluationComponent
+	Concept:		TBD
+	Description:	"How often the subject has trouble falling asleep."
+	Value:			CodeableConcept from QualitativeFrequencyVS
 
-EntryElement:	WakeFeelingRested
-Based on:		QuestionAnswerRecorded
-Concept:		TBD
-Description:	"How often the subject feels rested when they wake up."
-Value:			CodeableConcept from QualitativeFrequencyVS
-				Category includes #sleep
+		
+	EntryElement:	TroubleStayingAsleep
+	Based on:		CodedEvaluationComponent
+	Concept:		TBD
+	Description:	"How often the subject has trouble staying asleep."
+	Value:			CodeableConcept from QualitativeFrequencyVS
 
-EntryElement:	HoursSleepPerNight
-Based on:		QuestionAnswerRecorded
-Concept:		LNC#65968-0
-Description:	"Typical hours spent sleeping per night."
-Value:			IntegerQuantity
-				Category includes #sleep
+	EntryElement:	WakeFeelingRested
+	Based on:		CodedEvaluationComponent
+	Concept:		TBD
+	Description:	"How often the subject feels rested when they wake up."
+	Value:			CodeableConcept from QualitativeFrequencyVS
 
-				
+	EntryElement:	HoursSleepPerNight
+	Based on:		EvaluationComponent
+	Concept:		LNC#65968-0
+	Description:	"Typical hours spent sleeping per night."
+	Value:			Quantity with units UCUM#hr
+
+
+
+
 EntryElement:	PhysicalActivityPanel
-Based on:		EvaluationResultRecorded
+Based on:		Observation
 Concept:		TBD
 Description:	"Questions related to physical activity."
 0..0			Value
-				Category includes #exercise
+				Category is LNC#54511-1 "Behavior"
 				PanelMembers.EvaluationTopic
 includes 0..1	PhysicalActivityLevel
 includes 0..1	ExerciseHoursPerWeek
@@ -237,21 +235,21 @@ Based on:		QuestionAnswerRecorded
 Concept:		LNC#28323-4
 Description:	"The amount of exercise or other physical activity compared to others of the same age.  See BMC Medical Research Methodology 2012 12:20 1471-2288."
 Value:			CodeableConcept from QualitativeValueScaleVS
-				Category includes #exercise 
+				Category is LNC#54511-1 "Behavior"
 
 EntryElement:	ExerciseHoursPerWeek
 Based on:		QuestionAnswerRecorded
 Concept:		TBD
 Description:	"Hours of moderate or vigorous activity per week."
 Value:			IntegerQuantity  // TODO: potentially change to ratio with Units hours per one week
-				Category includes #exercise 
+				Category is LNC#54511-1 "Behavior"
 
 EntryElement:	PhysicalActivityLimitation
 Concept:		TBD
 Based on:		QuestionAnswerRecorded
 Description:	"Anything that limits physical activity, including health factors, logistical, monetary, or social restrictions."
 Value:			CodeableConcept from PhysicalActivityLimitationVS
-				Category includes #exercise 
+				Category is LNC#54511-1 "Behavior"
 
 
 EntryElement:	ViolentRiskToOthers
@@ -271,4 +269,21 @@ EntryElement:	Mood
 Concept:		TBD
 Description:	""
 Value:			CodeableConcept
+
+
+
+	Element:		ReasonForBehavior
+	Based on:		EvaluationComponent
+	Concept:		TBD
+	Description:	"Why the behavior has taken or is taking place."
+	Value:			CodeableConcept
+
+	Element:		ReadinessToChange
+	Based on:		EvaluationComponent
+	Concept:		TBD
+	Description:	"How motivated the subject is to change the behavior, if the behavior is ongoing, and change would be beneficial."
+	Value:			CodeableConcept from QualitativeLikelihoodVS
+
+
+
 */

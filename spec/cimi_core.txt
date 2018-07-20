@@ -24,39 +24,45 @@ Element:		Content
 Based on:		Independent
 Description:	"Abstract ancestor of all concrete content types. A unit of content that makes up a composition - e.g., a clinical statement in a patient record, a simple or composite action is a knowledge document, a catalog entry in a catalog."
 
-
 Element: 		InformationEntry
 Based on:		Content
 Concept:		MTH#C1705654
 Description:	"An entry in a patient record or in a report, generally used for the documentation of clinical information about a subject of information such as a patient or a relative of the patient, asserted by a particular source, recorded, and potentially verified."
-1..1			SubjectOfInformation
-0..1			SourceOfInformation
-0..*			Annotation
-0..1			RecordStatus
+0..1			PersonOfRecord
+0..1			SubjectIfNotPersonOfRecord
+0..1			SourceOfInformation // should this be 0..*?
+//0..*			Annotation
+//0..1			RecordStatus
 0..1			Recorded
 0..1			Signed  // Author
-0..*			Cosigned
-0..*			Verified
+//0..*			Cosigned
+//0..*			Verified
 
-	Element:		SubjectOfInformation
-	Description:	"The person or thing that this entry relates to, usually the Person of Record (see Entry). However, not all entries have health information specifically about the patient, but in different contexts, could refer to a fetus, family member (living or dead), device, location, organization, behavior, finding, condition, wound, or intervention.
-	CIMI alignment: SubjectOfInformation is not a Participation -- unlike CIMI. There's no action to participate in. Participant has extra unnecessary attributes, such as 'onBehalfOf'."
-	Value:			ref(EntityOrRole) // ref(Patient) or ref(Group) or ref(Device) or ref(Location) or ref(RelatedPerson) or ref(Organization)
+	Element:		PersonOfRecord
+	Concept:		TBD
+	Description:	"The person this entry belongs to."
+	Value:			ref(Patient)
+
+	Element:    	SubjectIfNotPersonOfRecord
+	Concept:        MTH#C0449416
+	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
+	Value:			0..1 ref(EntityOrRole) //string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
 	0..1			RelationshipToPersonOfRecord
-	
-		Element:		RelationshipToPersonOfRecord
-		Description: 	"The relationship of the SubjectOfInformation to the subject of record."
-		Value:			CodeableConcept
 
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
-	Value:			CodeableConcept
-	
 	Element:    	SourceOfInformation
 	Concept:        MTH#C0449416
 	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
 	Value:			ref(EntityOrRole) //string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
 	0..1			RelationshipToPersonOfRecord
+	
+		Element:		RelationshipToPersonOfRecord
+		Concept:		MTH#C0015608
+		Description: 	"The relationship of the SubjectIfNotPersonOfRecord to the subject of record."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype if covered
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Value:			CodeableConcept
 	
 	Element:		Recorded
 	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."

@@ -1,0 +1,35 @@
+Grammar:	Map 5.1
+Namespace:	shr.occupation
+Target:		FHIR_STU_3
+
+// do not map to US Core Results -- Brett says that is only for labs
+SocialHistoryObservation maps to Observation:
+	PersonOfRecord maps to subject
+//	SubjectIfNotPersonOfRecord.RelationshipToPersonOfRecord maps to http://hl7.org/fhir/StructureDefinition/observation-focal-subject
+	ObservationTopic.TopicCode maps to code
+	ObservationTopic.FindingMethod maps to method
+	ObservationTopic.Details maps to comment
+//	ObservationTopic.Media maps to extension
+	ObservationTopic.Category maps to category
+//	ObservationTopic.Precondition maps to extension
+	ObservationTopic.ReferenceRange maps to referenceRange
+	ObservationTopic.ReferenceRange.Range.LowerBound maps to referenceRange.low
+	ObservationTopic.ReferenceRange.Range.UpperBound maps to referenceRange.high
+	ObservationTopic.ReferenceRange.Type maps to referenceRange.type
+	ObservationTopic.ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
+	ObservationTopic.ReferenceRange.ApplicableAgeRange maps to referenceRange.age	
+	ObservationTopic.EvaluationComponent maps to component (slice on = coding.code; slice strategy = includes)
+	ObservationTopic.EvaluationComponent._Concept maps to component.code
+	ObservationTopic.EvaluationComponent.Value maps to component.value[x]
+	ObservationTopic.EvaluationComponent.ExceptionValue maps to component.dataAbsentReason
+	ObservationTopic.EvaluationComponent.Interpretation maps to component.interpretation
+	ObservationTopic.EvaluationComponent.ReferenceRange maps to component.referenceRange
+    constrain related to 0..0
+//	ObservationContext.ContextCode maps to nothing // drop
+	ObservationContext.ResultValue maps to value[x]
+	ObservationContext.ExceptionValue maps to dataAbsentReason
+	ObservationContext.Interpretation maps to interpretation
+	ObservationContext.Issued maps to issued
+	ObservationContext.FindingStatus maps to status
+	ObservationContext.RelevantTime maps to effective[x]
+	ObservationContext.Encounter maps to context
