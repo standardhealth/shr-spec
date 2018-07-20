@@ -1,59 +1,131 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.onconew
-Description:	"SHR implementation of ASCO requirements."
+Namespace:		shr.oncology
+Description:	"SHR implementation of cancer Lymph Node Involvement (LNI)."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-
-/*
-EntryElement:	LymphNodeBodySite
-Based on:		AnatomicalLocation
-Description:	"A body site specific to the lymph node structure."
-Value:			CodeableConcept from LymphNodeGroupVS
-1..1            Laterality
-0..0            AnatomicalDirection
-
-
-EntryElement:   LymphNodeMobility
-Based on:       Observation
-Concept:        TBD
-Description:    "The degree to which the lymph node is moveable upon palpation."
-Value:          CodeableConcept from LymphNodeMobilityVS
-1..*            LymphNode
-*/
-
-
-/*
-EntryElement:	LymphaticInvolvement
+EntryElement:	PathologicalBreastLymphNodeInvolvement
 Based on:		Observation
-Concept:		MTH#C0746333
-Description:	"Description of lymph nodes contain cancer cells."
-Value:			CodeableConcept from PositiveNegativeVS
-1..1			AnatomicalLocatoin from LymphSystemSubdivisionVS 
-				ObservationTopic.DiagnosticService is #pathology
-0..0			Focus
+Concept:		MTH#C0806692 "Lymph Node Involvement" 
+Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+				ObservationTopic is type PathologicalBreastLymphNodeInvolvementTopic
+
+Element:		PathologicalBreastLymphNodeInvolvementTopic
+Based on:		ObservationTopic  // mlt: change to LaboratoryObservationTopic and reference DiagnosticService to #pathology
+Description:	"The topic class for describing a lymph node involvement observation."
+				TopicCode is MTH#C0806692 "Lymph Node Involvement"	
+				AnatomicalLocation is type BreastLymphNodeBodySite 
+				EvaluationComponent		// LOINC codes for EvaluationComponents derived from the CAP Cancer Protocol for Breast (85904-1)	
+includes 0..1 	BreastLymphNodeInvolvement
+includes 0..1	LymphNodeSamplingMethod
+includes 0..1	TotalNumberOfLymphNodesExamined
+includes 0..1	NumberOfRegionalLymphNodes
+includes 0..1	NumberOfSentinelLymphNodes
+includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
+includes 0..1	NumberOfLymphNodesWithMicrometastases
+includes 0..1	NumberOfLymphNodesWithMacrometastases
+includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
+0..0			Focus  // only one breast cancer per patient
+0..0			ref(Device)
+0..0			ref(Specimen)  // mlt: TO_DO - open a Git bug that does not allow the authoring of 0..0 or anything that's referenced 
 0..0			Precondition
 0..0			ReferenceRange
-0..0			DeltaFlag
-				EvaluationComponent
-includes 0..1 	LargestLymphNodeSize
-includes 0..1 	NumberOfLymphNodesInvolved
-includes 0..1 	DegreeOfLymphaticInvolvement
 
-		Element:		LargestLymphNodeSize
-		Based on:		EvaluationComponent
-		Concept:		MTH#C1285847
-		Description:	"The largest dimension of the largest lymph node invaded by cancer cells."
-		Value: 			Quantity with units UCUM#mm
-						
-		Element:		NumberOfLymphNodesInvolved
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Description:	"A count of lymph nodes invaded by cancer cells of those examined."
-		Value:			Quantity with units UCUM#1
+EntryElement:	BreastLymphNodeBodySite
+Based on:		AnatomicalLocation
+Description:	"A body site specific to the lymph node structure."
+Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
+0..1            Laterality from http://hl7.org/fhir/valueset-bodysite-relative-location.html // mlt: travis had this but should we constrain this to right and left?
+0..0            AnatomicalDirection
 
-		Element:		DegreeOfLymphaticInvolvement
-		Based on:		CodedEvaluationComponent
-		Concept:		TBD
-		Description:	"Assessment of how much cancer is in a lymph node."
-		Value:			CodeableConcept from DegreeOfLymphaticInvolvementVS
+		Element:   BreastLymphNodeInvolvement  // mlt: change to LymphNodeInvolvement 
+		Based on:       EvaluationComponent
+		Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+		Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
+		Value:          CodeableConcept from LymphNodeInvolvementVS
+		0..0			ReferenceRange
+
+
+		Element:   		LymphNodeSamplingMethod
+		Based on:       CodedEvaluationComponent  // mlt: change this to CodedEvaluationComponent and remove 0..0 ReferenceRange.  Good best practice.
+		Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
+		Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
+		Value:          CodeableConcept from LymphNodeSamplingMethodVS
+		// 0..0			ReferenceRange
+
+		Element:		TotalNumberOfLymphNodesExamined 
+		Based on:		EvaluationComponent
+		Concept:		TBD "TBD"
+		Description:	"Total number of lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity 
+
+		Element:		NumberOfRegionalLymphNodes
+		Based on:		EvaluationComponent
+		Concept:		LNC#21894-1 "Regional lymph nodes examined [#] Specimen"
+		Description:	"Number of regional lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity 
+
+		Element:		NumberOfSentinelLymphNodes
+		Based on:		EvaluationComponent
+		Concept:		LNC#85347-3 "Sentinel lymph nodes examined [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of sentinel lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity 
+
+		Element:		NumberOfLymphNodesWithIsolatedTumorCells 
+		Based on:		EvaluationComponent
+		Concept:		LNC#85352-3 "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with isolated metatstatic tumor cells examined for the presence of cancer cells"
+		Value:			IntegerQuantity 
+
+		Element:		NumberOfLymphNodesWithMicrometastases
+		Based on:		EvaluationComponent
+		Concept:		LNC#85344-0 "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with micrometastases examined"
+		Value:			IntegerQuantity 
+
+		Element:		NumberOfLymphNodesWithMacrometastases
+		Based on:		EvaluationComponent
+		Concept:		LNC#85343-2 "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with macrometastases examined"
+		Value:			IntegerQuantity 
+
+		Element:		ExtraCapsularExtensionOfNodalTumorStatus
+		Based on:		EvaluationComponent
+		Concept:		LNC#85350-7 "Extranodal extension of carcinoma [Presence] in Cancer specimen by Light microscopy"
+		Description:	"Status for presence of extranodal extension of carcinoma where extranodal extension is the perforation of a cancer through the capsule of a lymph node into the tissue surrounding the node."
+		Value:          CodeableConcept should be from http://loinc.org/vs/LL748-5  // mlt: LL748-5 missing one term from original VS (indeterminate)
+		0..0			ReferenceRange
+
+EntryElement:	BreastClinicalLymphNodeInvolvement
+Based on:		LaboratoryObservation
+Concept:		MTH#C0806692 "Lymph Node Involvement" 
+Description:	"Assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
+				LaboratoryObservationTopic.DiagnosticService is #pathology
+0..0			LaboratoryObservationTopic.Precondition
+//				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
+				LaboratoryObservationTopic.Specimen.Type from BreastSpecimenTypeVS
+				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
+				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
+				LaboratoryObservationTopic.EvaluationComponent			
+includes 0..1 	LymphNodeMobility
+
+/*
+EntryElement:	BreastLymphNodeSpecimen
+Based on:		Specimen
+Description:	"A body site specific to the lymph node structure."
+				Type from BreastSpecimenTypeVS 
+				CollectionSite value is type BreastLymphNodeBodySite  // mlt: which is type AnatomicalLocation
+0..0			CollectionMethod from LymphNodeClinicalMethodVS
+0..0			SourceSpecimen 
 */
+
+Element:   		LymphNodeMobility
+Based on:       EvaluationComponent
+Concept:        TBD			// mlt_to_rmb: new LOINC term and answer list.
+Description:    "The degree to which the lymph node is moveable upon palpation."
+Value:          CodeableConcept from LymphNodeMobilityVS
+0..0			ReferenceRange
+
+
