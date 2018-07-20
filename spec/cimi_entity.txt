@@ -168,14 +168,8 @@ EntryElement:	RelatedPerson
 Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
 0..1			ref(Person)
-0..1			RelationshipType
+0..1			RelationshipToPersonOfRecord
 0..1			EffectiveTimePeriod
-
-
-	EntryElement:	RelationshipType
-	Concept:		MTH#C0015608
-	Description:	"The relationship of the subject to another person in the same extended family or extended family. May or may not be a blood relative."
-	Value:			CodeableConcept from FHIR/relatedperson-relationshiptype if covered 
 
 Element:		PatientOrPractitioner
 Based on:		EntityOrRole
@@ -543,34 +537,22 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 0..1			AccessionIdentifier
 0..1			SpecimenStatus from http://hl7.org/fhir/ValueSet/specimen-status
 1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
-1..1			SubjectOfInformation value is type ref(Patient)  // Subject cannot be a device or group
-0..1			SourceSpecimen
-0..1			ReceivedTime
+0..1			CollectionSource
 0..1			CollectionTime
 0..1			CollectionMethod
 0..1			CollectionSite
+0..1			SourceSpecimen
+0..1			ReceivedTime
 0..*			ref(SpecimenContainer)
 0..*			SpecimenTreatment
 0..*			HandlingRisk
 0..*			SpecialHandling
 
-
-		Element:		AccessionIdentifier
-		Based on:		Identifier
+		Element:		CollectionSource
 		Concept:		TBD
-		Description:	"Identifier assigned by the lab"
-		
-		
-		Element:		SpecimenStatus
-		Concept:		MTH#C0449438
-		Description:	"State of the specimen, such as obtained, processed, used."
-		Value:			CodeableConcept
+		Description:	"The person or thing the sample was obtained from."
+		Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Substance)
 
-		Element:		SourceSpecimen
-		Concept:		TBD
-		Description:	"Identifier for the source specimen from which this specimen was derived."
-		Value:			ref(Specimen)
-		
 		Element:		CollectionTime
 		Concept:		TBD
 		Description:	"When the sample was obtained, as a specific time or time period."
@@ -585,6 +567,20 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		Concept:		TBD
 		Description:	"The body site where specimen was collected"
 		Value:			AnatomicalLocation
+		Element:		AccessionIdentifier
+		Based on:		Identifier
+		Concept:		TBD
+		Description:	"Identifier assigned by the lab"
+		
+		Element:		SpecimenStatus
+		Concept:		MTH#C0449438
+		Description:	"State of the specimen, such as obtained, processed, used."
+		Value:			CodeableConcept
+
+		Element:		SourceSpecimen
+		Concept:		TBD
+		Description:	"Identifier for the source specimen from which this specimen was derived."
+		Value:			ref(Specimen)
 
 		Element:		HandlingRisk
 		Concept:		TBD

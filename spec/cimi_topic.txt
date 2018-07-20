@@ -36,8 +36,7 @@ The subject of a finding can be the entire patient, or an entity such as a locat
 		Element:		FindingMethod
 		Concept:		TBD
 		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-		Value:			CodeableConcept should be from http://loinc.org
-
+		Value:			CodeableConcept should be from FindingMethodVS
 
 Element:		ObservationTopic
 // All attributes of observation are defined at this level. Any subclass uses subtractive methods to define relevant attributes
@@ -53,7 +52,7 @@ Description:	"The base class, independent of context for evaluations (measuremen
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
 0..1			PanelMembers
-0..*			DiagnosticService
+
 
 		Element:		Focus
 		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
@@ -62,7 +61,8 @@ Description:	"The base class, independent of context for evaluations (measuremen
 		Element:		EvaluationComponent
 		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
 		Value:			(Quantity or CodeableConcept or string or Range or Ratio or Media or time or dateTime or TimePeriod or IntegerQuantity)
-		0..1			ExceptionValue
+		0..1			TopicCode
+		0..1			ExceptionValue from ExceptionValueVS if covered
 		0..1			Interpretation
 		0..*			ReferenceRange	
 		
@@ -78,7 +78,6 @@ Description:	"The base class, independent of context for evaluations (measuremen
 			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
-		
 		Element:		Precondition
 		Concept:		TBD
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
@@ -102,20 +101,26 @@ Description:	"The base class, independent of context for evaluations (measuremen
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
 
+Element:		LaboratoryObservationTopic
+Based on:		ObservationTopic
+Description:	"The topic composition for laboratory observations. A specimen is required, anatomical location is excluded (since the specimen indicates the collection body site). Also includes a diagnostic service (indicating the type of laboratory), not present in general observations."
+1..1			ref(Specimen)
+0..0			AnatomicalLocation  // AnatomicalLocation is where the Specimen was collected
+				Category is OBSCAT#laboratory
+0..*			DiagnosticService
+
 		Element:		DiagnosticService
 		Concept:		TBD
-		Description:	"A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes."
+		Description:	"The service completing the observations, e.g. biochemistry, microbiology, blood bank, etc."
 		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
 
 Element: 		AssertionTopic
 Based on:		FindingTopic
-Concept:		TBD
 Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
 
 Element:		ConditionTopic
 Based on:		AssertionTopic
-Concept:		MTH#C0348080
 Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. 
 CIMI deviation: AnatomicalLocation is included here, rather than being a property of FindingSiteAssertionTopic, since it is a common property of conditions. Severity, diseasePhase, periodicity, and other properites of an actual observed condition belong in ConditionPresenceContext. "
 				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
