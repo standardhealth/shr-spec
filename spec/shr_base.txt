@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, cimi.entity, cimi.statement
+Uses:			shr.core
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
@@ -65,14 +65,114 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Element:		DerivedFrom
 	Concept:		TBD
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
-	Value:			ref(ClinicalStatement)
+	Value:			ref(Statement)
+
+	Element:		Version
+	Concept:		MTH#C0333052
+	Description:	"A number or code associated with the product that identifies a particular release iteration."
+	Value:			string or id
 	
-		
-/*
-	Element:    	HealthRecordId
-	Concept:        MTH#C1549718
-	Description:    "A unique, persistent, permanent identifier for a health record."
-	Value:          id
-*/
+
+//------------ BASE CLASSES----------------
+// PRINCIPLES:
+// 		NO CONCEPT MODEL --- THAT'S TERMNOLOGY
+// 		FLAT, PURPOSE-AGNOSTIC LIST OF OBSERVATIONS AND ASSERTIONS THAT CAN BE PUT INTO ONE OR MORE GROUPS AS NEEDED
+//		NO NEED TO DISTINGUISH "STAND-ALONE" FROM "COMPONENT" OBSERVATIONS, OR PANELS FROM "COMPOUND OBSERVATIONS"
+//		ALL COMPUTABLE INFORMATION IN CODES -- CLASS NAMES ARE CONSIDERED NON-COMPUTABLE AND CANNOT BE RELIED UPON AS ANYTHING OTHER THAN A HUMAN-READABLE DESCRIPTION OF THE CONTENTS
+// 		OPEN-WORLD ASSUMPTION 
+// 			* just because something isn't stated, it doesn't mean it doesn't exist
+//			* something stated to NOT exist, does not exist
+//	
+
+
+Abstract Element:	Statement
+Description:		"A stand-alone clinical statement"
+0..1			ContextCode
+
+		Element:		ContextCode	
+		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc."
+		Value:			CodeableConcept
+
+EntryElement:	Assertion
+Based on:		Statement
+Description:	"A statement that asserts a situation, phenomenon, or relationship between two things"
+//1..1			RelevantTime
+
+EntryElement:	AssertPresence
+Based on:		Assertion
+				ContextCode is SCT#705057003 "Presence (qualifier value)"  // more like 'existence'
+1..1			EntityTypeCode
+0..1			BelongsTo  // what other thing 'has' this thing (ie. patient has condition; condition belongs to patient)
+
+EntryElement:	AssertAbsence
+Based on:		Assertion
+				ContextCode is SCT#2667000 "Absent (qualifier value)"
+1..1			EntityTypeCode
+0..1			BelongsTo  // what doesn't have the thing
+
+		Element:	EntityTypeCode
+		Value:		CodeableConcept
+
+		Element:	BelongsTo
+		Value:		Statement
+
+EntryElement:	AssertRelationship
+Based on:		Assertion
+Description: 	"Note that since a relationship is an assertion, it can be the subject of statements."
+1..1			Subject
+1..1			RelationshipCode
+1..1			Object
+
+		Element:		Subject
+		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
+		Value:			Statement
+
+		Element:		RelationshipCode
+		Description:	"An assertion about the subject, expressed as a code; can be viewed as a relationship between Subject and Object."
+		Value:			CodeableConcept
+
+		Element:		Object
+		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
+		Value:			Statement
+
+EntryElement:	EvaluationResult
+Based on:		Statement
+Description:	"A statement that asserts the value of a property of a thing."
+				ContextCode is SCT#424975005 "Record Entity"
+1..1			Subject
+1..1			ObservableCode
+1..1			ResultValue
+0..1			RelevantTime
+1..1			FindingStatus
+
+		Element:		ObservableCode
+		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
+		Value:			CodeableConcept
+
+		Element:		RelevantTime
+		Description:	"The time or time period that the statement addresses."
+		Value:			dateTime or TimePeriod 
+
+		Element:		ResultValue
+		Description:	"The finding itself, such as the blood pressure value recorded."
+		Value:			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod)
+	
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
+// + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
+
+EntryElement:	CodedEvaluationResult
+Based on:		EvaluationResult
+				ResultValue value is type CodeableConcept
+
+EntryElement:	QuantitativeEvaluationResult
+Based on:		EvaluationResult
+				ResultValue value is type Quantity
+
+
+
+
 
 

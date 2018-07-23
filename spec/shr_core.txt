@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:			cimi.element, cimi.topic
+
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
@@ -65,6 +65,10 @@ Description:	"Representation of an amount of currency or monetary value."
 
 //------------- Complex data types in FHIR 3.0 ---------------
 
+Element:		EmbeddedContent
+Concept:		TBD
+Description:	"Abstract class defining the common metadata of all types of encapsulated data, such as images."
+
 Element:		Media
 Based on:		EmbeddedContent
 Concept:		TBD
@@ -113,6 +117,11 @@ Description:	"A file that contains audio, video, image, or similar content."
 	Description:    "The point in time when the information was recorded in the system of record."
 	Value:          dateTime  // we can map to instant from dateTime
 
+	Element:		Title
+	Concept:		TBD
+	Description:	"A distinguishing word or group of words naming an item."
+	Value:			string
+
 	Element:		PhotographicImage
 	Based on:		Media
 	Concept:		LNC#72170-4
@@ -148,6 +157,12 @@ Value:			0..1 code  // changed to 0..1 so SHR won't generate a profile.
 	Description:	"The version of the vocabulary being used, if applicable."
 	Value:			string // Should be id type in FHIR, but it is a string (no issue recorded yet)
 	
+	Element:		DisplayText
+	Concept:		MTH#C1548311
+	Description:	"A string meant for reading by a person, for example, accompanying a code."
+	Value:			string
+
+
 Element:		CodeableConcept
 Concept:		TBD
 Description:	"A set of codes drawn from different coding systems, representing the same concept."
@@ -211,12 +226,18 @@ Description:	"An electronic means of contacting an organization or individual."
 		Description:	"Why the item is used."
 		Value:			Coding
 
+		Element: 		PriorityRank
+		Concept:		MTH#C0549179
+		Description:	"An indication of the importance of an action."
+		Value:			positiveInt or CodeableConcept
 
-Element:		ContactDetail
-Concept:		TBD
-Description:	"Describes an individual and how to reach them."
-0..1			HumanName
-0..*			ContactPoint
+		Element:		EffectiveTimePeriod
+		Based on:		TimePeriod
+		Concept:		MTH#C2985763
+		Description:	"The date and time span for which something is active, valid, or in force."
+
+
+
 
 
 /* TODO: Additional MetaData Types: see http://hl7.org/fhir/metadatatypes.html
@@ -257,6 +278,17 @@ Timing offers a choice of multiple OccurrenceTime (used is used to specify speci
 0..1		RecurrencePattern
 0..1		RecurrenceRange
 
+	Element:		OccurrenceTimeOrPeriod
+	Concept:		TBD
+	Description:	"The point in time or span of time in which something happens."
+	Value:			date or dateTime or TimePeriod
+
+	Element:		OccurrenceTime
+	Based on:		OccurrenceTimeOrPeriod
+	Concept:		TBD
+	Description:	"The point in time in which something happens."
+	Value:			dateTime
+
 	Element:		TimingCode
 	Concept:		TBD
 	Description: 	"A code for the timing schedule. 
@@ -266,7 +298,13 @@ Timing offers a choice of multiple OccurrenceTime (used is used to specify speci
 	Element:		EventDuration
 	Description:	"The length of the recurring event."
 	Value:			DurationRange
-	
+					
+				Element:		DurationRange
+				Based on:		Range
+				Description:	"A range of durations."
+				LowerBound value is type Duration
+				UpperBound value is type Duration
+
 	Element:	RecurrencePattern
 	Concept:	TBD
 	Description: "A set of rules that describe when a recurring event is scheduled."
@@ -387,6 +425,10 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 	Description:    "Part of an address that contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information. (Source: HL7 FHIR)."
 	Value:         	string
 
+	Element:		GeopoliticalLocation
+	Concept:		MTH#C0017446
+	Description:	"The countries of the world and major geopolitical subregions, such as US states."
+
 	Element:    	City
 	Based on:		GeopoliticalLocation
 	Concept:		MTH#C1555315
@@ -416,7 +458,7 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes."
 	Value:         	string
 
-	
+/*	
 //------------ Complex Data Types not in FHIR ----------------
 
 Element:		Count
@@ -430,9 +472,7 @@ Description:	"A text written in a human language."
 Value:			string
 0..1			Language
 
-Element:		EmbeddedContent
-Concept:		TBD
-Description:	"Abstract class defining the common metadata of all types of encapsulated data, such as images."
+
 
 Element:		ParsableContent
 Based on:		EmbeddedContent
@@ -446,41 +486,22 @@ Value:			string
 	Description:	"The system of formal syntax or interpretation associated with parsable content."
 	Value:			CodeableConcept
 
-/*  No can do! Can't restrict "value is type" to a primitive
+*  No can do! Can't restrict "value is type" to a primitive
 Element:		UnsignedIntegerRange
 Description:	"A range of non-negative integers. One of the two bounds must be present, and the lower bound must be less than or equal to the upper bound."
 0..1			LowerBound value is type unsignedInt
 0..1			UpperBound value is type unsignedInt
-*/
+*
 
-Element:		DurationRange
-Based on:		Range
-Description:	"A range of durations."
-				LowerBound value is type Duration
-				UpperBound value is type Duration
+
 	
-Element:		Statistic
-Based on: 		Quantity
-Concept:		MTH#C2828391
-Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
-1..1			StatisticType
 
-		Element:		StatisticType
-		Concept:		TBD
-		Description:	"The type of statistic that is represented by the value."
-		Value:			CodeableConcept from StatisticTypeVS
-
-Element: 		PriorityRank
-Concept:		MTH#C0549179
-Description:	"An indication of the importance of an action."
-Value:			positiveInt or CodeableConcept
 
 Element:		Percentage
 Based on:		SimpleQuantity
 Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units.Coding is UCUM#%
-
 
 Element:		Likelihood
 Concept:		MTH#C0033204
@@ -492,131 +513,24 @@ Concept:		TBD
 Description:	"A qualitative (subjective) likelihood."
 Value:			CodeableConcept from QualitativeLikelihoodVS
 
-Element:		Length
-Based on:		Quantity
-Concept:		MTH#C1444754
-Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
-				Units with Coding from UnitsOfLengthVS
-
-Element:		Depth
-Based on:		EvaluationComponent
-Concept:		SCT#131197000 "Depth (qualifier value)"
-Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
-Value:			Quantity with units UCUM#cm
-
-Element:		Area
-Based on:		EvaluationComponent
-Concept:		SCT#42798000 "Area (qualifier value)"
-Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
-Value:			Quantity with units UCUM#cm2
-
-Element:		ClockDirection
-Based on:		CodedEvaluationComponent
-Concept:		LNC#72294-2
-Description:	"A direction indicated by an angle relative to 12 o'clock."
-Value:			CodeableConcept from ClockDirectionVS
-
-
-/*
-Element:		Volume
-Based on:		???
-Concept:		MTH#C0449468
-Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Circumference
-Based on:		???
-Concept:		MTH#C0332520
-Description:	"The length of such a boundary line of a figure, area, or object."
-*/
-
-
-
-// --------------- Times and Time TimePeriods ----------------
-
-Element:		QualitativeDateTime
-Concept:		TBD
-Description:	"A point in time, described qualitatively."
-Value:			CodeableConcept from QualitativeDateTimeVS
-
-
-// -----------  Age --------------------------
-
-Element:		AgeGroup
-Concept:		MTH#C0027362
-Description:	"Subgroups of populations based on age."
-Value:			CodeableConcept from AgeGroupVS
-
-Element:		GestationalAge
-Concept:		MTH#C0017504
-Based on:		Age
-Description:	"The age of the embryo or fetus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
-
-Element:		GestationalTimePeriod
-Concept:		TBD
-Description:	"A time relative to a pregnancy or childbirth event."
-Value:			CodeableConcept from TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
-
-Element:		GestationalTemporalContext
-Concept:		TBD
-Description:	"A named gestational time period, or a gestational age."
-Value:			GestationalAge or GestationalTimePeriod
-
-
-//-------------- Duration and Frequency  -----------------
-
-
-Element:		SemiquantDuration
-Concept:		TBD
-Description:	"The duration of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeDurationVS
-
-
-Element:		Frequency   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
-Based on:		Ratio
-Concept:		MTH#C0376249
-Description:	"How many occurrences of an event per unit of time."
-				Numerator.Quantity with units UCUM#1
-				Denominator.Quantity.Units with Coding from http://hl7.org/fhir/ValueSet/units-of-time
-
-Element:		SemiquantFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeFrequencyVS
-
-Element:		QualitativeFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described qualitatively."
-Value:			CodeableConcept from QualitativeFrequencyVS
-
 
 //------------- Interpretations of Time -------------------
 
-Element:		EffectiveTimePeriod
-Based on:		TimePeriod
-Concept:		MTH#C2985763
-Description:	"The date and time span for which something is active, valid, or in force."
+
 
 Element:		ReceivedTime
 Concept:		MTH#C2735124	
 Description:	"Time the item was delivered to, or accepted by, the receiving facility or unit."
 Value:			dateTime
 
-Element:		OccurrenceTimeOrPeriod
-Concept:		TBD
-Description:	"The point in time or span of time in which something happens."
-Value:			date or dateTime or TimePeriod
+
 
 Element:		NonOccurrenceTimeOrPeriod
 Concept:		TBD
 Description:	"The point in time or span of time in which something did not happen."
 Value:			date or dateTime or TimePeriod
 
-Element:		OccurrenceTime
-Based on:		OccurrenceTimeOrPeriod
-Concept:		TBD
-Description:	"The point in time in which something happens."
-Value:			dateTime
+
 
 Element:		OccurrencePeriod
 Based on:		OccurrenceTimeOrPeriod
@@ -632,9 +546,6 @@ Value:			Duration
 
 //---------------  Locations and Addresses -----------------
 
-Element:		GeopoliticalLocation
-Concept:		MTH#C0017446
-Description:	"The countries of the world and major geopolitical subregions, such as US states."
 
 
 Element:		Geoposition
@@ -700,24 +611,18 @@ Concept: 		MTH#C0947611
 Description:	"A text note containing additional details, explanation, description, comment, or summarization. Details can discuss, support, explain changes to, or dispute information."
 Value:			string  // change to language-text
 
-Element:		DisplayText
-Concept:		MTH#C1548311
-Description:	"A string meant for reading by a person, for example, accompanying a code."
-Value:			string
 
-Element:		Version
-Concept:		MTH#C0333052
-Description:	"A number or code associated with the product that identifies a particular release iteration."
-Value:			string or id
-
-
-Element:		Title
+Element:		ContactDetail
 Concept:		TBD
-Description:	"A distinguishing word or group of words naming an item."
-Value:			string
+Description:	"Describes an individual and how to reach them."
+0..1			HumanName
+0..*			ContactPoint
+
+
 
 Element:		Category
 Concept:		TBD
 Description:	"A class or division of people or things having particular shared characteristics"
 Value:			CodeableConcept
 
+*/
