@@ -3,18 +3,20 @@ Namespace:		shr.oncology
 Description:	"SHR implementation of cancer Lymph Node Involvement (LNI)."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-EntryElement:	PathologicalBreastLymphNodeInvolvement
-Based on:		Observation
+EntryElement:	BreastPathologicalLymphNodeInvolvement
+Based on:		LaboratoryObservation
 Concept:		MTH#C0806692 "Lymph Node Involvement" 
-Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
-				ObservationTopic is type PathologicalBreastLymphNodeInvolvementTopic
-
-Element:		PathologicalBreastLymphNodeInvolvementTopic
-Based on:		ObservationTopic  // mlt: change to LaboratoryObservationTopic and reference DiagnosticService to #pathology
-Description:	"The topic class for describing a lymph node involvement observation."
-				TopicCode is MTH#C0806692 "Lymph Node Involvement"	
-				AnatomicalLocation is type BreastLymphNodeBodySite 
-				EvaluationComponent		// LOINC codes for EvaluationComponents derived from the CAP Cancer Protocol for Breast (85904-1)	
+Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+				LaboratoryObservationTopic.DiagnosticService is #pathology
+0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Precondition
+				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
+//				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
+//				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
+				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	BreastLymphNodeInvolvement
 includes 0..1	LymphNodeSamplingMethod
 includes 0..1	TotalNumberOfLymphNodesExamined
@@ -24,18 +26,13 @@ includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
 includes 0..1	NumberOfLymphNodesWithMicrometastases
 includes 0..1	NumberOfLymphNodesWithMacrometastases
 includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
-0..0			Focus  // only one breast cancer per patient
-0..0			ref(Device)
-0..0			ref(Specimen)  // mlt: TO_DO - open a Git bug that does not allow the authoring of 0..0 or anything that's referenced 
-0..0			Precondition
-0..0			ReferenceRange
 
 EntryElement:	BreastLymphNodeBodySite
 Based on:		AnatomicalLocation
 Description:	"A body site specific to the lymph node structure."
 Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 0..1            Laterality from http://hl7.org/fhir/valueset-bodysite-relative-location.html // mlt: travis had this but should we constrain this to right and left?
-0..0            AnatomicalDirection
+0..1            AnatomicalDirection
 
 		Element:   BreastLymphNodeInvolvement  // mlt: change to LymphNodeInvolvement 
 		Based on:       EvaluationComponent
@@ -98,11 +95,11 @@ Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 EntryElement:	BreastClinicalLymphNodeInvolvement
 Based on:		LaboratoryObservation
 Concept:		MTH#C0806692 "Lymph Node Involvement" 
-Description:	"Assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+0..0			LaboratoryObservationTopic.DiagnosticService  // This is a clinical evaluation, not part of DiagnosticServiceVS
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
 //				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
@@ -128,3 +125,31 @@ Value:          CodeableConcept from LymphNodeMobilityVS
 0..0			ReferenceRange
 
 
+/*
+EntryElement:	PathologicalBreastLymphNodeInvolvement
+Based on:		Observation
+Concept:		MTH#C0806692 "Lymph Node Involvement" 
+Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+				ObservationTopic is type PathologicalBreastLymphNodeInvolvementTopic
+
+Element:		PathologicalBreastLymphNodeInvolvementTopic
+Based on:		ObservationTopic  // mlt: change to LaboratoryObservationTopic and reference DiagnosticService to #pathology
+Description:	"The topic class for describing a lymph node involvement observation."
+				TopicCode is MTH#C0806692 "Lymph Node Involvement"	
+				AnatomicalLocation is type BreastLymphNodeBodySite 
+				EvaluationComponent		// LOINC codes for EvaluationComponents derived from the CAP Cancer Protocol for Breast (85904-1)	
+includes 0..1 	BreastLymphNodeInvolvement
+includes 0..1	LymphNodeSamplingMethod
+includes 0..1	TotalNumberOfLymphNodesExamined
+includes 0..1	NumberOfRegionalLymphNodes
+includes 0..1	NumberOfSentinelLymphNodes
+includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
+includes 0..1	NumberOfLymphNodesWithMicrometastases
+includes 0..1	NumberOfLymphNodesWithMacrometastases
+includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
+0..0			Focus  // only one breast cancer per patient
+0..0			ref(Device)
+0..0			ref(Specimen)  // mlt: TO_DO - open a Git bug that does not allow the authoring of 0..0 or anything that's referenced 
+0..0			Precondition
+0..0			ReferenceRange
+*/
