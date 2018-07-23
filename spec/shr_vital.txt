@@ -1,0 +1,205 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.vital
+Description:	"The SHR Vital domain contains definitions for basic physiological measurements categorized as vital signs."
+Uses:			shr.core, shr.base, shr.composition, shr.entity
+
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		UCUM = http://unitsofmeasure.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
+
+
+EntryElement:   VitalSignsPanel
+Based on:       Composition
+Description:    "Vital signs, weight, height, head circumference, oxygen saturation & BMI panel"
+                CompositionCode is LNC#85353-1
+1..1            VitalSignsSection
+
+Element:        VitalSignsSection
+Based on:       Section
+                SectionCode is LNC#85353-1
+                Statement
+0..1            RespiratoryRateMeasurement
+0..1            HeartRateMeasurement
+0..1            OxygenSaturationMeasurement
+0..1            BodyHeightMeasurement
+0..1            BodyLengthMeasurement
+0..1            HeadCircumferenceMeasurement
+0..1            BodyMassIndex
+                Section
+0..1            BloodPressureSection                
+
+
+EntryElement:	RespiratoryRateMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."
+                Subject value is type Person
+				ObservableCode is LNC#9279-1
+                ResultValue.Quantity with units UCUM#/min "/min"
+
+EntryElement:   RespiratoryRateMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type RespiratoryRateMeasurement
+                ObservableCode is TBD#TBD  // not SCT#362981000 "Qualifier value (qualifier value)"
+                ResultValue from RespiratoryRateMeasurementQualifierVS
+
+EntryElement:   RespiratoryRateMeasurementMethod
+Based on:       CodedEvaluationResult
+                Subject value is type RespiratoryRateMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from RespiratoryRateMeasurementMethodVS
+
+EntryElement:	HeartRateMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The number of times the heart ventricles contract per unit of time, usually per minute."
+                Subject value is type Person
+				ObservableCode is LNC#8867-4
+                ResultValue.Quantity with units UCUM#/min "/min"
+
+EntryElement:   HeartRateMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type HeartRateMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from HeartRateMeasurementQualifierVS
+
+EntryElement:   HeartRateMeasurementMethod
+Based on:       CodedEvaluationResult
+                Subject value is type HeartRateMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from HeartRateMeasurementMethodVS
+
+EntryElement:	OxygenSaturationMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
+                Subject value is type Person
+				ObservableCode is LNC#59408-5
+                ResultValue.Quantity with units UCUM#% "%"
+
+EntryElement:   OxygenSaturationMeasurementBodySite
+Based on:       CodedEvaluationResult
+                Subject value is type OxygenSaturationMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from OxygenSaturationMeasurementBodySiteVS
+
+EntryElement:	BodyTemperatureMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The measure of the level of heat in a human or animal."
+                Subject value is type Person
+				ObservableCode is LNC#8310-5
+                ResultValue.Quantity with units UCUM#Cel "C"
+
+EntryElement:   BodyTemperatureMeasurementBodySite
+Based on:       CodedEvaluationResult
+                Subject value is type BodyTemperatureMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BodyTemperatureMeasurementBodySiteVS
+
+EntryElement:   BodyTemperatureMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type BodyTemperatureMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BodyTemperatureMeasurementQualifierVS
+
+EntryElement:	BodyHeightMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The distance from the sole to the crown of the head."
+                Subject value is type Person
+				ObservableCode is LNC#8302-2
+    			ResultValue.Quantity with units UCUM#cm "cm"
+
+EntryElement:   BodyHeightMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type BodyHeightMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BodyHeightMeasurementQualifierVS
+
+EntryElement:	BodyLengthMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The distance from the sole of the foot to the crown of the head, lying down (typically 0-2 years)."
+                Subject value is type Person
+				ObservableCode is LNC#8306-3
+                ResultValue.Quantity with units UCUM#cm "cm"
+
+EntryElement:	BodyWeightMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
+                Subject value is type Person
+    			ResultValue.Quantity with units UCUM#kg "kg"
+				ObservableCode is LNC#29463-7
+
+EntryElement:   BodyWeightMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type BodyWeightMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BodyWeightMeasurementQualifierVS
+
+EntryElement:	HeadCircumferenceMeasurement
+Based on:		QuantitativeEvaluationResult
+Description:	"Circumference of the head (typically 0-2 years)."
+                Subject value is type Person
+				ObservableCode is LNC#8287-5
+    			ResultValue.Quantity with units UCUM#cm "cm"
+
+EntryElement:	BodyMassIndex
+Based on:		QuantitativeEvaluationResult
+Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
+                Subject value is type Person
+                ObservableCode is LNC#39156-5
+                ResultValue.Quantity with units UCUM#kg/m2  "kg/m2"
+
+EntryElement:   BloodPressureEvaluationResult
+Based on:       QuantitativeEvaluationResult
+                Subject value is type Person
+                ResultValue.Quantity with units UCUM#mm[Hg] "mmHg"
+
+EntryElement:	SystolicPressureMeasurement
+Based on:       BloodPressureEvaluationResult
+Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest."
+				ObservableCode is LNC#8480-6
+
+EntryElement:	DiastolicPressureMeasurement
+Based on:       BloodPressureEvaluationResult
+Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
+				ObservableCode is LNC#8462-4
+
+EntryElement:   BloodPressureMeasurementBodySite
+Based on:       CodedEvaluationResult
+                Subject value is type BloodPressureEvaluationResult
+                ObservableCode is TBD#TBD
+                ResultValue from BloodPressureMeasurementBodySiteVS
+
+EntryElement:   BloodPressureMeasurementMethod
+Based on:       CodedEvaluationResult
+                Subject value is type BloodPressureEvaluationResult
+                ObservableCode is TBD#TBD
+                ResultValue from BloodPressureMeasurementMethodVS
+
+EntryElement:   BloodPressureMeasurementQualifier
+Based on:       CodedEvaluationResult
+                Subject value is type BloodPressureEvaluationResult
+                ObservableCode is TBD#TBD
+                ResultValue from BloodPressureMeasurementQualifierVS
+
+EntryElement:   BloodPressureMeasurementHeadTiltAngle
+Based on:       QuantitativeEvaluationResult
+Description:	"The angle at which the head is tilted relative to a level position while physiologic tests are taken."
+                Subject value is type BloodPressureEvaluationResult
+                ObservableCode is LNC#8360-0
+                ResultValue.Quantity with units UCUM#deg "deg"
+
+Element:	    BloodPressureSection
+Based on:		Section
+Description:	"The force of circulating blood on the walls of the arteries, systolic and diastolic"
+                SectionCode is LNC#55284-4
+                Statement
+includes 0..1 	SystolicPressureMeasurement
+includes 0..1 	DiastolicPressureMeasurement
+
+
+
+
+  
+
+
+
+

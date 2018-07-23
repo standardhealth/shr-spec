@@ -1,17 +1,17 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.wound
-Description: "Implementation of LOINC Wound Assessment Panel (LOINC 39135-9). See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive"
+Description: "Implementation of LOINC Wound Assessment Section (LOINC 39135-9). See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive"
 Uses:  		shr.base, shr.core, shr.composition
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-/* 	39135-9  	Wound assessment panel	O	
+/* 	39135-9  	Wound assessment Section	O	
 
  	     81666-0  	Wound number [Object]		 	 
  	     72300-7  	Wound type	R
-		 72369-2  	Body site identification panel	R	 	 
+		 72369-2  	Body site identification Section	R	 	 
  	          39111-0  	Body site	R	 	 
  	          39112-8  	Body location qualifier	O	 	 
  	          20228-3  	Anatomic part Laterality	O	 	 
@@ -26,32 +26,32 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
   	     89250-5  	Device or anatomic structure visible in wound		 
  	     72301-5  	Description of Periwound	C	 	 
  	     72527-5  	Pressure ulcer stage NPUAP
- 	     72372-6  	Wound bed and edge panel	C	 	 
- 	          89254-7  	Wound bed panel		 	 
+ 	     72372-6  	Wound bed and edge Section	C	 	 
+ 	          89254-7  	Wound bed Section		 	 
  	               72371-8  	Appearance of Wound base	R	 	 
  	               72370-0  	Area of identified wound bed appearance/​Area of wound bed of Wound base	C	 	% 
  	               39132-6  	Color of Wound base	O	 	 
  	               89255-4  	Wound bed area identified by color/​Area of wound bed		 	% 
- 	          89256-2  	Wound edge panel		 	 
+ 	          89256-2  	Wound edge Section		 	 
  	               72304-9  	Edge of wound description	O	 	 
  	               39133-4  	Color of Wound edge	O	 	 
- 	     72299-1  	Wound tunneling and undermining panel	C
- 	          89257-0  	Wound tunneling panel
+ 	     72299-1  	Wound tunneling and undermining Section	C
+ 	          89257-0  	Wound tunneling Section
  	               72298-3  	Tunneling of Wound	R
  	               72296-7  	Tunneling [Length] of Wound	C	 	cm 
  	               72297-5  	Tunneling clock position of Wound	C	 	 
- 	          89258-8  	Wound undermining panel		 	 
+ 	          89258-8  	Wound undermining Section		 	 
  	               72295-9  	Undermining of Wound	R	 	 
  	               72293-4  	Undermining [Length] of Wound	C	 	cm 
  	               72294-2  	Undermining clock position of Wound	C	 	 
- 	     72292-6  	Wound exudate panel	C	 	 
+ 	     72292-6  	Wound exudate Section	C	 	 
  	          89259-6  	Presence of wound exudate		 	 
  	          89260-4  	Area of wound		 	cm2 
  	          39116-9  	Drainage amount of Wound	C	 	 
  	          72288-4  	Odor of Exudate from wound	O	 	 
  	          72289-2  	Color of Exudate from wound	R	 	 
  	          72290-0  	Appearance of Exudate from wound	R	    	 
- 	     72287-6  	Wound size panel	C	 	 
+ 	     72287-6  	Wound size Section	C	 	 
  	          39125-0  	Width of Wound	R	 	cm 
  	          39127-6  	Depth of Wound	R	 	cm 
  	          39126-8  	Length of Wound	R	 	cm 
@@ -72,7 +72,7 @@ Wound -- ONE ASSERTION PER WOUND
 	 
 ==========================	
 
-Wound ASSESSMENT PANEL (MULTIPLE PANELS PER WOUND)
+Wound ASSESSMENT Section (MULTIPLE SectionS PER WOUND)
 1..1    81666-0  	Wound number [Object]  -------> REFERENCE TO Wound Assertion	
 0..1    89253-9  	Trend		 	  	 
 0..*    72170-4  	Photographic image	[Media]	
@@ -100,14 +100,14 @@ Based on:		Composition
 Description:	"Information about a wound, assessed at a given time."
 				CompositionCode is LNC#39135-9
 				Section
-includes 0..1	WoundInformation
-includes 0..1	WoundBedAndEdgePanel
-includes 0..1	WoundTunnelingAndUnderminingPanel
-includes 0..1	WoundExudatePanel
-includes 0..1	WoundSizePanel
+includes 0..1	WoundInformationSection
+includes 0..1	WoundBedAndEdgeSection
+includes 0..1	WoundTunnelingAndUnderminingSection
+includes 0..1	WoundExudateSection
+includes 0..1	WoundSizeSection
 
 
-EntryElement:	WoundInformation
+Element:		WoundInformationSection
 Based on:		Section
 				SectionCode is TBD#TBD
 				Statement
@@ -125,57 +125,57 @@ includes 0..*	VisibleInternalStructure
 includes 0..1	PeriwoundDescription
 includes 0..1	PressureUlcerStage
 
-EntryElement:	WoundBedAndEdgePanel
+Element:		WoundBedAndEdgeSection
 Based on:		Section
 				SectionCode is LNC#72372-6
 				Section
-includes 0..*	WoundBedAppearancePanel
-includes 0..*	WoundBedColorPanel
-includes 0..1	WoundEdgePanel	
+includes 0..*	WoundBedAppearanceSection
+includes 0..*	WoundBedColorSection
+includes 0..1	WoundEdgeSection	
 
-	EntryElement:	WoundBedAppearancePanel
+	Element:		WoundBedAppearanceSection
 	Based on:       Section
 					SectionCode is TBD#TBD
 					Statement
 	includes 0..1   WoundBedAreaAppearance
 	includes 0..1	WoundBedAreaPercentage
 
-	EntryElement:	WoundBedColorPanel
+	Element:		WoundBedColorSection
 	Based on:       Section
 					SectionCode is TBD#TBD
 					Statement
 	includes 0..1   WoundBedAreaColor
 	includes 0..1	WoundBedAreaPercentage
 
-	EntryElement:	WoundEdgePanel
+	Element:		WoundEdgeSection
 	Based on:       Section
 					SectionCode is LNC#89256-2
 					Statement
 	includes 0..1   WoundEdgeDescription
 	includes 0..1	WoundEdgeColor
 
-EntryElement:   WoundTunnelingAndUnderminingPanel
+Element:   	WoundTunnelingAndUnderminingSection
 Based on:       Section
                 SectionCode is LNC#72299-1 
                 Section
-includes 0..*   WoundTunnelingPanel
-includes 0..*   WoundUnderminingPanel
+includes 0..*   WoundTunnelingSection
+includes 0..*   WoundUnderminingSection
 
-	EntryElement:   WoundTunnelingPanel
+	Element:   		WoundTunnelingSection
 	Based on:       Section
 					SectionCode is LNC#89258-8 
 					Statement
 	includes 1..1   WoundTunnelLength
 	includes 1..1   WoundTunnelClockDirection
 
-	EntryElement:   WoundUnderminingPanel
+	Element:   		WoundUnderminingSection
 	Based on:       Section
 					SectionCode is LNC#89258-8 
 					Statement
 	includes 1..1   WoundUnderminingLength
 	includes 1..1   WoundUnderminingClockDirection
 
-EntryElement:   WoundExudatePanel
+Element:   		WoundExudateSection
 Based on:       Section
                 SectionCode is LNC#72292-6
                 Statement
@@ -184,7 +184,7 @@ includes 1..1   ExudateAppearance
 includes 0..1   ExudateDrainageAmount
 includes 0..1   ExudateOdor
 
-EntryElement:   WoundSizePanel
+Element:   		WoundSizeSection
 Based on:       Section
                 SectionCode is LNC#72287-6
                 Statement
@@ -192,5 +192,4 @@ includes 1..1   WoundWidth
 includes 1..1   WoundDepth
 includes 1..1   WoundLength
 includes 0..1   WoundArea
-
-            
+ 
