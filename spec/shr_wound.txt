@@ -12,7 +12,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 EntryElement:	Person
 Based on:		AssertPresence
-				EntityTypeCode from PersonVS //<<SCT#125676002 "Person (person)" 
+				EntityTypeCode is SCT#125676002 "Person (person)" 
 
 EntryElement:	BodyStructure
 Based on:		AssertPresence
@@ -22,7 +22,7 @@ Based on:		AssertPresence
 EntryElement:	Wound
 Based on:		AssertPresence
 				BelongsTo value is type Person  // has to belong to a Person
-				EntityTypeCode from WoundVS //<< SCT#416462003 "Wound (disorder)"
+				EntityTypeCode is SCT#416462003 "Wound (disorder)"
 
 EntryElement:	WoundAbsent
 Based on:		AssertAbsence
@@ -89,6 +89,12 @@ Description:	"The absent of fluid produced by a wound."
 
 //-------------- Evaluation Results -------------------
 
+EntryElement:	WoundType
+Based on:		CodedEvaluationResult
+				BelongsTo value is type Wound
+				ObservableCode is LNC#72300-7
+				ResultValue from WoundTypeVS
+
 EntryElement:	AnatomicalLocation
 Based on:		CodedEvaluationResult
 				Subject value is type BodyStructure // A wound is a body structure, so this applies
@@ -114,6 +120,13 @@ Description:	"The beginning or first appearance of a mental or physical disorder
 				Subject value is type Disease
 				ObservableCode is LNC#85585-8  // or SCT#263501003 "Time of onset (observable entity)" 
 				ResultValue value is type dateTime
+
+EntryElement:	ConditionPresentOnAdmission
+Based on:		EvaluationResult
+Description:	"Whether the condition was present when the patient was admitted."
+				Subject value is type Disease
+				ObservableCode is LNC#89251-3 
+				ResultValue value from Positive			
 
 EntryElement:	TimeOfAbatement
 Based on:		EvaluationResult
@@ -178,7 +191,7 @@ Description:	"Area of wound bed portion appearance/Entire ​Area of wound bed -
 				ObservableCode is LNC#72370-0
 				ResultValue.Quantity with units UCUM#% 
 
-Element:		WoundBedColor
+Element:		WoundBedAreaColor
 Based on:		CodedEvaluationResult
 Description:	"Color of a portion or entire wound base (bed)."
 				Subject value is type WoundBedArea
