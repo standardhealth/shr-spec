@@ -16,6 +16,7 @@ Description:	"Clinical assessment of lymph nodes for presence of cancer cells in
 				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
 //				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
 //				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
+0..0			Focus
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	BreastLymphNodeInvolvement
 includes 0..1	LymphNodeSamplingMethod
@@ -98,14 +99,16 @@ Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
+				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
 0..0			LaboratoryObservationTopic.DiagnosticService  // This is a clinical evaluation, not part of DiagnosticServiceVS
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
 //				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
 //				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
+0..0			Focus
 				LaboratoryObservationTopic.EvaluationComponent			
 includes 0..1 	LymphNodeMobility
+includes 0..1	LymphNodeSize
 
 
 EntryElement:	BreastLymphNodeSpecimen
@@ -119,37 +122,13 @@ Description:	"A body site specific to the lymph node structure."
 
 Element:   		LymphNodeMobility
 Based on:       EvaluationComponent
-Concept:        TBD			// mlt_to_rmb: new LOINC term and answer list.
-Description:    "The degree to which the lymph node is moveable upon palpation."
+Concept:        MTH#C1112395			// mlt_to_rmb: need new SNOMED term, LOINC term, and LOINC answer list.
+Description:    "Lymph node palpable"
 Value:          CodeableConcept from LymphNodeMobilityVS
 0..0			ReferenceRange
 
-
-/*
-EntryElement:	PathologicalBreastLymphNodeInvolvement
-Based on:		Observation
-Concept:		MTH#C0806692 "Lymph Node Involvement" 
-Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
-				ObservationTopic is type PathologicalBreastLymphNodeInvolvementTopic
-
-Element:		PathologicalBreastLymphNodeInvolvementTopic
-Based on:		ObservationTopic  // mlt: change to LaboratoryObservationTopic and reference DiagnosticService to #pathology
-Description:	"The topic class for describing a lymph node involvement observation."
-				TopicCode is MTH#C0806692 "Lymph Node Involvement"	
-				AnatomicalLocation is type BreastLymphNodeBodySite 
-				EvaluationComponent		// LOINC codes for EvaluationComponents derived from the CAP Cancer Protocol for Breast (85904-1)	
-includes 0..1 	BreastLymphNodeInvolvement
-includes 0..1	LymphNodeSamplingMethod
-includes 0..1	TotalNumberOfLymphNodesExamined
-includes 0..1	NumberOfRegionalLymphNodes
-includes 0..1	NumberOfSentinelLymphNodes
-includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
-includes 0..1	NumberOfLymphNodesWithMicrometastases
-includes 0..1	NumberOfLymphNodesWithMacrometastases
-includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
-0..0			Focus  // only one breast cancer per patient
-0..0			ref(Device)
-0..0			ref(Specimen)  // mlt: TO_DO - open a Git bug that does not allow the authoring of 0..0 or anything that's referenced 
-0..0			Precondition
-0..0			ReferenceRange
-*/
+Element:		LymphNodeSize 
+Based on:		EvaluationComponent
+Concept:		SCT#364109001 "Size of lymph node (observable entity)"
+Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
+Value:			Quantity with units UCUM#mm
