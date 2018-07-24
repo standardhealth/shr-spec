@@ -98,22 +98,29 @@ A clinical statement can assert something exists or is present, does not exist o
 Abstract Element: Assertion
 Based on:		Statement
 Description:	"A statement that asserts a situation, phenomenon, or relationship between two things"
+
 //1..1			RelevantTime
 
 Abstract Element: AssertPresence
 Based on:		Assertion
 				ContextCode is SCT#705057003 "Presence (qualifier value)"  // more like 'existence'
-1..1			EntityTypeCode
+1..1			TypeCode
 0..1			BelongsTo  // what other thing 'has' this thing (ie. patient has condition; condition belongs to patient)
+0..1			EntityIdentifier
+
+		Element:		TypeCode
+		Description:	"A code identifying the type of item, for example, the type of lab, the type of panel, the type thing asserted, etc."
+		Value:			CodeableConcept
+
+		Element: 		EntityIdentifier
+		Description:	"An identifier for the entity that is asserted to be present. For example, if asserting the presence of a wound, this is the wound number used to track the wound's condition over time."
+		Value:			id
 
 Abstract Element: AssertAbsence
 Based on:		Assertion
 				ContextCode is SCT#2667000 "Absent (qualifier value)"
-1..1			EntityTypeCode
+1..1			TypeCode
 0..1			BelongsTo  // what doesn't have the thing
-
-		Element:	EntityTypeCode
-		Value:		CodeableConcept
 
 		Element:	BelongsTo
 		Value:		Statement

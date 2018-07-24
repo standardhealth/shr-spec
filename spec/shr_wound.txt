@@ -1,84 +1,89 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.wound
-Description: "Assertions and observations related to wounds."
+Description: "Assertions, observations and measurements related to wounds."
 Uses:  		shr.base, shr.core, shr.entity
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+//CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
 //----------------  Wound Assertions --------------------
 
 EntryElement:	Wound
 Based on:		AssertPresence
+Description:	"An assertion that a wound is present.
+Observations and measurements associated with the same wound must link back to the same wound assertion. Therefore, the same wound should not be asserted more than once. The 'same-as' relationship can be used to link multiple assertions of the same wound, if that is necessary."
 				BelongsTo value is type Person  // has to belong to a Person
-				EntityTypeCode is SCT#416462003 "Wound (disorder)"
+				TypeCode is SCT#416462003 "Wound (disorder)"
+// inherits an EntityIdentifier, which is the wound number
 
 EntryElement:	WoundAbsent
 Based on:		AssertAbsence
+Description:	"An assertion that a wound is not present (an assertion normally associated with an anatomical location). If a wound has healed, record as an abatement observation associated with the former wound, rather than a wound absent assertion."
 				BelongsTo value is type Person
-				EntityTypeCode is SCT#416462003 "Wound (disorder)"
+				TypeCode is SCT#416462003 "Wound (disorder)"
 
 EntryElement:	WoundBedArea
 Based on:		AssertPresence 
-Description:	"Part or all of the bed of a wound."
+Description:	"Part or all of the bed of a wound, optionally persistently identified to track the wound bed area condition over time."
 				BelongsTo value is type Wound
-				EntityTypeCode is TBD#TBD 
+				TypeCode is TBD#TBD 
 
 EntryElement:	WoundTunnel
 Based on:		AssertPresence
-Description:	"The presence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. 
-The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
+Description:	"The presence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. Each wound tunnel can be persistently identified to enable tracking of the condition of the tunnel over time."
 				BelongsTo value is type Wound
-				EntityTypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
+				TypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
 
 EntryElement:	WoundTunnelingAbsent
 Based on:		AssertAbsence
+Description:	"An assertion that wound tunneling is not present on a specific wound."
 				BelongsTo value is type Wound
-				EntityTypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
+				TypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
 
 EntryElement:	WoundUndermining
 Based on:		AssertPresence
 Description:	"The presence of deep tissue (subcutaneous fat and muscle) damage around the wound margin.
 Undermining are narrow sinus tracts away from the wound margins and go downward into the wound."
 				BelongsTo value is type Wound
-				EntityTypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
+				TypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
-EntryElement:	WoundUndermingAbsent
+EntryElement:	WoundUnderminingAbsent
 Based on:		AssertAbsence
+Description:	"An assertion that a specific wound does not have undermining."
 				BelongsTo value is type Wound
-				EntityTypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
+				TypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
 EntryElement:	Injury
 Based on:		AssertPresence
 Description:	"Physical harm or damage done to a living thing."
 				BelongsTo value is type Person
-				EntityTypeCode from InjuryVS
+				TypeCode from InjuryVS
 
 EntryElement:	Disease
 Based on:		AssertPresence
 Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
 				BelongsTo value is type Person
-				EntityTypeCode from DiseaseVS
+				TypeCode from DiseaseVS
 
 EntryElement:	PressureUlcer
 Based on:		AssertPresence
 Description:	"As defined by the NPUAP, a pressure ulcer is localized injury to the skin and/or underlying tissue usually over a bony prominence, as a result of pressure, or pressure in combination with shear."
 				BelongsTo value is type Person
-				EntityTypeCode from PressureUlcerVS
+				TypeCode from PressureUlcerVS
 
 EntryElement:	WoundExudate
 Based on:		AssertPresence
 Description:	"The presence of fluid produced by a wound."
 				BelongsTo value is type Wound
-				EntityTypeCode is LNC#72292-6
+				TypeCode is LNC#72292-6
 
 EntryElement:	WoundExudateAbsent
 Based on:		AssertAbsence
 Description:	"The absent of fluid produced by a wound."
 				BelongsTo value is type Wound
-				EntityTypeCode is LNC#72292-6
+				TypeCode is LNC#72292-6
 
 
 //-------------- Evaluation Results -------------------
@@ -105,6 +110,7 @@ Description:	"Anatomical location or specimen further detailing the side(s) of i
 
 EntryElement:	InjuryCause
 Based on:		CodedEvaluationResult
+Description:	""
 				Subject value is type Injury
 				ObservableCode is LNC#11373-8 "InjuryCause"
 				ResultValue from http://loinc.org/vs/LL4936-2 
@@ -136,7 +142,7 @@ Description:	"A photographic documentation of a condition, location, person, etc
 
 EntryElement:	EpisodeOfWound
 Based on:		CodedEvaluationResult
-Description:	"Whether the wound is initial or recurrent"
+Description:	"Whether the wound is initial or recurrent."
 				Subject value is type Wound
 				ObservableCode is LNC#89252-1  "Episode of Wound"
 				ResultValue from http://loinc.org/vs/LL4937-0
