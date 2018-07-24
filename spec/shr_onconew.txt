@@ -14,9 +14,8 @@ Description:	"Clinical assessment of lymph nodes for presence of cancer cells in
 0..0			LaboratoryObservationTopic.FindingMethod
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
-//				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
-//				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
 0..0			Focus
+0..0			Media
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	BreastLymphNodeInvolvement
 includes 0..1	LymphNodeSamplingMethod
@@ -103,13 +102,11 @@ Description:	"Clinical assessment of lymph nodes for presence of cancer cells in
 0..0			LaboratoryObservationTopic.DiagnosticService  // This is a clinical evaluation, not part of DiagnosticServiceVS
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
-//				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
-//				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS
-0..0			Focus
+0..0			LaboratoryObservationTopic.Focus
+0..0			LaboratoryObservationTopic.Media
 				LaboratoryObservationTopic.EvaluationComponent			
 includes 0..1 	LymphNodeMobility
 includes 0..1	LymphNodeSize
-
 
 EntryElement:	BreastLymphNodeSpecimen
 Based on:		Specimen
@@ -118,7 +115,6 @@ Description:	"A body site specific to the lymph node structure."
 				CollectionSite value is type BreastLymphNodeBodySite  // mlt: which is type AnatomicalLocation
 0..0			CollectionMethod from LymphNodeClinicalMethodVS
 0..0			SourceSpecimen 
-
 
 Element:   		LymphNodeMobility
 Based on:       EvaluationComponent
@@ -132,3 +128,40 @@ Based on:		EvaluationComponent
 Concept:		SCT#364109001 "Size of lymph node (observable entity)"
 Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
 Value:			Quantity with units UCUM#mm
+
+
+EntryElement: 	TumorDimensions
+Based on:		LaboratoryObservation
+Concept:		SCT#399375005 "Tumor size (observable entity)"
+Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
+				LaboratoryObservationTopic.DiagnosticService is #pathology
+0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.Specimen
+0..0			LaboratoryObservationTopic.Focus
+0..0			LaboratoryObservationTopic.Media
+				LaboratoryObservationTopic.EvaluationComponent
+includes 0..1	TumorPrimaryDimensionSize
+includes 0..1	TumorSecondaryDimensionSize
+includes 0..1	SizeOfGrossTumorBed
+
+		Element:		TumorPrimaryDimensionSize
+		Description:	"The longest diameter of the primary tumor."
+		Based on:		EvaluationComponent
+		Concept:		SCT#399734001 "Primary tumor size (observable entity)"
+		Value:			Quantity with units UCUM#mm		
+		
+		Element:		TumorSecondaryDimensionSize
+		Description:	"The longest perpendicular diameter of the primary tumor."
+		Based on:		EvaluationComponent
+		Concept:		SCT#399738003 "Secondary tumor size (observable entity)"
+		Value:			Quantity with units UCUM#mm
+
+		Element:		SizeOfGrossTumorBed
+		Based on:		EvaluationComponent
+		Concept:		TBD
+		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
+		Value:			Quantity with units UCUM#mm
