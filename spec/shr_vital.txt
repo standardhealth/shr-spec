@@ -19,15 +19,15 @@ Element:        VitalSignsSection
 Based on:       Section
                 SectionCode is LNC#85353-1
                 Statement
-0..1            RespiratoryRateMeasurement
-0..1            HeartRateMeasurement
-0..1            OxygenSaturationMeasurement
-0..1            BodyHeightMeasurement
-0..1            BodyLengthMeasurement
-0..1            HeadCircumferenceMeasurement
-0..1            BodyMassIndex
+includes 0..1   RespiratoryRateMeasurement
+includes 0..1   HeartRateMeasurement
+includes 0..1   OxygenSaturationMeasurement
+includes 0..1   BodyHeightMeasurement
+includes 0..1   BodyLengthMeasurement
+includes 0..1   HeadCircumferenceMeasurement
+includes 0..1   BodyMassIndex
                 Section
-0..1            BloodPressureSection                
+includes 0..1   BloodPressureSection                
 
 
 EntryElement:	RespiratoryRateMeasurement
@@ -39,12 +39,14 @@ Description:	"The rate of breathing (inhalation and exhalation) measured within 
 
 EntryElement:   RespiratoryRateMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "Information to help interpret the respiratory rate, for example, during exercise, or at rest."
                 Subject value is type RespiratoryRateMeasurement
                 ObservableCode is TBD#TBD  // not SCT#362981000 "Qualifier value (qualifier value)"
                 ResultValue from RespiratoryRateMeasurementQualifierVS
 
 EntryElement:   RespiratoryRateMeasurementMethod
 Based on:       CodedEvaluationResult
+Description:    "How the respiration rate was measured, for example, via spirometry"
                 Subject value is type RespiratoryRateMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from RespiratoryRateMeasurementMethodVS
@@ -58,12 +60,14 @@ Description:	"The number of times the heart ventricles contract per unit of time
 
 EntryElement:   HeartRateMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "A modifier to help interpret the heart rate measurement, such as during exercise, or at rest."
                 Subject value is type HeartRateMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from HeartRateMeasurementQualifierVS
 
 EntryElement:   HeartRateMeasurementMethod
 Based on:       CodedEvaluationResult
+Description:    "The method of measurement of heart rate, for example, manually counting of the pulse."
                 Subject value is type HeartRateMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from HeartRateMeasurementMethodVS
@@ -77,6 +81,7 @@ Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
 
 EntryElement:   OxygenSaturationMeasurementBodySite
 Based on:       CodedEvaluationResult
+Description:    "The location where the oxygen saturation measurement was taken."
                 Subject value is type OxygenSaturationMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from OxygenSaturationMeasurementBodySiteVS
@@ -90,12 +95,14 @@ Description:	"The measure of the level of heat in a human or animal."
 
 EntryElement:   BodyTemperatureMeasurementBodySite
 Based on:       CodedEvaluationResult
+Description:    "The location where the body temperature measurement was taken."
                 Subject value is type BodyTemperatureMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from BodyTemperatureMeasurementBodySiteVS
 
 EntryElement:   BodyTemperatureMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "A modifier to help interpret the body temperature measurement, such as a maximum measurement during an illness."
                 Subject value is type BodyTemperatureMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from BodyTemperatureMeasurementQualifierVS
@@ -109,6 +116,7 @@ Description:	"The distance from the sole to the crown of the head."
 
 EntryElement:   BodyHeightMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "Any modifier to help interpret the body height measurement, such as estimate, or with shoes."
                 Subject value is type BodyHeightMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from BodyHeightMeasurementQualifierVS
@@ -129,6 +137,7 @@ Description:	"The mass or quantity of heaviness of an individual. Does not inclu
 
 EntryElement:   BodyWeightMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "Information that assists interpretation of a body weight measurement, such as fully clothed."
                 Subject value is type BodyWeightMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from BodyWeightMeasurementQualifierVS
@@ -147,8 +156,17 @@ Description:	"A general indicator of the body fat an individual is carrying base
                 ObservableCode is LNC#39156-5
                 ResultValue.Quantity with units UCUM#kg/m2  "kg/m2"
 
-EntryElement:   BloodPressureEvaluationResult
+Element:	    BloodPressureSection
+Based on:		Section
+Description:	"The force of circulating blood on the walls of the arteries, systolic and diastolic"
+                SectionCode is LNC#55284-4
+                Statement
+includes 0..1 	SystolicPressureMeasurement
+includes 0..1 	DiastolicPressureMeasurement
+
+Abstract Element:   BloodPressureEvaluationResult
 Based on:       QuantitativeEvaluationResult
+Description:    "Parent class for measurements of systolic and diastolic pressures."
                 Subject value is type Person
                 ResultValue.Quantity with units UCUM#mm[Hg] "mmHg"
 
@@ -164,18 +182,21 @@ Description:	"The blood pressure after the contraction of the heart while the ch
 
 EntryElement:   BloodPressureMeasurementBodySite
 Based on:       CodedEvaluationResult
+Description:    "The body site where blood pressure is measured, such as arm or leg."
                 Subject value is type BloodPressureEvaluationResult
                 ObservableCode is TBD#TBD
                 ResultValue from BloodPressureMeasurementBodySiteVS
 
 EntryElement:   BloodPressureMeasurementMethod
 Based on:       CodedEvaluationResult
+Description:    "The method of measurement of blood pressure, for example, by an automatic cuff."
                 Subject value is type BloodPressureEvaluationResult
                 ObservableCode is TBD#TBD
                 ResultValue from BloodPressureMeasurementMethodVS
 
 EntryElement:   BloodPressureMeasurementQualifier
 Based on:       CodedEvaluationResult
+Description:    "Information to help interpret the blood pressure measurement, such as prior to or after an infusion."
                 Subject value is type BloodPressureEvaluationResult
                 ObservableCode is TBD#TBD
                 ResultValue from BloodPressureMeasurementQualifierVS
@@ -187,13 +208,7 @@ Description:	"The angle at which the head is tilted relative to a level position
                 ObservableCode is LNC#8360-0
                 ResultValue.Quantity with units UCUM#deg "deg"
 
-Element:	    BloodPressureSection
-Based on:		Section
-Description:	"The force of circulating blood on the walls of the arteries, systolic and diastolic"
-                SectionCode is LNC#55284-4
-                Statement
-includes 0..1 	SystolicPressureMeasurement
-includes 0..1 	DiastolicPressureMeasurement
+
 
 
 
