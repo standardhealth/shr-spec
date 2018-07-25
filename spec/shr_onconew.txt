@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
-Description:	"SHR implementation of cancer Lymph Node Involvement (LNI)."
+Description:	"SHR implementation of new Sept 2018 data elements: cancer Lymph Node Involvement (LNI) and TumorDimension."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
 EntryElement:	BreastPathologicalLymphNodeInvolvement
@@ -34,20 +34,17 @@ Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral. 
 0..1            AnatomicalDirection
 
-		Element:   BreastLymphNodeInvolvement  // mlt: change to LymphNodeInvolvement 
-		Based on:       EvaluationComponent
+		Element:   BreastLymphNodeInvolvement  
+		Based on:       CodedEvaluationComponent
 		Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 		Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
 		Value:          CodeableConcept from LymphNodeInvolvementVS
-		0..0			ReferenceRange
-
 
 		Element:   		LymphNodeSamplingMethod
-		Based on:       CodedEvaluationComponent  // mlt: change this to CodedEvaluationComponent and remove 0..0 ReferenceRange.  Good best practice.
+		Based on:       CodedEvaluationComponent  
 		Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
 		Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
 		Value:          CodeableConcept from LymphNodeSamplingMethodVS
-		// 0..0			ReferenceRange
 
 		Element:		TotalNumberOfLymphNodesExamined 
 		Based on:		EvaluationComponent
@@ -142,6 +139,7 @@ Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensi
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.Specimen
 0..0			LaboratoryObservationTopic.Focus
+0..0			LaboratoryObservationTopic.Device
 0..0			LaboratoryObservationTopic.Media
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	TumorPrimaryDimensionSize
@@ -162,6 +160,6 @@ includes 0..1	SizeOfGrossTumorBed
 
 		Element:		SizeOfGrossTumorBed
 		Based on:		EvaluationComponent
-		Concept:		TBD
-		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
+		Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
+		Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
 		Value:			Quantity with units UCUM#mm
