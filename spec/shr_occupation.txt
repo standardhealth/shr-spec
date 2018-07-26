@@ -1,0 +1,234 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.occupation
+Description:	"Patient’s or family member's work information."
+Uses:  			shr.base, shr.core, shr.entity
+
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:     UCUM = http://unitsofmeasure.org 
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+
+EntryElement:	OccupationalDataComposition
+Based on:		Group
+Description:	"Current and past activities for profit, wages, salary, or as a service to others. The aggregation can contain some or all information about a wound. For example, a snapshot might include only the most recent observations about the wound, while the comprehensive history could be comprised of many observations taken by different people at different times."
+				TypeCode is LNC#74166-0
+				Statement 
+includes 0..*   HistoryOfEmploymentStatus
+includes 0..*	DateOfRetirement
+includes 0..*	CombatZonePeriod 
+includes 0..1	UsualOccupation
+includes 0..*	PastOrPresentOccupation
+
+EntryElement:	RelatedPerson
+Based on:		AssertPresence
+Description:	"A person who is related to another person."  // we are modeling this like a wound that belongs to a person. The related person IS a father, not a person.
+				BelongsTo is type Person  // e.g., father OF person
+				TypeCode is from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype	
+
+EntryElement:	HistoryOfEmploymentStatus
+Based on:		CodedEvaluationResult
+Description:	"A person’s state of being employed during the time period specified. 
+Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
+				BelongsTo value is type Person
+				TypeCode is LNC#74165-2 "HistoryOfEmploymentStatus"
+				ResultValue from EmploymentStatusVS
+1..1			RelevantTime
+
+
+EntryElement:	DateOfRetirement
+Based on:		TemporalEvaluationResult
+Description:	"If present, the patient is retired, and this observation records the retirement date.
+This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
+				BelongsTo value is type Person
+				ObservationCode is LNC#87510-4 "Date of Retirement"
+0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
+
+EntryElement:	CombatZonePeriod
+Based on:		EvaluationResult
+Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
+				BelongsTo value is type Person
+				ObservationCode is LNC#87511-2
+				ResultValue value is type TimePeriod
+0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
+
+
+EntryElement:	UsualOccupation
+Based on:		CodedEvaluationResult
+Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
+// We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
+				Subject value is type Person //or RelatedPerson
+				ObservationCode is LNC#21843-8
+				ResultValue could be from OccupationVS
+
+EntryElement:	UsualIndustry
+Based on:		CodedEvaluationResponse
+Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
+For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction."  // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
+				Subject value is type Person
+				ObservableCode is LNC#21844-6 "History of usual industry"
+				ResultValue could be from IndustryVS
+1..1			RelevantTime 
+				RelevantTime value is type TimePeriod			
+
+EntryElement:	UsualOccupationDuration
+Based on:		EvaluationResult
+Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
+				Subject value is type Person
+				ObservableCode is LNC#74163-7 "Usual occupation duration"
+				ResultValue is Quantity with units UCUM#a
+	
+EntryElement:	PastOrPresentOccupationGroup
+Based on:		Group
+Description:	"A single job, past or present. The relevant time is the period the job was held."
+				TypeCode is LNC#11341-5 "History of Occupation"
+
+
+EntryElement:	PastOrPresentOccupation // aka job
+Based on:		AssertPresence
+				BelongsTo value is type Person
+				TypeCode could be from OccupationVS
+
+EntryElement:	Employer
+Based on:		AssertPresent
+Description:	"A person or organization that hires the services of another."
+				BelongsTo value is type Person
+				TypeCode is SCT#394571004 "Employer (person)"
+??????
+	Value:			ref(Person) or ref(Organization)
+
+
+				ObservationTopic.Focus value is type CodeableConcept
+				ObservationTopic.Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+				Statement
+includes 0..1	PastOrPresentOccupation
+includes 0..1	PastOrPresentIndustry
+includes 0..1	WorkClassification
+includes 0..1	SupervisoryLevel
+includes 0..*	JobDuty
+includes 0..*	OccupationalHazard
+includes 0..1	WorkSchedule
+includes 0..1	WeeklyWorkDays
+includes 0..1	DailyWorkHours
+1..1			RelevantTime 
+				RelevantTime value is type TimePeriod
+
+// Question -- organization only, or person or organization
+
+	Element:		PastOrPresentIndustry
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#86188-0 	
+	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
+	Value:			CodeableConcept could be from IndustryVS 
+//	Value:			CodeableConcept could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.5.315
+					TopicCode is LNC#86188-0
+
+	Element:		WorkClassification
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#85104-8 "Compensation and sector employment type"
+	Description:	"Employment attributes for a given job. 
+	This specifies information about the worker’s job, such as self-employed or unpaid, and is similar to the U.S. Bureau of Labor Statistics ‘class of worker’ and the International Labor Organization ‘classification of status in employment’. Knowing a patient is self-employed, for example, can assist in discussing return-to-work options."
+	Value:			CodeableConcept could be from WorkClassificationVS  
+	//Value:			CodeableConcept could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7597 
+					TopicCode is LNC#85104-8 "Compensation and sector employment type"
+
+	Element:		SupervisoryLevel
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#87707-6
+	Description:	"The supervisory or management responsibilities for an individual’s job. For military jobs, this is pay grade."
+	Value:			CodeableConcept could be from SupervisoryLevelVS 
+	//Value:			CodeableConcept could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7613	 
+					TopicCode is LNC#87707-6
+
+	Element:		JobDuty
+	Based on:		EvaluationComponent
+	Concept:		LNC#63761-1
+	Description:	"Regular actions performed at work. A person may have the occupation of 'construction laborer' and his specific job duty to carry construction supplies."
+	Value:			string
+	0..0			ReferenceRange
+					TopicCode is LNC#63761-1
+	
+	Element:		OccupationalHazard
+	Based on:		EvaluationComponent
+	Concept:		LNC#87729-0
+	Description:	"Actual contact or interaction with a specific hazard that increases an individual’s risk of a detrimental physical or mental health outcome (e.g., ingestion or inhalation of a toxic chemical). 
+	Information on an exposure may include the measurement of duration/intensity of contact or interaction with the specific hazard."
+	Value:			string
+	0..0			ReferenceRange
+					TopicCode is LNC#87729-0
+					
+	Element:		WorkSchedule
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#74159-5
+	Description:	"An individual's typical arrangement of working hours for an occupation. 
+	For example, work schedule may capture that an individual typically works a regular day shift, evening shift, or night shift. It can also specify if an individual has another type of schedule, such as a rotating shift, split shift, etc."
+	Value:			CodeableConcept could be from WorkScheduleVS 
+	//Value:			CodeableConcept could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7130
+					TopicCode is LNC#74159-5
+
+	Element:		WeeklyWorkDays
+	Based on:		EvaluationComponent
+	Concept:		LNC#74160-3
+	Description:	"The typical number of days per week that a person spends performing their duties for work. 
+	This information is most useful coupled with daily work hours and helps to reveal compressed schedules or a 7-day work-week."
+	Value:			Quantity with units UCUM#d
+	0..0			ReferenceRange
+							
+	Element:		DailyWorkHours
+	Based on:		EvaluationComponent
+	Concept:		LNC#87512-0
+	Description:	"The typical number of hours in a day that a person spends performing their duties for work.
+	This information is most useful coupled with weekly work days and helps to reveal compressed schedules, long work hours, and overtime."
+	Value:			Quantity with units UCUM#h
+	0..0			ReferenceRange
+					TopicCode is LNC#87512-0
+
+/*
+EntryElement:	MilitaryServiceHistory
+Based on:		CodedSocialHistoryObservation
+Description:	"History of service in the US military."
+				ObservationTopic.Category is OBSCAT#social-history
+				ObservationTopic.TopicCode is MTH#C3714797
+				ObservationTopic.EvaluationComponent
+includes 1..1	MilitaryStatus
+includes 0..1 	MilitaryServiceDischargeStatus
+includes 0..1	MilitaryBranch
+includes 0..*	MilitaryServiceEra
+includes 0..1	ServiceConnectedDisability
+//includes 0..1	TBD "MilitaryRank"
+
+
+	Element:		MilitaryStatus
+	Concept:		MTH#C1550416
+	Based on:		CodedEvaluationComponent
+	Description:	"The current connection to the US military."
+	Value:			CodeableConcept from MilitaryStatusVS
+
+	Element:		MilitaryServiceDischargeStatus
+	Concept:		TBD
+	Based on:		CodedEvaluationComponent
+	Description:	"How the subject was formally discharged from the US Military."
+	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
+
+	Element:		MilitaryBranch
+	Concept:		MTH#C2129058
+	Based on:		CodedEvaluationComponent
+	Description:	"The branch of the US military that the subject has served."
+	Value:			CodeableConcept from USMilitaryBranchVS
+
+	Element:		MilitaryServiceEra
+	Concept:		TBD
+	Based on:		CodedEvaluationComponent
+	Description:	"The time period of US military service."
+	Value:			CodeableConcept from MilitaryServiceEraVS
+
+	Element:		ServiceConnectedDisability
+	Based on:		EvaluationComponent
+	Concept:		TBD
+	Description:	"Percentage disability resulting from US Military Service."
+	Value:			Quantity with units UCUM#%
+	0..0			ReferenceRange
+
+
+*/
+
+
