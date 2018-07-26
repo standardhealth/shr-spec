@@ -14,76 +14,70 @@ EntryElement:	Wound
 Based on:		AssertPresence
 Description:	"An assertion that a wound is present.
 Observations and measurements associated with the same wound must link back to the same wound assertion. Therefore, the same wound should not be asserted more than once. The 'same-as' relationship can be used to link multiple assertions of the same wound, if that is necessary."
-				BelongsTo value is type Person  // has to belong to a Person
-				TypeCode is SCT#416462003 "Wound (disorder)"
+				AssociatedWith value is type Person  // has to belong to a Person
+				EntityTypeCode is SCT#416462003 "Wound (disorder)"
 // inherits an EntityIdentifier, which is the wound number
 
 EntryElement:	WoundAbsent
 Based on:		AssertAbsence
 Description:	"An assertion that a wound is not present (an assertion normally associated with an anatomical location). If a wound has healed, record as an abatement observation associated with the former wound, rather than a wound absent assertion."
-				BelongsTo value is type Person
-				TypeCode is SCT#416462003 "Wound (disorder)"
-
-EntryElement:	WoundBedArea
-Based on:		AssertPresence 
-Description:	"Part or all of the bed of a wound, optionally persistently identified to track the wound bed area condition over time."
-				BelongsTo value is type Wound
-				TypeCode is TBD#TBD 
+				AssociatedWith value is type Person
+				EntityTypeCode is SCT#416462003 "Wound (disorder)"
 
 EntryElement:	WoundTunnel
 Based on:		AssertPresence
 Description:	"The presence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. Each wound tunnel can be persistently identified to enable tracking of the condition of the tunnel over time."
-				BelongsTo value is type Wound
-				TypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
+				AssociatedWith value is type Wound
+				EntityTypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
 
 EntryElement:	WoundTunnelingAbsent
 Based on:		AssertAbsence
 Description:	"An assertion that wound tunneling is not present on a specific wound."
-				BelongsTo value is type Wound
-				TypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
+				AssociatedWith value is type Wound
+				EntityTypeCode is SCT#1561000124108 "Wound tunneling (observable entity)"
 
 EntryElement:	WoundUndermining
 Based on:		AssertPresence
 Description:	"The presence of deep tissue (subcutaneous fat and muscle) damage around the wound margin.
 Undermining are narrow sinus tracts away from the wound margins and go downward into the wound."
-				BelongsTo value is type Wound
-				TypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
+				AssociatedWith value is type Wound
+				EntityTypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
 EntryElement:	WoundUnderminingAbsent
 Based on:		AssertAbsence
 Description:	"An assertion that a specific wound does not have undermining."
-				BelongsTo value is type Wound
-				TypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
+				AssociatedWith value is type Wound
+				EntityTypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
 EntryElement:	Injury
 Based on:		AssertPresence
 Description:	"Physical harm or damage done to a living thing."
-				BelongsTo value is type Person
-				TypeCode from InjuryVS
+				AssociatedWith value is type Person
+				EntityTypeCode from InjuryVS
 
 EntryElement:	Disease
 Based on:		AssertPresence
 Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
-				BelongsTo value is type Person
-				TypeCode from DiseaseVS
+				AssociatedWith value is type Person
+				EntityTypeCode from DiseaseVS
 
 EntryElement:	PressureUlcer
 Based on:		AssertPresence
 Description:	"As defined by the NPUAP, a pressure ulcer is localized injury to the skin and/or underlying tissue usually over a bony prominence, as a result of pressure, or pressure in combination with shear."
-				BelongsTo value is type Person
-				TypeCode from PressureUlcerVS
+				AssociatedWith value is type Person
+				EntityTypeCode from PressureUlcerVS
 
 EntryElement:	WoundExudate
 Based on:		AssertPresence
 Description:	"The presence of fluid produced by a wound."
-				BelongsTo value is type Wound
-				TypeCode is LNC#72292-6
+				AssociatedWith value is type Wound
+				EntityTypeCode is LNC#72292-6
 
 EntryElement:	WoundExudateAbsent
 Based on:		AssertAbsence
 Description:	"The absent of fluid produced by a wound."
-				BelongsTo value is type Wound
-				TypeCode is LNC#72292-6
+				AssociatedWith value is type Wound
+				EntityTypeCode is LNC#72292-6
 
 
 //-------------- Evaluation Results -------------------
@@ -110,16 +104,17 @@ Description:	"Anatomical location or specimen further detailing the side(s) of i
 
 EntryElement:	InjuryCause
 Based on:		CodedEvaluationResult
-Description:	""
+Description:	"The source or key factor in the formation or acquisition of the wound."
 				Subject value is type Injury
 				ObservableCode is LNC#11373-8 "InjuryCause"
 				ResultValue from http://loinc.org/vs/LL4936-2 
 
 EntryElement:	TimeOfOnset
-Based on:		TemporalEvaluationResult
+Based on:		EvaluationResult
 Description:	"The beginning or first appearance of a mental or physical disorder."
 				Subject value is type Disease
-				ObservableCode is LNC#85585-8  // or SCT#263501003 "Time of onset (observable entity)" 
+				ObservableCode is LNC#85585-8  // or SCT#263501003 "Time of onset (observable entity)"
+				ResultValue value is type dateTime
 
 EntryElement:	ConditionPresentOnAdmission
 Based on:		EvaluationResult
@@ -129,10 +124,11 @@ Description:	"Whether the condition was present when the patient was admitted."
 				ResultValue from YesNoUnknownVS		
 
 EntryElement:	TimeOfAbatement
-Based on:		TemporalEvaluationResult
+Based on:		EvaluationResult
 Description:	"The end, remission or resolution of a disease."
 				Subject value is type Disease
 				ObservableCode is LNC#88878-4 // of SCT#...... Time of abatement (observable entity)"
+				ResultValue value is type dateTime
 
 EntryElement:	PhotographicImage
 Based on:		EvaluationResult
@@ -182,35 +178,33 @@ Description: 	"Exposed body structures, devices, and/or foreign bodies visible b
 				ObservableCode is LNC#89250-5
 				ResultValue should be from http://loinc.org/vs/LL4935-4   // preferred
 
-EntryElement:	WoundBedAreaAppearance
+EntryElement:	WoundBedAppearance
 Based on:		CodedEvaluationResult
 Description:	"Appearance of wound base (bed)"
-				Subject value is type WoundBedArea
+				Subject value is type Wound
 				ObservableCode is LNC#72371-8
 				ResultValue could be from http://loinc.org/vs/LL2237-7
 
-EntryElement:	WoundBedAreaPercentage
+EntryElement:	WoundBedAppearancePercentage
 Based on:		QuantitativeEvaluationResult
 Description:	"Area of wound bed portion appearance/Entire ​Area of wound bed -- Linked to a wound bed appearance"
-				Subject value is type WoundBedArea
+				Subject value is type WoundBedAppearance
 				ObservableCode is LNC#72370-0
 				ResultValue.Quantity with units UCUM#% 
 
-Element:		WoundBedAreaColor
+Element:		WoundBedColor
 Based on:		CodedEvaluationResult
 Description:	"Color of a portion or entire wound base (bed)."
-				Subject value is type WoundBedArea
+				Subject value is type Wound
 				ObservableCode is LNC#39132-6 
 				ResultValue  could be from http://loinc.org/vs/LL2338-3	 
 
-/*
-Element:		WoundBedColorAreaPercentage
+Element:		WoundBedColorPercentage
 Based on:		QuantitativeEvaluationResult
 Description:	"Wound bed area identified by color/​Area of wound bed."
-				Subject value is type WoundBedArea
+				Subject value is type WoundBedColor
 				ObservableCode is LNC#89255-4
 				ResultValue.Quantity with units UCUM#%
-*/
 
 EntryElement:	WoundEdgeDescription
 Based on:		CodedEvaluationResult

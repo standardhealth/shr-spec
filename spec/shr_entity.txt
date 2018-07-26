@@ -6,9 +6,23 @@ Uses:			shr.core, shr.base
 
 EntryElement:	Person
 Based on:		AssertPresence
-				TypeCode is SCT#125676002 "Person (person)" 
+				EntityTypeCode is SCT#125676002 "Person (person)" 
 
 EntryElement:	BodyStructure
 Based on:		AssertPresence
-				BelongsTo value is type Person
-				TypeCode from BodyStructureVS // <<SCT#123037004 "Body structure (body structure)"
+				AssociatedWith value is type Person
+				EntityTypeCode from BodyStructureVS // <<SCT#123037004 "Body structure (body structure)"
+
+EntryElement:	RelatedPerson
+Based on:		Person
+Description:	"A person who is related to another person."  // we are modeling this like a wound that belongs to a person. The related person IS a father, not a person.
+				AssociatedWith is type Person  // e.g., father of person
+				RelationshipCode from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+//				EntityTypeCode is SCT#125676002 "Person (person)"   // inherited
+
+EntryElement:	RelatedPersonRelationship
+Based on:		AssertRelationship
+Description:	"The relationship between two people."
+				Subject is type Person  // e.g., father of person
+				RelationshipCode from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+				Object is type Person
