@@ -3,168 +3,241 @@ Namespace:		shr.oncology
 Description:	"SHR implementation of new Sept 2018 data elements: cancer Lymph Node Involvement (LNI) and TumorDimension."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-EntryElement:	BreastPathologicalLymphNodeInvolvement
+	EntryElement:	BreastLymphNodeBodySite
+	Based on:		AnatomicalLocation
+	Description:	"A body site specific to the lymph node structure."
+	Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
+	0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral. 
+	0..1            AnatomicalDirection
+
+	EntryElement:	BreastPathologicalLymphNodeInvolvement
+	Based on:		LaboratoryObservation
+	Concept:		SCT#364108009 "Lymph node observable (observable entity)" 
+	Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+	0..0			ObservationContext.ResultValue
+	0..0			ObservationContext.ExceptionValue
+					LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+					LaboratoryObservationTopic.DiagnosticService is #pathology
+	0..0			LaboratoryObservationTopic.FindingMethod
+	0..0			LaboratoryObservationTopic.Precondition
+					LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
+  					LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
+	0..0			Media
+					LaboratoryObservationTopic.EvaluationComponent
+	includes 0..1 	BreastLymphNodeInvolvement
+	includes 0..1	LymphNodeSamplingMethod
+	includes 0..1	TotalNumberOfLymphNodesExamined
+	includes 0..1	NumberOfRegionalLymphNodes
+	includes 0..1	NumberOfSentinelLymphNodes
+	includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
+	includes 0..1	NumberOfLymphNodesWithMicrometastases
+	includes 0..1	NumberOfLymphNodesWithMacrometastases
+	includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
+
+			Element:   BreastLymphNodeInvolvement  
+			Based on:       CodedEvaluationComponent
+			Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+			Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
+			Value:          CodeableConcept from LymphNodeInvolvementVS
+
+			Element:   		LymphNodeSamplingMethod
+			Based on:       CodedEvaluationComponent  
+			Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
+			Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
+			Value:          CodeableConcept from LymphNodeSamplingMethodVS
+
+			Element:		TotalNumberOfLymphNodesExamined 
+			Based on:		EvaluationComponent
+			Concept:		TBD "TBD"
+			Description:	"Total number of lymph nodes examined for the presence of cancer cells"
+			Value:			IntegerQuantity 
+
+			Element:		NumberOfRegionalLymphNodes
+			Based on:		EvaluationComponent
+			Concept:		LNC#21894-1 "Regional lymph nodes examined [#] Specimen"
+			Description:	"Number of regional lymph nodes examined for the presence of cancer cells"
+			Value:			IntegerQuantity 
+
+			Element:		NumberOfSentinelLymphNodes
+			Based on:		EvaluationComponent
+			Concept:		LNC#85347-3 "Sentinel lymph nodes examined [#] in Cancer specimen by Light microscopy"
+			Description:	"Number of sentinel lymph nodes examined for the presence of cancer cells"
+			Value:			IntegerQuantity 
+
+			Element:		NumberOfLymphNodesWithIsolatedTumorCells 
+			Based on:		EvaluationComponent
+			Concept:		LNC#85352-3 "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
+			Description:	"Number of lymph nodes with isolated metatstatic tumor cells examined for the presence of cancer cells"
+			Value:			IntegerQuantity 
+
+			Element:		NumberOfLymphNodesWithMicrometastases
+			Based on:		EvaluationComponent
+			Concept:		LNC#85344-0 "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
+			Description:	"Number of lymph nodes with micrometastases examined"
+			Value:			IntegerQuantity 
+
+			Element:		NumberOfLymphNodesWithMacrometastases
+			Based on:		EvaluationComponent
+			Concept:		LNC#85343-2 "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
+			Description:	"Number of lymph nodes with macrometastases examined"
+			Value:			IntegerQuantity 
+
+			Element:		ExtraCapsularExtensionOfNodalTumorStatus
+			Based on:		EvaluationComponent
+			Concept:		LNC#85350-7 "Extranodal extension of carcinoma [Presence] in Cancer specimen by Light microscopy"
+			Description:	"Status for presence of extranodal extension of carcinoma where extranodal extension is the perforation of a cancer through the capsule of a lymph node into the tissue surrounding the node."
+			Value:          CodeableConcept should be from http://loinc.org/vs/LL748-5  // mlt: LL748-5 missing one term from original VS (indeterminate)
+			0..0			ReferenceRange
+
+		EntryElement:	BreastClinicalLymphNodeInvolvement
+		Based on:		LaboratoryObservation
+		Concept:		MTH#C0806692 "Lymph Node Involvement" 
+		Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+		0..0			ObservationContext.ResultValue
+		0..0			ObservationContext.ExceptionValue
+						LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
+						LaboratoryObservationTopic.DiagnosticService is #laboratory // This is a clinical evaluation
+		0..0			LaboratoryObservationTopic.Precondition
+						LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
+						LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS if covered
+ 						LaboratoryObservationTopic.Focus value is type Identifier  // Pathology Lymph node identifier
+		0..0			LaboratoryObservationTopic.Media
+						LaboratoryObservationTopic.EvaluationComponent			
+		includes 0..1 	LymphNodeMobility
+		includes 0..1	LymphNodeSize
+
+			Element:   		LymphNodeMobility
+			Based on:       EvaluationComponent
+			Concept:        MTH#C1112395			// mlt_to_rmb: need new SNOMED term, LOINC term, and LOINC answer list.
+			Description:    "Lymph node palpable"
+			Value:          CodeableConcept from LymphNodeMobilityVS
+			0..0			ReferenceRange
+
+			Element:		LymphNodeSize 
+			Based on:		EvaluationComponent
+			Concept:		SCT#364109001 "Size of lymph node (observable entity)"
+			Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
+			Value:			Quantity with units UCUM#mm
+
+EntryElement:	TumorAssessment		// change to TumorAssessment
 Based on:		LaboratoryObservation
-Concept:		MTH#C0806692 "Lymph Node Involvement" 
-Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+Concept:		SCT#395531003 "Tumor observable (observable entity)"
+Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should."  // source: NCI 
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+ 				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
+				LaboratoryObservationTopic.TopicCode is SCT#395531003 "Tumor observable (observable entity)"
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
-0..0			LaboratoryObservationTopic.Precondition
-//				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
-				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
-0..0			Focus
-0..0			Media
-				LaboratoryObservationTopic.EvaluationComponent
-includes 0..1 	BreastLymphNodeInvolvement
-includes 0..1	LymphNodeSamplingMethod
-includes 0..1	TotalNumberOfLymphNodesExamined
-includes 0..1	NumberOfRegionalLymphNodes
-includes 0..1	NumberOfSentinelLymphNodes
-includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
-includes 0..1	NumberOfLymphNodesWithMicrometastases
-includes 0..1	NumberOfLymphNodesWithMacrometastases
-includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
+0..0 			LaboratoryObservationTopic.EvaluationComponent
+				LaboratoryObservationTopic.PanelMembers.Observation
+includes 0..1	TumorDimensions
+includes 0..1	TumorMargins
 
-EntryElement:	BreastLymphNodeBodySite
-Based on:		AnatomicalLocation
-Description:	"A body site specific to the lymph node structure."
-Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
-0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral. 
-0..1            AnatomicalDirection
+	Element: 	TumorDimensions
+	Based on:		LaboratoryObservation
+	Concept:		SCT#399375005 "Tumor size (observable entity)"
+	Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
+	0..0			ObservationContext.ResultValue
+	0..0			ObservationContext.ExceptionValue
+					LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
+					LaboratoryObservationTopic.DiagnosticService is #pathology
+	0..0			LaboratoryObservationTopic.FindingMethod
+	0..0			LaboratoryObservationTopic.Precondition
+	0..0			LaboratoryObservationTopic.Specimen
+	0..0			LaboratoryObservationTopic.Focus
+	0..0			LaboratoryObservationTopic.Device
+	0..0			LaboratoryObservationTopic.Media
+					LaboratoryObservationTopic.EvaluationComponent
+	includes 0..1	TumorPrimaryDimensionSize
+	includes 0..1	TumorSecondaryDimensionSize
+	includes 0..1	SizeOfGrossTumorBed
+	0..0			LaboratoryObservationTopic.PanelMembers.Observation
 
-		Element:   BreastLymphNodeInvolvement  
-		Based on:       CodedEvaluationComponent
-		Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
-		Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
-		Value:          CodeableConcept from LymphNodeInvolvementVS
+			Element:		TumorPrimaryDimensionSize
+			Description:	"The longest diameter of the primary tumor."
+			Based on:		EvaluationComponent
+			Concept:		SCT#399734001 "Primary tumor size (observable entity)"
+			Value:			Quantity with units UCUM#mm		
+			
+			Element:		TumorSecondaryDimensionSize
+			Description:	"The longest perpendicular diameter of the primary tumor."
+			Based on:		EvaluationComponent
+			Concept:		SCT#399738003 "Secondary tumor size (observable entity)"
+			Value:			Quantity with units UCUM#mm
 
-		Element:   		LymphNodeSamplingMethod
-		Based on:       CodedEvaluationComponent  
-		Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
-		Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
-		Value:          CodeableConcept from LymphNodeSamplingMethodVS
+			Element:		SizeOfGrossTumorBed
+			Based on:		EvaluationComponent
+			Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
+			Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
+			Value:			Quantity with units UCUM#mm
 
-		Element:		TotalNumberOfLymphNodesExamined 
-		Based on:		EvaluationComponent
-		Concept:		TBD "TBD"
-		Description:	"Total number of lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+// ***** Addition of TumorMargins to each Tumor.  This is currently not inTumorDimension 
+			Element: 	TumorMargins
+			Based on:		CodedLaboratoryObservation
+			Concept:		LNC#44669-0 "Margin involvement in Breast tumor"
+			Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+			ObservationContext.ResultValue from http://loinc.org/vs/LL4350-6
+			0..0			ObservationContext.ExceptionValue
+							LaboratoryObservationTopic.TopicCode is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
+			0..0			LaboratoryObservationTopic.FindingMethod
+			0..0			LaboratoryObservationTopic.Precondition
+			0..0			LaboratoryObservationTopic.Specimen
+			0..0			LaboratoryObservationTopic.Focus
+			0..0			LaboratoryObservationTopic.Device
+			0..0			LaboratoryObservationTopic.Media
+							LaboratoryObservationTopic.EvaluationComponent
+			includes 0..1	TumorMarginDescription
+			includes 0..1	Cellularity   // not sure this belongs here
+			includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
+			// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
+			0..0			LaboratoryObservationTopic.PanelMembers.Observation
+					Element:		TumorMarginDescription
+					Concept:		TBD
+					Based on:		CodedEvaluationComponent
+					Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+					Value:			CodeableConcept from TumorMarginDescriptionVS
 
-		Element:		NumberOfRegionalLymphNodes
-		Based on:		EvaluationComponent
-		Concept:		LNC#21894-1 "Regional lymph nodes examined [#] Specimen"
-		Description:	"Number of regional lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+					Element:		Cellularity
+					Concept:		MTH#C4055283
+					Based on:		EvaluationComponent
+					Description:	"Percentage of cells in a sample that are cancerous"
+					Value:			Quantity with units UCUM#%
 
-		Element:		NumberOfSentinelLymphNodes
-		Based on:		EvaluationComponent
-		Concept:		LNC#85347-3 "Sentinel lymph nodes examined [#] in Cancer specimen by Light microscopy"
-		Description:	"Number of sentinel lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+					Element:		PercentageInSituCarcinoma
+					Based on:		EvaluationComponent
+					Concept:		TBD
+					Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+					Value:			Quantity with units UCUM#%
 
-		Element:		NumberOfLymphNodesWithIsolatedTumorCells 
-		Based on:		EvaluationComponent
-		Concept:		LNC#85352-3 "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
-		Description:	"Number of lymph nodes with isolated metatstatic tumor cells examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
-
-		Element:		NumberOfLymphNodesWithMicrometastases
-		Based on:		EvaluationComponent
-		Concept:		LNC#85344-0 "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
-		Description:	"Number of lymph nodes with micrometastases examined"
-		Value:			IntegerQuantity 
-
-		Element:		NumberOfLymphNodesWithMacrometastases
-		Based on:		EvaluationComponent
-		Concept:		LNC#85343-2 "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
-		Description:	"Number of lymph nodes with macrometastases examined"
-		Value:			IntegerQuantity 
-
-		Element:		ExtraCapsularExtensionOfNodalTumorStatus
-		Based on:		EvaluationComponent
-		Concept:		LNC#85350-7 "Extranodal extension of carcinoma [Presence] in Cancer specimen by Light microscopy"
-		Description:	"Status for presence of extranodal extension of carcinoma where extranodal extension is the perforation of a cancer through the capsule of a lymph node into the tissue surrounding the node."
-		Value:          CodeableConcept should be from http://loinc.org/vs/LL748-5  // mlt: LL748-5 missing one term from original VS (indeterminate)
-		0..0			ReferenceRange
-
-EntryElement:	BreastClinicalLymphNodeInvolvement
+EntryElement:	BreastCancerGeneticAnalysisObservation
+Concept:		TBD
 Based on:		LaboratoryObservation
-Concept:		MTH#C0806692 "Lymph Node Involvement" 
-Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
-0..0			LaboratoryObservationTopic.DiagnosticService  // This is a clinical evaluation, not part of DiagnosticServiceVS
+ 				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
+				LaboratoryObservationTopic.TopicCode is TBD#TBD
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+				LaboratoryObservationTopic.DiagnosticService is #genetics
 0..0			LaboratoryObservationTopic.Precondition
-				LaboratoryObservationTopic.Specimen.CollectionSite value is type BreastLymphNodeBodySite
-				LaboratoryObservationTopic.Specimen.CollectionMethod from LymphNodeClinicalMethodVS if covered
-//				LaboratoryObservationTopic.Specimen is type BreastLymphNodeSpecimen
-0..0			LaboratoryObservationTopic.Focus
-0..0			LaboratoryObservationTopic.Media
-				LaboratoryObservationTopic.EvaluationComponent			
-includes 0..1 	LymphNodeMobility
-includes 0..1	LymphNodeSize
-
-/*
-EntryElement:	BreastLymphNodeSpecimen
-Based on:		Specimen
-Description:	"A body site specific to the lymph node structure."
-				Type from BreastSpecimenTypeVS 
-				CollectionSite value is type BreastLymphNodeBodySite  // mlt: which is type AnatomicalLocation
-0..0			CollectionMethod from LymphNodeClinicalMethodVS
-0..0			SourceSpecimen 
-*/
-
-Element:   		LymphNodeMobility
-Based on:       EvaluationComponent
-Concept:        MTH#C1112395			// mlt_to_rmb: need new SNOMED term, LOINC term, and LOINC answer list.
-Description:    "Lymph node palpable"
-Value:          CodeableConcept from LymphNodeMobilityVS
-0..0			ReferenceRange
-
-Element:		LymphNodeSize 
-Based on:		EvaluationComponent
-Concept:		SCT#364109001 "Size of lymph node (observable entity)"
-Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
-Value:			Quantity with units UCUM#mm
-
-
-EntryElement: 	TumorDimensions
-Based on:		LaboratoryObservation
-Concept:		SCT#399375005 "Tumor size (observable entity)"
-Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
 0..0			LaboratoryObservationTopic.FindingMethod
-0..0			LaboratoryObservationTopic.Precondition
-0..0			LaboratoryObservationTopic.Specimen
-0..0			LaboratoryObservationTopic.Focus
-0..0			LaboratoryObservationTopic.Device
-0..0			LaboratoryObservationTopic.Media
-				LaboratoryObservationTopic.EvaluationComponent
-includes 0..1	TumorPrimaryDimensionSize
-includes 0..1	TumorSecondaryDimensionSize
-includes 0..1	SizeOfGrossTumorBed
+	 			LaboratoryObservationTopic.EvaluationComponent
+includes 1..1	BRCA1Variant
+includes 1..1	BRCA2Variant
+0..0			LaboratoryObservationTopic.PanelMembers.Observation
 
-		Element:		TumorPrimaryDimensionSize
-		Description:	"The longest diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		SCT#399734001 "Primary tumor size (observable entity)"
-		Value:			Quantity with units UCUM#mm		
-		
-		Element:		TumorSecondaryDimensionSize
-		Description:	"The longest perpendicular diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		SCT#399738003 "Secondary tumor size (observable entity)"
-		Value:			Quantity with units UCUM#mm
+	Element:		BRCA1Variant
+	Concept:		LNC#21639-0 "BRCA1 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
+	Based on:		EvaluationComponent
+	Description:	"Whether the patient has a mutation in the BRCA1 gene."
+	Value:			CodeableConcept from PositiveNegativeVS
+//					Focus.CodeableConcept is HGNC#BRCA1Gene					
 
-		Element:		SizeOfGrossTumorBed
-		Based on:		EvaluationComponent
-		Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
-		Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
-		Value:			Quantity with units UCUM#mm
+	Element:		BRCA2Variant
+	Concept:		LNC#38531-0 "BRCA2 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
+	Based on:		EvaluationComponent
+	Description:	"Whether the patient has a mutation in the BRCA2 gene."
+	Value:			CodeableConcept from PositiveNegativeVS
+//					Focus.CodeableConcept is HGNC#BRCA2Gene
