@@ -7,32 +7,31 @@ CodeSystem:		SCT = http://snomed.info/sct
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
 //
-Abstract Element:	BodyStructureTopic
-Based on:		ConditionTopic
+Abstract Element:	FindingSiteConditionTopic  
+Based on:		ConditionAssertionTopic
 Concept:		MTH#C1268086
-Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds."
-0..1			Identifier
-0..1			Morphology
-1..*			AnatomicalLocation
+Description:	"Presence (or absence) of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds.
+The FindingSiteCondition topic provides not only the AnatomicalLocation (as in CIMI FindingSiteAssertionTopic), tbut also the type of structure found at that location, such as a wound or tumor."
+0..1			FindingSiteIdentifier
+1..*			AnatomicalLocation  // not a new attribute, but making it required
 
-	Element:		Morphology
-	Concept:		TBD
-	Description:	"The kind of structure being represented. This can define both normal and abnormal morphologies."
-	Value:			CodeableConcept
+			Element:	FindingSiteIdentifier
+			Concept:	TBD
+			Description:	"A human-readable identifier for the condition at the finding site, for example, a wound number or tumor identifier."
+			Value:		string
 
-	
-EntryElement:	BodyStructurePresenceStatement
+EntryElement:	FindingSiteConditionPresenceStatement
 Based on:		ConditionPresenceStatement
 Concept:		TBD
 Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-				StatementTopic is type BodyStructureTopic
+				StatementTopic is type FindingSiteConditionTopic
 
 
-EntryElement:	BodyStructureAbsenceStatement  // AssertionOfAbsenceStatement?
+EntryElement:	FindingSiteConditionAbsenceStatement  // AssertionOfAbsenceStatement?
 Based on:		ConditionAbsenceStatement
 Concept:		TBD
 Description:	"Absence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
-				StatementTopic is type BodyStructureTopic
+				StatementTopic is type FindingSiteConditionTopic
 
 EntryElement:	DiseaseProgression
 Based on:		Observation

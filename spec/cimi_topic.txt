@@ -56,7 +56,7 @@ Description:	"The base class, independent of context for evaluations (measuremen
 
 		Element:		Focus
 		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
-		Value:			CodeableConcept or Identifier or ref(EntityOrRole)
+		Value:			string or CodeableConcept or Identifier or ref(EntityOrRole)
 
 		Element:		EvaluationComponent
 		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
@@ -117,16 +117,17 @@ Description:	"The topic composition for laboratory observations. A specimen is r
 
 Element: 		AssertionTopic
 Based on:		FindingTopic
-Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
+Description:	"The base topic for conditions, allergies, adverse events, etc. These are things asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the TopicCode is the substance, for a Condition, the TopicCode represents the type of condition found."
 
-Element:		ConditionTopic
+Element:		ConditionAssertionTopic
 Based on:		AssertionTopic
-Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context. 
-CIMI deviation: AnatomicalLocation is included here, rather than being a property of FindingSiteAssertionTopic, since it is a common property of conditions. Severity, diseasePhase, periodicity, and other properites of an actual observed condition belong in ConditionPresenceContext. "
+Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context."
 				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 0..*			ConditionCause
+0..*			AlleviatingFactor
+0..*			ExacerbatingFactor
 
 		Element:	ConditionCause
 		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
@@ -134,7 +135,13 @@ CIMI deviation: AnatomicalLocation is included here, rather than being a propert
 		// probably other attributes needed, such as likelihood or type of cause
 
 
+		Element:		AlleviatingFactor
+		Concept:		LNC#55258-8
+		Description:	"Activities that reduce the severity of the pathology"
+		Value:			CodeableConcept
 
-
-
+		Element:		ExacerbatingFactor
+		Concept:		LNC#55258-8
+		Description:	"Activities that increase the severity of the pathology"
+		Value:			CodeableConcept
 
