@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
-Description:	"SHR implementation of ASCO requirements."
+Description:	"SHR implementation of oncology data elements."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
@@ -64,9 +64,9 @@ Description:	"The topic class for describing a breast cancer staging observation
 0..1			StageTimingPrefix				
 				EvaluationComponent	
 				PanelMembers.Observation
-includes 0..1 	BreastCancerTumorClassification // mlt: added here now that it's an observation.
-includes 0..1 	BreastCancerRegionalNodesClassification // mlt: added here now that it's an observation.
-includes 0..1 	BreastCancerDistantMetastasesClassification // mlt: added here now that it's an observation.
+includes 0..1 	BreastCancerPrimaryTumorClassification
+includes 0..1 	BreastCancerRegionalNodesClassification
+includes 0..1 	BreastCancerDistantMetastasesClassification
 includes 0..1	HER2ReceptorStatus
 includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
@@ -95,7 +95,7 @@ includes 0..1	BreastCancerHistologicGrade
 // ******* START OF MLT_Tumor_Mod ***********
 
 
-	EntryElement:	BreastCancerTumorClassification
+	EntryElement:	BreastCancerPrimaryTumorClassification
 	Based on:		CodedLaboratoryObservation
 	Concept:		SCT#78873005 "T category"
 	Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
@@ -225,9 +225,6 @@ includes 0..1	BreastCancerHistologicGrade
 				Value: 		CodeableConcept
 */
 
-
-// ****** START OF MLT_Node_Mod **************
-// *******************************************
 
 	EntryElement:	BreastCancerRegionalNodesClassification
 	Based on:		CodedLaboratoryObservation
@@ -365,8 +362,6 @@ Description:	"Size of the lymph node or lymph node group which is being clinical
 Value:			Quantity with units UCUM#mm
 
 
-// ****** END OF MLT_Node_Mod ****************
-// *******************************************
 /*
 		Element:		BreastCancerDistantMetastasesClassification
 		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
@@ -392,7 +387,6 @@ Value:			Quantity with units UCUM#mm
 	includes 0..1	StageSuffix
 	0..0			LaboratoryObservationTopic.PanelMembers.Observation  
 
-// ***** End of MLT_Mets_Mod *****************
 
 EntryElement:	BreastCancerStage
 Based on:		Observation
@@ -632,7 +626,6 @@ The is currently no LOINC code for Mammaprint test."
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen				 
 
-/******************************************** /
 /** MLT_START_Re-adding Genetic Variant for BRCA 1 and 2 **/
 EntryElement:	BreastCancerGeneticAnalysisObservation
 Concept:		TBD
@@ -664,9 +657,6 @@ includes 1..1	BRCA2Variant
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
 //					Focus.CodeableConcept is HGNC#BRCA2Gene
-
-/** MLT_END_Re-adding Genetic Variant for BRCA 1 and 2 **/
-/******************************************** /
 
 
 /*	
