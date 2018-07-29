@@ -49,25 +49,8 @@ Description:	"An assertion that a specific wound does not have undermining."
 				AssociatedWith value is type Wound
 				EntityTypeCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
-EntryElement:	Injury
-Based on:		AssertPresence
-Description:	"Physical harm or damage done to a living thing."
-				AssociatedWith value is type Person
-				EntityTypeCode from InjuryVS
 
-EntryElement:	Disease
-Based on:		AssertPresence
-Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
-				AssociatedWith value is type Person
-				EntityTypeCode from DiseaseVS
-
-EntryElement:	PressureUlcer
-Based on:		AssertPresence
-Description:	"As defined by the NPUAP, a pressure ulcer is localized injury to the skin and/or underlying tissue usually over a bony prominence, as a result of pressure, or pressure in combination with shear."
-				AssociatedWith value is type Person
-				EntityTypeCode from PressureUlcerVS
-
-EntryElement:	WoundExudate
+EntryElement:	WoundExudatePresent
 Based on:		AssertPresence
 Description:	"The presence of fluid produced by a wound."
 				AssociatedWith value is type Wound
@@ -79,35 +62,13 @@ Description:	"The absent of fluid produced by a wound."
 				AssociatedWith value is type Wound
 				EntityTypeCode is LNC#72292-6
 
+//------------- Not limited to Wound ------------------
 
-//-------------- Evaluation Results -------------------
-
-EntryElement:	WoundType
-Based on:		CodedEvaluationResult
-Description:	"The type of wound, for example, abrasion or laceration."
-				Subject value is type Wound
-				ObservableCode is LNC#72300-7
-				ResultValue from WoundTypeVS
-
-EntryElement:	AnatomicalLocation
-Based on:		CodedEvaluationResult
-				Subject value is type BodyStructure // A wound is a body structure, so this applies
-				ObservableCode is SCT#758637006 "Anatomical location (property) (qualifier value)"
-				ResultValue from AnatomicalLocationVS
-
-EntryElement:	AnatomicalLaterality
-Based on:		CodedEvaluationResult
-Description:	"Anatomical location or specimen further detailing the side(s) of interest."
-				Subject value is type BodyStructure // A wound is a body structure, so this applies
-				ObservableCode is SCT#272741003 "Laterality (attribute)"
-				ResultValue from http://hl7.org/fhir/ValueSet/bodysite-laterality
-
-EntryElement:	InjuryCause
-Based on:		CodedEvaluationResult
-Description:	"The source or key factor in the formation or acquisition of the wound."
-				Subject value is type Injury
-				ObservableCode is LNC#11373-8 "InjuryCause"
-				ResultValue from http://loinc.org/vs/LL4936-2 
+EntryElement:	Disease
+Based on:		AssertPresence
+Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
+				AssociatedWith value is type Person
+				EntityTypeCode from DiseaseVS
 
 EntryElement:	TimeOfOnset
 Based on:		EvaluationResult
@@ -130,6 +91,47 @@ Description:	"The end, remission or resolution of a disease."
 				ObservableCode is LNC#88878-4 // of SCT#...... Time of abatement (observable entity)"
 				ResultValue value is type dateTime
 
+EntryElement:	AnatomicalLocation
+Based on:		CodedEvaluationResult
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
+				Subject value is type BodyStructure
+				ObservableCode is LNC#72369-2  // Body site identification panel
+				ResultValue from AnatomicalLocationVS
+
+
+
+EntryElement:	AnatomicalLaterality
+Based on:		CodedEvaluationResult
+Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+				Subject value is type AnatomicalLocation // A wound is a body structure, so this applies
+				ObservableCode is SCT#272741003 "Laterality (attribute)"
+				ResultValue from http://hl7.org/fhir/ValueSet/bodysite-laterality
+
+
+
+//-------------- Evaluation Results -------------------
+
+EntryElement:	WoundType
+Based on:		CodedEvaluationResult
+Description:	"The type of wound, for example, abrasion or laceration."
+				Subject value is type Wound
+				ObservableCode is LNC#72300-7
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion //WoundTypeVS
+
+// WoundAnatomicalLocation should not have the same LOINC code as generic body site since the value set binding is different.
+EntryElement:	WoundAnatomicalLocation
+Based on:		CodedEvaluationResult
+				Subject value is type Wound // A wound is a body structure, so this applies
+				ObservableCode is LNC#39111-0  //SCT#758637006 "Anatomical location (property) (qualifier value)"
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/definition  
+
+EntryElement:	WoundTypeEtiology
+Based on:		CodedEvaluationResult
+Description:	"The source or key factor in the formation or acquisition of the wound."
+				Subject value is type Wound
+				ObservableCode is LNC#11373-8 "InjuryCause"
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.3/definition  // http://loinc.org/vs/LL4936-2 
+
 EntryElement:	PhotographicImage
 Based on:		EvaluationResult
 Description:	"A photographic documentation of a condition, location, person, etc..."
@@ -143,12 +145,12 @@ Description:	"Whether the wound is initial or recurrent."
 				ObservableCode is LNC#89252-1  "Episode of Wound"
 				ResultValue from http://loinc.org/vs/LL4937-0
 
-EntryElement:	PressureUlcerStage
+EntryElement:	PressureUlcerAssociation
 Based on:		CodedEvaluationResult
-Description:	"The stage as defined by the National Pressure Ulcer Advisory Panel (2007)."
-				Subject value is type PressureUlcer
-				ObservableCode is LNC#72527-5
-				ResultValue from http://loinc.org/vs/LL2337-5
+Description:	"Is the wound associated with a device or pressure point?"
+				Subject value is type Wound
+				ObservableCode is TBD#TBD
+				ResultValue from YesNoUnknownVS
 
 EntryElement:	WoundAssessmentInterpretation
 Based on:		CodedEvaluationResult
@@ -211,7 +213,7 @@ Based on:		CodedEvaluationResult
 Description:	"The state of the tissue at the edge of the wound."
 				Subject value is type Wound
 				ObservableCode is LNC#89256-2
-				ResultValue could be from http://loinc.org/vs/LL2230-2
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.8/definition  // could be from http://loinc.org/vs/LL2230-2
 
 EntryElement:	WoundEdgeColor
 Based on:		CodedEvaluationResult
@@ -248,33 +250,40 @@ Description:	"Clock position of wound undermining"
 				ObservableCode is LNC#72294-2
 				ResultValue from ClockDirectionVS
 
-EntryElement:	ExudateDrainageAmount
+EntryElement:	WoundExudateDrainageAmount
 Based on:		CodedEvaluationResult
 Description:	"Drainage amount of wound"
-				Subject value is type WoundExudate
+				Subject value is type Wound
 				ObservableCode is LNC#39116-9
-				ResultValue could be from http://loinc.org/vs/LL2222-9
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.10/definition // could be from http://loinc.org/vs/LL2222-9
 
-EntryElement:	ExudateOdor
-Based on:		CodedEvaluationResult
-Description:	"Odor of exudate from wound"
-				Subject value is type WoundExudate
-				ObservableCode is LNC#72288-4
-				// LOINC: no value set for exudate odor defined
+EntryElement:	WoundExudateVolume
+Based on:		QuantitativeEvaluationResult
+Description:	"Appearance of exudate from wound"
+				Subject value is type Wound
+				ObservableCode is LNC#39122-7
+				ResultValue.Quantity with units UCUM#mL
 
-EntryElement:	ExudateColor
-Based on:		CodedEvaluationResult
-Description:	"Color of exudate from wound"
-				Subject value is type WoundExudate
-				ObservableCode is LNC#72289-2 
-				ResultValue could be from http://loinc.org/vs/LL2219-5
-
-EntryElement:	ExudateAppearance
+EntryElement:	WoundExudateAppearance
 Based on:		CodedEvaluationResult
 Description:	"Appearance of exudate from wound"
-				Subject value is type WoundExudate
+				Subject value is type Wound
 				ObservableCode is LNC#72290-0 
 				ResultValue could be from http://loinc.org/vs/LL2220-3
+
+EntryElement:	WoundExudateColor
+Based on:		CodedEvaluationResult
+Description:	"Color of exudate from wound"
+				Subject value is type Wound
+				ObservableCode is LNC#72289-2 
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.12/definition //could be from http://loinc.org/vs/LL2219-5
+
+EntryElement:	WoundExudateOdor
+Based on:		CodedEvaluationResult
+Description:	"Odor of exudate from wound"
+				Subject value is type Wound
+				ObservableCode is LNC#72288-4
+				ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.13/definition
 
 EntryElement:	WoundLength
 Based on:		QuantitativeEvaluationResult 
@@ -304,9 +313,13 @@ Description:	"Area of the wound."
 				ObservableCode is LNC#89260-4
 				ResultValue.Quantity with units UCUM#cm2
 
+/*  Not used, for discussion only
 
-
-//  Not used, for discussion only
+EntryElement:	Injury
+Based on:		AssertPresence
+Description:	"Physical harm or damage done to a living thing."
+				AssociatedWith value is type Person
+				EntityTypeCode from InjuryVS
 
 EntryElement:	Interpretation
 Based on:		CodedEvaluationResult
@@ -322,6 +335,7 @@ Description:    "Indicator of Hispanic or Latino origin."
 				ObservableCode is SCT#372148003 "Ethnic group (ethnic group)"
 				ResultValue from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
 
+
 EntryElement:	ClockDirection
 Based on:		CodedEvaluationResult
 Description:	"A direction indicated by an angle relative to 12 o'clock."
@@ -329,7 +343,6 @@ Description:	"A direction indicated by an angle relative to 12 o'clock."
 				ObservableCode is SCT#272485000 "Clockface position (qualifier value)"
 				ResultValue from ClockDirectionVS
 
-/*
 EntryElement:	WoundMorphology
 Based on:		CodedEvaluationResult
 Description:	"Structure of a wound."
