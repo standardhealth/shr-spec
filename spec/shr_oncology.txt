@@ -33,7 +33,7 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
-		Concept:		LNC#44778-9
+		Concept:		LNC#44778-9 "Cold ischemic time {Organ}"
 		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed.
 		CIMI Alignment: In CIMI Version 0.0.4, specimen processing is represented as a 'SpecimenProcessingPerformed' clinical statement, mapped to FHIR Procedure. However, specimen processing should actually map to FHIR Specimen.processing, part of the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by (1) finding the corresponding Specimen entity, and (2) mapping the content of (possibly multiple) SpecimenProcessingPerformed into the FHIR Specimen resource. To avoid this complexity, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
 		Value:			TimePeriod
@@ -350,6 +350,7 @@ Value:			Quantity with units UCUM#mm
 
 
 /*
+
 		Element:		BreastCancerDistantMetastasesClassification
 		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
 		Based on:		CodedEvaluationComponent
@@ -385,29 +386,27 @@ Description:	"The stage of a breast cancer. Different staging systems use differ
 
 
 EntryElement:	NuclearGrade
-Concept:		MTH#C18513  // No LOINC code available for nuclear grade.
+Concept:		MTH#C18513 "Nuclear Grade"  // No LOINC code available for nuclear grade.
 Based on: 		SimpleCodedLaboratoryObservation
 Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
 				ObservationContext.ResultValue value is type CodeableConcept
-//				ObservationContext.ResultValue.CodeableConcept from NuclearGradeVS
-//				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-				LaboratoryObservationTopic.TopicCode is MTH#C18513
+				LaboratoryObservationTopic.TopicCode is MTH#C18513 "Nuclear Grade"
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 
-				EntryElement: BreastCancerNuclearGrade
-				Based on: NuclearGrade
-				Description: "The nuclear grade for a breast cancer specimen. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
-					ObservationContext.ResultValue.CodeableConcept from DCISNuclearGradeVS
-					LaboratoryObservationTopic.Specimen is type BreastSpecimen
+EntryElement: BreastCancerNuclearGrade
+Based on: NuclearGrade
+Description: "The nuclear grade for a breast cancer specimen. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
+				ObservationContext.ResultValue.CodeableConcept from BreastCancerNuclearGradeVS
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	BreastCancerHistologicGrade
-Concept:		LNC#44648-4
+Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 Based on:		CodedLaboratoryObservation
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from NottinghamCombinedGradeVS
 				ObservationContext.ExceptionValue from NottinghamNullVS
-				LaboratoryObservationTopic.TopicCode is LNC#44648-4
+				LaboratoryObservationTopic.TopicCode is LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.EvaluationComponent
@@ -418,23 +417,23 @@ includes 0..1 	MitoticCountScore
 
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
-			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
+			Concept:		LNC#85321-8 "Granular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham."
+			Description:	"The degree of glandular differentiation or tubule formation in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Less aggressive cancers have more tubule formation."
 			Value:			CodeableConcept from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
 							ExceptionValue from NottinghamComponentNullVS
 
 			Element:		NuclearPleomorphismScore
-			Concept:		LNC#44645-0
+			Concept:		LNC#44645-0 "Nuclear pleomorphism in Breast tumor Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
+			Description:	"The degree of nuclear pleomorphism (variability of nuclei) in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Increasing degrees of pleomorphism are associated with increasingly aggressive cancers."
 			Value:			CodeableConcept from NuclearPleomorphismScoreVS
 							ExceptionValue from NottinghamComponentNullVS
 
 			Element:		MitoticCountScore
-			Concept:		LNC#85300-2
+			Concept:		LNC#85300-2 "Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
+			Description:	"The degree of mitotic activity in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Mitotic activity is assessed as the number of mitoses per 10 high power fields (HPF), with increasing mitotic activity being an indicator of more aggressive cancer. The specific scores assigned to the number of mitoses depends on the size of the HPF. For example, for a HPF size of 0.274 mm^2, less than 10 mitoses per 10 HPF gets a score of 1, 10-19 gets a score of 2, and greater than or equal to 20 gets a score of 3. When larger or smaller HPFs are used, the cutoffs for the number of mitoses corresponding to a specific score are adjusted according to published guidelines."
 			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
 							ExceptionValue from MitoticCountScoreNullVS
 
@@ -463,7 +462,7 @@ includes 0..1	OtherReceptorScoringSystem
 
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		CodedLaboratoryObservation
-Concept:		LNC#16113-3
+Concept:		LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
 Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity.
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model."
 				ObservationContext.ResultValue value is type CodeableConcept
@@ -508,7 +507,7 @@ includes 0..*	HER2byFISH
 EntryElement:	HER2byIHC
 // MK 7/14/2018 separated null value from non-null values.
 Based on:		CodedLaboratoryObservation
-Concept:		LNC#85319-2
+Concept:		LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
 Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
 				ObservationContext.ResultValue.CodeableConcept from HER2byIHCScoreVS
 				ObservationContext.ExceptionValue from HER2byIHCScoreNullVS
@@ -532,7 +531,7 @@ includes 0..1	CompleteMembraneStainingPercent
 
 EntryElement:	HER2byFISH
 Based on:		LaboratoryObservation
-Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
+Concept:		LNC#85318-4 "HER2 [Presence] in Breast cancer specimen by FISH"
 Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
@@ -550,33 +549,33 @@ includes 0..1	HER2toCEP17Ratio
 
 		Element:		AverageHER2SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		LNC#74860-8
+		Concept:		LNC#74860-8 "HER2 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number of HER2 signals per cell"
 		Value:			Quantity
 		0..0			ReferenceRange
 
 		Element:		AverageCEP17SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		LNC#74861-6
+		Concept:		LNC#74861-6 "CEP17 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
 
 		Element:		HER2toCEP17Ratio
 		Based on:		EvaluationComponent
-		Concept:		LNC#49683-6
+		Concept:		LNC#49683-6 "HER2/CEP17 [Ratio] in Tissue by FISH"
 		Description:	"HER2 to CEP17 Ratio (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
 
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C1709318
+Concept:		MTH#C1709318 "Oncotype DX Breast Cancer Assay"
 Description:	"The Oncotype DX test for invasive breast cancer examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value from 0 to 100 indicates the estimated risk of recurrence, with the highest risk indicated by a score greater than 31.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is MTH#C1709318
+				LaboratoryObservationTopic.TopicCode is MTH#C1709318 "Oncotype DX Breast Cancer Assay"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
@@ -584,36 +583,36 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C3898101
+Concept:		MTH#C3898101 "Oncotype DX DCIS Score"
 Description:	"The Oncotype DX test for DCIS (Ductal Carcinoma in Situ) breast cancer. Risk scores range from 0 to 100 with the following interpretations: 0-38: Low-Risk, 39-54: Intermediate-Risk, 55+: High-Risk.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is MTH#C3898101
+				LaboratoryObservationTopic.TopicCode is MTH#C3898101 "Oncotype DX DCIS Score"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		LNC#76544-6
+Concept:		LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Prosigna.
 The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptor positive, early stage breast cancer."
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is LNC#76544-6
+				LaboratoryObservationTopic.TopicCode is LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	MammaprintRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C2827401
+Concept:		MTH#C2827401 "MammaPrint"
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Mammaprint.
 In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
 The is currently no LOINC code for Mammaprint test."
 				ObservationContext.ResultValue value is type Quantity
-				LaboratoryObservationTopic.TopicCode is MTH#C2827401
+				LaboratoryObservationTopic.TopicCode is MTH#C2827401 "MammaPrint"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
@@ -768,4 +767,3 @@ https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
 */
-
