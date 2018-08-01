@@ -3,26 +3,38 @@ Namespace:		shr.entity
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
 Uses:			shr.core, shr.base
 
-
 EntryElement:	Person
-Based on:		AssertPresence
-				EntityTypeCode is SCT#125676002 "Person (person)" 
+Based on:		Assertion
+				ContextCode is SCT#424975005 "Record Entity"
+				ObservableCode is SCT#125676002 "Person"
+				ResultValue from PersonVS  // patient, practitioner, etc. 
 
 EntryElement:	BodyStructure
-Based on:		AssertPresence
-				AssociatedWith value is type Person
-				EntityTypeCode from BodyStructureVS // <<SCT#123037004 "Body structure (body structure)"
+Based on:		AssertPresent
+				Subject value is type Person
+				ObservableCode is SCT#123037004 "Body structure (body structure)"
+				ResultValue from BodyStructureVS // <<SCT#123037004 "Body structure (body structure)"
 
 EntryElement:	RelatedPerson
-Based on:		Person
-Description:	"A person who is related to another person."  // we are modeling this like a wound that belongs to a person. The related person IS a father, not a person.
-				AssociatedWith value is type Person  // e.g., father of person
-				RelationshipCode from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
-//				EntityTypeCode is SCT#125676002 "Person (person)"   // inherited
+Based on:		Assertion
+				ContextCode is SCT#424975005 "Record Entity"
+				Subject value is type Person
+				ObservableCode from  http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+0..1			ResultValue from PresentAbsentVS
+0..1			ResultObject value is type Person
 
-EntryElement:	RelatedPersonRelationship
-Based on:		AssertRelationship
-Description:	"The relationship between two people."
-				Subject value is type Person  // e.g., father of person
-				RelationshipCode from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
-				Object value is type Person
+EntryElement:	Organization
+Based on:		Assertion
+				ContextCode is SCT#424975005 "Record Entity"
+				ObservableCode is SCT#308912000
+				ResultValue value from http://hl7.org/fhir/ValueSet/organization-type
+
+EntryElement:	SameAs
+Based on:		Assertion
+				ContextCode is SCT#424975005 "Record Entity"
+				ObservableCode is SCT#168666000 "SAME AS (attribute)"
+0..0			ResultValue
+1..1			Subject
+1..1			ResultObject
+
+

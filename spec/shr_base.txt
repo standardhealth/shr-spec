@@ -25,122 +25,49 @@ Differences between Assertion and EvaluationResult:
 3)  The assertion represents the thing
 4)  Evaluation results speak to the value of a property of a thing
 5)  The subject of an ER can be an assertion (e.g. wound present) or say more about an evaluation result (e.g. the % area that has a certain color)
-
-ASSERTION						EVALUATION RESULT
---------------             		----------------------
-AssociatedWith					Subject (of observation)
-RelationshipCode				ObservableCode (property, question)
-EntityTypeCode					ResultValue
-EntityIdentifier				n/a
-
-Example:  Job
-
-ASSERTION (job present)			EVALUATION RESULT (Job recorded)
---------------					----------------------
-EntryElement: Job				EntryElement: Job
-AssociatedWith: Person			Subject: Person
-RelationshipCode: 'has'			ObservableCode: LNC#11341-5 "History of Occupation"			
-EntityTypeCode: LNC#11341-5		ResultValue: SCT#106302007 "Accountant"
-EntityIdentifier: Job #1		n/a
-								RelevantTime: 1973-1988
-
-Example:  Job Type, Job Time Period -- not covered by the assertion
-
-Example:  Employer
-
-ASSERTION											EVALUATION RESULT
---------------										----------------------
-EntryElement: Employer								EntryElement: Employer
-AssociatedWith: Job									Subject: Job
-RelationshipCode: 'has'								ObservableCode: SCT#394571004 Employer (person)		
-EntityTypeCode: SCT#394571004 Employer (person)		ResultValue: "AT&T" (string), organization, or person? 
-EntityIdentifier: AT&T								
-
-
-
+							
 */
 
 Abstract Element:	Statement
 Description:		"A stand-alone clinical statement. 
 A clinical statement can assert something exists or is present, does not exist or is not present, incorporate an observation result, or containt a collection of information, such as a complete blood count panel."
 0..1				ContextCode
+0..1				RelevantTime
 
 		Element:		ContextCode	
 		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc."
-		Value:			CodeableConcept
-
-Abstract Element: Assertion
-Based on:		Statement
-Description:	"A statement that asserts a situation, phenomenon, or relationship between two things"
-
-//1..1			RelevantTime
-
-Abstract Element: AssertPresence
-Based on:		Assertion
-Description:	"A statement that asserts that a person, place, condition or material thing exists. "
-				ContextCode is SCT#705057003 "Presence (qualifier value)"  // more like 'existence'
-1..1			EntityTypeCode
-0..1			EntityIdentifier
-0..1			AssociatedWith  // what other thing 'has' this thing (ie. a condition belongs to patient)
-0..1			RelationshipCode // if absent, the relationship is assumed to be "has"
-
-		Element:		EntityTypeCode
-		Description:	"A code identifying the type of item, for example, the type of lab, the type of panel, the type thing asserted, etc."
-		Value:			CodeableConcept
-
-		Element: 		EntityIdentifier
-		Description:	"An identifier for the entity that allows the entity to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
-		Value:			id
-
-Abstract Element: AssertAbsence
-Based on:		Assertion
-				ContextCode is SCT#2667000 "Absent (qualifier value)"
-1..1			EntityTypeCode
-0..1			AssociatedWith  // what doesn't have the thing
-
-		Element:	AssociatedWith
-		Value:		Statement
-
-Abstract Element: AssertRelationship
-Based on:		Assertion
-Description: 	"Note that since a relationship is an assertion, it can be the subject of statements."
-1..1			Subject
-1..1			RelationshipCode
-1..1			Object
-
-		Element:		Subject
-		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
-		Value:			Statement
-
-		Element:		RelationshipCode
-		Description:	"An assertion about the subject, expressed as a code; can be viewed as a relationship between Subject and Object."
-		Value:			CodeableConcept
-
-		Element:		Object
-		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
-		Value:			Statement
-
-Abstract Element: EvaluationResult
-Based on:		Statement
-Description:	"A statement that asserts the value of a property of a thing."
-				ContextCode is SCT#424975005 "Record Entity"
-1..1			Subject
-1..1			ObservableCode
-1..1			ResultValue
-0..1			RelevantTime
-1..1			FindingStatus
-
-		Element:		ObservableCode
-		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
 		Value:			CodeableConcept
 
 		Element:		RelevantTime
 		Description:	"The time or time period that the statement addresses."
 		Value:			dateTime or TimePeriod 
 
+
+Abstract Element:	Assertion
+Based on:			Statement
+Description:		"Any assertion of a measured value, relationship, situation, condition, or phenomenon present or absent."
+1..1				Subject
+1..1				ObservableCode
+0..1				ResultValue
+0..1				ResultObject
+0..1				ObjectIdentifier
+1..1				FindingStatus
+
+		Element:		Subject
+		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
+		Value:			Statement
+
+		Element:		ObservableCode
+		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
+		Value:			CodeableConcept
+
 		Element:		ResultValue
 		Description:	"The finding itself, such as the blood pressure value recorded."
 		Value:			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod or Media)
+
+		Element:		ResultObject
+		Description:	"The phenomenon (person, place, event, condition, other statement) that the subject of this statement addresses or belongs to."
+		Value:			Statement
 	
 		Element:		FindingStatus
 		Concept:		TBD
@@ -148,13 +75,39 @@ Description:	"A statement that asserts the value of a property of a thing."
 		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
 // + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
 
-EntryElement:	CodedEvaluationResult
-Based on:		EvaluationResult
-				ResultValue value is type CodeableConcept
+		Element: 		ObjectIdentifier
+		Description:	"An identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
+		Value:			id
 
-EntryElement:	QuantitativeEvaluationResult
-Based on:		EvaluationResult
-				ResultValue value is type Quantity
+
+Abstract Element: 	AssertPresentAbsent
+Based on:			Assertion
+Description:		"A statement that asserts the presence or absence of a situation, phenomenon, or relationship between two things."
+					ContextCode from PresentAbsentVS
+
+
+Abstract Element:	AssertPresent
+Based on:			AssertPresentAbsent
+Description:		"An assertion of the existence of relationship or situation, condition, or phenomenon."
+					ContextCode is SCT#705057003  "Presence (qualifier value)"
+
+Abstract Element:	AssertAbsent
+Based on:			AssertPresentAbsent
+Description:		"An assertion of the existence of relationship or situation, condition, or phenomenon."
+					ContextCode is SCT#2667000   "Absent (qualifier value)"
+
+Abstract Element: 	EvaluationResult
+Based on:			Assertion
+Description:		"A statement that asserts the value of a property of a thing."
+					ContextCode is SCT#424975005 "Record Entity"
+
+EntryElement:		CodedEvaluationResult
+Based on:			EvaluationResult
+					ResultValue value is type CodeableConcept
+
+EntryElement:		QuantitativeEvaluationResult
+Based on:			EvaluationResult
+					ResultValue value is type Quantity
 
 // -------------  Groups -----------------
 
@@ -162,10 +115,13 @@ EntryElement:   Group
 Based on:       Statement
 Description:    "A set of one or more statements and subgroups that should be interpreted together, or may be convenient to consider collectively."
 ContextCode is SCT#424975005 "Record Entity"
-1..1            EntityTypeCode
+1..1            GroupTypeCode
 0..*            Statement
 0..*			Group
 
+		Element:	GroupTypeCode
+		Description:	"A code that describes the type of composition or group, such as a section or document type identifier."
+		Value:		CodeableConcept
 
 // -------------  Entry Metadata -----------------
 

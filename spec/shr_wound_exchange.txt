@@ -1,0 +1,69 @@
+Grammar:	DataElement 5.0
+Namespace:	shr.wound
+Description: "Format for exchange of wound information"
+Uses:  		shr.base, shr.core, shr.composition
+
+CodeSystem:  	UCUM = http://unitsofmeasure.org
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+EntryElement:	WoundAssessment
+Based on:		Group
+Description:	"Information about a single wound. The aggregation can contain some or all information about a wound. Useful for some purposes, a snapshot might include only the most recent observations about the wound, while a comprehensive history of the wound could be comprised of many observations taken by different people at different times."
+				GroupTypeCode is LNC#39135-9
+				Statement
+includes 1..1	Wound
+includes 1..1	WoundType
+includes 1..1	WoundAnatomicalLocation
+includes 1..1	AnatomicalLaterality
+includes 0..1	TimeOfOnset
+includes 0..1	ConditionPresentOnAdmission
+includes 0..1	WoundTypeEtiology
+includes 0..1	TimeOfAbatement
+includes 0..1	PressureUlcerAssociation
+// These can be repeated !  Hence, 0..*
+includes 0..*	WoundAssessmentInterpretation
+includes 0..*	PhotographicImage
+includes 0..*	WoundTrend
+includes 0..1	EpisodeOfWound
+includes 0..*	PeriwoundDescription
+includes 0..*	VisibleInternalStructure
+includes 0..*   WoundBedAppearance
+includes 0..*	WoundBedAppearancePercentage
+includes 0..*  	WoundBedColor
+includes 0..*	WoundBedColorPercentage
+includes 0..*   WoundEdgeDescription
+includes 0..*	WoundEdgeColor
+includes 0..*   WoundWidth
+includes 0..*   WoundDepth
+includes 0..*   WoundLength
+includes 0..*	WoundArea
+includes 0..*	WoundTunnelingPresentAbsent
+includes 0..*	WoundUnderminingPresentAbsent
+includes 0..*	WoundExudatePresentAbsent
+includes 0..*   WoundExudateColor
+includes 0..*   WoundExudateAppearance
+includes 0..*   WoundExudateAmount
+includes 0..*   WoundExudateOdor
+includes 0..*	WoundTunnelingGroup
+includes 0..*	WoundUnderminingGroup
+
+	EntryElement:   WoundTunnelingGroup
+	Based on:       Group
+	Description:	"Description of a specific single tunnel on a specific wound. Applicable only if tunnel(s) are present"
+					GroupTypeCode is LNC#89258-8 
+					Statement
+	includes 1..1   WoundTunnelLength
+	includes 1..1   WoundTunnelClockDirection
+
+	EntryElement:   WoundUnderminingGroup
+	Based on:       Group
+	Description:	"Description of the undermining of the wound. Applicable only if undermining is present"
+					GroupTypeCode is LNC#89258-8 
+					Statement
+	includes 1..1   WoundUnderminingLength
+	includes 1..1   WoundUnderminingClockDirection
+
+
+
+ 

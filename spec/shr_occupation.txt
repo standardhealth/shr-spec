@@ -13,7 +13,7 @@ Based on:		CodedEvaluationResult
 Description:	"A person’s state of being employed during the time period specified. 
 Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
 				Subject value is type Person
-				EntityTypeCode is LNC#74165-2 "HistoryOfEmploymentStatus"
+				ObservableCode is LNC#74165-2 "HistoryOfEmploymentStatus"
 				ResultValue from EmploymentStatusVS
 1..1			RelevantTime
 
@@ -22,7 +22,7 @@ Based on:		EvaluationResult
 Description:	"If present, the patient is retired, and this observation records the retirement date.
 This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
 				Subject value is type Person
-				ObservationCode is LNC#87510-4 "Date of Retirement"
+				ObservableCode is LNC#87510-4 "Date of Retirement"
 				ResultValue value is type dateTime 
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
 
@@ -30,7 +30,7 @@ EntryElement:	CombatZonePeriod
 Based on:		EvaluationResult
 Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
 				Subject value is type Person
-				ObservationCode is LNC#87511-2
+				ObservableCode is LNC#87511-2
 				ResultValue value is type TimePeriod
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
 
@@ -38,11 +38,11 @@ EntryElement:	UsualOccupation
 Based on:		CodedEvaluationResult
 Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
 				Subject value is type Person
-				ObservationCode is LNC#21843-8
+				ObservableCode is LNC#21843-8
 				ResultValue could be from OccupationVS
 
 EntryElement:	UsualOccupationIndustry
-Based on:		CodedEvaluationResponse
+Based on:		CodedEvaluationResult
 Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
 For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction." 
 				Subject value is type UsualOccupation
@@ -50,11 +50,11 @@ For example, a person who has spent 30 years as a secretary in various industrie
 				ResultValue could be from IndustryVS
 
 EntryElement:	UsualOccupationDuration
-Based on:		EvaluationResult
+Based on:		QuantitativeEvaluationResult
 Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted. This refers specifically to a certain UsualOccupation"
 				Subject value is type UsualOccupation
 				ObservableCode is LNC#74163-7 "Usual occupation duration"
-				ResultValue is Quantity with units UCUM#a
+				ResultValue.Quantity with units UCUM#a
 
 EntryElement:	PastOrPresentOccupation  // aka job
 Based on:		CodedEvaluationResult
@@ -63,24 +63,24 @@ Description:	"A single job, past or present. The relevant time is the period the
 				ObservableCode is LNC#11341-5 "History of Occupation"
 				ResultValue could be from OccupationVS
 
-EntryElement:	Employer
-Based on:		AssertPresent
-Description:	"A person or organization that hires the services of another."
-				AssociatedWith value is type Person
-				EntityTypeCode is SCT#394571004 "Employer (person)"
-??????
-	Value:			ref(Person) or ref(Organization)
+	EntryElement:	Employer
+	Based on:		EvaluationResult
+	Description:	"The employer associated with a particular job."
+					ContextCode is SCT#424975005 "Record Entity"  // present/absent?
+	1..1			Subject value is type Person
+	1..1			ObservableCode is SCT#394571004 "Employer (person)" // not person, could be organization!
+	0..1			ResultValue is type string
+	0..1			ResultObject value is type Person or Organization
 
 
-
-// Question -- organization only, or person or organization
+// Can get rid of AssertRelationship -- that's just a finding 
 
 	Element:		PastOrPresentOccupationIndustry
 	Based on:		CodedEvaluationResult
 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
 					Subject value is type PastOrPresentOccupation
 					ObservableCode is LNC#86188-0 "History of Occupation industry"
-					CodeableConcept could be from IndustryVS
+					ResultValue could be from IndustryVS
 
 	Element:		WorkClassification
 	Based on:		CodedEvaluationResult
@@ -122,30 +122,30 @@ Description:	"A person or organization that hires the services of another."
 					ResultValue could be from WorkScheduleVS 
 
 	Element:		WeeklyWorkDays
-	Based on:		EvaluationResult
+	Based on:		QuantitativeEvaluationResult
 	Description:	"The typical number of days per week that a person spends performing their duties for work. 
 	This information is most useful coupled with daily work hours and helps to reveal compressed schedules or a 7-day work-week."
 					Subject is type PastOrPresentOccupation
 					ObservableCode is LNC#74160-3
-					ResultValue is Quantity with units UCUM#d
+					ResultValue.Quantity with units UCUM#d
 							
 	Element:		DailyWorkHours
-	Based on:		EvaluationComponent
+	Based on:		QuantitativeEvaluationComponent
 	Concept:		LNC#87512-0
 	Description:	"The typical number of hours in a day that a person spends performing their duties for work.
 	This information is most useful coupled with weekly work days and helps to reveal compressed schedules, long work hours, and overtime."
-	Value:			Quantity with units UCUM#h
+					ResultValue.Quantity with units UCUM#h
 	0..0			ReferenceRange
 					TopicCode is LNC#87512-0
 
 
 //----------------  Groupings ---------------------------
 
-
+/*
 EntryElement:	OccupationalDataGroup
 Based on:		Group
 Description:	"Current and past activities for profit, wages, salary, or as a service to others. The aggregation can contain some or all information about a wound. For example, a snapshot might include only the most recent observations about the wound, while the comprehensive history could be comprised of many observations taken by different people at different times."
-				EntityTypeCode is LNC#74166-0
+				ObjectTypeCode is LNC#74166-0
 				Statement 
 includes 0..*   HistoryOfEmploymentStatus
 includes 0..*	DateOfRetirement
