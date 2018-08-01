@@ -33,8 +33,8 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
-		Concept:		LNC#44778-9 
-		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed. 
+		Concept:		LNC#44778-9
+		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed.
 		CIMI Alignment: In CIMI Version 0.0.4, specimen processing is represented as a 'SpecimenProcessingPerformed' clinical statement, mapped to FHIR Procedure. However, specimen processing should actually map to FHIR Specimen.processing, part of the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by (1) finding the corresponding Specimen entity, and (2) mapping the content of (possibly multiple) SpecimenProcessingPerformed into the FHIR Specimen resource. To avoid this complexity, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
 		Value:			TimePeriod
 
@@ -42,7 +42,7 @@ EntryElement:	BreastCancerPresenceStatement
 Based on:		ConditionPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				ConditionAssertionTopic.TopicCode from BreastCancerTypeVS		
+				ConditionAssertionTopic.TopicCode from BreastCancerTypeVS
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerStage
 				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 				ConditionAssertionTopic.AnatomicalLocation is type BreastSite
@@ -70,7 +70,7 @@ includes 0..1 	BreastCancerDistantMetastasesClassification
 includes 0..1	HER2ReceptorStatus
 includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
-includes 0..1	DCISNuclearGrade
+includes 0..1	BreastCancerNuclearGrade
 includes 0..1	BreastCancerHistologicGrade
 includes 0..1	Ki-67NuclearAntigen
 0..0			Focus  // only one breast cancer per patient
@@ -383,16 +383,21 @@ Description:	"The stage of a breast cancer. Different staging systems use differ
 				ObservationContext.ResultValue should be from http://loinc.org/vs/LL240-3
 
 
-EntryElement:	DCISNuclearGrade
-Concept:		MTH#C18513  // What is the proper LOINC code?
+EntryElement:	NuclearGrade
+Concept:		MTH#C18513  // No LOINC code available for nuclear grade.
 Based on: 		SimpleCodedLaboratoryObservation
 Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
 				ObservationContext.ResultValue value is type CodeableConcept
-				ObservationContext.ResultValue.CodeableConcept from NuclearGradeVS
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+//				ObservationContext.ResultValue.CodeableConcept from NuclearGradeVS
+//				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.TopicCode is MTH#C18513
 				LaboratoryObservationTopic.DiagnosticService is #pathology
 
+				EntryElement: BreastCancerNuclearGrade
+				Based on: NuclearGrade
+				Description: "The nuclear grade for a breast cancer specimen. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
+					ObservationContext.ResultValue.CodeableConcept from DCISNuclearGradeVS
+					LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	BreastCancerHistologicGrade
 Concept:		LNC#44648-4
@@ -408,7 +413,7 @@ Description:	"The Elston Grade/Nottingham Score, representative of the aggressiv
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
-0..0			LaboratoryObservationTopic.PanelMembers					
+0..0			LaboratoryObservationTopic.PanelMembers
 
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
@@ -440,8 +445,8 @@ The current approach is that positive/negative designation is a value, even thou
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
 				LaboratoryObservationTopic.TopicCode is LNC#16112-5
-				LaboratoryObservationTopic.DiagnosticService is #pathology	
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				
+				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -458,13 +463,13 @@ includes 0..1	OtherReceptorScoringSystem
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		CodedLaboratoryObservation
 Concept:		LNC#16113-3
-Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity. 
+Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity.
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model."
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
-				LaboratoryObservationTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
-				LaboratoryObservationTopic.DiagnosticService is #pathology	
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				
+				LaboratoryObservationTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
+				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -497,8 +502,8 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 0..0 			LaboratoryObservationTopic.EvaluationComponent
 				LaboratoryObservationTopic.PanelMembers.Observation
 includes 0..*	HER2byIHC
-includes 0..*	HER2byFISH				
-				
+includes 0..*	HER2byFISH
+
 EntryElement:	HER2byIHC
 // MK 7/14/2018 separated null value from non-null values.
 Based on:		CodedLaboratoryObservation
@@ -548,21 +553,21 @@ includes 0..1	HER2toCEP17Ratio
 		Description:	"Average number of HER2 signals per cell"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 		Element:		AverageCEP17SignalsPerCell
 		Based on:		EvaluationComponent
 		Concept:		LNC#74861-6
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 		Element:		HER2toCEP17Ratio
 		Based on:		EvaluationComponent
 		Concept:		LNC#49683-6
 		Description:	"HER2 to CEP17 Ratio (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimpleLaboratoryObservation
 Concept:		MTH#C1709318
@@ -573,7 +578,7 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				LaboratoryObservationTopic.TopicCode is MTH#C1709318
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen			
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
@@ -586,8 +591,8 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				LaboratoryObservationTopic.TopicCode is MTH#C3898101
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen	
-				
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimpleLaboratoryObservation
 Concept:		LNC#76544-6
@@ -610,7 +615,7 @@ The is currently no LOINC code for Mammaprint test."
 				LaboratoryObservationTopic.TopicCode is MTH#C2827401
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				 
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 /** MLT_START_Re-adding Genetic Variant for BRCA 1 and 2 **/
 EntryElement:	BreastCancerGeneticAnalysisObservation
@@ -667,19 +672,19 @@ includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since th
 	Value:		 	Quantity with units UCUM#%
 
 
-/*	
+/*
 		Element:		Aneusomy
 		Based on:		CodedEvaluationComponent
 		Concept:		CAP#30478
 		Description:	"Aneusomy (as defined by vendor kit used)"
 		Value:			CodeableConcept from YesNoVS
-	
+
 		Element:		HeterogeneousSignals
 		Based on:		CodedEvaluationComponent
-		Concept:		CAP#30482 
+		Concept:		CAP#30482
 		Description:	"Whether In Situ Hybridization signals were heterogeneous."
 		Value:			CodeableConcept from YesNoVS
-		
+
 		Element:		PercentageAmplified
 		Based on:		EvaluationComponent
 		Concept:		CAP#31073
@@ -691,20 +696,20 @@ includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since th
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
-	
+
 
 		Element:		PrimaryAntibody
 		Based on:		CodedEvaluationComponent
 		Concept:		CAP#31092
 		Description:	""
 		Value:			CodeableConcept
-		
+
 		Element:		StainingControl
 		Based on:		CodedEvaluationComponent
 		Concept:		CAP#25895
 		Description:	"Whether control cells were present."
 		Value:			CodeableConcept from StainingControlVS if covered
-		
+
 		Element:		AllredProportionScore
 		Concept:		CAP#31054
 		Based on:		EvaluationComponent
@@ -716,17 +721,17 @@ includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since th
 		Based on:		EvaluationComponent
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			Quantity with units UCUM#1
-							
+
 		Element:		AllredTotalScore
 		Concept:		CAP#31056
 		Based on:		EvaluationComponent
 		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
-		Value:			Quantity with units UCUM#1  // unsignedInt -  limit to max of 8				
+		Value:			Quantity with units UCUM#1  // unsignedInt -  limit to max of 8
 
 		Element:		OtherReceptorScoringSystem
 		Concept:		CAP#31062
 		Based on:		CodedEvaluationComponent
-		Description:	"A scoring system other than Allred."	
+		Description:	"A scoring system other than Allred."
 
 	Element:		S-PhaseFraction
 	Based on:		SimpleCodedObservation
