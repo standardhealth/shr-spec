@@ -4,37 +4,28 @@ Description:	"The SHR Core domain contains definitions for a variety of general-
 Uses:			shr.core, shr.base
 
 EntryElement:	Person
-Based on:		Assertion
-				ContextCode is SCT#424975005 "Record Entity"
-				ObservableCode is SCT#125676002 "Person"
-				ResultValue from PersonVS  // patient, practitioner, etc. 
+Based on:		ObjectExistence
+				ObjectCode from PersonVS
 
 EntryElement:	BodyStructure
-Based on:		AssertPresent
+Based on:		ObjectExistence
 				Subject value is type Person
-				ObservableCode is SCT#123037004 "Body structure (body structure)"
-				ResultValue from BodyStructureVS // <<SCT#123037004 "Body structure (body structure)"
+				ObjectCode from BodyStructureVS 
 
 EntryElement:	RelatedPerson
-Based on:		Assertion
-				ContextCode is SCT#424975005 "Record Entity"
+Based on:		RelationshipExistence
 				Subject value is type Person
-				ObservableCode from  http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
-0..1			ResultValue from PresentAbsentVS
-0..1			ResultObject value is type Person
+				RelationshipCode from  http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+0..1			Object value is type Person  // note: if object is omitted, the relationship exists but the related person is uninstantiated;and further information about the related person (name, phone, address, etc.) cannot be specified.
 
 EntryElement:	Organization
-Based on:		Assertion
-				ContextCode is SCT#424975005 "Record Entity"
-				ObservableCode is SCT#308912000
-				ResultValue value from http://hl7.org/fhir/ValueSet/organization-type
+Based on:		ObjectExistence
+				ObjectCode from http://hl7.org/fhir/ValueSet/organization-type
 
 EntryElement:	SameAs
-Based on:		Assertion
-				ContextCode is SCT#424975005 "Record Entity"
-				ObservableCode is SCT#168666000 "SAME AS (attribute)"
-0..0			ResultValue
+Based on:		RelationshipExistence
 1..1			Subject
-1..1			ResultObject
+				RelationshipCode is SCT#168666000 "SAME AS (attribute)"
+1..1			Object
 
 

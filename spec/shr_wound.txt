@@ -8,55 +8,33 @@ CodeSystem:     LNC = http://loinc.org
 //CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
-//----------------  Wound Assertions --------------------
-
-EntryElement:	WoundPresentAbsent
-Based on:		AssertPresentAbsent
+EntryElement:	Wound
+Based on:		ObjectExistence
 Description:	"An assertion that a wound is present or absent.
 Observations and measurements associated with the same wound must link back to the same wound assertion. Therefore, the same wound should not be asserted more than once. The 'same-as' relationship can be used to link multiple assertions of the same wound, if that is necessary."
-				Subject value is type Person  // has to belong to a Person
-				ObservableCode is SCT#416462003 "Wound (disorder)"
-// inherits an ObjectIdentifier, which is the wound number
-				ResultValue from PresentAbsentVS
+				Subject value is type Person
+				ObjectCode is SCT#416462003 "Wound (disorder)"
 
-EntryElement:	Wound
-Based on:		WoundPresentAbsent
-Description:	"A wound that exists on a patient."
-				ContextCode is SCT#705057003   "Presence (qualifier value)"
-
-EntryElement:	WoundTunnelingPresentAbsent
-Based on:		AssertPresentAbsent
+EntryElement:	WoundTunneling
+Based on:		ObjectExistence
 Description:	"The presence or absence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. Each wound tunnel can be persistently identified to enable tracking of the condition of the tunnel over time."
 				Subject value is type Wound
-				ObservableCode is SCT#1561000124108 "Wound tunneling (observable entity)"
-				ResultValue is PresentAbsentVS
+				ObjectCode is SCT#1561000124108 "Wound tunneling (observable entity)"
 
-EntryElement:	WoundTunnel
-Based on:		WoundTunnelingPresentAbsent
-Description:	"The presence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. Each wound tunnel can be persistently identified to enable tracking of the condition of the tunnel over time."
-				ContextCode is SCT#705057003   "Presence (qualifier value)"
-
-EntryElement:	WoundUnderminingPresentAbsent
-Based on:		AssertPresentAbsent
+EntryElement:	WoundUndermining
+Based on:		ObjectExistence
 Description:	"The presence or absence of deep tissue (subcutaneous fat and muscle) damage around the wound margin.
 Undermining are narrow sinus tracts away from the wound margins and go downward into the wound."
 				Subject value is type Wound
-				ObservableCode SCT#454341000124104 "Wound undermining (observable entity)"
-				ResultValue is PresentAbsentVS
-
-EntryElement:	WoundUndermining
-Based on:		WoundUnderminingPresentAbsent
-Description:	"The presence deep tissue (subcutaneous fat and muscle) damage around the wound margin."
-				ContextCode is SCT#705057003   "Presence (qualifier value)"
+				ObjectCode is SCT#454341000124104 "Wound undermining (observable entity)"
 
 //------------- Not limited to Wound ------------------
 
 EntryElement:	Disease
-Based on:		AssertPresent
+Based on:		ObjectExistence
 Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
 				Subject value is type Person
-				ObservableCode is 
-				ResultValue from DiseaseVS
+				ObjectCode from DiseaseVS
 
 EntryElement:	TimeOfOnset
 Based on:		EvaluationResult
@@ -209,14 +187,14 @@ Description:	"Color of Wound edge."
 EntryElement:	WoundTunnelLength
 Based on:		QuantitativeEvaluationResult  // not a subtype of length. Keep the model of the world out of it.
 Description:	"The length of a wound tunnel, in cm."
-				Subject value is type WoundTunnel
+				Subject value is type WoundTunneling
 				ObservableCode is LNC#72296-7
 				ResultValue.Quantity with units UCUM#cm
 
 Element:		WoundTunnelClockDirection
 Based on:		CodedEvaluationResult
 Description:	"Clock position of wound tunnel"
-				Subject value is type WoundTunnel
+				Subject value is type WoundTunneling
 				ObservableCode is LNC#72297-5
 				ResultValue from ClockDirectionVS
 
@@ -300,7 +278,7 @@ Description:	"Area of the wound."
 /*  Not used, for discussion only
 
 EntryElement:	Injury
-Based on:		AssertPresentAbsent
+Based on:		
 Description:	"Physical harm or damage done to a living thing."
 				Subject value is type Person
 				ObjectTypeCode from InjuryVS

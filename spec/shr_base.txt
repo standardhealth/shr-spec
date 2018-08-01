@@ -3,8 +3,6 @@ Namespace:		shr.base
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
 Uses:			shr.core
 
-CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-
 
 //------------ BASE CLASSES----------------
 /* PRINCIPLES:
@@ -15,91 +13,92 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 5)  OPEN-WORLD ASSUMPTION 
 * just because something isn't stated, it doesn't mean it doesn't exist
 * something stated to NOT exist, does not exist
-
-Differences between Assertion and EvaluationResult:
-1)  Assertion is a statement of existence or non-existence of a condition, person, place, or entity for a thing that can be tracked over time.
-	a.  The type of entity that exists/does not exist
-	b.	What the new entity is associated with
-	c.  How the new entity is associated
-2)  An assertion represents the new thing and can be assigned a business identifier to refer to 
-3)  The assertion represents the thing
-4)  Evaluation results speak to the value of a property of a thing
-5)  The subject of an ER can be an assertion (e.g. wound present) or say more about an evaluation result (e.g. the % area that has a certain color)
 							
 */
 
 Abstract Element:	Statement
-Description:		"A stand-alone clinical statement. 
-A clinical statement can assert something exists or is present, does not exist or is not present, incorporate an observation result, or containt a collection of information, such as a complete blood count panel."
-0..1				ContextCode
+Description:		"Any clinical statement."
+
+
+Abstract Element:	Finding
+Based on:			Statement
+Description:		"A determination, based on observation, opinion, fact, or judgment."
+
+1..1				FindingStatus
+0..1				ObservableCode
 0..1				RelevantTime
 
-		Element:		ContextCode	
-		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc."
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
+
+		Element:		ObservableCode
+		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
 		Value:			CodeableConcept
 
 		Element:		RelevantTime
 		Description:	"The time or time period that the statement addresses."
 		Value:			dateTime or TimePeriod 
 
+Abstract Element:	ExistentialStatement
+Based on:			Finding
+Description:		"An assertion of a physical or conceptual entity, relationship, situation, condition, or phenomenon present or absent."
+1..1				ContextCode from PresentAbsentVS
 
-Abstract Element:	Assertion
-Based on:			Statement
-Description:		"Any assertion of a measured value, relationship, situation, condition, or phenomenon present or absent."
-1..1				Subject
-1..1				ObservableCode
-0..1				ResultValue
-0..1				ResultObject
+		Element:		ContextCode	
+		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc."
+		Value:			CodeableConcept
+
+Abstract Element:	ObjectExistence
+Based on:			ExistentialStatement
+Description:		"An assertion of a physical or conceptual entity, relationship, situation, condition, or phenomenon present or absent."
+0..1				Subject
+0..1				ObjectCode
 0..1				ObjectIdentifier
-1..1				FindingStatus
 
 		Element:		Subject
-		Description:	"The phenomenon (person, place, event, condition, other statement) that the phenomenon of this statement addresses or belongs to."
+		Description:	"The person, place, event, condition, other statement that the phenomenon of this statement addresses or belongs to."
 		Value:			Statement
 
-		Element:		ObservableCode
+		Element:		ObjectCode
 		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
 		Value:			CodeableConcept
+
+		Element: 		ObjectIdentifier
+		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
+		Value:			id
+	
+EntryElement:		RelationshipExistence
+Based on:			ExistentialStatement
+Description:		"An assertion of a realtionship between two things, either present or absent."
+0..1				Subject
+0..1				RelationshipCode
+0..1				Object
+
+		Element:		RelationshipCode
+		Description:	"The code describing the relationship asserted between the two objects."
+		Value:			CodeableConcept
+
+		Element:		Object
+		Description:	"The phenomenon (person, place, event, condition, other statement) that the subject of this statement addresses or belongs to."
+		Value:			Statement
+
+
+// + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
+
+
+Abstract Element: 	EvaluationResult
+Based on:			Finding
+Description:		"A statement that asserts the value of a property of a thing."
+1..1				Subject
+0..1				ResultValue
+1..1				ObservableCode
 
 		Element:		ResultValue
 		Description:	"The finding itself, such as the blood pressure value recorded."
 		Value:			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod or Media)
 
-		Element:		ResultObject
-		Description:	"The phenomenon (person, place, event, condition, other statement) that the subject of this statement addresses or belongs to."
-		Value:			Statement
-	
-		Element:		FindingStatus
-		Concept:		TBD
-		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
-		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
-// + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
-
-		Element: 		ObjectIdentifier
-		Description:	"An identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
-		Value:			id
-
-
-Abstract Element: 	AssertPresentAbsent
-Based on:			Assertion
-Description:		"A statement that asserts the presence or absence of a situation, phenomenon, or relationship between two things."
-					ContextCode from PresentAbsentVS
-
-
-Abstract Element:	AssertPresent
-Based on:			AssertPresentAbsent
-Description:		"An assertion of the existence of relationship or situation, condition, or phenomenon."
-					ContextCode is SCT#705057003  "Presence (qualifier value)"
-
-Abstract Element:	AssertAbsent
-Based on:			AssertPresentAbsent
-Description:		"An assertion of the existence of relationship or situation, condition, or phenomenon."
-					ContextCode is SCT#2667000   "Absent (qualifier value)"
-
-Abstract Element: 	EvaluationResult
-Based on:			Assertion
-Description:		"A statement that asserts the value of a property of a thing."
-					ContextCode is SCT#424975005 "Record Entity"
 
 EntryElement:		CodedEvaluationResult
 Based on:			EvaluationResult
@@ -114,7 +113,6 @@ Based on:			EvaluationResult
 EntryElement:   Group
 Based on:       Statement
 Description:    "A set of one or more statements and subgroups that should be interpreted together, or may be convenient to consider collectively."
-ContextCode is SCT#424975005 "Record Entity"
 1..1            GroupTypeCode
 0..*            Statement
 0..*			Group
