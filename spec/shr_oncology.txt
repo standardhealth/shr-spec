@@ -60,8 +60,8 @@ Element:		BreastCancerStageTopic
 Based on:		ObservationTopic
 Description:	"The topic class for describing a breast cancer staging observation."
 				TopicCode is MTH#C2216702 "Malignant Neoplasm of Breast Staging"
-0..1			StageTimingPrefix				
-0..0			EvaluationComponent	
+0..1			StageTimingPrefix
+0..0			EvaluationComponent
 				PanelMembers.Observation
 includes 0..1 	BreastCancerPrimaryTumorClassification
 includes 0..1 	BreastCancerRegionalNodesClassification
@@ -69,7 +69,7 @@ includes 0..1 	BreastCancerDistantMetastasesClassification
 includes 0..1	HER2ReceptorStatus
 includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
-includes 0..1	BreastCancerNuclearGrade
+includes 0..1	DCISNuclearGrade
 includes 0..1	BreastCancerHistologicGrade
 0..0			Focus  // only one breast cancer per patient
 0..0			Media
@@ -92,7 +92,7 @@ includes 0..1	BreastCancerHistologicGrade
 					ObservationContext.ResultValue.CodeableConcept from TBD
 					LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
 					LaboratoryObservationTopic.TopicCode is SCT#78873005 "T category"
-	0..0			LaboratoryObservationTopic.DiagnosticService  
+	0..0			LaboratoryObservationTopic.DiagnosticService
 	0..0			LaboratoryObservationTopic.Specimen // also removed b/c this is determined lower
 	0..0			LaboratoryObservationTopic.Precondition
 	0..0			LaboratoryObservationTopic.FindingMethod
@@ -102,17 +102,17 @@ includes 0..1	BreastCancerHistologicGrade
 	includes 0..1	TumorDimensions
 	includes 0..1	TumorMargins
 
-		Element:   		StageSuffix  
+		Element:   		StageSuffix
 		Based on:       CodedEvaluationComponent
-		Concept:        TBD#TBD 
+		Concept:        TBD#TBD
 		Description:    "A suffix used in conjuction with certain cancer stages, based on criteria defined by the staging system being used."
 		Value:          CodeableConcept
 
-	/*	
+	/*
 		EntryElement:	TumorAssessment		// change to TumorAssessment
 		Based on:		LaboratoryObservation
 		Concept:		SCT#395531003 "Tumor observable (observable entity)"
-		Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should."  // source: NCI 
+		Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should."  // source: NCI
 		0..0			ObservationContext.ResultValue
 		0..0			ObservationContext.ExceptionValue
 						LaboratoryObservationTopic.TopicCode is SCT#395531003 "Tumor observable (observable entity)"
@@ -149,8 +149,8 @@ includes 0..1	BreastCancerHistologicGrade
 					Description:	"The longest diameter of the primary tumor."
 					Based on:		EvaluationComponent
 					Concept:		SCT#399734001 "Primary tumor size (observable entity)"
-					Value:			Quantity with units UCUM#mm		
-					
+					Value:			Quantity with units UCUM#mm
+
 					Element:		TumorSecondaryDimensionSize
 					Description:	"The longest perpendicular diameter of the primary tumor."
 					Based on:		EvaluationComponent
@@ -203,11 +203,11 @@ includes 0..1	BreastCancerHistologicGrade
 					LaboratoryObservationTopic.PanelMembers.Observation
 	includes 0..*	BreastPathologicalLymphNodeInvolvement
 	includes 0..*	BreastClinicalLymphNodeInvolvement
-	
+
 
 EntryElement:	BreastPathologicalLymphNodeInvolvement
 Based on:		LaboratoryObservation
-Concept:		MTH#C0806692 "Lymph Node Involvement" 
+Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
@@ -235,56 +235,56 @@ EntryElement:	BreastLymphNodeBodySite
 Based on:		AnatomicalLocation
 Description:	"A body site specific to the lymph node structure."
 Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
-0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral. 
+0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral.
 0..1            AnatomicalDirection
 
-		Element:   BreastLymphNodeInvolvement  
+		Element:   BreastLymphNodeInvolvement
 		Based on:       CodedEvaluationComponent
 		Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 		Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
 		Value:          CodeableConcept from LymphNodeInvolvementVS
 
 		Element:   		LymphNodeSamplingMethod
-		Based on:       CodedEvaluationComponent  
+		Based on:       CodedEvaluationComponent
 		Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
 		Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
 		Value:          CodeableConcept from LymphNodeSamplingMethodVS
 
-		Element:		TotalNumberOfLymphNodesExamined 
+		Element:		TotalNumberOfLymphNodesExamined
 		Based on:		EvaluationComponent
 		Concept:		TBD "TBD"
 		Description:	"Total number of lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
 		Element:		NumberOfRegionalLymphNodes
 		Based on:		EvaluationComponent
 		Concept:		LNC#21894-1 "Regional lymph nodes examined [#] Specimen"
 		Description:	"Number of regional lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
 		Element:		NumberOfSentinelLymphNodes
 		Based on:		EvaluationComponent
 		Concept:		LNC#85347-3 "Sentinel lymph nodes examined [#] in Cancer specimen by Light microscopy"
 		Description:	"Number of sentinel lymph nodes examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
-		Element:		NumberOfLymphNodesWithIsolatedTumorCells 
+		Element:		NumberOfLymphNodesWithIsolatedTumorCells
 		Based on:		EvaluationComponent
 		Concept:		LNC#85352-3 "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
 		Description:	"Number of lymph nodes with isolated metatstatic tumor cells examined for the presence of cancer cells"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
 		Element:		NumberOfLymphNodesWithMicrometastases
 		Based on:		EvaluationComponent
 		Concept:		LNC#85344-0 "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
 		Description:	"Number of lymph nodes with micrometastases examined"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
 		Element:		NumberOfLymphNodesWithMacrometastases
 		Based on:		EvaluationComponent
 		Concept:		LNC#85343-2 "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
 		Description:	"Number of lymph nodes with macrometastases examined"
-		Value:			IntegerQuantity 
+		Value:			IntegerQuantity
 
 		Element:		ExtraCapsularExtensionOfNodalTumorStatus
 		Based on:		EvaluationComponent
@@ -295,19 +295,19 @@ Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 
 EntryElement:	BreastClinicalLymphNodeInvolvement
 Based on:		LaboratoryObservation
-Concept:		MTH#C0806692 "Lymph Node Involvement" 
+Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
 				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
-				LaboratoryObservationTopic.DiagnosticService is #exam 
+				LaboratoryObservationTopic.DiagnosticService is #exam
 0..0			LaboratoryObservationTopic.Precondition
 0..1			LaboratoryObservationTopic.Specimen  // mlt: moved specimen to LymphNodeAssessment
-0..0			LaboratoryObservationTopic.Specimen.CollectionMethod 
+0..0			LaboratoryObservationTopic.Specimen.CollectionMethod
 0..0			LaboratoryObservationTopic.Focus
 0..0			LaboratoryObservationTopic.Media
-				LaboratoryObservationTopic.EvaluationComponent			
+				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	LymphNodeMobility
 includes 0..1	LymphNodeSize
 0..0			LaboratoryObservationTopic.PanelMembers
@@ -319,7 +319,7 @@ Description:    "Lymph node palpable"
 Value:          CodeableConcept from LymphNodeMobilityVS
 0..0			ReferenceRange
 
-Element:		LymphNodeSize 
+Element:		LymphNodeSize
 Based on:		EvaluationComponent
 Concept:		SCT#364109001 "Size of lymph node (observable entity)"
 Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
@@ -342,7 +342,7 @@ Value:			Quantity with units UCUM#mm
 	0..0			LaboratoryObservationTopic.FindingMethod
 			 		LaboratoryObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
-	0..0			LaboratoryObservationTopic.PanelMembers.Observation  
+	0..0			LaboratoryObservationTopic.PanelMembers.Observation
 
 
 EntryElement:	BreastCancerStage
@@ -355,18 +355,14 @@ Description:	"The stage of a breast cancer. Different staging systems use differ
 
 
 EntryElement:	NuclearGrade
-Concept:		MTH#C18513 "Nuclear Grade"  // No LOINC code available for nuclear grade.
+Concept:		TBD#TBD "Nuclear Grade"  // TODO: request LOINC code for DCIS nuclear grade (no DCIS-specific code available and DCISNuclearGradeVS specifically references DCIS)
 Based on: 		SimpleCodedLaboratoryObservation
-Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
+Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
 				ObservationContext.ResultValue value is type CodeableConcept
-				LaboratoryObservationTopic.TopicCode is MTH#C18513 "Nuclear Grade"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
-
-EntryElement: BreastCancerNuclearGrade
-Based on: NuclearGrade
-Description: "The nuclear grade for a breast cancer specimen. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
-				ObservationContext.ResultValue.CodeableConcept from BreastCancerNuclearGradeVS
+				ObservationContext.ResultValue.CodeableConcept from DCISNuclearGradeVS
+				LaboratoryObservationTopic.TopicCode is TBD#TBD
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+				LaboratoryObservationTopic.DiagnosticService is #pathology
 
 EntryElement:	BreastCancerHistologicGrade
 Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
@@ -608,7 +604,7 @@ includes 1..1	BRCA2Variant
 	Based on:		EvaluationComponent
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
-//					Focus.CodeableConcept is HGNC#BRCA1Gene					
+//					Focus.CodeableConcept is HGNC#BRCA1Gene
 
 	Element:		BRCA2Variant
 	Concept:		LNC#38531-0 "BRCA2 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
