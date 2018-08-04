@@ -3,18 +3,20 @@ Namespace:		cimi.topic
 Description:	"The Topic Core package contains the top-level specializations of the Statement Topic class, namely, the FindingTopic, ActionTopic (ProcedureTopic), and EventTopic classes."
 Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.element, cimi.entity, cimi.statement
 
+Code System: HL7v2_0074 = https://www.hl7.org/fhir/v2/0074/index.html
+
 Element:		StatementTopic
 Based on:		NonIndependent
 Concept:		TBD
-Description:	"Compositional and reusable grouping of clinical statement attributes that make up the clinical focus of a statement. 
+Description:	"Compositional and reusable grouping of clinical statement attributes that make up the clinical focus of a statement.
 
 StatementTopic class attributes are aligned with SNOMED CT Concept Model attributes when such an overlap exists. Note that this class does not include contextual attributes such as the nature of the action (ordered, proposed, planned, etc...), the nature of the patient state being described (e.g., present, suspected present, absent), and the attribution of this information (the who, when, where, how, why of the information recorded)."
 1..1			TopicCode
 
-		Element:		TopicCode	
+		Element:		TopicCode
 		Concept:		TBD
-		Description:	"The concept representing the finding or action that is the topic of the statement. 
-		
+		Description:	"The concept representing the finding or action that is the topic of the statement.
+
 		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic independent of the context of the action or the finding."
 		Value:			CodeableConcept
 
@@ -27,7 +29,7 @@ Description:		"An entry related to an action or intervention, whether potential 
 Element: 		FindingTopic
 Based on:		StatementTopic
 Concept:		TBD
-Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings. 
+Description:	"Base class - independent of context - for all kinds of determinations: questions/answers, conditions, observations, allergies, and other findings.
 The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			FindingMethod
 0..1			Details
@@ -64,17 +66,17 @@ Description:	"The base class, independent of context for evaluations (measuremen
 		0..1			TopicCode
 		0..1			ExceptionValue from ExceptionValueVS if covered
 		0..1			Interpretation
-		0..*			ReferenceRange	
-		
+		0..*			ReferenceRange
+
 		Element:		CodedEvaluationComponent
 		Based on:		EvaluationComponent
 		Description:	"An evaluation component whose value is a code (concept)."
 		Value:			CodeableConcept
-		0..0			ReferenceRange 
+		0..0			ReferenceRange
 
 		Element:		PanelMembers
 		Concept:		TBD
-		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
+		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations.
 			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
@@ -82,7 +84,7 @@ Description:	"The base class, independent of context for evaluations (measuremen
 		Concept:		TBD
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
 		Value:			CodeableConcept or ref(Observation)
-		
+
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
@@ -90,12 +92,12 @@ Description:	"The base class, independent of context for evaluations (measuremen
 		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
 		0..1			ApplicableSubpopulation
 		0..1			ApplicableAgeRange
-		
+
 				Element:	ApplicableSubpopulation
 				Concept:	MTH#C0039309 "Target Population"
 				Description:	"Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
 				Value: 		CodeableConcept from http://hl7.org/fhir/ValueSet/referencerange-appliesto if covered
-		
+
 				Element:	ApplicableAgeRange
 				Concept:	TBD
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
@@ -111,8 +113,8 @@ Description:	"The topic composition for laboratory observations. A specimen is r
 
 		Element:		DiagnosticService
 		Concept:		TBD
-		Description:	"The service completing the observations, e.g. biochemistry, microbiology, blood bank, etc."
-		Value:			CodeableConcept from DiagnosticServiceVS if covered
+		Description:	"The service completing the observations, e.g. biochemistry, microbiology, blood bank."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/diagnostic-service-sections if covered
 
 
 Element: 		AssertionTopic
@@ -122,7 +124,7 @@ Description:	"The base topic for conditions, allergies, adverse events, etc. The
 Element:		ConditionAssertionTopic
 Based on:		AssertionTopic
 Description:	"A condition, independent of context. 'Condition' is interpreted broadly to include disorder, abnormality, problem, injury, complaint, functionality, concern, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble, independent of context."
-				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 0..*			ConditionCause
@@ -144,4 +146,3 @@ Description:	"A condition, independent of context. 'Condition' is interpreted br
 		Concept:		LNC#55258-8
 		Description:	"Activities that increase the severity of the pathology"
 		Value:			CodeableConcept
-
