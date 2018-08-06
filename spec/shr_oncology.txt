@@ -3,13 +3,15 @@ Namespace:		shr.oncology
 Description:	"SHR implementation of oncology data elements."
 Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-CodeSystem:     SCT = http://snomed.info/sct
-CodeSystem:     LNC = http://loinc.org
+CodeSystem:   SCT = http://snomed.info/sct
+CodeSystem:   LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:   UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		HL7V20074 = http://hl7.org/fhir/v2/0074
+
 
 EntryElement:	BreastSite
 Based on:		AnatomicalLocation
@@ -132,7 +134,7 @@ includes 0..1	BreastCancerHistologicGrade
 			0..0			ObservationContext.ResultValue
 			0..0			ObservationContext.ExceptionValue
 							LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
-							LaboratoryObservationTopic.DiagnosticService is #pathology
+							LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 			0..0			LaboratoryObservationTopic.FindingMethod
 			0..0			LaboratoryObservationTopic.Precondition
 			0..0			LaboratoryObservationTopic.Specimen
@@ -213,7 +215,7 @@ Description:	"Clinical assessment of lymph nodes for presence of cancer cells in
 0..0			ObservationContext.ExceptionValue
 				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
 				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.FindingMethod
 0..0			LaboratoryObservationTopic.Precondition
 0..1			LaboratoryObservationTopic.Specimen
@@ -362,7 +364,7 @@ Description:	"An evaluation of the size and shape of the nucleus in tumor cells 
 				ObservationContext.ResultValue.CodeableConcept from DCISNuclearGradeVS
 				LaboratoryObservationTopic.TopicCode is TBD#TBD
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 
 EntryElement:	BreastCancerHistologicGrade
 Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
@@ -373,7 +375,7 @@ Description:	"The Elston Grade/Nottingham Score, representative of the aggressiv
 				ObservationContext.ExceptionValue from NottinghamNullVS
 				LaboratoryObservationTopic.TopicCode is LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
@@ -410,7 +412,7 @@ The current approach is that positive/negative designation is a value, even thou
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
 				LaboratoryObservationTopic.TopicCode is LNC#16112-5
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	NuclearPositivity
@@ -433,7 +435,7 @@ Based on discussion with Cancer Interoperability Group subject matter experts, t
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
 				LaboratoryObservationTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	NuclearPositivity
@@ -460,7 +462,7 @@ Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeEquivocalVS
 				LaboratoryObservationTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
@@ -479,7 +481,7 @@ Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (I
 				ObservationContext.Interpretation from PositiveNegativeEquivocalVS
 				LaboratoryObservationTopic.TopicCode is LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
 0..0			LaboratoryObservationTopic.FindingMethod  // pre-coordinated in the TopicCode
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
@@ -503,7 +505,7 @@ Description:	"HER2 receptor status as determined by single-probe or dual-probe F
 				LaboratoryObservationTopic.TopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
 				LaboratoryObservationTopic.FindingMethod from HER2FISHMethodVS // single or double probe
 				ObservationContext.Interpretation from PositiveNegativeEquivocalVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
@@ -542,7 +544,7 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				ObservationContext.ResultValue.Quantity with units UCUM#1
 				LaboratoryObservationTopic.TopicCode is MTH#C1709318 "Oncotype DX Breast Cancer Assay"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 
@@ -555,7 +557,7 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				ObservationContext.ResultValue.Quantity with units UCUM#1
 				LaboratoryObservationTopic.TopicCode is MTH#C3898101 "Oncotype DX DCIS Score"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	ProsignaRecurrenceScore
@@ -567,7 +569,7 @@ The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Ris
 				ObservationContext.ResultValue.Quantity with units UCUM#1
 				LaboratoryObservationTopic.TopicCode is LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	MammaprintRecurrenceScore
@@ -579,7 +581,7 @@ The is currently no LOINC code for Mammaprint test."
 				ObservationContext.ResultValue value is type Quantity
 				LaboratoryObservationTopic.TopicCode is MTH#C2827401 "MammaPrint"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 
 EntryElement:	BreastCancerGeneticAnalysisObservation
@@ -620,7 +622,7 @@ Description:	"Ki-67 is a protein phosphatase whose expression is strongly associ
 				ObservationContext.ResultValue.CodeableConcept from Ki-67NuclearAntigenVS
 				LaboratoryObservationTopic.TopicCode is LNC#33055-5 "Ki-67 nuclear Ag [Presence] in Tissue by Immune stain"
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
@@ -714,7 +716,7 @@ includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since th
 	Concept:		MTH#C0812425
 	Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
 	Value:			Quantity with units UCUM#%
-					ObservationTopic.DiagnosticService is #pathology
+					ObservationTopic.DiagnosticService is HL7V20074#PAT
 					TopicCode is LNC#29593-1
 
 EntryElement:	GeneticVariant
