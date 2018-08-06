@@ -193,32 +193,14 @@ EntryElement:	WoundAssessmentPanel
 Based on:		NonLaboratoryObservation
 Concept:		LNC#39135-9
 Description:	"Group of observations regarding the properties and severity of a wound."
-				StatementTopic is type WoundEvaluationResultTopic
 				Interpretation is type WoundAssessmentInterpretation
 				DeltaFlag is type WoundTrend
 0..0			ResultValue
 0..0			ExceptionValue
-
-		Element:		WoundAssessmentInterpretation
-		Based on:		Interpretation
-		Concept: 		LNC#80338-7
-		Description:	"Overall assessement of whether the wound is within normal parameters."
-		Value:			CodeableConcept from http://loinc.org/vs/LL3816-7 if covered // underpowered? 'normal' and 'other'
-
-		Element:		WoundTrend
-		Based on:		DeltaFlag
-		Concept:		LNC#89253-9
-		Description:	"Whether a condition is improving, worsening, stable, or resolved."
-		Value:			CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.5/definition // should be from http://loinc.org/vs/LL4938-8 with values improved, deteriorated, stablized or resolved. Resolved is missing from the VS in VSAC
-
-
-Abstract Element: WoundEvaluationResultTopic
-Based on:		ObservationTopic
-Description:	"Topic for wound assessments."
 				TopicCode is LNC#39135-9
 0..0			ReferenceRange
  				Focus value is type string  // WoundNumber
-				Media is type PhotographicImage  // 72170-4  	Photographic image	[Media]	 
+				Media is type PhotographicImage  // 72170-4  	Photographic image	[Media] 
 				EvaluationComponent
 includes 0..1	EpisodeOfWound  // very similar to Episodicity or ClinicalStatus, but value set is different.
 includes 0..1 	PeriwoundDescription   // 72301-5  	Description of Periwound
@@ -281,12 +263,26 @@ includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
 		Description:	"The presence or absence of wound exudate."
 		Value:			CodeableConcept from PresentAbsentVS
 
+
+		Element:		WoundAssessmentInterpretation
+		Based on:		Interpretation
+		Concept: 		LNC#80338-7
+		Description:	"Overall assessement of whether the wound is within normal parameters."
+		Value:			CodeableConcept from http://loinc.org/vs/LL3816-7 if covered // underpowered? 'normal' and 'other'
+
+		Element:		WoundTrend
+		Based on:		DeltaFlag
+		Concept:		LNC#89253-9
+		Description:	"Whether a condition is improving, worsening, stable, or resolved."
+		Value:			CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.5/definition // should be from http://loinc.org/vs/LL4938-8 with values improved, deteriorated, stablized or resolved. Resolved is missing from the VS in VSAC
+
+
 // LOINC: The wound bed panel is factored so the percentages pair unambiguously with the color/appearances. It should be a set of 2-tuples (pairs). The way it is done in LOINC doesn't allow pairing 
 EntryElement: 	WoundBedAppearanceObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89254-7
 Description:	"The appearance of the base (bed) of the wound, together with the percentage of the bed with each type of appearance."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 1..1	WoundBedAppearance
 includes 1..1	WoundBedAppearancePercentage
 
@@ -306,7 +302,7 @@ EntryElement: 	WoundBedColorObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		TBD
 Description:	"Color of part or all of the wound base (bed), and the percentage of the area with that color."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 1..1	WoundBedColor
 includes 1..1	WoundBedColorAreaPercentage
 
@@ -328,7 +324,7 @@ EntryElement:	WoundEdgeObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 1..1	WoundEdgeDescription
 includes 0..1	WoundEdgeColor
 // LOINC:Is the entire edge of the wound described by one color? Or should it be by percentage, similar to the wound bed?
@@ -350,7 +346,7 @@ EntryElement:	WoundTunnelingObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89257-0
 Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 0..1	WoundTunnelLength
 includes 0..1	WoundTunnelClockDirection
 
@@ -375,7 +371,7 @@ EntryElement:	WoundUnderminingObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89258-8
 Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
-		 		ObservationTopic.EvaluationComponent
+		 		EvaluationComponent
 includes 0..1	WoundUnderminingLength
 includes 0..1	WoundUnderminingClockDirection
 
@@ -396,7 +392,7 @@ EntryElement:	WoundExudateObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 0..1	WoundExudateAmount
 includes 0..1	WoundExudateVolume
 includes 1..1	ExudateAppearance
@@ -441,7 +437,7 @@ EntryElement:	WoundSizeObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
-				ObservationTopic.EvaluationComponent
+				EvaluationComponent
 includes 1..1	WoundLength
 includes 1..1	WoundWidth
 includes 1..1	WoundDepth

@@ -193,35 +193,33 @@ Element: 		AssertionTopic
 Based on:		FindingTopic
 Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
 
-Element:		ObservationTopic
-// All attributes of observation are defined at this level. Any subclass uses subtractive methods to define relevant attributes
-Based on:		FindingTopic
-Concept:		MTH#C1554188
-Description:	"The base class, independent of context for evaluations (measurements, tests, or questions). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
-0..1			Focus
-0..1			ref(Device)
-0..1			ref(Specimen)
-0..*			Precondition
-0..*			ReferenceRange  // applies to a quantitative measurement only
-0..* 			EvaluationComponent
-0..1			PanelMembers
 
 EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+1..1			TopicCode
 1..1			PersonOfRecord
 				ContextCode is SCT#424975005 "Record Entity"
 				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
-				StatementTopic is type ObservationTopic
 0..1			ResultValue
 0..1			ExceptionValue from ExceptionValueVS if covered
 0..1			DeltaFlag
 0..1			Issued
 0..*			Observer
+1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
+0..1			Focus
+0..1			Device
+0..1			Specimen
+0..*			Precondition
+0..*			ReferenceRange  // applies to a quantitative measurement only
+0..* 			EvaluationComponent
+0..1			PanelMembers
+0..1			FindingMethod
+0..1			Details
+0..*			Media
 
 		Element:		Focus
 		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
@@ -299,69 +297,76 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 EntryElement:	NonLaboratoryObservation
 Based on:		Observation
 Description:	"An observation not based on a specimen."
-0..0			ObservationTopic.Specimen
+0..0			Specimen
 
 EntryElement:	SimpleNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation having no components or panel members"
-0..0			ObservationTopic.EvaluationComponent
-0..0			ObservationTopic.PanelMembers
+0..0			EvaluationComponent
+0..0			PanelMembers
 
 EntryElement:	CodedNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
 				ResultValue value is type CodeableConcept
-0..0			ObservationTopic.ReferenceRange
+0..0			ReferenceRange
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
-0..0			ObservationTopic.EvaluationComponent
-0..0			ObservationTopic.PanelMembers
+0..0			EvaluationComponent
+0..0			PanelMembers
 
 EntryElement:	ComponentOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
 0..0			ResultValue
 0..0			ExceptionValue
-0..0			ObservationTopic.PanelMembers
-0..0			ObservationTopic.ReferenceRange
+0..0			PanelMembers
+0..0			ReferenceRange
 
 EntryElement:	PanelOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with panel members, but without a result value or components."
 0..0			ResultValue
 0..0			ExceptionValue
-0..0			ObservationTopic.ReferenceRange
-0..0			ObservationTopic.EvaluationComponent
-1..1			ObservationTopic.PanelMembers
+0..0			ReferenceRange
+0..0			EvaluationComponent
+1..1			PanelMembers
 
 // Laboratory Measurements and Results
 
 EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
-				ObservationTopic is type LaboratoryObservationTopic
+1..1			Specimen
+0..0			AnatomicalLocation  // AnatomicalLocation is Specimen.CollectionSite
+				Category is OBSCAT#laboratory
+0..*			DiagnosticService
 
+		Element:		DiagnosticService
+		Concept:		TBD
+		Description:	"The service completing the observations, e.g. biochemistry, microbiology, blood bank, etc."
+		Value:			CodeableConcept from DiagnosticServiceVS if covered
 
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
 				ResultValue value is type CodeableConcept
-0..0			LaboratoryObservationTopic.ReferenceRange
+0..0			ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			LaboratoryObservationTopic.EvaluationComponent
-0..0			LaboratoryObservationTopic.PanelMembers
+0..0			EvaluationComponent
+0..0			PanelMembers
 
 EntryElement:	SimpleCodedLaboratoryObservation
 Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			LaboratoryObservationTopic.EvaluationComponent
-0..0			LaboratoryObservationTopic.PanelMembers
+0..0			EvaluationComponent
+0..0			PanelMembers
 
 //---------- Assertions -------------
 
