@@ -16,7 +16,7 @@ Concept:		TBD
 Description: 	"A special type of information entry consisting of a topic and a context. 
 The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model."
 0..1			ContextCode
-1..1			StatementTopic
+0..1			StatementTopic
 0..1			Encounter  // clinical statements are often associated with specific encounters
 
 		Element:		ContextCode
@@ -31,6 +31,7 @@ Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action."
 1..1				PersonOfRecord
+1..1				StatementTopic
 					StatementTopic is type ActionTopic
 0..*				Reason
 
@@ -168,9 +169,9 @@ Description:		"Abstract class representing a request to not perform any type of 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
-1..1				PersonOfRecord
+0..1				PersonOfRecord
 0..1				Interpretation
-1..1				FindingStatus
+//1..1				FindingStatus
 0..1				RelevantTime   // CIMI's ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 
 		Element:		Interpretation
@@ -199,15 +200,16 @@ Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+0..0			PersonOfRecord  // just use FHIR
+0..0			StatementTopic
 1..1			TopicCode
-1..1			PersonOfRecord
 				ContextCode is SCT#424975005 "Record Entity"
 				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
 0..1			ResultValue
-0..1			ExceptionValue from ExceptionValueVS if covered
+0..1			ExceptionValue from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
 0..1			DeltaFlag
-0..1			Issued
-0..*			Observer
+//0..1			Issued
+//0..*			Observer
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
 0..1			Focus
@@ -283,9 +285,9 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from DeltaFlagVS
 				
-		Element:		Issued
-		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
-		Value:			instant
+//		Element:		Issued
+//		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+//		Value:			instant
 
 		Element:		Observer
 		Description:	"The person or organization who observed or informed the reporter about the characteristic, potentially the clinician, the patient, or a related person."
@@ -373,6 +375,8 @@ Description:	"A coded finding from a laboratory test without further panel membe
 Abstract Element:	AssertionStatement
 Based on:			FindingStatement
 Description:		"A clinical statement that asserts presence or absence."
+1..1				PersonOfRecord
+1..1				StatementTopic
 
 Abstract Element:	AssertionPresenceStatement  // AssertPresence
 Based on:			AssertionStatement
@@ -473,6 +477,7 @@ EntryElement:	ClinicalNote
 Based on:		FindingStatement
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. Can be related to a specific Focus, such as a condition; and evidence and interpretation from FindingTopic."
+1..1			PersonOfRecord
 				ContextCode is SCT#424975005 "Record Entity"
 1..1			Details   // TODO: change to "description" to synch with CIMI
 
@@ -481,21 +486,3 @@ Based on:		AssertionStatement
 Concept:		TBD
 Description:	"Indicates the finding in question is either known absent (ruled out), not suspected, or unknown."
 	
-	
-Element:		AtRiskStatement
-Based on:		FindingStatement
-Concept:		SCT#410519009
-Description:	"At risk indicates the finding should be interpreted as a future possibility or expectation."
-				ContextCode from AtRiskContextVS
-
-Element:		ExpectationStatement
-Based on:		FindingStatement
-Concept:		SCT#410517006
-Description:	"A context indicating the finding is an expectation, prognosis, or likely outcome."
-				ContextCode from ExpectationContextVS				
-
-Element:		GoalStatement
-Based on:		FindingStatement
-Concept:		SCT#410518001
-Description:	"A hypothetical or future finding that represents an objective or goal."
-				ContextCode from GoalContextVS
