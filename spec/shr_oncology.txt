@@ -46,6 +46,7 @@ Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 				ConditionAssertionTopic.TopicCode from BreastCancerTypeVS
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerStage
+0..0			ConditionPresenceContext.Severity
 				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 				ConditionAssertionTopic.AnatomicalLocation is type BreastSite
 0..1			MorphologyBehavior from MorphologyBehaviorVS
@@ -110,83 +111,67 @@ includes 0..1	BreastCancerHistologicGrade
 		Description:    "A suffix used in conjuction with certain cancer stages, based on criteria defined by the staging system being used."
 		Value:          CodeableConcept
 
-	/*
-		EntryElement:	TumorAssessment		// change to TumorAssessment
+		Element: 	TumorDimensions
 		Based on:		LaboratoryObservation
-		Concept:		SCT#395531003 "Tumor observable (observable entity)"
-		Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should."  // source: NCI
+		Concept:		SCT#399375005 "Tumor size (observable entity)"
+		Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
 		0..0			ObservationContext.ResultValue
 		0..0			ObservationContext.ExceptionValue
-						LaboratoryObservationTopic.TopicCode is SCT#395531003 "Tumor observable (observable entity)"
-		0..0			LaboratoryObservationTopic.Specimen
-		0..0			LaboratoryObservationTopic.Precondition
+						LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
+						LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+						LaboratoryObservationTopic.Focus value is type Identifier 
 		0..0			LaboratoryObservationTopic.FindingMethod
+		0..0			LaboratoryObservationTopic.Precondition
+		0..0			LaboratoryObservationTopic.Specimen
+		0..0			LaboratoryObservationTopic.Focus
+		0..0			LaboratoryObservationTopic.Device
 		0..0			LaboratoryObservationTopic.Media
-		0..0 			LaboratoryObservationTopic.EvaluationComponent
-						LaboratoryObservationTopic.PanelMembers.Observation
-		includes 0..1	TumorDimensions
-		includes 0..1	TumorMargins
+						LaboratoryObservationTopic.EvaluationComponent
+		includes 0..*	TumorDimensionSize	
+		includes 0..1	SizeOfGrossTumorBed
+		0..0			LaboratoryObservationTopic.PanelMembers.Observation
+
+				Element:		TumorDimensionSize
+				Description:	"Measurements for the primary tumor size which includes the longest diameter of the primary tumor and the longest perpendicular diameter of the primary tumor."
+				Based on:		EvaluationComponent
+				Concept:		TBD
+				Value:			Quantity with units UCUM#mm
+/*
+				Element:		TumorSecondaryDimensionSize
+				Description:	"The longest perpendicular diameter of the primary tumor."
+				Based on:		EvaluationComponent
+				Concept:		TBD
+				Value:			Quantity with units UCUM#mm
 */
-			Element: 	TumorDimensions
-			Based on:		LaboratoryObservation
-			Concept:		SCT#399375005 "Tumor size (observable entity)"
-			Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
-			0..0			ObservationContext.ResultValue
-			0..0			ObservationContext.ExceptionValue
-							LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
-							LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
-			0..0			LaboratoryObservationTopic.FindingMethod
-			0..0			LaboratoryObservationTopic.Precondition
-			0..0			LaboratoryObservationTopic.Specimen
-			0..0			LaboratoryObservationTopic.Focus
-			0..0			LaboratoryObservationTopic.Device
-			0..0			LaboratoryObservationTopic.Media
-							LaboratoryObservationTopic.EvaluationComponent
-			includes 0..1	TumorPrimaryDimensionSize
-			includes 0..1	TumorSecondaryDimensionSize
-			includes 0..1	SizeOfGrossTumorBed
-			0..0			LaboratoryObservationTopic.PanelMembers.Observation
 
-					Element:		TumorPrimaryDimensionSize
-					Description:	"The longest diameter of the primary tumor."
-					Based on:		EvaluationComponent
-					Concept:		SCT#399734001 "Primary tumor size (observable entity)"
-					Value:			Quantity with units UCUM#mm
+				Element:		SizeOfGrossTumorBed
+				Based on:		EvaluationComponent
+				Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
+				Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
+				Value:			Quantity with units UCUM#mm
 
-					Element:		TumorSecondaryDimensionSize
-					Description:	"The longest perpendicular diameter of the primary tumor."
-					Based on:		EvaluationComponent
-					Concept:		SCT#399738003 "Secondary tumor size (observable entity)"
-					Value:			Quantity with units UCUM#mm
+		Element: 	TumorMargins
+		Based on:		CodedLaboratoryObservation
+		Concept:		LNC#44669-0 "Margin involvement in Breast tumor"
+		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+		ObservationContext.ResultValue from http://loinc.org/vs/LL4350-6
+		0..0			ObservationContext.ExceptionValue
+						LaboratoryObservationTopic.TopicCode is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
+		0..0			LaboratoryObservationTopic.FindingMethod
+		0..0			LaboratoryObservationTopic.Precondition
+						LaboratoryObservationTopic.Specimen is type BreastSpecimen
+		0..0			LaboratoryObservationTopic.Focus
+		0..0			LaboratoryObservationTopic.Device
+		0..0			LaboratoryObservationTopic.Media
+						LaboratoryObservationTopic.EvaluationComponent
+		includes 0..1	TumorMarginDescription
+		0..0			LaboratoryObservationTopic.PanelMembers.Observation
 
-					Element:		SizeOfGrossTumorBed
-					Based on:		EvaluationComponent
-					Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
-					Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
-					Value:			Quantity with units UCUM#mm
-
-			Element: 	TumorMargins
-			Based on:		CodedLaboratoryObservation
-			Concept:		LNC#44669-0 "Margin involvement in Breast tumor"
-			Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-			ObservationContext.ResultValue from http://loinc.org/vs/LL4350-6
-			0..0			ObservationContext.ExceptionValue
-							LaboratoryObservationTopic.TopicCode is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
-			0..0			LaboratoryObservationTopic.FindingMethod
-			0..0			LaboratoryObservationTopic.Precondition
-			0..0			LaboratoryObservationTopic.Specimen
-			0..0			LaboratoryObservationTopic.Focus
-			0..0			LaboratoryObservationTopic.Device
-			0..0			LaboratoryObservationTopic.Media
-							LaboratoryObservationTopic.EvaluationComponent
-			includes 0..1	TumorMarginDescription
-			0..0			LaboratoryObservationTopic.PanelMembers.Observation
-
-					Element:		TumorMarginDescription
-					Concept:		TBD
-					Based on:		CodedEvaluationComponent
-					Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
-					Value:			CodeableConcept from TumorMarginDescriptionVS
+				Element:		TumorMarginDescription
+				Concept:		TBD
+				Based on:		CodedEvaluationComponent
+				Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+				Value:			CodeableConcept from TumorMarginDescriptionVS
 
 
 	EntryElement:	BreastCancerRegionalNodesClassification
@@ -196,8 +181,8 @@ includes 0..1	BreastCancerHistologicGrade
 					ObservationContext.ResultValue.CodeableConcept from TBD
 					LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
 					LaboratoryObservationTopic.TopicCode is SCT#277206009 "N category"
-	0..0			LaboratoryObservationTopic.DiagnosticService  // removed because this is determined in LNI.
-	0..0			LaboratoryObservationTopic.Specimen // also removed b/c this is determined lower
+	0..0			LaboratoryObservationTopic.DiagnosticService
+	0..0			LaboratoryObservationTopic.Specimen
 	0..0			LaboratoryObservationTopic.Precondition
 	0..0			LaboratoryObservationTopic.FindingMethod
 			 		LaboratoryObservationTopic.EvaluationComponent
@@ -254,7 +239,7 @@ Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 
 		Element:		TotalNumberOfLymphNodesExamined
 		Based on:		EvaluationComponent
-		Concept:		TBD "TBD"
+		Concept:		SCT#444025001 "Number of lymph nodes examined (observable entity)"
 		Description:	"Total number of lymph nodes examined for the presence of cancer cells"
 		Value:			IntegerQuantity
 
@@ -328,9 +313,6 @@ Description:	"Size of the lymph node or lymph node group which is being clinical
 Value:			Quantity with units UCUM#mm
 
 
-
-// ***** Start of MLT_Mets_Mod ***************
-
 /* MLT_TO_DO: add in relationships to Met location and FindingMethod since both evaluate M category values.*/
 	EntryElement:	BreastCancerDistantMetastasesClassification
 	Based on:		CodedLaboratoryObservation
@@ -339,7 +321,7 @@ Value:			Quantity with units UCUM#mm
 					ObservationContext.ResultValue.CodeableConcept from TBD
 					LaboratoryObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
 					LaboratoryObservationTopic.DiagnosticService is #laboratory
-	0..0			LaboratoryObservationTopic.Specimen is type BreastSpecimen
+					LaboratoryObservationTopic.Specimen
 	0..0			LaboratoryObservationTopic.Precondition
 	0..0			LaboratoryObservationTopic.FindingMethod
 			 		LaboratoryObservationTopic.EvaluationComponent
