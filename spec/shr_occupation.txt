@@ -1,21 +1,32 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.occupation
+Namespace:		odh
 Description:	"Patient’s or family member's work information."
 Uses:  			shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     UCUM = http://unitsofmeasure.org 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
+
+Element:		SocialHistoryComposition
+Based on:		Composition
+Description:	"A composition represents a document such as a patient record, a knowledge artifact, or a catalog definition."
+	          	Section is type SocialHistorySection
+
+    Element:        SocialHistorySection
+    Based on:       Section
+    Description:    "Represents a section containing entries in a social history composition."
+					ClinicalStatement is type SocialHistoryObservation
 
 EntryElement:	OccupationalDataSummary
 Concept:		LNC#74166-0
-Based on:		Composition 
+Based on:		SocialHistoryComposition 
 Description:	"Current and past activities for profit, wages, salary, or as a service to others."
-1..1			Section is type OccupationalDataSection
+1..1			SocialHistorySection is type OccupationalDataSection
 
 Element:		OccupationalDataSection
 Concept:		TBD
-Based on:		Section
+Based on:		SocialHistorySection
 Description:	"Single section in the current OccupationalDataSummary, containing the person's history of employment and occupation, past and present."
 				ClinicalStatement 
 includes 0..*   HistoryOfEmploymentStatus
@@ -29,35 +40,33 @@ Based on:		CodedSocialHistoryObservation
 Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
 Description:	"A person’s state of being employed during the time period specified. 
 Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
-0..0			SubjectIfNotPersonOfRecord
 				TopicCode is LNC#74165-2 "HistoryOfEmploymentStatus"
 				ResultValue value is type CodeableConcept
 //				ResultValue from EmploymentStatusVS
 				ResultValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 0..0			EvaluationComponent
+0..0			FocalSubject
 
 EntryElement:	DateOfRetirement
 Based on:		SocialHistoryObservation
 Concept:		LNC#87510-4 "Date of Retirement"
 Description:	"If present, the patient is retired, and this observation records the retirement date.
 This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
-0..0			SubjectIfNotPersonOfRecord
 				TopicCode is LNC#87510-4 "Date of Retirement"
 				ResultValue value is type dateTime
 0..0			EvaluationComponent
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
-0..0			Focus 
+0..0			FocalSubject
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
 Concept:		LNC#87511-2
 Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
-0..0			SubjectIfNotPersonOfRecord
 				TopicCode is LNC#87511-2
 				ResultValue value is type TimePeriod
 0..0			EvaluationComponent
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
-0..0			Focus // only patient
+0..0			FocalSubject // only patient
 
 				
 EntryElement:	UsualOccupation
@@ -67,9 +76,7 @@ Description:	"The type of work a person has held for the longest duration during
 // We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
 				TopicCode is LNC#21843-8
 //				ResultValue could be from OccupationVS
-				ResultValue could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
-				Focus value is type CodeableConcept
-				Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype				
+				ResultValue could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186		
 				EvaluationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
@@ -101,8 +108,6 @@ Description:	"A single job, past or present. The relevant time is the period the
 //				ResultValue could be from OccupationVS
 				ResultValue could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
-				Focus value is type CodeableConcept
-				Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
 				EvaluationComponent
 includes 0..1	PastOrPresentIndustry
 includes 0..1	WorkClassification
@@ -120,7 +125,14 @@ includes 0..1	DailyWorkHours
 	Based on:		Role
 	Concept:		SCT#394571004 "Employer (person)"
 	Description:	"A person or organization that hires the services of another."
-	Value:			ref(Person) or ref(Organization)
+	Value:			ref(EmployerPerson) or ref(EmployerOrganization)
+
+		Element:		EmployerPerson
+		Description:	"A related person who is an employer"
+		1..1			RelationshipToPersonOfRecord is V2#E
+
+		Element:		EmployerOrganization
+		Description:	"An Organization as defined in FHIR"
 
 	Element:		PastOrPresentIndustry
 	Based on:		CodedEvaluationComponent
@@ -193,10 +205,12 @@ includes 0..1	DailyWorkHours
 Element:		SocialHistoryObservation
 Based on:		Observation
 Description:	"A simplified observation for social histories."
-				SubjectIfNotPersonOfRecord value is type ref(RelatedPerson)
+0..0			SubjectIfNotPersonOfRecord // value is type ref(RelatedPerson)
+0..0			PersonOfRecord
+0..0			Focus
 				Category is OBSCAT#social-history
+0..1			FocalSubject
 // Get rid of some unnecessary CIMI-isms
-0..0			PersonOfRecord // just use FHIR default patient
 0..0			Recorded
 0..0			Signed
 0..0			ContextCode
@@ -204,7 +218,6 @@ Description:	"A simplified observation for social histories."
 0..0			FindingMethod
 0..0			AnatomicalLocation
 0..0			Precondition
-0..0			Focus
 0..0			ReferenceRange
 0..0			PanelMembers
 0..0			Device
@@ -217,12 +230,17 @@ Description:	"A simplified observation for social histories."
 0..0			Details
 //0..0			FindingStatus
 
+	Element:		FocalSubject
+	Description:	"The focus of the observation, if someone other than the person of record (subject)."
+	1..1			RelationshipToPersonOfRecord from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+
 
 Element:		CodedSocialHistoryObservation
 Based on:		SocialHistoryObservation
 Description:	"The result of social history questions, whose answer is expressed as a code."
 				ResultValue value is type CodeableConcept
 0..0			ReferenceRange
+
 
 
 	
