@@ -1,28 +1,57 @@
 Grammar:	DataElement 5.0
 Namespace:	shr.wound
 Description: "Format for wound information capture and display, including grouping of related items."
-Uses:  		shr.base, shr.core, shr.composition
+Uses:  		shr.base, shr.core, shr.entity, shr.composition
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-EntryElement:	WoundAssessment
+EntryElement:	WoundAssessmentCompleteHistory
 Based on:		Group
-Description:	"Information about a single wound. The aggregation can contain some or all information about a wound. For example, a snapshot might include only the most recent observations about the wound, while the comprehensive history could be comprised of many observations taken by different people at different times."
+Description:	"A collection of all information about a single wound, possibly including many observations taken by different people at different times. Everything in the aggregation must relate to the same wound."
 				GroupTypeCode is LNC#39135-9
 				Statement
-includes 0..1	WoundBasicInformationGroup
-includes 0..1	WoundBedAndEdgeGroup
-includes 0..1	WoundTunnelingAndUnderminingGroup
-includes 0..1	WoundExudateGroup
-includes 0..1	WoundSizeGroup
+includes 1..1	Wound
+includes 1..*	WoundType
+includes 1..*	WoundAnatomicalLocation
+includes 1..*	AnatomicalLaterality
+includes 0..*	TimeOfOnset
+includes 0..*	ConditionPresentOnAdmission
+includes 0..*	WoundTypeEtiology
+includes 0..*	TimeOfAbatement
+includes 0..*	PressureUlcerAssociation
+includes 0..*	EpisodeOfWound
+includes 0..*	WoundAssessmentInterpretation
+includes 0..*	PhotographicImage
+includes 0..*	WoundTrend
+includes 0..*	PeriwoundDescription
+includes 0..*	VisibleInternalStructure
+includes 0..*   WoundBedAppearance
+includes 0..*	WoundBedAppearancePercentage
+includes 0..*  	WoundBedColor
+includes 0..*	WoundBedColorPercentage
+includes 0..*   WoundEdgeDescription
+includes 0..*	WoundEdgeColor
+includes 0..*   WoundWidth
+includes 0..*   WoundDepth
+includes 0..*   WoundLength
+includes 0..*	WoundArea
+includes 0..*	WoundTunneling
+includes 0..*	WoundUndermining
+includes 0..*   WoundExudateAmount
+includes 0..*	WoundExudateVolume
+includes 0..*   WoundExudateColor
+includes 0..*   WoundExudateAppearance
+includes 0..*   WoundExudateOdor
+includes 0..*	WoundTunnelingGroup
+includes 0..*	WoundUnderminingGroup
 
 
-EntryElement:	WoundBasicInformationGroup
+EntryElement:	WoundAssessmentSnapshot
 Based on:		Group
-Description:	"A grouping of basic information about a single wound, include the type of wound, cause of the wound, location, etc., including pictures if available."
-				GroupTypeCode is TBD#TBD
+Description:	"Information about a wound at a single time, structured into logical groupings. The snapshot form can be used for either input or output."
+				GroupTypeCode is LNC#39135-9
 				Statement
 includes 1..1	Wound
 includes 1..1	WoundType
@@ -31,17 +60,17 @@ includes 0..1	TimeOfOnset
 includes 0..1	ConditionPresentOnAdmission
 includes 0..1	WoundTypeEtiology
 includes 0..1	TimeOfAbatement
-// These can be repeated !  Hence, 0..*
-includes 0..*	WoundAssessmentInterpretation
+includes 0..1	WoundAssessmentInterpretation
 includes 0..*	PhotographicImage
-includes 0..*	WoundTrend
+includes 0..1	WoundTrend
 includes 0..1	EpisodeOfWound
-includes 0..*	PeriwoundDescription
+includes 0..1	PeriwoundDescription
 includes 0..*	VisibleInternalStructure
-includes 0..*	PressureUlcerAssociation
-includes 0..*	WoundTunneling
-includes 0..*	WoundUndermining
-
+includes 0..1	PressureUlcerAssociation
+includes 0..1	WoundBedAndEdgeGroup
+includes 0..1	WoundTunnelingAndUnderminingGroup
+includes 0..1	WoundExudateGroup
+includes 0..1	WoundSizeGroup
 
 EntryElement:	WoundBedAndEdgeGroup
 Based on:		Group
