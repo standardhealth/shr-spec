@@ -52,30 +52,6 @@ Based on:			ClinicalStatement
 Description:		"Any clinical statement representing a finding."
 					StatementTopic is type FindingTopic
 1..1			ref(PersonOfRecord)
-/*
-[Entry]ShrId
-[Entry]EntryId
-[Entry]PersonOfRecord
-[Entry]Version
-[Entry]EntryType
-[Entry]CreationTime
-[Entry]LastUpdated
-[Entry]Narrative
-[Entry]Language
-[Entry]SecurityLabel
-[Entry]Tag
-[Entry]DerivedFrom
-[InformationEntry]SubjectIfNotPersonOfRecord
-[InformationEntry]SourceOfInformation
-[InformationEntry]Annotation
-[InformationEntry]RecordStatus
-[InformationEntry]Recorded (who-when)
-[InformationEntry]Signed (who-when)
-[InformationEntry]Cosigned (who-when)
-[InformationEntry]Verified (who-when)
-FindingTopic.FindingMethod
-FindingTopic.Details
-*/
 
 EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
@@ -84,46 +60,6 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 				StatementTopic is type ObservationTopic
 				StatementContext is type ObservationContext
-				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
-/* 
- Here's a list of all the attributes of Observation. 
- To keep things straight, always consider the constraints on each element in this order:
-	// ClinicalStatement
-		SubjectIfNotPersonOfRecord
-		SourceOfInformation
-		Annotation
-		RecordStatus
-		Recorded
-		Signed  // aka Author
-		Cosigned
-		Verified
-	// Topic	
-		ObservationTopic.TopicCode
-		ObservationTopic.FindingMethod
-		ObservationTopic.Details
-		ObservationTopic.Category from http://hl7.org/fhir/ValueSet/observation-category if covered
-		ObservationTopic.AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
-		ObservationTopic.Focus
-		ObservationTopic.ref(Device)
-		ObservationTopic.ref(Specimen)
-		ObservationTopic.Precondition
-		ObservationTopic.ReferenceRange
-		ObservationTopic.EvaluationComponent
-		ObservationTopic.PanelMembers
-		ObservationTopic.EvaluationComponent.Value
-		ObservationTopic.EvaluationComponent.ExceptionValue
-		ObservationTopic.EvaluationComponent.Interpretation
-		ObservationTopic.EvaluationComponent.ReferenceRange
-	// Context	
-		ObservationContext.ContextCode is SCT#424975005 "Record Entity"
-		ObservationContext.Interpretation
-		ObservationContext.FindingStatus
-		ObservationContext.RelevantTime  
-		ObservationContext.Encounter
-		ObservationContext.ResultValue
-		ObservationContext.ExceptionValue
-		ObservationContext.DeltaFlag
-*/
 
 //  Non-Laboratory Results
 
@@ -214,11 +150,11 @@ EntryElement:	ConditionPresenceStatement
 Based on:		AssertionPresenceStatement
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
-				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+//				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				StatementTopic is type ConditionAssertionTopic
 				StatementContext is type ConditionPresenceContext
-				SubjectIfNotPersonOfRecord value is type ref(Patient)
-0..0			SubjectIfNotPersonOfRecord.RelationshipToPersonOfRecord  // could be self				
+//				SubjectIfNotPersonOfRecord value is type ref(Patient)
+//0..0			SubjectIfNotPersonOfRecord.RelationshipToPersonOfRecord  // could be self				
 
 EntryElement:	ConditionAbsenceStatement
 Based on:		AssertionAbsenceStatement
