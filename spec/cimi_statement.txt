@@ -173,6 +173,9 @@ Description:		"Any clinical statement representing a finding."
 0..1				Interpretation
 //1..1				FindingStatus
 0..1				RelevantTime   // CIMI's ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
+0..1				FindingMethod
+0..1				Details
+0..*				Media
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -190,10 +193,15 @@ Description:		"Any clinical statement representing a finding."
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 
+		Element:		FindingMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
+		Value:			CodeableConcept should be from http://loinc.org
+
+
 Element: 		AssertionTopic
 Based on:		FindingTopic
-Description:	"The base topic for conditions, allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found."
-
+Description:	"The base topic for allergies, adverse events, etc. These are things that are asserted to exist or not. The Value is interpreted in the context of the class; for an AdverseSensitivityToSubstance, the value is the substance, for a Condition, the Value represents the type of condition found. NO LONGER USED IN FHIMI FOR CONDITION ASSERTION."
 
 EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
 Based on:		FindingStatement
@@ -201,7 +209,7 @@ Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..0			PersonOfRecord  // just use FHIR
-0..0			StatementTopic
+0..0			StatementTopic  // eliminate to avoid making everything more complicated
 1..1			TopicCode
 				ContextCode is SCT#424975005 "Record Entity"
 				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
@@ -224,7 +232,7 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..*			Media
 
 		Element:		Focus
-		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
+		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor."
 		Value:			string or CodeableConcept or Identifier or ref(EntityOrRole)
 
 		Element:		EvaluationComponent
@@ -376,7 +384,6 @@ Abstract Element:	AssertionStatement
 Based on:			FindingStatement
 Description:		"A clinical statement that asserts presence or absence."
 1..1				PersonOfRecord
-1..1				StatementTopic
 
 Abstract Element:	AssertionPresenceStatement  // AssertPresence
 Based on:			AssertionStatement
@@ -420,13 +427,21 @@ Based on:		AssertionPresenceStatement
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
-				StatementTopic is type ConditionAssertionTopic
+1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+1..*			Category from ConditionCategoryVS
+0..*			AnatomicalLocation
+0..*			ConditionCause
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			WhenClinicallyRecognized
 0..1			Preexisting
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
 0..1			Stage
+
+			Element:		ConditionCause
+			Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
+			Value:			CodeableConcept or ref(Entity) or ref(ClinicalStatement)
+			// probably other attributes needed, such as likelihood or type of cause
 
 			Element:		ClinicalStatus
 			Concept:		TBD
@@ -466,12 +481,13 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 
 
 
-
 EntryElement:	ConditionAbsenceStatement
 Based on:		AssertionAbsenceStatement
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
-				StatementTopic is type ConditionAssertionTopic
+1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+1..*			Category from ConditionCategoryVS
+0..*			AnatomicalLocation
 				
 EntryElement:	ClinicalNote
 Based on:		FindingStatement
@@ -481,8 +497,4 @@ Description:	"An entry concerning a patient where the result is a narrative text
 				ContextCode is SCT#424975005 "Record Entity"
 1..1			Details   // TODO: change to "description" to synch with CIMI
 
-Element:		AbsenceStatement
-Based on:		AssertionStatement
-Concept:		TBD
-Description:	"Indicates the finding in question is either known absent (ruled out), not suspected, or unknown."
 	

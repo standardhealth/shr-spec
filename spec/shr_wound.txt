@@ -1,5 +1,5 @@
 Grammar:	DataElement 5.0
-Namespace:	swa
+Namespace:	sw
 Description: "SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
 Uses:  		shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
 
@@ -59,95 +59,41 @@ See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive
  	          39126-8  	Length of Wound	R	 	cm 
  	     80338-7  	Wound assessment [Interpretation]
 
-
-==========================
-
-Wound ASSERTION -- ONE ASSERTION PER WOUND
- 0..1    72300-7  	Wound type	R	 
- 0..1    89251-3  	Condition present on admission		 	 
- 0..1    11373-8  	Injury cause
- 0..1 	 85585-8  	Date of Onset of Impairment		 	{mm/dd/yyyy} 		 	 
- 0..1    88878-4  	Date of condition abatement		 	{mm/dd/yyyy} 
- 1..1    81666-0  	Wound number [Identifier]		 	 	
- 1..1?   89252-1  	Episode of Wound (aka ClinicalStatus) 		 	 
- 1..1	 72369-2  	Anatomical Location 
- 0..1 	72527-5  	Pressure ulcer stage NPUAP
-	 
-==========================	
-
-Wound ASSESSMENT PANEL (MULTIPLE PANELS PER WOUND)
-1..1    81666-0  	Wound number [Identifier]  -------> REFERENCE TO Wound Assertion	
-0..1    89253-9  	Trend		 	  	 
-0..*    72170-4  	Photographic image	[Media]	
-0..1 	80338-7  	Wound assessment [Interpretation]   
-Components:
-0..1    72301-5  	Description of Periwound
-0..*    89250-5  	Device or anatomic structure visible in wound
-1..1	72298-3  	Presence of Tunneling of Wound	R	
-1..1	72295-9  	Presence of Undermining of Wound	R	
-1..1	89259-6  	Presence of wound exudate	
-MemberObservations:
-	0..*    89254-7 	Wound bed appearance observation
-	0..*    xxxx  		Wound bed color observation
-	0..1?   89256-2  	Wound edge observation
-	0..*    89257-0  	Wound tunneling observation
-	0..*    89258-8  	Wound undermining observation
-	0..1	72292-6  	Wound exudate observation
-	0..1	72287-6  	Wound size observation
-
-===========================
-
-Observation:  89254-7 Wound bed appearance observation
- 	        COMPONENT:      72371-8  	Appearance of Wound base (bed)	R	 	 
- 	        COMPONENT:      72370-0  	Area of wound bed appearance/Entire ​Area of wound bed 	C	 	% 
-
-Observation: xxxx  Wound bed color observation
- 	        COMPONENT:      39132-6  	Color of Wound base	O	 	 
- 	        COMPONENT:      89255-4  	Wound bed area identified by color/​Area of wound bed		 	% 
-
-Observation: 89256-2  Wound edge observation		 	 
- 	         COMPONENT:      72304-9  	Edge of wound description	O	 	 
- 	         COMPONENT:      39133-4  	Color of Wound edge	O	
-	 	 
-Observation: 89257-0  	Wound tunneling observation 		 	  	 
- 	        COMPONENT:      72296-7  	Tunneling [Length] of Wound	C	 	cm 
- 	        COMPONENT:      72297-5  	Tunneling clock position of Wound	C	
-
-Observation: 89258-8  	Wound undermining observation 		 	  	 
- 	        COMPONENT:   72293-4  	Undermining [Length] of Wound	C	 	cm 
- 	        COMPONENT:   72294-2  	Undermining clock position of Wound	C	 
-
-Observation: 72292-6  	Wound exudate observation 	 	 	 
- 	        COMPONENT:     39116-9  	Drainage amount of Wound	C	 	 
- 	        COMPONENT:     72288-4  	Odor of Exudate from wound	O	 	 
- 	        COMPONENT:     72289-2  	Color of Exudate from wound	R	 	 
- 	        COMPONENT:     72290-0  	Appearance of Exudate from wound	R	
-
-Observation: 72287-6  	Wound size observation	 	 
- 	        COMPONENT:     39125-0  	Width of Wound	R	 	cm 
- 	        COMPONENT:     39127-6  	Depth of Wound	R	 	cm 
- 	        COMPONENT:     39126-8  	Length of Wound	R	 	cm 
- 			COMPONENT:     89260-4  	Area of wound		 	cm2 
-
 */
 
-Abstract Element:	WoundTopic
-Based on:		FindingSiteConditionTopic
-Description:	"A topic concerning a wound being present or absent."
-1..1			TopicCode is type WoundType
+
+//------------- Wound Absence or Presence ---------------
+EntryElement:	WoundPresenceAssertion
+Based on:		FindingSiteConditionPresenceStatement
+Concept:		SCT#416462003 "Wound (disorder)"
+Description:	"A determination that a wound that exists at a particular body site. Multiple wound assessments can be associated with a single wound."
+				Onset value is type dateTime  // 85585-8  Date of Onset {mm/dd/yyyy} 
+				Abatement value is type dateTime // 88878-4 Date of abatement {mm/dd/yyyy}
 1..1			Category is OBSCAT#exam
-1..1			FindingSiteIdentifier is type WoundIdentifier // in this context, a wound number 81666-0. However it is not clear how to associate a more specific meaning
-				ConditionCause is type WoundTypeEtiology
-1..1			AnatomicalLocation is type WoundAnatomicLocation	
+1..1			TopicCode is SCT#416462003 "Wound (disorder)"
+1..1			WoundType
+1..1			WoundIdentifier
+0..1			WoundTypeEtiology
+1..1			WoundAnatomicLocation
+0..0			Severity  // not sure if zeroing it out should be prohibited, but it is not part of LOINC panel
+0..0			Criticality
+0..0			Certainty
 0..0			Device
 0..0			Precondition
+
+EntryElement:	WoundAbsenceAssertion
+Based on:		FindingSiteConditionAbsenceStatement
+Description:	"Documents the absence of a wounds of a particular type at a given body site. If the topic is SCT#416462003 (Wound) then there is no wound of any type at the site. No wounds anywhere on the body can be indicated using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicLocation (the entire skin code should be added to the wound anatomic location value set)."
+1..1			TopicCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion if covered
+1..1			Category is OBSCAT#exam
+1..1			WoundAnatomicLocation
 
 		Element: 	WoundType
 		Based on:	TopicCode
 		Concept:	LNC#72300-7
 		Description:	"A type code describing the wound or skin injury.  
 		Differentiating pressure ulcers and other types of wounds is important for an accurate count of their number and for identifying appropriate wound treatment.  The values will be used for documenting and retrieving data regarding the number and types of wounds present. "
-		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion
+		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion if covered
 
 		Element:	WoundIdentifier
 		Based on:	FindingSiteIdentifier
@@ -158,7 +104,7 @@ Description:	"A topic concerning a wound being present or absent."
 		Element:	WoundTypeEtiology
 		Based on:	ConditionCause
 		Concept:	LNC#11373-8 "Injury cause"
-		Description:	"A specialization of condition cause, specific to the causes of injuries."
+		Description:	"A specialization of condition cause, specific to the causes of injuries (or not having injury in the wound absent context)."
 		Value: 		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.3/expansion  // should be from http://loinc.org/vs/LL4936-2 
 
 		Element:	WoundAnatomicLocation
@@ -168,24 +114,6 @@ Description:	"A topic concerning a wound being present or absent."
 		1..1 		Laterality
 		0..0		AnatomicalDirection
 
-//------------- Wound Absence or Presence ---------------
-EntryElement:	WoundPresenceStatement
-Based on:		FindingSiteConditionPresenceStatement
-Concept:		SCT#416462003 "Wound (disorder)"
-Description:	"A determination that a wound that exists at a particular body site. Multiple wound assessments can be associated with a single wound."
-				FindingSiteConditionTopic is type WoundTopic
-				Onset value is type dateTime  // 85585-8  Date of Onset {mm/dd/yyyy} 
-				Abatement value is type dateTime // 88878-4 Date of abatement {mm/dd/yyyy}
-0..0			Severity  // not sure if zeroing it out should be prohibited, but it is not part of LOINC panel
-0..0			Criticality
-0..0			Certainty
-
-
-
-/* EntryElement:	WoundAbsenceStatement
-Based on:		FindingSiteConditionAbsenceStatement
-Description:	"Documents the absence of a wounds of a particular type at a given body site. if the Value is SCT#416462003 (Wound) then there is no wound of any type at the site."
-				FindingSiteConditionTopic is type WoundTopic*/
 
 //--------------- Wound Assessment -------------------------
 
@@ -206,9 +134,9 @@ includes 0..1	EpisodeOfWound  // very similar to Episodicity or ClinicalStatus, 
 includes 0..1 	PeriwoundDescription   // 72301-5  	Description of Periwound
 includes 0..*	VisibleInternalStructure  //89250-5  Device or anatomic structure visible in wound
 includes 0..1	PressureUlcerAssociation // missing LOINC code
-includes 0..1	PresenceOfWoundTunneling  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
-includes 0..1	PresenceOfWoundUndermining // 72295-9  	Undermining of Wound	R
-includes 0..1	PresenceOfWoundExudate // 89259-6  	Presence of wound exudate	
+includes 0..1	TunnelingPresentOrAbsent  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
+includes 0..1	UnderminingPresentOrAbsent // 72295-9  	Undermining of Wound	R
+includes 0..1	ExudatePresentOrAbsent // 89259-6  	Presence of wound exudate
 				PanelMembers.Observation
 includes 0..*	WoundBedAppearanceObservation  //89254-7 	Wound bed appearance observation
 includes 0..*	WoundBedColorObservation  // xxxx  Wound color observation
@@ -244,25 +172,24 @@ includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
 		Description:	"Is the wound associated with a device or pressure point?"
 		Value:			CodeableConcept from YesNoUnknownVS
 
-		Element:		PresenceOfWoundTunneling
+		Element:		TunnelingPresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#72298-3
 		Description:	"The presence or absence of wound tunneling."
 		Value:			CodeableConcept from PresentAbsentVS
 	// LOINC: should re-use the same Snomed codes for Present-Absent
 
-		Element:		PresenceOfWoundUndermining
+		Element:		UnderminingPresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#72295-9
 		Description:	"The presence or absence of wound undermining."
 		Value:			CodeableConcept from PresentAbsentVS
 
-		Element:		PresenceOfWoundExudate
+		Element:		ExudatePresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#89259-6
 		Description:	"The presence or absence of wound exudate."
 		Value:			CodeableConcept from PresentAbsentVS
-
 
 		Element:		WoundAssessmentInterpretation
 		Based on:		Interpretation
