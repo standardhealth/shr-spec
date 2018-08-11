@@ -66,7 +66,9 @@ See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive
 EntryElement:	WoundPresenceAssertion
 Based on:		FindingSiteConditionPresenceStatement
 Concept:		SCT#416462003 "Wound (disorder)"
-Description:	"A determination that a wound that exists at a particular body site. Multiple wound assessments can be associated with a single wound."
+Description:	"A determination that a wound that exists at a particular body site.
+The WoundIdentifier serves as a link between this assertion and assessments of the wound that might occur at later times. Multiple wound assessments can be associated with a single wound."
+0..0			StatementTopic
 				Onset value is type dateTime  // 85585-8  Date of Onset {mm/dd/yyyy} 
 				Abatement value is type dateTime // 88878-4 Date of abatement {mm/dd/yyyy}
 1..1			Category is OBSCAT#exam
@@ -83,8 +85,10 @@ Description:	"A determination that a wound that exists at a particular body site
 
 EntryElement:	WoundAbsenceAssertion
 Based on:		FindingSiteConditionAbsenceStatement
-Description:	"Documents the absence of a wounds of a particular type at a given body site. If the topic is SCT#416462003 (Wound) then there is no wound of any type at the site. No wounds anywhere on the body can be indicated using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicLocation (the entire skin code should be added to the wound anatomic location value set)."
-1..1			TopicCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion if covered
+Description:	"Documents the absence of a wound at a given body site. 
+No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicLocation."
+0..0			StatementTopic
+1..1			TopicCode is SCT#416462003 "Wound (disorder)"
 1..1			Category is OBSCAT#exam
 1..1			WoundAnatomicLocation
 
@@ -130,13 +134,13 @@ Description:	"Group of observations regarding the properties and severity of a w
  				Focus value is type string  // WoundNumber
 				Media is type PhotographicImage  // 72170-4  	Photographic image	[Media] 
 				EvaluationComponent
-includes 0..1	EpisodeOfWound  // very similar to Episodicity or ClinicalStatus, but value set is different.
-includes 0..1 	PeriwoundDescription   // 72301-5  	Description of Periwound
-includes 0..*	VisibleInternalStructure  //89250-5  Device or anatomic structure visible in wound
-includes 0..1	PressureUlcerAssociation // missing LOINC code
-includes 0..1	TunnelingPresentOrAbsent  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
-includes 0..1	UnderminingPresentOrAbsent // 72295-9  	Undermining of Wound	R
-includes 0..1	ExudatePresentOrAbsent // 89259-6  	Presence of wound exudate
+includes 0..1	WoundEpisode  // very similar to Episodicity or ClinicalStatus, but value set is different.
+includes 0..1 	WoundPeriwoundDescription   // 72301-5  	Description of Periwound
+includes 0..*	WoundVisibleInternalStructure  //89250-5  Device or anatomic structure visible in wound
+includes 0..1	WoundPressureUlcerAssociation // missing LOINC code
+includes 0..1	WoundTunnelingPresentOrAbsent  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
+includes 0..1	WoundUnderminingPresentOrAbsent // 72295-9  	Undermining of Wound	R
+includes 0..1	WoundExudatePresentOrAbsent // 89259-6  	Presence of wound exudate
 				PanelMembers.Observation
 includes 0..*	WoundBedAppearanceObservation  //89254-7 	Wound bed appearance observation
 includes 0..*	WoundBedColorObservation  // xxxx  Wound color observation
@@ -146,46 +150,46 @@ includes 0..*	WoundUnderminingObservation  // 89258-8  Wound undermining observa
 includes 0..1	WoundExudateObservation  // 72292-6  Wound exudate observation
 includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
 
-		Element: 		EpisodeOfWound
+		Element: 		WoundEpisode
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#89252-1 "Episode of Wound"
 		Description:	"Wound episode refers to a period of the wound, an incident in the course of a wound"
 		Value: 			CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.4/expansion 
 
-		Element:		PeriwoundDescription 
+		Element:		WoundPeriwoundDescription 
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#72301-5
 		Description:	 "A description of the skin around the wound (periwound). Color, induration, warmth and edema should be assessed. Redness of the surrounding skin can be indicative of unrelieved pressure. Irritation of the surrounding skin can result from exposure to feces or urine, a reaction to the dressing or tape, or inappropriate removal of dressing or tape. Redness, tenderness, warmth and swelling are classical clinical signs of infection. [Reference: Brown, P., 2009]"
 		Value:			CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.2/expansion
  //could be from http://loinc.org/vs/LL2216-1
 
-		Element:		VisibleInternalStructure
+		Element:		WoundVisibleInternalStructure
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#89250-5
 		Description: 	"Exposed body structures, devices, and/or foreign bodies visible by the naked eye in a wound."
 		Value:			CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.1/expansion
 // should be from http://loinc.org/vs/LL4935-4 
 
-		Element:		PressureUlcerAssociation
+		Element:		WoundPressureUlcerAssociation
 		Based on:		CodedEvaluationComponent
 		Concept:		TBD
 		Description:	"Is the wound associated with a device or pressure point?"
 		Value:			CodeableConcept from YesNoUnknownVS
 
-		Element:		TunnelingPresentOrAbsent
+		Element:		WoundTunnelingPresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#72298-3
 		Description:	"The presence or absence of wound tunneling."
 		Value:			CodeableConcept from PresentAbsentVS
 	// LOINC: should re-use the same Snomed codes for Present-Absent
 
-		Element:		UnderminingPresentOrAbsent
+		Element:		WoundUnderminingPresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#72295-9
 		Description:	"The presence or absence of wound undermining."
 		Value:			CodeableConcept from PresentAbsentVS
 
-		Element:		ExudatePresentOrAbsent
+		Element:		WoundExudatePresentOrAbsent
 		Based on:		CodedEvaluationComponent
 		Concept:		LNC#89259-6
 		Description:	"The presence or absence of wound exudate."
@@ -251,6 +255,7 @@ EntryElement:	WoundEdgeObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
+				TopicCode is LNC#89256-2
 				EvaluationComponent
 includes 1..1	WoundEdgeDescription
 includes 0..1	WoundEdgeColor
@@ -273,6 +278,7 @@ EntryElement:	WoundTunnelingObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89257-0
 Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
+				TopicCode is LNC#89257-0
 				EvaluationComponent
 includes 0..1	WoundTunnelLength
 includes 0..1	WoundTunnelClockDirection
@@ -298,6 +304,7 @@ EntryElement:	WoundUnderminingObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89258-8
 Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
+				TopicCode is LNC#89258-8
 		 		EvaluationComponent
 includes 0..1	WoundUnderminingLength
 includes 0..1	WoundUnderminingClockDirection
@@ -319,12 +326,13 @@ EntryElement:	WoundExudateObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
+				TopicCode is LNC#72292-6
 				EvaluationComponent
 includes 0..1	WoundExudateAmount
 includes 0..1	WoundExudateVolume
-includes 1..1	ExudateAppearance
-includes 1..1	ExudateColor
-includes 0..1	ExudateOdor
+includes 1..1	WoundExudateAppearance
+includes 1..1	WoundExudateColor
+includes 0..1	WoundExudateOdor
 
 //  LOINC: Wound area should be in wound size panel, not wound exudate panel
 
@@ -340,20 +348,20 @@ includes 0..1	ExudateOdor
 		Description:"Appearance of exudate from wound"
 		Value:		Quantity with units UCUM#mL
 
-		Element:	ExudateAppearance
+		Element:	WoundExudateAppearance
 		Based on:	CodedEvaluationComponent
 		Concept:	LNC#72290-0 
 		Description:"Appearance of exudate from wound"
 		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.11/expansion //could be from http://loinc.org/vs/LL2220-3
 
-		Element:	ExudateColor
+		Element:	WoundExudateColor
 		Based on:	CodedEvaluationComponent
 		Concept:	LNC#72289-2 
 		Description:"Color of exudate from wound"
 		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.12/expansion
  // could be from http://loinc.org/vs/LL2219-5
 
-		Element:	ExudateOdor
+		Element:	WoundExudateOdor
 		Based on:	CodedEvaluationComponent
 		Concept:	LNC#72288-4
 		Description:"Odor of exudate from wound"
@@ -364,10 +372,11 @@ EntryElement:	WoundSizeObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
+				TopicCode is LNC#72287-6
 				EvaluationComponent
 includes 1..1	WoundLength
 includes 1..1	WoundWidth
-includes 1..1	WoundDepth
+includes 0..1	WoundDepth
 includes 0..1	WoundArea
 
 		Element:		WoundLength

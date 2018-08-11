@@ -10,6 +10,7 @@ Element:		AdverseSensitivityTopic
 Based on:		AssertionTopic
 Concept:		TBD	
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
+1..1			TopicCode
 0..1			AllergenIrritant
 0..*			SubstanceCategory from http://hl7.org/fhir/ValueSet/allergy-intolerance-category
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
@@ -26,7 +27,7 @@ EntryElement:	AdverseSensitivityToSubstanceStatement
 Based on:		AssertionPresenceStatement
 Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
 Description:	"A finding related to the presence or absence of an individual's risk or sensitivity to a substance or class of substances. A finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time."
-				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+//				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				Signed.Attribution.EntityOrRole is type PatientOrPractitioner  // to facilitate mapping to FHIR, which only allows Patient or Practitioner as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
 1..1			StatementTopic is type AdverseSensitivityTopic
 1..1			StatementTopic.AllergenIrritant  // US Core requirement. See http://hl7.org/fhir/us/core/StructureDefinition-us-core-allergyintolerance.html
@@ -56,9 +57,9 @@ Description:	"A finding related to the presence or absence of an individual's ri
 EntryElement:	NoAdverseSensitivityToSubstanceStatement
 Based on:		AssertionAbsenceStatement
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject."
-				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+//				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
 				Signed.Attribution.EntityOrRole is type PatientOrPractitioner
-				StatementTopic is type AdverseSensitivityTopic
+1..1			StatementTopic is type AdverseSensitivityTopic
 				AdverseSensitivityTopic.TopicCode is SCT#716186003 "No known allergy (situation)"
 				StatementTopic.TopicCode from NoKnownAllergyVS
 

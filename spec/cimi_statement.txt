@@ -212,7 +212,7 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..0			StatementTopic  // eliminate to avoid making everything more complicated
 1..1			TopicCode
 				ContextCode is SCT#424975005 "Record Entity"
-				SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
+//0..0			SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
 0..1			ResultValue
 0..1			ExceptionValue from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
 0..1			DeltaFlag
@@ -426,7 +426,7 @@ EntryElement:	ConditionPresenceStatement
 Based on:		AssertionPresenceStatement
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
-				SourceOfInformation value is type PatientOrPractitionerOrRelatedPerson
+//0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
 1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
@@ -498,3 +498,21 @@ Description:	"An entry concerning a patient where the result is a narrative text
 1..1			Details   // TODO: change to "description" to synch with CIMI
 
 	
+
+EntryElement:	FindingSiteConditionPresenceStatement
+Based on:		ConditionPresenceStatement
+Concept:		MTH#C1268086
+Description:	"Presence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+0..1			FindingSiteIdentifier
+1..*			AnatomicalLocation
+
+	Element:	FindingSiteIdentifier
+	Concept:	TBD
+	Description:	"A human-readable identifier for the condition at the finding site, for example, a wound number or tumor identifier."
+	Value:		string
+
+EntryElement:	FindingSiteConditionAbsenceStatement  // AssertionOfAbsenceStatement?
+Based on:		ConditionAbsenceStatement
+Concept:		TBD
+Description:	"Absence of a distinct anatomical or pathological morphological feature or organizational pattern, acquired or innate. Examples include tissue types, tumors, and wounds. Body structures are continuants that allow observations of the same body structure to be related to be tracked over time."
+1..*			AnatomicalLocation
