@@ -1,5 +1,5 @@
 Grammar:	DataElement 5.0
-Namespace:	swa
+Namespace:	sw
 Description: "Format for wound information capture and display, including grouping of related items."
 Uses:  		shr.base, shr.core, shr.entity, shr.composition
 
@@ -7,26 +7,166 @@ CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-EntryElement:	WoundAssessmentCompleteHistory
-Based on:		Group
-Description:	"A collection of all information about a single wound, possibly including many observations taken by different people at different times. Everything in the aggregation must relate to the same wound."
-				GroupTypeCode is LNC#39135-9
+
+EntryElement:	ClinicalInputForm-PatientWoundSummary
+Based on:		Composition
+Description:	"Clinical input form for the initial observation of a wound or wounds on a patient. Includes only basic who/what/where aspects, not the complete assessment. Addresses the use case of a new patient being evaluated for the presence or absence of wounds."
+				Subject value is type Patient
+				TypeCode is LNC#39135-9
 				Statement
-includes 1..1	Wound
+includes 0..*	WoundPresentAssembly
+includes 0..*	WoundAbsentAssembly
+
+	Element:		WoundPresentAssembly
+	Based on:		Assembly
+	Description:	"A group of observations that together describe initial observations about a wound."
+					Statement
+	includes 1..1	WoundPresent				
+	includes 1..1	WoundType
+	includes 1..1	WoundAnatomicalLocation
+	includes 0..1	TimeOfOnset
+	includes 0..1	ConditionPresentOnAdmission
+	includes 0..1	WoundTypeEtiology
+	includes 0..*	PhotographicImage
+	includes 0..1	WoundEpisode
+
+	Element:		WoundAbsentAssembly
+	Based on:		Assembly
+					Statement
+	includes 1..1	WoundAbsent
+	includes 1..1	WoundAnatomicalLocation				
+
+
+EntryElement:	ClinicalInputForm-WoundAssessment
+Based on:		Composition
+Description:	"Information about a wound at a single time, structured into logical groupings for input or display."
+				Subject value is type WoundPresent
+				TypeCode is LNC#39135-9
+//				Assembly
+//includes 1..1	WoundAssessmentAssembly
+//
+//	Element:		WoundAssessmentAssembly
+//	Based on:		Assembly
+					Statement
+	includes 0..1	WoundAssessmentInterpretation
+	includes 0..*	PhotographicImage
+	includes 0..1	WoundTrend
+	includes 0..1	WoundPeriwoundDescription
+	includes 0..*	WoundVisibleInternalStructure
+	includes 0..1	WoundPressureUlcerAssociation
+	includes 0..1	TimeOfAbatement
+//					Assembly
+	includes 0..1	WoundSizeAssembly
+	includes 0..1	WoundBedAndEdgeAssembly
+	includes 0..1	WoundTunnelingAndUnderminingAssembly
+	includes 0..1	WoundExudateAssembly
+
+
+Element:		WoundBedAndEdgeAssembly
+Based on:		Assembly
+Description:	"Assessment of the wound bed (base) and edge, including the appearance and color of each."
+				TypeCode is LNC#72372-6
+//				Assembly
+				Statement
+includes 0..*	WoundBedAppearanceAssembly
+includes 0..*	WoundBedColorAssembly
+includes 0..1	WoundEdgeAssembly
+
+	Element:		WoundBedAppearanceAssembly
+	Based on:       Assembly
+	Description:	"The appearance of a percentage area of the wound bed (base"
+					TypeCode is TBD#TBD
+					Statement
+	includes 0..1   WoundBedAppearance
+	includes 0..1	WoundBedAppearancePercentage
+
+	Element:		WoundBedColorAssembly
+	Based on:       Assembly
+	Description:	"The color of a percentage area of the wound bed (base)"
+					TypeCode is TBD#TBD
+					Statement
+	includes 0..1   WoundBedColor
+	includes 0..1	WoundBedColorPercentage
+
+	Element:		WoundEdgeAssembly
+	Based on:       Assembly
+	Description:	"Description of the color and condition of the edige of the wound."
+					TypeCode is LNC#89256-2
+					Statement
+	includes 0..1   WoundEdgeDescription
+	includes 0..1	WoundEdgeColor
+
+Element:   		WoundTunnelingAndUnderminingAssembly
+Based on:       Assembly
+Description:	"Assessment and measurement of tunnels and undermining of the wound."
+                TypeCode is LNC#72299-1 
+//                Assembly
+				Statement
+includes 0..*   WoundTunnelingAssembly
+includes 0..*   WoundUnderminingAssembly
+
+	Element:   		WoundTunnelingAssembly
+	Based on:       Assembly
+	Description:	"Description of a specific single tunnel on a specific wound. Applicable only if tunnel(s) are present"
+					TypeCode is LNC#89258-8 
+					Statement
+	includes 1..1   WoundTunnelLength
+	includes 1..1   WoundTunnelClockDirection
+
+	Element:  		WoundUnderminingAssembly
+	Based on:       Assembly
+	Description:	"Description of the undermining of the wound. Applicable only if undermining is present"
+					TypeCode is LNC#89258-8 
+					Statement
+	includes 1..1   WoundUnderminingLength
+	includes 1..1   WoundUnderminingClockDirection
+
+Element:   		WoundExudateAssembly
+Based on:       Assembly
+Description:	"Descriptions of the exudate of the wound. Applicable only if wound exudate is present."
+                TypeCode is LNC#72292-6
+                Statement
+includes 0..1   WoundExudateAmount
+includes 0..1	WoundExudateVolume
+includes 1..1   WoundExudateColor
+includes 1..1   WoundExudateAppearance
+includes 0..1   WoundExudateOdor
+
+Element: 	WoundSizeAssembly
+Based on:       Assembly
+Description:	"The dimensions of the wound."
+                TypeCode is LNC#72287-6
+                Statement
+includes 1..1   WoundWidth
+includes 1..1   WoundDepth
+includes 1..1   WoundLength
+includes 0..1	WoundArea
+
+
+EntryElement:	ExchangeForm-WoundComprehensiveHistory
+Based on:		Composition
+Description:	"A collection of all information about a single wound, possibly including many observations taken by different people at different times. Everything in the aggregation relates to the same wound."
+				Subject value is type WoundPresent
+				TypeCode is LNC#39135-9
+//				Assembly
+//includes 1..1	WoundComprehensiveHistoryAssembly
+//
+//Element:		WoundComprehensiveHistoryAssembly
+//Based on:		Assembly
+				Statement
 includes 1..*	WoundType
 includes 1..*	WoundAnatomicalLocation
-includes 1..*	AnatomicalLaterality
 includes 0..*	TimeOfOnset
 includes 0..*	ConditionPresentOnAdmission
 includes 0..*	WoundTypeEtiology
 includes 0..*	TimeOfAbatement
-includes 0..*	PressureUlcerAssociation
-includes 0..*	EpisodeOfWound
+includes 0..*	WoundPressureUlcerAssociation
+includes 0..*	WoundEpisode
 includes 0..*	WoundAssessmentInterpretation
 includes 0..*	PhotographicImage
 includes 0..*	WoundTrend
-includes 0..*	PeriwoundDescription
-includes 0..*	VisibleInternalStructure
+includes 0..*	WoundPeriwoundDescription
+includes 0..*	WoundVisibleInternalStructure
 includes 0..*   WoundBedAppearance
 includes 0..*	WoundBedAppearancePercentage
 includes 0..*  	WoundBedColor
@@ -37,116 +177,14 @@ includes 0..*   WoundWidth
 includes 0..*   WoundDepth
 includes 0..*   WoundLength
 includes 0..*	WoundArea
-includes 0..*	WoundTunneling
-includes 0..*	WoundUndermining
 includes 0..*   WoundExudateAmount
 includes 0..*	WoundExudateVolume
 includes 0..*   WoundExudateColor
 includes 0..*   WoundExudateAppearance
 includes 0..*   WoundExudateOdor
-includes 0..*	WoundTunnelingGroup
-includes 0..*	WoundUnderminingGroup
-
-
-EntryElement:	WoundAssessmentSnapshot
-Based on:		Group
-Description:	"Information about a wound at a single time, structured into logical groupings. The snapshot form can be used for either input or output."
-				GroupTypeCode is LNC#39135-9
-				Statement
-includes 1..1	Wound
-includes 1..1	WoundType
-includes 1..1	WoundAnatomicalLocation
-includes 0..1	TimeOfOnset
-includes 0..1	ConditionPresentOnAdmission
-includes 0..1	WoundTypeEtiology
-includes 0..1	TimeOfAbatement
-includes 0..1	WoundAssessmentInterpretation
-includes 0..*	PhotographicImage
-includes 0..1	WoundTrend
-includes 0..1	EpisodeOfWound
-includes 0..1	PeriwoundDescription
-includes 0..*	VisibleInternalStructure
-includes 0..1	PressureUlcerAssociation
-includes 0..1	WoundBedAndEdgeGroup
-includes 0..1	WoundTunnelingAndUnderminingGroup
-includes 0..1	WoundExudateGroup
-includes 0..1	WoundSizeGroup
-
-EntryElement:	WoundBedAndEdgeGroup
-Based on:		Group
-Description:	"Assessment of the wound bed (base) and edge, including the appearance and color of each."
-				GroupTypeCode is LNC#72372-6
-				Group
-includes 0..*	WoundBedAppearanceGroup
-includes 0..*	WoundBedColorGroup
-includes 0..1	WoundEdgeGroup
-
-	EntryElement:	WoundBedAppearanceGroup
-	Based on:       Group
-	Description:	"The appearance of a percentage area of the wound bed (base"
-					GroupTypeCode is TBD#TBD
-					Statement
-	includes 0..1   WoundBedAppearance
-	includes 0..1	WoundBedAppearancePercentage
-
-	EntryElement:	WoundBedColorGroup
-	Based on:       Group
-	Description:	"The color of a percentage area of the wound bed (base)"
-					GroupTypeCode is TBD#TBD
-					Statement
-	includes 0..1   WoundBedColor
-	includes 0..1	WoundBedColorPercentage
-
-	EntryElement:	WoundEdgeGroup
-	Based on:       Group
-	Description:	"Description of the color and condition of the edige of the wound."
-					GroupTypeCode is LNC#89256-2
-					Statement
-	includes 0..1   WoundEdgeDescription
-	includes 0..1	WoundEdgeColor
-
-EntryElement:   WoundTunnelingAndUnderminingGroup
-Based on:       Group
-Description:	"Assessment and measurement of tunnels and undermining of the wound."
-                GroupTypeCode is LNC#72299-1 
-                Group
-includes 0..*   WoundTunnelingGroup
-includes 0..*   WoundUnderminingGroup
-
-	EntryElement:   WoundTunnelingGroup
-	Based on:       Group
-	Description:	"Description of a specific single tunnel on a specific wound. Applicable only if tunnel(s) are present"
-					GroupTypeCode is LNC#89258-8 
-					Statement
-	includes 1..1   WoundTunnelLength
-	includes 1..1   WoundTunnelClockDirection
-
-	EntryElement:   WoundUnderminingGroup
-	Based on:       Group
-	Description:	"Description of the undermining of the wound. Applicable only if undermining is present"
-					GroupTypeCode is LNC#89258-8 
-					Statement
-	includes 1..1   WoundUnderminingLength
-	includes 1..1   WoundUnderminingClockDirection
-
-EntryElement:   WoundExudateGroup
-Based on:       Group
-Description:	"Descriptions of the exudate of the wound. Applicable only if wound exudate is present."
-                GroupTypeCode is LNC#72292-6
-                Statement
-includes 0..1   WoundExudateAmount
-includes 0..1	WoundExudateVolume
-includes 1..1   WoundExudateColor
-includes 1..1   WoundExudateAppearance
-includes 0..1   WoundExudateOdor
-
-EntryElement: 	WoundSizeGroup
-Based on:       Group
-Description:	"The dimensions of the wound."
-                GroupTypeCode is LNC#72287-6
-                Statement
-includes 1..1   WoundWidth
-includes 1..1   WoundDepth
-includes 1..1   WoundLength
-includes 0..1	WoundArea
- 
+includes 0..*	WoundTunnelingPresent
+includes 0..*   WoundTunnelLength
+includes 0..*   WoundTunnelClockDirection
+includes 0..*	WoundUnderminingPresent			
+includes 0..*   WoundUnderminingLength
+includes 0..*   WoundUnderminingClockDirection

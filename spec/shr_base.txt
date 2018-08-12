@@ -16,11 +16,11 @@ Uses:			shr.core
 */
 
 Abstract Element:	Statement
-Description:		"Any clinical statement."
+Description:		"Base class for all types of clinical statements."
 
 Abstract Element:	Finding
 Based on:			Statement
-Description:		"A determination, such as an observation, opinion, fact, or judgment."
+Description:		"A determination, such as an observation, assertion, opinion, fact, or judgment."
 1..1				FindingStatus			
 0..1				RelevantTime
 
@@ -33,36 +33,37 @@ Description:		"A determination, such as an observation, opinion, fact, or judgme
 		Description:	"The time or time period that the statement addresses."
 		Value:			dateTime or TimePeriod 
 
-Abstract Element:	ExistentialStatement
+Abstract Element:	ExistentialFinding
 Based on:			Finding
 Description:		"An assertion of a physical or conceptual entity, relationship, situation, condition, or phenomenon present or absent."
-1..1				ContextCode from PresentAbsentVS
+1..1				PresentOrAbsent
 
-		Element:		ContextCode	
-		Description:	"A code representing the ontological status of the statement, e.g., whether it exists, does not exist, is planned, etc."
-		Value:			CodeableConcept
+		Element:		PresentOrAbsent	
+		Description:	"Whether the object is present or absent, exists or does not exist."
+		Value:			CodeableConcept  from PresentAbsentVS
 
 Abstract Element:	ObjectExistence
-Based on:			ExistentialStatement
+Based on:			ExistentialFinding
 Description:		"An assertion of a physical or conceptual entity, relationship, role, situation, condition, or phenomenon present or absent."
 0..1				Subject
 0..1				ObjectCode
 0..1				ObjectIdentifier
 
 		Element:		Subject
-		Description:	"The person, place, event, condition, other statement that the phenomenon of this statement addresses or belongs to."
+		Description:	"The person, place, event, condition, other statement that this statement addresses or belongs to. 
+		For an existential finding, the Subject is the 'owner' of the object said to exist or not exist. For example, the subject for a condition is a patient; the subject for wound size is a wound. Subjects are themselves statements."
 		Value:			Statement
 
 		Element:		ObjectCode
-		Description: 	"The property of the Subject being observed or measured. Also can be viewed as the 'question' to the result value's 'answer'.'"
+		Description: 	"A code reprsenting the type of entity, person, role, condition, or phenomenon that is being asserted to exist or not exist."
 		Value:			CodeableConcept
 
 		Element: 		ObjectIdentifier
 		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
-		Value:			id
+		Value:			string
 	
 EntryElement:		RelationshipExistence
-Based on:			ExistentialStatement
+Based on:			ExistentialFinding
 Description:		"An assertion of a realtionship between two things, either present or absent."
 0..1				Subject
 0..1				RelationshipCode
@@ -76,15 +77,19 @@ Description:		"An assertion of a realtionship between two things, either present
 		Description:	"The phenomenon (person, place, event, condition, other statement) that the subject of this statement addresses or belongs to."
 		Value:			Statement
 
-
 // + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
 
 
 Abstract Element: 	EvaluationResult
 Based on:			Finding
-Description:		"A statement that asserts the value of a property of a thing."
+Description:		"A statement that asserts the value of a property (observable) of the subject. The subject is often the patient, but may be a condition, a physical structure, or another clinical statement. For example, an interpretation is a finding about an observation."
 1..1				Subject
+1..1				ObservableCode
 0..1				ResultValue
+
+		Element:		ObservableCode
+		Description:	"A code describing the aspect or property of the subject being observed or measured. The ObservableCode is the 'question code' that pairs to the 'answer' contained in the ResultValue."
+		Value:			CodeableConcept
 
 		Element:		ResultValue
 		Description:	"The finding itself, such as the blood pressure value recorded."
@@ -99,17 +104,25 @@ EntryElement:		QuantitativeEvaluationResult
 Based on:			EvaluationResult
 					ResultValue value is type Quantity
 
-// -------------  Groups -----------------
+// -------------  Assemblies -----------------
 
-EntryElement:   Group
+EntryElement:   Composition
 Based on:       Statement
-Description:    "A set of one or more statements and subgroups that should be interpreted together, or may be convenient to consider collectively."
-1..1            GroupTypeCode
-0..*            Statement
-0..*			Group
+Description:    "A set of one or more groups that should be interpreted together, exchanged as a group, or may be aggregregated for the purpose of clinical input or output."
+1..1			Subject
+1..1            TypeCode
+0..*			Statement
+//0..*			Assembly
 
-		Element:	GroupTypeCode
-		Description:	"A code that describes the type of composition or group, such as a section or document type identifier."
+		Element:	Assembly
+		Based on:	Statement
+		Description:	"A collection of statements and groups."
+		0..1		TypeCode
+		0..*		Statement
+	//	0..*		Assembly
+
+		Element:	TypeCode
+		Description:	"A code that describes the type of composition or section, such as a section or document type identifier."
 		Value:		CodeableConcept
 
 // -------------  Entry Metadata -----------------
@@ -152,7 +165,7 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 
 	Element:		Narrative
 	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Description:	"A human-readable narrative that contains a summary of the resource, and may be used to represent the content of the resource to a human."
 	Value:			xhtml
 	1..1			NarrativeQualifier
 

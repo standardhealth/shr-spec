@@ -8,10 +8,19 @@ CodeSystem:		UCUM = http://unitsofmeasure.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
 
-EntryElement:   VitalSignsGroup
-Based on:       Group
-Description:    "An aggregation of information on vital signs, weight, height, head circumference, oxygen saturation, BMI, etc. The aggregation can contain some or all information about vital signs. A snapshot might include only the most recent vital signs, while a history could be comprised of many vital signs observations taken by different people at different times."
-                GroupTypeCode is LNC#85353-1
+EntryElement:   VitalSignsComposition
+Based on:       Composition
+Description:    "An aggregation of information on vital signs, weight, height, head circumference, oxygen saturation, BMI, etc. 
+The aggregation can contain some or all information about vital signs. A snapshot might include only the most recent vital signs, while a history could be comprised of many vital signs observations taken by different people at different times."
+                Subject value is type Patient
+                TypeCode is LNC#85353-1
+                Statement
+includes 1..1   VitalSignsAssembly
+
+Element:        VitalSignsAssembly
+Based on:       Assembly
+Description:    "A section-level aggregation containing some or all information about vital signs."
+                TypeCode is LNC#85353-1
                 Statement
 includes 0..1   RespiratoryRateMeasurement
 includes 0..1   HeartRateMeasurement
@@ -20,8 +29,8 @@ includes 0..1   BodyHeightMeasurement
 includes 0..1   BodyLengthMeasurement
 includes 0..1   HeadCircumferenceMeasurement
 includes 0..1   BodyMassIndex
-                Group
-includes 0..1   BloodPressureGroup                
+//                Assembly
+includes 0..1   BloodPressure               
 
 
 EntryElement:	RespiratoryRateMeasurement
@@ -151,15 +160,15 @@ Description:	"A general indicator of the body fat an individual is carrying base
                 Subject value is type Person
                 ResultValue.Quantity with units UCUM#kg/m2  "kg/m2"
 
-EntryElement:	BloodPressureGroup
-Based on:		Group
-Description:	"The force of circulating blood on the walls of the arteries, systolic and diastolic"
-                GroupTypeCode is LNC#55284-4
+EntryElement:	BloodPressure
+Based on:		Assembly
+Description:	"The force of circulating blood on the walls of the arteries, systolic and diastolic."
+                TypeCode is LNC#55284-4
                 Statement
 includes 0..1 	SystolicPressureMeasurement
 includes 0..1 	DiastolicPressureMeasurement
 
-Abstract Element:   BloodPressureEvaluationResult
+Abstract Element:   SystolicOrDiastolicMeasurement
 Based on:       QuantitativeEvaluationResult
 Concept:        TBD#TBD
 Description:    "Parent class for measurements of systolic and diastolic pressures."
@@ -167,13 +176,13 @@ Description:    "Parent class for measurements of systolic and diastolic pressur
                 ResultValue.Quantity with units UCUM#mm[Hg] "mmHg"
 
 EntryElement:	SystolicPressureMeasurement
-Based on:       BloodPressureEvaluationResult
+Based on:       SystolicOrDiastolicMeasurement
 Concept:        LNC#8480-6
 Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest."
 				
 
 EntryElement:	DiastolicPressureMeasurement
-Based on:       BloodPressureEvaluationResult
+Based on:       SystolicOrDiastolicMeasurement
 Concept:        LNC#8462-4
 Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
 
@@ -181,28 +190,28 @@ EntryElement:   BloodPressureMeasurementBodySite
 Based on:       CodedEvaluationResult
 Concept:        TBD#TBD
 Description:    "The body site where blood pressure is measured, such as arm or leg."
-                Subject value is type BloodPressureEvaluationResult
+                Subject value is type SystolicOrDiastolicMeasurement
                 ResultValue from BloodPressureMeasurementBodySiteVS
 
 EntryElement:   BloodPressureMeasurementMethod
 Based on:       CodedEvaluationResult
 Concept:        TBD#TBD
 Description:    "The method of measurement of blood pressure, for example, by an automatic cuff."
-                Subject value is type BloodPressureEvaluationResult
+                Subject value is type SystolicOrDiastolicMeasurement
                 ResultValue from BloodPressureMeasurementMethodVS
 
 EntryElement:   BloodPressureMeasurementQualifier
 Based on:       CodedEvaluationResult
 Concept:        TBD#TBD
 Description:    "Information to help interpret the blood pressure measurement, such as prior to or after an infusion."
-                Subject value is type BloodPressureEvaluationResult
+                Subject value is type SystolicOrDiastolicMeasurement
                 ResultValue from BloodPressureMeasurementQualifierVS
 
 EntryElement:   BloodPressureMeasurementHeadTiltAngle
 Based on:       QuantitativeEvaluationResult
 Concept:        LNC#8360-0
 Description:	"The angle at which the head is tilted relative to a level position while physiologic tests are taken."
-                Subject value is type BloodPressureEvaluationResult
+                Subject value is type SystolicOrDiastolicMeasurement
                 ResultValue.Quantity with units UCUM#deg "deg"
 
 

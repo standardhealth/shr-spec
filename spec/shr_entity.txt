@@ -5,31 +5,27 @@ Uses:			shr.core, shr.base
 
 EntryElement:	Person
 Based on:		ObjectExistence
-Concept:		TBD#TBD
+Concept:		SCT#125676002
 				ObjectCode is SCT#125676002 "Person (person)"
 
-EntryElement:	PersonRole
+Abstract Element:	RolePlayedByPerson
 Based on:		ObjectExistence
-Concept:		TBD#TBD
 Description:	"The capacity in which an actor is involved in an activity or environment. For instance, 'attending physician' or 'research subject'.
 The difference between role and type is that type is constant, while role can change depending on the activity or setting. Note that attributes of the actor (the subject) remain constant regardless of the role the actor plays should be part of the subject and not the role. For instance, a person may be a practitioner and a patient. In both cases their date of birth will be the same and thus such information should not be part of the role."
 				Subject value is type Person  // Actor
-				ObjectCode from PersonRoleVS
+				ObjectCode from RolePlayedByPersonVS
 
-EntryElement:	PatientRole
-Based on:		PersonRole
-Concept:		TBD#TBD
+EntryElement:	Patient
+Based on:		RolePlayedByPerson
+Concept:		SCT#116154003
 Description:	"The role of patient in a healthcare context."
-				Subject value is type Person  // Actor
 				ObjectCode is SCT#116154003 "Patient (person)"
 
-EntryElement:	ProviderRole
-Based on:		PersonRole
-Concept:		TBD#TBD
+EntryElement:	Provider
+Based on:		RolePlayedByPerson
+Concept:		MTH#C1138603
 Description:	"The role of provider in a healthcare context, which can be a person or an organization."
-				Subject value is type Person  // Actor
-				ObjectCode is SCT#116154003 "Patient (person)"
-
+				ObjectCode is MTH#C1138603 "Provider"
 
 EntryElement:	Organization
 Concept:		TBD#TBD
@@ -37,24 +33,24 @@ Based on:		ObjectExistence
 0..0			Subject
 				ObjectCode from http://hl7.org/fhir/ValueSet/organization-type
 
-EntryElement:	Disease
+EntryElement:	Condition
 Based on:		ObjectExistence
 Concept:		TBD#TBD
 Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
 				Subject value is type Person
-				ObjectCode from DiseaseVS
+				ObjectCode from ConditionVS
 
 EntryElement:	TimeOfOnset
 Based on:		EvaluationResult
 Concept:        LNC#85585-8  // or SCT#263501003 "Time of onset (observable entity)"
 Description:	"The beginning or first appearance of a mental or physical disorder."
-				Subject value is type Disease
+				Subject value is type Condition
 				ResultValue value is type dateTime
 
 EntryElement:	BodyStructure
 Concept:		TBD#TBD
 Based on:		ObjectExistence
-				Subject value is type Person
+1..1			Subject value is type Patient
 				ObjectCode from BodyStructureVS 
 
 //--------------These will map to basic?------------------
@@ -94,14 +90,14 @@ EntryElement:	TimeOfAbatement
 Based on:		EvaluationResult
 Concept:        LNC#88878-4 // of SCT#...... Time of abatement (observable entity)"
 Description:	"The end, remission or resolution of a disease."
-				Subject value is type Disease
+				Subject value is type Condition
 				ResultValue value is type dateTime
 
 EntryElement:	ConditionPresentOnAdmission
 Based on:		EvaluationResult
 Concept:        LNC#89251-3 
 Description:	"Whether the condition was present when the patient was admitted."
-				Subject value is type Disease
+				Subject value is type Condition
 				ResultValue from YesNoUnknownVS
 
 EntryElement:	DateOfBirth
