@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:			cimi.element, cimi.topic, cimi.statement
+Uses:			cimi.element, cimi.topic, cimi.statement, cimi.datatypes
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
@@ -61,65 +61,6 @@ Based on:		Quantity
 Concept:		TBD
 Description:	"Representation of an amount of currency or monetary value."
 				Units with Coding from CurrencyVS
-
-
-//------------- Complex data types in FHIR 3.0 ---------------
-
-Element:		Media
-Based on:		EmbeddedContent
-Concept:		TBD
-Description:	"A file that contains audio, video, image, or similar content."
-0..1			BinaryData
-0..1			ContentType
-0..1			Language
-0..1			ResourceLocation
-0..1			ResourceSize
-0..1			Hash
-0..1			Title
-0..1			CreationTime
-
-	Element:		BinaryData
-	Concept:		TBD
-	Description:	"The data itself."
-	Value:			base64Binary
-
-	Element:		ContentType
-	Concept:		TBD
-	Description:	"Mime type of the content, with charset etc."
-	Value:			code
-	
-	Element:		Language
-	Concept:		MTH#C0023008
-	Description: 	"A human language, spoken or written."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/languages if covered
-
-	Element:		ResourceLocation
-	Concept:		TBD
-	Description:	"URI where data can be found."
-	Value:			uri
-
-	Element:		ResourceSize
-	Concept:		TBD
-	Description:	"Number of bytes of content in the resource (if url provided)"
-	Value:			unsignedInt
-
-	Element:		Hash
-	Concept:		TBD
-	Description:	"A hash code of the data (sha-1, base64ed)"
-	Value:			base64Binary
-	
-	Element:   	 	CreationTime  
-	Concept:        MTH#C3669169
-	Description:    "The point in time when the information was recorded in the system of record."
-	Value:          dateTime  // we can map to instant from dateTime
-
-	Element:		PhotographicImage
-	Based on:		Media
-	Concept:		LNC#72170-4
-	//				ContentType from ImageMimeTypeVS if covered
-
-
-//---- Coding departs from CIMI to align with FHIR
 
 Element:		Coding
 Concept:		MTH#C0805701
@@ -419,21 +360,7 @@ Description:	"A text written in a human language."
 Value:			string
 0..1			Language
 
-Element:		EmbeddedContent
-Concept:		TBD
-Description:	"Abstract class defining the common metadata of all types of encapsulated data, such as images."
 
-Element:		ParsableContent
-Based on:		EmbeddedContent
-Concept:		TBD
-Description:	"A string that follows a formal syntax and can be analyzed and broken into meaningful parts."
-Value:			string
-1..1			Formalism
-
-	Element:		Formalism
-	Concept:		TBD
-	Description:	"The system of formal syntax or interpretation associated with parsable content."
-	Value:			CodeableConcept
 
 /*  No can do! Can't restrict "value is type" to a primitive
 Element:		UnsignedIntegerRange
@@ -684,11 +611,6 @@ Concept:		MTH#C1262869
 Description:	"The position or physical attitude of the body."
 Value:			CodeableConcept from BodyPositionVS
 
-Element:		Details
-Concept: 		MTH#C0947611
-Description:	"A text note containing additional details, explanation, description, comment, or summarization. Details can discuss, support, explain changes to, or dispute information."
-Value:			string  // change to language-text
-
 Element:		DisplayText
 Concept:		MTH#C1548311
 Description:	"A string meant for reading by a person, for example, accompanying a code."
@@ -705,8 +627,5 @@ Concept:		TBD
 Description:	"A distinguishing word or group of words naming an item."
 Value:			string
 
-Element:		Category
-Concept:		TBD
-Description:	"The type, kind, or class of this item."
-Value:			CodeableConcept
+
 

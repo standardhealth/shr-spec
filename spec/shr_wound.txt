@@ -1,7 +1,7 @@
 Grammar:	DataElement 5.0
 Namespace:	sw
 Description: "SHR implementation of the HL7 Pressure Ulcer Prevention Domain Analysis Model (May, 2011)."
-Uses:  		shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
+Uses:  		shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition, cimi.datatypes
 
 CodeSystem:  	UCUM = http://unitsofmeasure.org
 CodeSystem:     LNC = http://loinc.org
@@ -31,6 +31,7 @@ See https://s.details.loinc.org/LOINC/39135-9.html?sections=Comprehensive
  	          89254-7  	Wound bed panel		 	 
  	               72371-8  	Appearance of Wound base	R	 	 
  	               72370-0  	Area of identified wound bed appearance/​Area of wound bed of Wound base	C	 	% 
+			  **MISSING**  Wound bed color panel
  	               39132-6  	Color of Wound base	O	 	 
  	               89255-4  	Wound bed area identified by color/​Area of wound bed		 	% 
  	          89256-2  	Wound edge panel		 	 
@@ -74,23 +75,14 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 1..1			Category is OBSCAT#exam
 1..1			TopicCode is SCT#416462003 "Wound (disorder)"
 1..1			WoundType
-1..1			WoundIdentifier
-0..1			WoundTypeEtiology
-1..1			WoundAnatomicLocation
+0..1			ConditionIdentifier is type WoundIdentifier
+0..1			ConditionCause is type WoundTypeEtiology
+1..1			AnatomicalLocation is type WoundAnatomicalLocation
 0..0			Severity  // not sure if zeroing it out should be prohibited, but it is not part of LOINC panel
 0..0			Criticality
 0..0			Certainty
 0..0			Device
 0..0			Precondition
-
-EntryElement:	WoundAbsenceAssertion
-Based on:		FindingSiteConditionAbsenceStatement
-Description:	"Documents the absence of a wound at a given body site. 
-No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicLocation."
-0..0			StatementTopic
-1..1			TopicCode is SCT#416462003 "Wound (disorder)"
-1..1			Category is OBSCAT#exam
-1..1			WoundAnatomicLocation
 
 		Element: 	WoundType
 		Based on:	TopicCode
@@ -100,9 +92,9 @@ No wounds anywhere on the body can be indicated by omitting the anatomical locat
 		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion if covered
 
 		Element:	WoundIdentifier
-		Based on:	FindingSiteIdentifier
+		Based on:	ConditionIdentifier
 		Concept:	LNC#81666-0
-		Description:	"A human-readable identifier for the lesion; e.g., a letter or integer."
+		Description: "A human-readable identifier for the lesion; e.g., a letter or integer."
 		Value:		string
 
 		Element:	WoundTypeEtiology
@@ -111,7 +103,7 @@ No wounds anywhere on the body can be indicated by omitting the anatomical locat
 		Description:	"A specialization of condition cause, specific to the causes of injuries (or not having injury in the wound absent context)."
 		Value: 		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.3/expansion  // should be from http://loinc.org/vs/LL4936-2 
 
-		Element:	WoundAnatomicLocation
+		Element:	WoundAnatomicalLocation
 		Based on:	AnatomicalLocation
 		Concept:	LNC#39111-0 "Body Site"
 		Value:		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion
@@ -119,19 +111,30 @@ No wounds anywhere on the body can be indicated by omitting the anatomical locat
 		0..0		AnatomicalDirection
 
 
+EntryElement:	WoundAbsenceAssertion
+Based on:		FindingSiteConditionAbsenceStatement
+Description:	"Documents the absence of a wound at a given body site. 
+No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicalLocation."
+0..0			StatementTopic
+1..1			TopicCode is SCT#416462003 "Wound (disorder)"
+1..1			Category is OBSCAT#exam
+1..1			AnatomicalLocation is type WoundAnatomicalLocation
+
 //--------------- Wound Assessment -------------------------
 
 EntryElement:	WoundAssessmentPanel
 Based on:		NonLaboratoryObservation
 Concept:		LNC#39135-9
 Description:	"Group of observations regarding the properties and severity of a wound."
+1..1			WoundIdentifier
 				Interpretation is type WoundAssessmentInterpretation
 				DeltaFlag is type WoundTrend
 0..0			ResultValue
 0..0			ExceptionValue
+0..0			AnatomicalLocation // carried by wound assertion
+0..0			Device	
 				TopicCode is LNC#39135-9
-0..0			ReferenceRange
- 				Focus value is type string  // WoundNumber
+0..0			ReferenceRange		
 				Media is type PhotographicImage  // 72170-4  	Photographic image	[Media] 
 				EvaluationComponent
 includes 0..1	WoundEpisode  // very similar to Episodicity or ClinicalStatus, but value set is different.
@@ -213,6 +216,10 @@ EntryElement: 	WoundBedAppearanceObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89254-7
 Description:	"The appearance of the base (bed) of the wound, together with the percentage of the bed with each type of appearance."
+1..1			WoundIdentifier
+				TopicCode is LNC#89254-7
+0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			Device	
 				EvaluationComponent
 includes 1..1	WoundBedAppearance
 includes 1..1	WoundBedAppearancePercentage
@@ -233,6 +240,10 @@ EntryElement: 	WoundBedColorObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		TBD
 Description:	"Color of part or all of the wound base (bed), and the percentage of the area with that color."
+1..1			WoundIdentifier
+				TopicCode is TBD#TBD
+0..0			AnatomicalLocation  // location is given by the wound assertion
+0..0			Device	
 				EvaluationComponent
 includes 1..1	WoundBedColor
 includes 1..1	WoundBedColorAreaPercentage
@@ -255,7 +266,10 @@ EntryElement:	WoundEdgeObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
+1..1			WoundIdentifier
 				TopicCode is LNC#89256-2
+0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			Device				
 				EvaluationComponent
 includes 1..1	WoundEdgeDescription
 includes 0..1	WoundEdgeColor
@@ -278,7 +292,10 @@ EntryElement:	WoundTunnelingObservation
 Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89257-0
 Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
+1..1			WoundIdentifier
 				TopicCode is LNC#89257-0
+0..0			AnatomicalLocation  // location is given by the wound assertion
+0..0			Device	
 				EvaluationComponent
 includes 0..1	WoundTunnelLength
 includes 0..1	WoundTunnelClockDirection
@@ -305,6 +322,9 @@ Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#89258-8
 Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
 				TopicCode is LNC#89258-8
+1..1			WoundIdentifier
+0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			Device	
 		 		EvaluationComponent
 includes 0..1	WoundUnderminingLength
 includes 0..1	WoundUnderminingClockDirection
@@ -327,6 +347,9 @@ Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
 				TopicCode is LNC#72292-6
+1..1			WoundIdentifier
+0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			Device	
 				EvaluationComponent
 includes 0..1	WoundExudateAmount
 includes 0..1	WoundExudateVolume
@@ -373,6 +396,9 @@ Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
 				TopicCode is LNC#72287-6
+1..1			WoundIdentifier	
+0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			Device		
 				EvaluationComponent
 includes 1..1	WoundLength
 includes 1..1	WoundWidth
