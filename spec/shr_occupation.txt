@@ -9,7 +9,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
 EntryElement:	HistoryOfEmploymentStatus
-Based on:		CodedEvaluationResult
+Based on:		CodedObservation
 Concept:        LNC#74165-2 "HistoryOfEmploymentStatus"
 Description:	"A person’s state of being employed during the time period specified. 
 Generally, employment status refers to whether or not a person has a job (e.g. employed, unemployed, not in labor force). In a healthcare setting employment status may be used to determine appropriate probing questions for occupational hazards and occupational history. For example, someone who is unemployed or has chosen not to work may be prompted to provide information about previous jobs. Employment status is not the same as work classification, which describes characteristics of a given job such as self-employed."
@@ -19,7 +19,7 @@ Generally, employment status refers to whether or not a person has a job (e.g. e
 1..1			RelevantTime
 
 EntryElement:	DateOfRetirement
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:        LNC#87510-4 "Date of Retirement"
 Description:	"If present, the patient is retired, and this observation records the retirement date.
 This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
@@ -29,7 +29,7 @@ This is a self-identified statement about the date of being retired as self-iden
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
 
 EntryElement:	CombatZonePeriod
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:        LNC#87511-2
 Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
 				Subject value is type Person
@@ -38,7 +38,7 @@ Description:	"Indicates the date range(s) an individual hs worked in what is con
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
 
 EntryElement:	UsualOccupation
-Based on:		CodedEvaluationResult
+Based on:		CodedObservation
 Concept:        LNC#21843-8
 Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
 				Subject value is type Person
@@ -46,7 +46,7 @@ Description:	"The type of work a person has held for the longest duration during
 				ResultValue could be from OccupationVS
 
 EntryElement:	UsualOccupationIndustry
-Based on:		CodedEvaluationResult
+Based on:		CodedObservation
 Concept:        LNC#21844-6 "History of usual industry"
 Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
 For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction." 
@@ -55,7 +55,7 @@ For example, a person who has spent 30 years as a secretary in various industrie
 				ResultValue could be from IndustryVS
 
 EntryElement:	UsualOccupationDuration
-Based on:		QuantitativeEvaluationResult
+Based on:		QuantitativeObservation
 Concept:        LNC#74163-7 "Usual occupation duration"
 Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted. This refers specifically to a certain UsualOccupation"
 				Subject value is type Person
@@ -64,14 +64,14 @@ Description:	"The total time spent on an activity, inclusive of all time interva
 
 
 EntryElement:	PastOrPresentOccupation  // aka job
-Based on:		ObjectExistence
+Based on:		ObjectPresentOrAbsent
 Concept:        LNC#11341-5 "History of Occupation"
 Description:	"A single job, past or present. The relevant time is the period the job was held."
 1..1			Subject value is type Person	
-				ObjectCode could be from OccupationVS
+				ObjectTypeCode could be from OccupationVS
 
 	EntryElement:	Employer
-	Based on:		RelationshipExistence
+	Based on:		RelationshipPresentOrAbsent
 	Concept:		TBD#TBD
 	Description:	"The employer associated with a particular job."
 	1..1			Subject value is type PastOrPresentOccupation
@@ -80,7 +80,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 
 
 	Element:		PastOrPresentOccupationIndustry
-	Based on:		CodedEvaluationResult
+	Based on:		CodedObservation
 	Concept:        LNC#86188-0 "History of Occupation industry"
 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
 					Subject value is type PastOrPresentOccupation
@@ -88,7 +88,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue could be from IndustryVS
 
 	Element:		WorkClassification
-	Based on:		CodedEvaluationResult
+	Based on:		CodedObservation
 	Concept:        LNC#85104-8 "Compensation and sector employment type"
 	Description:	"Employment attributes for a given job. 
 	This specifies information about the worker’s job, such as self-employed or unpaid, and is similar to the U.S. Bureau of Labor Statistics ‘class of worker’ and the International Labor Organization ‘classification of status in employment’. Knowing a patient is self-employed, for example, can assist in discussing return-to-work options."
@@ -97,7 +97,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue could be from WorkClassificationVS  
 
 	Element:		SupervisoryLevel
-	Based on:		CodedEvaluationResult
+	Based on:		CodedObservation
 	Concept:        LNC#87707-6
 	Description:	"The supervisory or management responsibilities for an individual’s job. For military jobs, this is pay grade."
 					Subject value is type PastOrPresentOccupation
@@ -105,7 +105,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue could be from SupervisoryLevelVS   
 
 	Element:		JobDuty
-	Based on:		EvaluationResult
+	Based on:		Observation
 	Concept:        LNC#63761-1
 	Description:	"Regular actions performed at work. A person may have the occupation of 'construction laborer' and his specific job duty to carry construction supplies."
 					Subject value is type PastOrPresentOccupation
@@ -113,7 +113,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue value is type string
 	
 	Element:		OccupationalHazard
-	Based on:		EvaluationResult
+	Based on:		Observation
 	Concept:		LNC#87729-0
 	Description:	"Actual contact or interaction with a specific hazard that increases an individual’s risk of a detrimental physical or mental health outcome (e.g., ingestion or inhalation of a toxic chemical). 
 	Information on an exposure may include the measurement of duration/intensity of contact or interaction with the specific hazard."
@@ -122,7 +122,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue value is type string
 					
 	Element:		WorkSchedule
-	Based on:		CodedEvaluationResult
+	Based on:		CodedObservation
 	Concept:        LNC#74159-5
 	Description:	"An individual's typical arrangement of working hours for an occupation. 
 	For example, work schedule may capture that an individual typically works a regular day shift, evening shift, or night shift. It can also specify if an individual has another type of schedule, such as a rotating shift, split shift, etc."
@@ -131,7 +131,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue could be from WorkScheduleVS 
 
 	Element:		WeeklyWorkDays
-	Based on:		QuantitativeEvaluationResult
+	Based on:		QuantitativeObservation
 	Concept:        LNC#74160-3
 	Description:	"The typical number of days per week that a person spends performing their duties for work. 
 	This information is most useful coupled with daily work hours and helps to reveal compressed schedules or a 7-day work-week."
@@ -140,7 +140,7 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue.Quantity with units UCUM#d
 							
 	Element:		DailyWorkHours
-	Based on:		QuantitativeEvaluationResult
+	Based on:		QuantitativeObservation
 	Concept:		LNC#87512-0
 	Description:	"The typical number of hours in a day that a person spends performing their duties for work.
 	This information is most useful coupled with weekly work days and helps to reveal compressed schedules, long work hours, and overtime."
@@ -149,10 +149,10 @@ Description:	"A single job, past or present. The relevant time is the period the
 					ResultValue.Quantity with units UCUM#h
 
 
-//----------------  Assemblies ---------------------------
+//----------------  Clusters ---------------------------
 
 /*
-EntryElement:	OccupationalDataAssembly
+EntryElement:	OccupationalDataCluster
 Based on:		Composition
 Description:	"Current and past activities for profit, wages, salary, or as a service to others. The aggregation can contain some or all information about a wound. For example, a snapshot might include only the most recent observations about the wound, while the comprehensive history could be comprised of many observations taken by different people at different times."
 				ObjectTypeCode is LNC#74166-0
@@ -160,12 +160,10 @@ Description:	"Current and past activities for profit, wages, salary, or as a ser
 includes 0..*   HistoryOfEmploymentStatus
 includes 0..*	DateOfRetirement
 includes 0..*	CombatZonePeriod 
-includes 0..1	UsualOccupationAssembly
-includes 0..*	PastOrPresentOccupationAssembly
+includes 0..1	UsualOccupationCluster
+includes 0..*	PastOrPresentOccupationCluster
 
 
-				ObservationTopic.Focus value is type CodeableConcept
-				ObservationTopic.Focus from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
 				Statement
 includes 0..1	PastOrPresentOccupation
 includes 0..1	PastOrPresentIndustry
@@ -180,7 +178,7 @@ includes 0..1	DailyWorkHours
 				RelevantTime value is type TimePeriod
 
 
-/*
+
 EntryElement:	MilitaryServiceHistory
 Based on:		CodedSocialHistoryObservation
 Description:	"History of service in the US military."

@@ -4,66 +4,60 @@ Description:	"The SHR Core domain contains definitions for a variety of general-
 Uses:			shr.core, shr.base
 
 EntryElement:	Person
-Based on:		ObjectExistence
+Based on:		ObjectPresentOrAbsent
 Concept:		SCT#125676002
-				ObjectCode is SCT#125676002 "Person (person)"
+				ObjectTypeCode is SCT#125676002 "Person (person)"
 
 Abstract Element:	RolePlayedByPerson
-Based on:		ObjectExistence
+Based on:		ObjectPresentOrAbsent
 Description:	"The capacity in which an actor is involved in an activity or environment. For instance, 'attending physician' or 'research subject'.
 The difference between role and type is that type is constant, while role can change depending on the activity or setting. Note that attributes of the actor (the subject) remain constant regardless of the role the actor plays should be part of the subject and not the role. For instance, a person may be a practitioner and a patient. In both cases their date of birth will be the same and thus such information should not be part of the role."
 				Subject value is type Person  // Actor
-				ObjectCode from RolePlayedByPersonVS
+				ObjectTypeCode from RolePlayedByPersonVS
 
 EntryElement:	Patient
 Based on:		RolePlayedByPerson
 Concept:		SCT#116154003
 Description:	"The role of patient in a healthcare context."
-				ObjectCode is SCT#116154003 "Patient (person)"
+				ObjectTypeCode is SCT#116154003 "Patient (person)"
 
 EntryElement:	Provider
 Based on:		RolePlayedByPerson
 Concept:		MTH#C1138603
 Description:	"The role of provider in a healthcare context, which can be a person or an organization."
-				ObjectCode is MTH#C1138603 "Provider"
+				ObjectTypeCode is MTH#C1138603 "Provider"
 
 EntryElement:	Organization
 Concept:		TBD#TBD
-Based on:		ObjectExistence
+Based on:		ObjectPresentOrAbsent
 0..0			Subject
-				ObjectCode from http://hl7.org/fhir/ValueSet/organization-type
+				ObjectTypeCode from http://hl7.org/fhir/ValueSet/organization-type
 
 EntryElement:	Condition
-Based on:		ObjectExistence
+Based on:		ObjectPresentOrAbsent
 Concept:		TBD#TBD
 Description:	"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms, and is not simply a direct result of physical injury"
 				Subject value is type Person
-				ObjectCode from ConditionVS
+				ObjectTypeCode from ConditionVS
 
 EntryElement:	TimeOfOnset
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:        LNC#85585-8  // or SCT#263501003 "Time of onset (observable entity)"
 Description:	"The beginning or first appearance of a mental or physical disorder."
 				Subject value is type Condition
 				ResultValue value is type dateTime
 
-EntryElement:	BodyStructure
-Concept:		TBD#TBD
-Based on:		ObjectExistence
-1..1			Subject value is type Patient
-				ObjectCode from BodyStructureVS 
-
 //--------------These will map to basic?------------------
 
 EntryElement:	SameAs
-Based on:		RelationshipExistence
+Based on:		RelationshipPresentOrAbsent
 Concept:		SCT#168666000 "SAME AS (attribute)"
 1..1			Subject
 				RelationshipCode is SCT#168666000 "SAME AS (attribute)"
 1..1			Object
 
 EntryElement:	RelatedPerson
-Based on:		RelationshipExistence
+Based on:		RelationshipPresentOrAbsent
 Concept:		TBD#TBD
 				Subject value is type Person
 				RelationshipCode from  http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
@@ -72,24 +66,8 @@ Concept:		TBD#TBD
 
 //----------These will map to observation -------------  
 
-EntryElement:	AnatomicalLocation
-Based on:		CodedEvaluationResult
-Concept:        LNC#72369-2  // Body site identification panel
-Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
-				Subject value is type BodyStructure
-				ObservableCode is LNC#72369-2
-				ResultValue from AnatomicalLocationVS
-
-EntryElement:	AnatomicalLaterality
-Based on:		CodedEvaluationResult
-Concept:        SCT#272741003 "Laterality (attribute)"
-Description:	"Anatomical location or specimen further detailing the side(s) of interest."
-				Subject value is type AnatomicalLocation // A wound is a body structure, so this applies
-				ObservableCode is SCT#272741003
-				ResultValue from http://hl7.org/fhir/ValueSet/bodysite-laterality
-
 EntryElement:	TimeOfAbatement
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:        LNC#88878-4 // of SCT#...... Time of abatement (observable entity)"
 Description:	"The end, remission or resolution of a disease."
 				Subject value is type Condition
@@ -97,7 +75,7 @@ Description:	"The end, remission or resolution of a disease."
 				ResultValue value is type dateTime
 
 EntryElement:	ConditionPresentOnAdmission
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:        LNC#89251-3 
 Description:	"Whether the condition was present when the patient was admitted."
 				Subject value is type Condition
@@ -105,7 +83,7 @@ Description:	"Whether the condition was present when the patient was admitted."
 				ResultValue from YesNoUnknownVS
 
 EntryElement:	DateOfBirth
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:		LNC#21112-8
 Description:	"Birth date"
 				Subject value is type Person
@@ -113,10 +91,9 @@ Description:	"Birth date"
 				ResultValue value is type dateTime
 
 EntryElement:	AdministrativeGender
-Based on:		EvaluationResult
+Based on:		Observation
 Concept:		TBD
 Description:	"Administrative gender as defined in FHIR"
 				Subject value is type Person
 				ObservableCode is TBD#TBD
 				ResultValue from http://hl7.org/fhir/ValueSet/administrative-gender
-

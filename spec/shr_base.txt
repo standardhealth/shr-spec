@@ -23,6 +23,7 @@ Based on:			Statement
 Description:		"A determination, such as an observation, assertion, opinion, fact, or judgment."
 1..1				FindingStatus			
 0..1				RelevantTime
+0..1				FindingMethod
 
 		Element:		FindingStatus
 		Concept:		TBD
@@ -33,6 +34,10 @@ Description:		"A determination, such as an observation, assertion, opinion, fact
 		Description:	"The time or time period that the statement addresses."
 		Value:			dateTime or TimePeriod 
 
+		Element:		FindingMethod
+		Description:	"The method used to determine the finding."
+		Value:			CodeableConcept
+
 Abstract Element:	ExistentialFinding
 Based on:			Finding
 Description:		"An assertion of a physical or conceptual entity, relationship, situation, condition, or phenomenon present or absent."
@@ -42,11 +47,11 @@ Description:		"An assertion of a physical or conceptual entity, relationship, si
 		Description:	"Whether the object is present or absent, exists or does not exist."
 		Value:			CodeableConcept  from PresentAbsentVS
 
-Abstract Element:	ObjectExistence
+Abstract Element:	ObjectPresentOrAbsent
 Based on:			ExistentialFinding
 Description:		"An assertion of a physical or conceptual entity, relationship, role, situation, condition, or phenomenon present or absent."
 0..1				Subject
-0..1				ObjectCode
+0..1				ObjectTypeCode
 0..1				ObjectIdentifier
 
 		Element:		Subject
@@ -54,15 +59,21 @@ Description:		"An assertion of a physical or conceptual entity, relationship, ro
 		For an existential finding, the Subject is the 'owner' of the object said to exist or not exist. For example, the subject for a condition is a patient; the subject for wound size is a wound. Subjects are themselves statements."
 		Value:			Statement
 
-		Element:		ObjectCode
-		Description: 	"A code reprsenting the type of entity, person, role, condition, or phenomenon that is being asserted to exist or not exist."
+		Element:		ObjectTypeCode
+		Description: 	"A code representing the type of entity, person, role, condition, or phenomenon that is being asserted to exist or not exist."
 		Value:			CodeableConcept
 
 		Element: 		ObjectIdentifier
 		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
 		Value:			string
-	
-EntryElement:		RelationshipExistence
+
+EntryElement:	BodyStructurePresentOrAbsent
+Based on:		ObjectPresentOrAbsent
+Concept:		TBD#TBD
+1..1			Subject value is type Patient
+				ObjectTypeCode should be from BodyStructureVS 
+
+EntryElement:		RelationshipPresentOrAbsent
 Based on:			ExistentialFinding
 Description:		"An assertion of a realtionship between two things, either present or absent."
 0..1				Subject
@@ -80,12 +91,13 @@ Description:		"An assertion of a realtionship between two things, either present
 // + ExceptionValue, DeltaFlag, Issued, Observer, Recorder, +Method of observation, etc.
 
 
-Abstract Element: 	EvaluationResult
+Abstract Element: 	Observation
 Based on:			Finding
 Description:		"A statement that asserts the value of a property (observable) of the subject. The subject is often the patient, but may be a condition, a physical structure, or another clinical statement. For example, an interpretation is a finding about an observation."
 1..1				Subject
 1..1				ObservableCode
 0..1				ResultValue
+0..*				Qualifier
 
 		Element:		ObservableCode
 		Description:	"A code describing the aspect or property of the subject being observed or measured. The ObservableCode is the 'question code' that pairs to the 'answer' contained in the ResultValue."
@@ -95,31 +107,76 @@ Description:		"A statement that asserts the value of a property (observable) of 
 		Description:	"The finding itself, such as the blood pressure value recorded."
 		Value:			(Quantity or CodeableConcept or string or boolean or Range or Ratio or time or dateTime or TimePeriod or Media)
 
+		Element:		Qualifier
+		Description:	"A condition or circumstance associated with an observation that affects the interpretation of the result value."
+		Value:			CodeableConcept
 
-EntryElement:		CodedEvaluationResult
-Based on:			EvaluationResult
+
+EntryElement:		CodedObservation
+Based on:			Observation
 					ResultValue value is type CodeableConcept
 
-EntryElement:		QuantitativeEvaluationResult
-Based on:			EvaluationResult
+EntryElement:		QuantitativeObservation
+Based on:			Observation
 					ResultValue value is type Quantity
 
-// -------------  Assemblies -----------------
+
+// --------- Anatomical Location Observation ---------------
+
+EntryElement:	AnatomicalLocationObservation
+Concept:        LNC#72369-2 
+Description:	"An observation of the location of something on or in the body of the subject, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart. May involve a measurement "
+		Subject
+		ObservableCode
+		ResultValue
+		Qualifier
+
+		1..1			BodySiteOrLandmarkCode
+		0..1			AnatomicalLaterality
+		0..1			DistanceFromLandmarkBodySite
+		0..1			ClockDirectionFromLandmarkBodySite
+
+			Element:		BodySiteOrLandmarkCode
+			Concept:		LNC#72369-2
+			Description:	"A code describing a body site that might be the body site of interest, or a landmark used to determine a body site."
+			Value:			CodeableConcept from 
+
+			Element:		AnatomicalLaterality
+			Concept:        SCT#272741003 "Laterality (attribute)"
+			Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/bodysite-laterality
+
+			Element:		DistanceFromLandmarkBodySite
+			Concept:		TBD
+			Description:	"The distance of the target body site from a landmark body site."
+			Value:			Quantity
+
+			Element:		ClockDirectionFromLandmarkBodySite
+			Concept:        SCT#272485000 "Clockface position (qualifier value)"
+			Description:	"A direction indicated by an angle relative to 12 o'clock."
+			Value:			CodeableConcept from ClockDirectionVS
+
+
+
+
+
+
+// -------------  Clusters -----------------
 
 EntryElement:   Composition
 Based on:       Statement
-Description:    "A set of one or more groups that should be interpreted together, exchanged as a group, or may be aggregregated for the purpose of clinical input or output."
+Description:    "A set of one or more statements or aggregations that should be interpreted together, exchanged as a collection, or may be aggregregated for the purpose of clinical input or output."
 1..1			Subject
 1..1            TypeCode
 0..*			Statement
-//0..*			Assembly
+//0..*			Cluster
 
-		Element:	Assembly
+		Element:	Cluster
 		Based on:	Statement
 		Description:	"A collection of statements and groups."
 		0..1		TypeCode
 		0..*		Statement
-	//	0..*		Assembly
+	//	0..*		Cluster
 
 		Element:	TypeCode
 		Description:	"A code that describes the type of composition or section, such as a section or document type identifier."

@@ -14,39 +14,32 @@ Description:	"Clinical input form for the initial observation of a wound or woun
 				Subject value is type Patient
 				TypeCode is LNC#39135-9
 				Statement
-includes 0..*	WoundPresentAssembly
-includes 0..*	WoundAbsentAssembly
+includes 0..*	WoundPresentCluster
+includes 0..*	WoundAbsent
 
-	Element:		WoundPresentAssembly
-	Based on:		Assembly
+	Element:		WoundPresentCluster
+	Based on:		Cluster
 	Description:	"A group of observations that together describe initial observations about a wound."
 					Statement
-	includes 1..1	WoundPresent				
+	includes 1..1	Wound				
 	includes 1..1	WoundType
-	includes 1..1	WoundAnatomicalLocation
 	includes 0..1	TimeOfOnset
 	includes 0..1	ConditionPresentOnAdmission
 	includes 0..1	WoundTypeEtiology
 	includes 0..*	PhotographicImage
-	includes 0..1	WoundEpisode
-
-	Element:		WoundAbsentAssembly
-	Based on:		Assembly
-					Statement
-	includes 1..1	WoundAbsent
-	includes 1..1	WoundAnatomicalLocation				
+	includes 0..1	WoundEpisode		
 
 
 EntryElement:	ClinicalInputForm-WoundAssessment
 Based on:		Composition
 Description:	"Information about a wound at a single time, structured into logical groupings for input or display."
-				Subject value is type WoundPresent
+				Subject value is type Wound
 				TypeCode is LNC#39135-9
-//				Assembly
-//includes 1..1	WoundAssessmentAssembly
+//				Cluster
+//includes 1..1	WoundAssessmentCluster
 //
-//	Element:		WoundAssessmentAssembly
-//	Based on:		Assembly
+//	Element:		WoundAssessmentCluster
+//	Based on:		Cluster
 					Statement
 	includes 0..1	WoundAssessmentInterpretation
 	includes 0..*	PhotographicImage
@@ -55,74 +48,74 @@ Description:	"Information about a wound at a single time, structured into logica
 	includes 0..*	WoundVisibleInternalStructure
 	includes 0..1	WoundPressureUlcerAssociation
 	includes 0..1	TimeOfAbatement
-//					Assembly
-	includes 0..1	WoundSizeAssembly
-	includes 0..1	WoundBedAndEdgeAssembly
-	includes 0..1	WoundTunnelingAndUnderminingAssembly
-	includes 0..1	WoundExudateAssembly
+//					Cluster
+	includes 0..1	WoundSizeCluster
+	includes 0..1	WoundBedAndEdgeCluster
+	includes 0..1	WoundTunnelingAndUnderminingCluster
+	includes 0..1	WoundExudateCluster
 
 
-Element:		WoundBedAndEdgeAssembly
-Based on:		Assembly
+Element:		WoundBedAndEdgeCluster
+Based on:		Cluster
 Description:	"Assessment of the wound bed (base) and edge, including the appearance and color of each."
 				TypeCode is LNC#72372-6
-//				Assembly
+//				Cluster
 				Statement
-includes 0..*	WoundBedAppearanceAssembly
-includes 0..*	WoundBedColorAssembly
-includes 0..1	WoundEdgeAssembly
+includes 0..*	WoundBedAppearanceCluster
+includes 0..*	WoundBedColorCluster
+includes 0..1	WoundEdgeCluster
 
-	Element:		WoundBedAppearanceAssembly
-	Based on:       Assembly
+	Element:		WoundBedAppearanceCluster
+	Based on:       Cluster
 	Description:	"The appearance of a percentage area of the wound bed (base"
 					TypeCode is TBD#TBD
 					Statement
 	includes 0..1   WoundBedAppearance
 	includes 0..1	WoundBedAppearancePercentage
 
-	Element:		WoundBedColorAssembly
-	Based on:       Assembly
+	Element:		WoundBedColorCluster
+	Based on:       Cluster
 	Description:	"The color of a percentage area of the wound bed (base)"
 					TypeCode is TBD#TBD
 					Statement
 	includes 0..1   WoundBedColor
 	includes 0..1	WoundBedColorPercentage
 
-	Element:		WoundEdgeAssembly
-	Based on:       Assembly
+	Element:		WoundEdgeCluster
+	Based on:       Cluster
 	Description:	"Description of the color and condition of the edige of the wound."
 					TypeCode is LNC#89256-2
 					Statement
 	includes 0..1   WoundEdgeDescription
 	includes 0..1	WoundEdgeColor
 
-Element:   		WoundTunnelingAndUnderminingAssembly
-Based on:       Assembly
+Element:   		WoundTunnelingAndUnderminingCluster
+Based on:       Cluster
 Description:	"Assessment and measurement of tunnels and undermining of the wound."
                 TypeCode is LNC#72299-1 
-//                Assembly
+//                Cluster
 				Statement
-includes 0..*   WoundTunnelingAssembly
-includes 0..*   WoundUnderminingAssembly
+includes 0..*   WoundTunnelingCluster
+includes 0..*   WoundUnderminingCluster
 
-	Element:   		WoundTunnelingAssembly
-	Based on:       Assembly
+	Element:   		WoundTunnelingCluster
+	Based on:       Cluster
 	Description:	"Description of a specific single tunnel on a specific wound. Applicable only if tunnel(s) are present"
 					TypeCode is LNC#89258-8 
 					Statement
 	includes 1..1   WoundTunnelLength
 	includes 1..1   WoundTunnelClockDirection
 
-	Element:  		WoundUnderminingAssembly
-	Based on:       Assembly
+	Element:  		WoundUnderminingCluster
+	Based on:       Cluster
 	Description:	"Description of the undermining of the wound. Applicable only if undermining is present"
 					TypeCode is LNC#89258-8 
 					Statement
 	includes 1..1   WoundUnderminingLength
 	includes 1..1   WoundUnderminingClockDirection
 
-Element:   		WoundExudateAssembly
-Based on:       Assembly
+Element:   		WoundExudateCluster
+Based on:       Cluster
 Description:	"Descriptions of the exudate of the wound. Applicable only if wound exudate is present."
                 TypeCode is LNC#72292-6
                 Statement
@@ -132,8 +125,8 @@ includes 1..1   WoundExudateColor
 includes 1..1   WoundExudateAppearance
 includes 0..1   WoundExudateOdor
 
-Element: 	WoundSizeAssembly
-Based on:       Assembly
+Element: 		WoundSizeCluster
+Based on:       Cluster
 Description:	"The dimensions of the wound."
                 TypeCode is LNC#72287-6
                 Statement
@@ -146,16 +139,10 @@ includes 0..1	WoundArea
 EntryElement:	ExchangeForm-WoundComprehensiveHistory
 Based on:		Composition
 Description:	"A collection of all information about a single wound, possibly including many observations taken by different people at different times. Everything in the aggregation relates to the same wound."
-				Subject value is type WoundPresent
+				Subject value is type Wound
 				TypeCode is LNC#39135-9
-//				Assembly
-//includes 1..1	WoundComprehensiveHistoryAssembly
-//
-//Element:		WoundComprehensiveHistoryAssembly
-//Based on:		Assembly
 				Statement
 includes 1..*	WoundType
-includes 1..*	WoundAnatomicalLocation
 includes 0..*	TimeOfOnset
 includes 0..*	ConditionPresentOnAdmission
 includes 0..*	WoundTypeEtiology
@@ -182,9 +169,9 @@ includes 0..*	WoundExudateVolume
 includes 0..*   WoundExudateColor
 includes 0..*   WoundExudateAppearance
 includes 0..*   WoundExudateOdor
-includes 0..*	WoundTunnelingPresent
+includes 0..*	WoundTunnel
 includes 0..*   WoundTunnelLength
 includes 0..*   WoundTunnelClockDirection
-includes 0..*	WoundUnderminingPresent			
+includes 0..*	WoundUndermining			
 includes 0..*   WoundUnderminingLength
 includes 0..*   WoundUnderminingClockDirection
