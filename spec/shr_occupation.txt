@@ -29,13 +29,13 @@ Concept:		TBD
 Based on:		SocialHistorySection
 Description:	"Single section in the current OccupationalDataSummary, containing the person's history of employment and occupation, past and present."
 				ClinicalStatement 
-includes 0..*   HistoryOfEmploymentStatus
-includes 0..*	DateOfRetirement
+includes 0..*   PersonEmploymentStatus
+includes 0..*	RetirementDate
 includes 0..*	CombatZonePeriod 
-includes 0..1	UsualOccupation
-includes 0..*	PastOrPresentOccupation
+includes 0..1	UsualWork
+includes 0..*	PastOrPresentJob
 
-EntryElement:	HistoryOfEmploymentStatus
+EntryElement:	PersonEmploymentStatus
 Based on:		CodedSocialHistoryObservation
 Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
 Description:	"A person’s state of being employed during the time period specified. 
@@ -45,35 +45,38 @@ Generally, employment status refers to whether or not a person has a job (e.g. e
 //				ResultValue from EmploymentStatusVS
 				ResultValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 0..0			EvaluationComponent
-0..0			FocalSubject
+0..0			FocalSubjectModifier
 
-EntryElement:	DateOfRetirement
+EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
 Concept:		LNC#87510-4 "Date of Retirement"
-Description:	"If present, the patient is retired, and this observation records the retirement date.
-This is a self-identified statement about the date of being retired as self-identified by the patient. A person can be both retired and employed; most often, a person would be retired from one job and employed in another job."
+Description:	"A self-reported date that a person considers themselves to have ‘retired’.
+A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job.
+Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 				TopicCode is LNC#87510-4 "Date of Retirement"
 				ResultValue value is type dateTime
 0..0			EvaluationComponent
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
-0..0			FocalSubject
+0..0			FocalSubjectModifier
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
 Concept:		LNC#87511-2
-Description:	"Indicates the date range(s) an individual hs worked in what is considered a combat or hazardous duty zone; both civilian and military."
+Description:	"Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work.
+Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones."
 				TopicCode is LNC#87511-2
 				ResultValue value is type TimePeriod
 0..0			EvaluationComponent
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
-0..0			FocalSubject // only patient
+0..0			FocalSubjectModifier // only patient
 
-				
-EntryElement:	UsualOccupation
+EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
 Concept:		LNC#21843-8
-Description:	"The type of work a person has held for the longest duration during his or her working history at the point in time the statement is recorded."
-// We'll need to determine the fix here -- US Core requires Subject to be a patient, but ODH allows patient or related person
+Description:	"Related data elements about the work a person reports having performed for the longest amount of time during his or her life, regardless of the person's current job and regardless of whether or not the person performed this work for a continuous time.
+Knowledge of person's Usual Work can potentially assist in diagnosis, treatment and/or prevention of chronic condition(s) or conditions with a long latency. The potential for exposure to Occupational Hazard(s) related to an Occupation and/or an Industry can change over time, and a person could have been in and out of their Usual Work over time, so additional data are helpful to fully evaluate the possible impact of the person's Usual Work on their health and guide appropriate use of screening tests to detect early disease.
+Example: a person has worked for a total of 30 years as a 'secretary' (Occupation), but in various industries, mostly hotel construction. Her Usual Occupation is 'secretary' and her Usual Industry is 'hotel construction.'
+Usual Work does not include work that was unpaid or voluntary.   Usual Work does not include work that was unpaid or voluntary."
 				TopicCode is LNC#21843-8
 //				ResultValue could be from OccupationVS
 				ResultValue could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186		
@@ -100,10 +103,13 @@ includes 0..1	UsualOccupationDuration
 	Value:			Quantity with units UCUM#a
 					TopicCode is LNC#74163-7 "Usual occupation duration"
 	
-EntryElement:	PastOrPresentOccupation
+EntryElement:	PastOrPresentJob
 Based on:		CodedSocialHistoryObservation
 Concept:		LNC#11341-5 "History of Occupation"
-Description:	"A single job, past or present. The relevant time is the period the job was held."
+Description:	"Related data elements for a current or previous job, as reported by the person, i.e., a work situation or position held for a specified time period.
+A person can have more than one job at the same time and multiple jobs over time, so the data related to each job must remain in the record in perpetuity. 
+A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
+At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 				TopicCode is LNC#11341-5 "History of Occupation"
 //				ResultValue could be from OccupationVS
 				ResultValue could be from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
@@ -205,9 +211,9 @@ includes 0..1	DailyWorkHours
 Element:		SocialHistoryObservation
 Based on:		Observation
 Description:	"A simplified observation for social histories."
-0..0			PersonOfRecord			
+//0..1			PersonOfRecord	
 				Category is OBSCAT#social-history
-0..1			FocalSubject
+0..1			FocalSubjectModifier
 // Get rid of some unnecessary CIMI-isms
 0..0			Recorded
 0..0			Signed
@@ -228,7 +234,7 @@ Description:	"A simplified observation for social histories."
 0..0			AdditionalText
 //0..0			FindingStatus
 
-	Element:		FocalSubject
+	Element:		FocalSubjectModifier
 	Description:	"The focus of the observation, if someone other than the person of record (subject)."
 	1..1			RelationshipToPersonOfRecord from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype if covered
 
@@ -241,8 +247,8 @@ Description:	"The result of social history questions, whose answer is expressed 
 
 
 	
-/* UsualOccupation is in the value element
-	Element:		UsualOccupation
+/* UsualWork is in the value element
+	Element:		UsualWork
 	Based on:		CodedEvaluationComponent
 	Concept:		LNC#21843-8 "History of Usual Occupation" // Occupation is LNC#74287-4
 	Description:	"A person's work or business"

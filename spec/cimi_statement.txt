@@ -207,7 +207,7 @@ Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-0..0			PersonOfRecord  // just use FHIR
+//0..0			PersonOfRecord  // do not zero out, but try to avoid a profile on Patient by matching FHIR
 0..0			StatementTopic  // eliminate to avoid making everything more complicated
 1..1			TopicCode
 				ContextCode is SCT#424975005 "Record Entity"
@@ -425,11 +425,11 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 0..*			AnatomicalLocation
 0..*			ConditionCause
 0..1			ConditionIdentifier
-1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
+1..1			ClinicalStatus
 0..1			WhenClinicallyRecognized
 0..1			PresentOnAdmission
-0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
-0..1			Criticality from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+0..1			Severity
+0..1			Criticality
 0..1			Stage
 
 			Element:		ConditionCause
@@ -445,7 +445,7 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Element:		ClinicalStatus
 			Concept:		TBD
 			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
-			Value:			code
+			Value:			code from http://hl7.org/fhir/ValueSet/condition-clinical
 
 			Element:		WhenClinicallyRecognized
 			Concept:		TBD
@@ -460,12 +460,12 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Element:		Severity
 			Concept:		MTH#C0392364
 			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept 
+			Value: 			CodeableConcept from http://hl7.org/fhir/ValueSet/condition-severity
 
 			Element:		Criticality
 			Concept:		MTH#C3858539 "Criticality"
 			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			code
+			Value:			code from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
 
 			Element:		Stage
 			Concept:		MTH#C0699749
