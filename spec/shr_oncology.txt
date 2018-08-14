@@ -89,19 +89,19 @@ includes 0..1	BreastCancerHistologicGrade
 
 
 	EntryElement:	BreastCancerPrimaryTumorClassification
-	Based on:		CodedLaboratoryObservation
+	Based on:		Observation
 	Concept:		SCT#78873005 "T category"
 	Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
 					ObservationContext.ResultValue.CodeableConcept from TBD
-					LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
-					LaboratoryObservationTopic.TopicCode is SCT#78873005 "T category"
-	0..0			LaboratoryObservationTopic.DiagnosticService
-	0..0			LaboratoryObservationTopic.Specimen // also removed b/c this is determined lower
-	0..0			LaboratoryObservationTopic.Precondition
-	0..0			LaboratoryObservationTopic.FindingMethod
-			 		LaboratoryObservationTopic.EvaluationComponent
+					ObservationTopic.Focus value is type Identifier 
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.TopicCode is SCT#78873005 "T category"
+	0..0			ObservationTopic.Precondition
+	0..0			ObservationTopic.FindingMethod
+			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
-					LaboratoryObservationTopic.PanelMembers.Observation
+					ObservationTopic.PanelMembers.Observation
 	includes 0..1	TumorDimensions
 	includes 0..1	TumorMargins
 
@@ -175,19 +175,20 @@ includes 0..1	BreastCancerHistologicGrade
 
 
 	EntryElement:	BreastCancerRegionalNodesClassification
-	Based on:		CodedLaboratoryObservation
+	Based on:		Observation
 	Concept:		SCT#277206009 "N category"
 	Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
 					ObservationContext.ResultValue.CodeableConcept from TBD
-					LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
-					LaboratoryObservationTopic.TopicCode is SCT#277206009 "N category"
-	0..0			LaboratoryObservationTopic.DiagnosticService
-	0..0			LaboratoryObservationTopic.Specimen
-	0..0			LaboratoryObservationTopic.Precondition
-	0..0			LaboratoryObservationTopic.FindingMethod
-			 		LaboratoryObservationTopic.EvaluationComponent
+	0..0			ObservationTopic.ReferenceRange
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.Focus value is type Identifier  // Lymph node identifier
+					ObservationTopic.TopicCode is SCT#277206009 "N category"
+	0..0			ObservationTopic.Precondition
+	0..0			ObservationTopic.FindingMethod
+			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
-					LaboratoryObservationTopic.PanelMembers.Observation
+					ObservationTopic.PanelMembers.Observation
 	includes 0..*	BreastPathologicalLymphNodeInvolvement
 	includes 0..*	BreastClinicalLymphNodeInvolvement
 
@@ -290,7 +291,7 @@ Description:	"Clinical assessment of lymph nodes for presence of cancer cells in
 				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
 				LaboratoryObservationTopic.DiagnosticService is #exam
 0..0			LaboratoryObservationTopic.Precondition
-0..1			LaboratoryObservationTopic.Specimen  // mlt: moved specimen to LymphNodeAssessment
+0..1			LaboratoryObservationTopic.Specimen
 0..0			LaboratoryObservationTopic.Specimen.CollectionMethod
 0..0			LaboratoryObservationTopic.Focus
 0..0			LaboratoryObservationTopic.Media
@@ -315,19 +316,18 @@ Value:			Quantity with units UCUM#mm
 
 /* MLT_TO_DO: add in relationships to Met location and FindingMethod since both evaluate M category values.*/
 	EntryElement:	BreastCancerDistantMetastasesClassification
-	Based on:		CodedLaboratoryObservation
+	Based on:		Observation
 	Concept:		SCT#277208005 "M category (observable entity)"
 	Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
 					ObservationContext.ResultValue.CodeableConcept from TBD
-					LaboratoryObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
-					LaboratoryObservationTopic.DiagnosticService is #laboratory
-					LaboratoryObservationTopic.Specimen
-	0..0			LaboratoryObservationTopic.Precondition
-	0..0			LaboratoryObservationTopic.FindingMethod
-			 		LaboratoryObservationTopic.EvaluationComponent
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
+	0..0			ObservationTopic.Precondition
+	0..0			ObservationTopic.FindingMethod
+			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
-	0..0			LaboratoryObservationTopic.PanelMembers  // mk-should remove panel members altogether, not just PanelMembers.Observation 8/9/18
-
+	0..0			ObservationTopic.PanelMembers  // mk-should remove panel members altogether, not just PanelMembers.Observation 8/9/18
 
 EntryElement:	BreastCancerStage
 Based on:		Observation
