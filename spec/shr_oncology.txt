@@ -45,6 +45,9 @@ Based on:		ConditionPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 				ConditionAssertionTopic.TopicCode from BreastCancerTypeVS
+0..0			ConditionAssertionTopic.Media
+0..0			ConditionAssertionTopic.AlleviatingFactor
+0..0			ConditionAssertionTopic.ExacerbatingFactor
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerStage
 0..0			ConditionPresenceContext.Severity
 				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
@@ -64,6 +67,7 @@ Based on:		ObservationTopic
 Description:	"The topic class for describing a breast cancer staging observation."
 				TopicCode is MTH#C2216702 "Malignant Neoplasm of Breast Staging"
 0..1			StageTimingPrefix
+0..0			FindingMethod
 0..0			EvaluationComponent
 				PanelMembers.Observation
 includes 0..1 	BreastCancerPrimaryTumorClassification
@@ -97,8 +101,12 @@ includes 0..1	BreastCancerHistologicGrade
 					ObservationTopic.Focus value is type Identifier 
 	1..1			ObservationTopic.Category is OBSCAT#exam
 					ObservationTopic.TopicCode is SCT#78873005 "T category"
+					ObservationTopic.AnatomicalLocation is type BreastSite
 	0..0			ObservationTopic.Precondition
 	0..0			ObservationTopic.FindingMethod
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
 			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
 					ObservationTopic.PanelMembers.Observation
@@ -136,13 +144,6 @@ includes 0..1	BreastCancerHistologicGrade
 				Based on:		EvaluationComponent
 				Concept:		TBD
 				Value:			Quantity with units UCUM#mm
-/*
-				Element:		TumorSecondaryDimensionSize
-				Description:	"The longest perpendicular diameter of the primary tumor."
-				Based on:		EvaluationComponent
-				Concept:		TBD
-				Value:			Quantity with units UCUM#mm
-*/
 
 				Element:		SizeOfGrossTumorBed
 				Based on:		EvaluationComponent
@@ -186,6 +187,11 @@ includes 0..1	BreastCancerHistologicGrade
 					ObservationTopic.TopicCode is SCT#277206009 "N category"
 	0..0			ObservationTopic.Precondition
 	0..0			ObservationTopic.FindingMethod
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
+	0..0			ObservationTopic.AnatomicalLocation // moved to level of Clinical and Path lymph node involvement
+	0..0			ObservationTopic.Specimen  // mlt: moved to level of Clinical and Path lymph node involvement
 			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
 					ObservationTopic.PanelMembers.Observation
@@ -199,7 +205,7 @@ Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
+				LaboratoryObservationTopic.Focus value is type Identifier  
 				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.FindingMethod
@@ -287,8 +293,8 @@ Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
-				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  //mlt_to_rmb: need new LOINC or SNOMED concepts distinguishing pathological and clinical lymph node involvement.
+				LaboratoryObservationTopic.Focus value is type Identifier
+				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"  
 				LaboratoryObservationTopic.DiagnosticService is #exam
 0..0			LaboratoryObservationTopic.Precondition
 0..1			LaboratoryObservationTopic.Specimen
@@ -302,7 +308,7 @@ includes 0..1	LymphNodeSize
 
 Element:   		LymphNodeMobility
 Based on:       EvaluationComponent
-Concept:        MTH#C1112395			// mlt_to_rmb: need new SNOMED term, LOINC term, and LOINC answer list.
+Concept:        MTH#C1112395
 Description:    "Lymph node palpable"
 Value:          CodeableConcept from LymphNodeMobilityVS
 0..0			ReferenceRange
@@ -325,6 +331,9 @@ Value:			Quantity with units UCUM#mm
 					ObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
 	0..0			ObservationTopic.Precondition
 	0..0			ObservationTopic.FindingMethod
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
 			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
 	0..0			ObservationTopic.PanelMembers  // mk-should remove panel members altogether, not just PanelMembers.Observation 8/9/18
@@ -347,6 +356,8 @@ Description:	"An evaluation of the size and shape of the nucleus in tumor cells 
 				LaboratoryObservationTopic.TopicCode is TBD#TBD
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+	0..0		LaboratoryObservationTopic.Media
+	0..0		LaboratoryObservationTopic.Device
 
 EntryElement:	BreastCancerHistologicGrade
 Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
@@ -358,6 +369,8 @@ Description:	"The Elston Grade/Nottingham Score, representative of the aggressiv
 				LaboratoryObservationTopic.TopicCode is LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
@@ -396,6 +409,8 @@ The current approach is that positive/negative designation is a value, even thou
 				LaboratoryObservationTopic.TopicCode is LNC#16112-5
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+	0..0		LaboratoryObservationTopic.Media
+	0..0		LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
@@ -448,6 +463,8 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 0..0 			LaboratoryObservationTopic.EvaluationComponent
 				LaboratoryObservationTopic.PanelMembers.Observation
 includes 0..*	HER2byIHC
@@ -465,6 +482,9 @@ Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (I
 0..0			LaboratoryObservationTopic.FindingMethod  // pre-coordinated in the TopicCode
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
@@ -489,6 +509,8 @@ Description:	"HER2 receptor status as determined by single-probe or dual-probe F
 				ObservationContext.Interpretation from PositiveNegativeEquivocalVS
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
@@ -528,7 +550,8 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
 Based on:		SimpleLaboratoryObservation
@@ -541,6 +564,8 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimpleLaboratoryObservation
@@ -553,6 +578,8 @@ The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Ris
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	MammaprintRecurrenceScore
 Based on:		SimpleLaboratoryObservation
@@ -565,6 +592,10 @@ The is currently no LOINC code for Mammaprint test."
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	BreastCancerGeneticAnalysisObservation
 Concept:		TBD
@@ -578,6 +609,8 @@ Description:	"The status of genes known or suspected to play a role in breast ca
 				LaboratoryObservationTopic.DiagnosticService is #genetics
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 	 			LaboratoryObservationTopic.EvaluationComponent
 includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
@@ -608,6 +641,8 @@ Description:	"Ki-67 is a protein phosphatase whose expression is strongly associ
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 	 			LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since the quantitative measurement is assigned a different LOINC code
 0..0			LaboratoryObservationTopic.PanelMembers // mk 8/9/18 removed .Observation to make sure related goes away altogether
