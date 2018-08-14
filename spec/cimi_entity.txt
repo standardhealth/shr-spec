@@ -23,117 +23,32 @@ Description:	"Root class for entities such as people, organizations, and devices
 EntryElement:	Patient
 Based on:		Role
 Concept: 		MTH#C1299487
-Description:	"A person in the role of a patient, including extended demographic information about the subject of this health record."
+Description:	"A person in the role of a patient."
 1..1			ref(Person)
-//0..1			PlaceOfBirth
-//0..1			MultipleBirth
-//0..1			BirthSex
-0..1		 	Race
-0..1		 	Ethnicity
-0..1		 	MaritalStatus
-//0..1			MothersMaidenName
-//0..1			FathersName
-//0..1			SocialSecurityNumber
-//0..1			DriversLicenseNumber
-//0..*			PassportNumber
-//0..1			MedicalInterpreterNeeded
-//0..1			Deceased
+0..1			ActiveFlag
+0..*			ref(ExternalHealthRecord)
 
-	Element:   		PlaceOfBirth
-	Concept:        MTH#C0032040
-	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
-	Value:          Address
-
-	Element:		MultipleBirth
-	Concept:		MTH#C0026753
-	Description:	"Indication if the person was part of a multiple birth event."
+	Element:		ActiveFlag
+	Concept:		TBD
+	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
 	Value:			boolean
-	0..1			MultipleBirthOrder
-
-		Element:		MultipleBirthOrder
-		Concept:		LNC#73771-8
-		Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)."
-		Value:			integer 
-		// should be positiveInt, but it is an integer in FHIR (no issue yet logged)
-
-	Element:		BirthSex
-	Concept:		MTH#C4086849
-	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
-	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
-
-	Element:		Race
-	Concept:		MTH#C0034510
-	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
-	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
-	0..*			RaceDetail
-
-		Element:		RaceDetail
-		Concept:		TBD
-		Description:	"Additional description of race or heritage."
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-race or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
-
-	Element:		Ethnicity
-	Concept:		MTH#C0015031
-	Description:    "Indicator of Hispanic or Latino origin."
-	Value:          CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
-	0..*			EthnicityDetail
-
-		Element:		EthnicityDetail
-		Concept:		TBD
-		Description:	"Additional description of ethnicity."
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity
-
-
-	Element:   		MaritalStatus
-	Concept:		MTH#C0024819
-	Description:	"The most recent marital status of a person."
-	Value:			CodeableConcept from FHIR/marital-status if covered
-
-	Element:   		MothersMaidenName
-	Concept:		MTH#C0806887
-	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
-	Value:			HumanName
-
-	Element:		FathersName
+	Element:		ActiveFlagAsaCodeableConcept
 	Concept:		TBD
-	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
-	Value:			HumanName
-
-	Element: 		SocialSecurityNumber
-	Concept:		MTH#C1301821
-	Description:	"A US social security number (SSN)."
-	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
-
-	Element:		DriversLicenseNumber
-	Concept:		TBD
-	Description:	"Identifying information from a drivers license."
-	Value:			string
-	0..1			StateOfIssue
-	0..1			EffectiveTimePeriod
-
-		Element: 		StateOfIssue
-		Concept:		TBD
-		Description:	"A state or country acting as an assuing authority for a document."
-		Value:			State
-	
-	Element:		PassportNumber
-	Concept:		MTH#C1549737
-	Description:	"Credential indicating citizenship."
-	Value:			string
-	1..1			CountryOfIssue
-	0..1			EffectiveTimePeriod
-
-		Element: 		CountryOfIssue
-		Concept:		TBD
-		Description:	"A country acting as an assuing authority for a document."
-		Value:			Country
+	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
+	Value:			CodeableConcept
 	
 
-	Element: 		MedicalInterpreterNeeded
-	Concept:		MTH#C1442531
-	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-	Value:			CodeableConcept from YesNoUnknownVS
-	1..1			Language
+EntryElement:	ExternalHealthRecord
+Based on:		Entity
+Concept: 		TBD
+Description:	"A health record other than the current health record; may have been used to help populate the current record."
+1..1			Identifier
+1..1			AccessTime
+
+	Element:		AccessTime
+	Concept:		TBD
+	Description:	"Point in time when data was accessed."
+	Value:			dateTime
 
 
 EntryElement:	Practitioner
@@ -370,7 +285,114 @@ Description:	"A person relevant to the health or social situation of the subject
 0..*			ContactPoint
 0..*			LanguageUsed
 0..1			ActiveFlag
-//0..*    		ref(ExternalHealthRecord)
+0..1		 	MaritalStatus
+//0..1			PlaceOfBirth
+//0..1			MultipleBirth
+//0..1			BirthSex
+//0..1		 	Race
+//0..1		 	Ethnicity
+//0..1			MothersMaidenName
+//0..1			FathersName
+//0..1			SocialSecurityNumber
+//0..1			DriversLicenseNumber
+//0..*			PassportNumber
+//0..1			Deceased
+
+	Element:   		PlaceOfBirth
+	Concept:        MTH#C0032040
+	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+	Value:          Address
+
+	Element:		MultipleBirth
+	Concept:		MTH#C0026753
+	Description:	"Indication if the person was part of a multiple birth event."
+	Value:			boolean
+	0..1			MultipleBirthOrder
+
+		Element:		MultipleBirthOrder
+		Concept:		LNC#73771-8
+		Description:	"Order of birth of the person in multiple birth event (if part of multiple birth)."
+		Value:			integer 
+		// should be positiveInt, but it is an integer in FHIR (no issue yet logged)
+
+	Element:		BirthSex
+	Concept:		MTH#C4086849
+	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
+	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
+
+	Element:		Race
+	Concept:		MTH#C0034510
+	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
+	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+	0..*			RaceDetail
+
+		Element:		RaceDetail
+		Concept:		TBD
+		Description:	"Additional description of race or heritage."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-race or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+
+	Element:		Ethnicity
+	Concept:		MTH#C0015031
+	Description:    "Indicator of Hispanic or Latino origin."
+	Value:          CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+	0..*			EthnicityDetail
+
+		Element:		EthnicityDetail
+		Concept:		TBD
+		Description:	"Additional description of ethnicity."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity or CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity
+
+	Element:   		MothersMaidenName
+	Concept:		MTH#C0806887
+	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+	Value:			HumanName
+
+	Element:		FathersName
+	Concept:		TBD
+	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
+	Value:			HumanName
+
+	Element: 		SocialSecurityNumber
+	Concept:		MTH#C1301821
+	Description:	"A US social security number (SSN)."
+	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
+
+	Element:		DriversLicenseNumber
+	Concept:		TBD
+	Description:	"Identifying information from a drivers license."
+	Value:			string
+	0..1			StateOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element: 		StateOfIssue
+		Concept:		TBD
+		Description:	"A state or country acting as an assuing authority for a document."
+		Value:			State
+	
+	Element:		PassportNumber
+	Concept:		MTH#C1549737
+	Description:	"Credential indicating citizenship."
+	Value:			string
+	1..1			CountryOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element: 		CountryOfIssue
+		Concept:		TBD
+		Description:	"A country acting as an assuing authority for a document."
+		Value:			Country
+	
+
+	Element: 		MedicalInterpreterNeeded
+	Concept:		MTH#C1442531
+	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
+	Value:			CodeableConcept from YesNoUnknownVS
+	1..1			Language
+
+
+	Element:   		MaritalStatus
+	Concept:		MTH#C0024819
+	Description:	"The most recent marital status of a person."
+	Value:			CodeableConcept from FHIR/marital-status if covered
 
 	Element:		AnonymizedFlag
 	Concept:		MTH#C3858751
@@ -419,11 +441,6 @@ Description:	"A person relevant to the health or social situation of the subject
 			Description:	"Additional information about a person's use of language."
 			Value:			CodeableConcept from LanguageQualifierVS
 
-	Element:		ActiveFlag
-	Concept:		TBD
-	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
-	Value:			boolean
-
 	Element:		Deceased
 	Concept:		MTH#C0011065
 	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
@@ -440,23 +457,6 @@ Description:	"A person relevant to the health or social situation of the subject
 		Concept:		MTH#C1546180
 		Description:	"The age, age range, or age group when the cessation of life happens."
 		Value:			Age or Range
-
-	Element:		ActiveFlagAsaCodeableConcept
-	Concept:		TBD
-	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
-	Value:			CodeableConcept
-	
-	Element:		ExternalHealthRecord
-	Based on:		Entity
-	Concept: 		TBD
-	Description:	"A health record other than the current health record; may have been used to help populate the current record."
-	1..1			Identifier
-	1..1			AccessTime
-
-	Element:		AccessTime
-	Concept:		TBD
-	Description:	"Point in time when data was accessed."
-	Value:			dateTime
 
 	
 EntryElement:	Organization
