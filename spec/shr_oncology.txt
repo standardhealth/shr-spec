@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
 Description:	"SHR implementation of oncology data elements."
-Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+Uses:  			shr.core, shr.base, shr.condition, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
 CodeSystem:   SCT = http://snomed.info/sct
 CodeSystem:   LNC = http://loinc.org
@@ -51,7 +51,7 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerStage
 0..0			ConditionPresenceContext.Severity
 				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
-				ConditionAssertionTopic.AnatomicalLocation is type BreastSite
+				ConditionAssertionTopic.AnatomicalLocation is type BreastSite  // we're conflating the Breast site with an assertion of the disorder. We need another attribute to group the breast cancer disorder types.
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -119,37 +119,61 @@ includes 0..1	BreastCancerHistologicGrade
 		Description:    "A suffix used in conjuction with certain cancer stages, based on criteria defined by the staging system being used."
 		Value:          CodeableConcept
 
+		EntryElement:	BreastTumor
+		Based on:		FindingSiteConditionPresenceStatement
+		Concept:		SCT#395557000 "Tumor finding (finding)"
+		Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
+1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
+1..1			Category is OBSCAT#exam
+0..1			ConditionAssertionTopic.AnatomicalLocation is type BreastSite 
+0..0			ConditionAssertionTopic.AlleviatingFactor
+0..0			ConditionAssertionTopic.ExacerbatingFactor
+0..0			ConditionPresenceContext.Severity
+				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
+
 		Element: 	TumorDimensions
 		Based on:		LaboratoryObservation
-		Concept:		SCT#399375005 "Tumor size (observable entity)"
-		Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a height, width, and margin measurements."
+		Concept:		SCT#399375005 "Tumor size finding (finding)"
+		Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a size measurements for the longest diameter and the short axis (per RECIST guidelines) as well as margin measurements. "
 		0..0			ObservationContext.ResultValue
 		0..0			ObservationContext.ExceptionValue
 						LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
 						LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
-						LaboratoryObservationTopic.Focus value is type Identifier
-		0..0			LaboratoryObservationTopic.FindingMethod
+		0..0			ObservationTopic.Focus
+		// 0..0			LaboratoryObservationTopic.FindingMethod 
 		0..0			LaboratoryObservationTopic.Precondition
-		0..0			LaboratoryObservationTopic.Specimen
-		0..0			LaboratoryObservationTopic.Focus
-		0..0			LaboratoryObservationTopic.Device
-		0..0			LaboratoryObservationTopic.Media
+		// 0..0			LaboratoryObservationTopic.Specimen
+		// 0..1			LaboratoryObservationTopic.Focus is BreastTumor
+		// 0..0			LaboratoryObservationTopic.Device
+		// 0..0			LaboratoryObservationTopic.Media
 						LaboratoryObservationTopic.EvaluationComponent
-		includes 0..*	TumorDimensionSize
+		includes 0..1	SizeOfLongestDiameter
+		includes 0..1	SizeOfShortAxis
 		includes 0..1	SizeOfGrossTumorBed
+		0..0			ReferenceRange
 		0..0			LaboratoryObservationTopic.PanelMembers // mk 8/9/18 removed .Observation to make sure related goes away altogether
 
-				Element:		TumorDimensionSize
+				Element:		SizeOfLongestDiameter
 				Description:	"Measurements for the primary tumor size which includes the longest diameter of the primary tumor and the longest perpendicular diameter of the primary tumor."
 				Based on:		EvaluationComponent
-				Concept:		TBD
+				Concept:		MTH#C0552406 "Longest Diameter"
 				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
 
+				Element:		SizeOfShortAxis
+				Description:	"Measurements for the primary tumor size which includes the longest diameter of the primary tumor and the longest perpendicular diameter of the primary tumor."
+				Based on:		EvaluationComponent
+				Concept:		SCT#103340004 "Short axis (qualifier value)"
+				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
+				
 				Element:		SizeOfGrossTumorBed
 				Based on:		EvaluationComponent
 				Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
 				Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
 				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
 
 		Element: 	TumorMargins
 		Based on:		CodedLaboratoryObservation
