@@ -28,6 +28,7 @@ Value:			CodeableConcept from BreastSiteVS
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
+0..*			TumorIdentifier
 				Type from BreastSpecimenTypeVS
 				CollectionSite value is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
@@ -59,6 +60,25 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
 
+EntryElement:	BreastTumor
+Based on:		FindingSiteConditionPresenceStatement
+Concept:		SCT#395557000 "Tumor finding (finding)"
+Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
+1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
+1..1			Category is OBSCAT#exam
+0..1			FindingSiteConditionTopic.AnatomicalLocation is type BreastSite
+0..0			FindingSiteConditionTopic.AlleviatingFactor
+0..0			FindingSiteConditionTopic.ExacerbatingFactor
+				FindingSiteConditionTopic.FindingSiteIdentifier is type TumorIdentifier
+0..0			ConditionPresenceContext.Severity
+				FindingSiteConditionTopic.FindingMethod should be from BreastCancerDetectionVS
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
+
+		Element:		TumorIdentifier
+		Based on:		FindingSiteIdentifier
+		Description:	"A human-readable identifier for the lesion; e.g., a letter or integer."
+
+
 // We need to add an example to the IG!
 // Perhaps move timing prefix to component
 // Do we want to follow Travis' approach of putting the Cancer Staging Encounter Phase in Encounter?
@@ -78,7 +98,6 @@ includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
 includes 0..1	DCISNuclearGrade
 includes 0..1	BreastCancerHistologicGrade
-0..0			Focus  // only one breast cancer per patient
 0..0			Media
 0..0			AnatomicalLocation
 0..0			ref(Device)
@@ -97,10 +116,9 @@ includes 0..1	BreastCancerHistologicGrade
 	Concept:		SCT#78873005 "T category"
 	Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
 					ObservationContext.ResultValue value is type CodeableConcept
-					ObservationContext.ResultValue.CodeableConcept
-					ObservationTopic.Focus value is type Identifier
 	1..1			ObservationTopic.Category is OBSCAT#exam
 					ObservationTopic.TopicCode is SCT#78873005 "T category"
+	0..1			TumorIdentifier  // optionally identifies the tumor considered to be primary
 					ObservationTopic.AnatomicalLocation is type BreastSite
 	0..0			ObservationTopic.Precondition
 	0..0			ObservationTopic.FindingMethod
@@ -119,20 +137,7 @@ includes 0..1	BreastCancerHistologicGrade
 		Description:    "A suffix used in conjuction with certain cancer stages, based on criteria defined by the staging system being used."
 		Value:          CodeableConcept
 
-		EntryElement:	BreastTumor
-		Based on:		FindingSiteConditionPresenceStatement
-		Concept:		SCT#395557000 "Tumor finding (finding)"
-		Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
-1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
-1..1			Category is OBSCAT#exam
-0..1			ConditionAssertionTopic.AnatomicalLocation is type BreastSite 
-0..0			ConditionAssertionTopic.AlleviatingFactor
-0..0			ConditionAssertionTopic.ExacerbatingFactor
-0..0			ConditionPresenceContext.Severity
-				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS
-0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
-
-		Element: 	TumorDimensions
+		Element: 		TumorDimensions
 		Based on:		LaboratoryObservation
 		Concept:		SCT#399375005 "Tumor size finding (finding)"
 		Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a size measurements for the longest diameter and the short axis (per RECIST guidelines) as well as margin measurements. "
@@ -140,11 +145,10 @@ includes 0..1	BreastCancerHistologicGrade
 		0..0			ObservationContext.ExceptionValue
 						LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
 						LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
-		0..0			ObservationTopic.Focus
-		// 0..0			LaboratoryObservationTopic.FindingMethod 
+		1..1			TumorIdentifier
+		// 0..0			LaboratoryObservationTopic.FindingMethod
 		0..0			LaboratoryObservationTopic.Precondition
 		// 0..0			LaboratoryObservationTopic.Specimen
-		// 0..1			LaboratoryObservationTopic.Focus is BreastTumor
 		// 0..0			LaboratoryObservationTopic.Device
 		// 0..0			LaboratoryObservationTopic.Media
 						LaboratoryObservationTopic.EvaluationComponent
@@ -167,7 +171,7 @@ includes 0..1	BreastCancerHistologicGrade
 				Concept:		SCT#103340004 "Short axis (qualifier value)"
 				Value:			Quantity with units UCUM#mm
 				0..0			ReferenceRange // no limits here.
-				
+
 				Element:		SizeOfGrossTumorBed
 				Based on:		EvaluationComponent
 				Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
@@ -175,7 +179,7 @@ includes 0..1	BreastCancerHistologicGrade
 				Value:			Quantity with units UCUM#mm
 				0..0			ReferenceRange // no limits here.
 
-		Element: 	TumorMargins
+		Element: 		TumorMargins
 		Based on:		CodedLaboratoryObservation
 		Concept:		LNC#44669-0 "Margin involvement in Breast tumor"
 		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
@@ -185,7 +189,6 @@ includes 0..1	BreastCancerHistologicGrade
 		0..0			LaboratoryObservationTopic.FindingMethod
 		0..0			LaboratoryObservationTopic.Precondition
 						LaboratoryObservationTopic.Specimen is type BreastSpecimen
-		0..0			LaboratoryObservationTopic.Focus
 		0..0			LaboratoryObservationTopic.Device
 		0..0			LaboratoryObservationTopic.Media
 						LaboratoryObservationTopic.EvaluationComponent
@@ -207,7 +210,6 @@ includes 0..1	BreastCancerHistologicGrade
 					ObservationContext.ResultValue.CodeableConcept
 	0..0			ObservationTopic.ReferenceRange
 	1..1			ObservationTopic.Category is OBSCAT#exam
-					ObservationTopic.Focus value is type Identifier  // Lymph node identifier
 					ObservationTopic.TopicCode is SCT#277206009 "N category"
 	0..0			ObservationTopic.Precondition
 	0..0			ObservationTopic.FindingMethod
@@ -229,14 +231,10 @@ Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.Focus value is type Identifier
 				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.FindingMethod
 0..0			LaboratoryObservationTopic.Precondition
-0..1			LaboratoryObservationTopic.Specimen
-0..0			Focus
-0..0			Media
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	BreastLymphNodeInvolvement
 includes 0..1	LymphNodeSamplingMethod
@@ -312,23 +310,18 @@ Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
 		0..0			ReferenceRange
 
 EntryElement:	BreastClinicalLymphNodeInvolvement
-Based on:		LaboratoryObservation
+Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
-0..0			ObservationContext.ResultValue
-0..0			ObservationContext.ExceptionValue
-				LaboratoryObservationTopic.Focus value is type Identifier
-				LaboratoryObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
-				LaboratoryObservationTopic.DiagnosticService is #exam
-0..0			LaboratoryObservationTopic.Precondition
-0..1			LaboratoryObservationTopic.Specimen
-0..0			LaboratoryObservationTopic.Specimen.CollectionMethod
-0..0			LaboratoryObservationTopic.Focus
-0..0			LaboratoryObservationTopic.Media
-				LaboratoryObservationTopic.EvaluationComponent
+				ObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
+				ObservationTopic.AnatomicalLocation is type BreastLymphNodeBodySite
+				ObservationTopic.FindingMethod from LymphNodeClinicalMethodVS if covered
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.Specimen
+0..0			ObservationTopic.Media
+				ObservationTopic.EvaluationComponent
 includes 0..1 	LymphNodeMobility
 includes 0..1	LymphNodeSize
-0..0			LaboratoryObservationTopic.PanelMembers
 
 Element:   		LymphNodeMobility
 Based on:       EvaluationComponent
@@ -353,14 +346,15 @@ Value:			Quantity with units UCUM#mm
 					ObservationContext.ResultValue.CodeableConcept
 	1..1			ObservationTopic.Category is OBSCAT#exam
 					ObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
+	0..*			TumorIdentifier  // possibly based on one or more identified tumors
 	0..0			ObservationTopic.Precondition
-	0..0			ObservationTopic.FindingMethod
+					ObservationTopic.FindingMethod from BreastCancerDetectionVS
 	0..0			ObservationTopic.Media
 	0..0			ObservationTopic.Device
 	0..0			ObservationTopic.ReferenceRange
 			 		ObservationTopic.EvaluationComponent
 	includes 0..1	StageSuffix
-	0..0			ObservationTopic.PanelMembers  // mk-should remove panel members altogether, not just PanelMembers.Observation 8/9/18
+	0..0			ObservationTopic.PanelMembers  // mk- removed panel members altogether, not just PanelMembers.Observation 8/9/18
 
 EntryElement:	BreastCancerStage
 Based on:		Observation
@@ -639,7 +633,6 @@ Based on:		LaboratoryObservation
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
- 				LaboratoryObservationTopic.Focus value is type Identifier  // Lymph node identifier
 				LaboratoryObservationTopic.TopicCode is TBD#TBD
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.DiagnosticService is #genetics
@@ -657,14 +650,12 @@ includes 1..1	BRCA2Variant
 	Based on:		EvaluationComponent
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
-//					Focus.CodeableConcept is HGNC#BRCA1Gene
 
 	Element:		BRCA2Variant
 	Concept:		LNC#38531-0 "BRCA2 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
 	Based on:		EvaluationComponent
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
-//					Focus.CodeableConcept is HGNC#BRCA2Gene
 
 EntryElement:	Ki-67NuclearAntigen
 Based on:		CodedLaboratoryObservation
@@ -778,7 +769,6 @@ Based on:		Observation
 Concept:		MTH#C0678941
 Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
-				Focus.CodeableConcept from GeneIdentifierVS
 				ObservationTopic.DiagnosticService is #genetics
 0..0			Precondition
 0..0			ReferenceRange
