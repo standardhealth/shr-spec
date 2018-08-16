@@ -1,15 +1,17 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
-Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
+Description:	"SHR implementation of oncology data elements."
+Uses:  			shr.core, shr.base, shr.condition, cimi.core, cimi.element, cimi.context, cimi.topic, cimi.statement, cimi.entity
 
-CodeSystem:     SCT = http://snomed.info/sct
-CodeSystem:     LNC = http://loinc.org
+CodeSystem:   SCT = http://snomed.info/sct
+CodeSystem:   LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:   UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		HL7V20074 = http://hl7.org/fhir/v2/0074
+
 
 EntryElement:	BreastSite
 Based on:		AnatomicalLocation
@@ -26,6 +28,7 @@ Value:			CodeableConcept from BreastSiteVS
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
+0..*			TumorIdentifier
 				Type from BreastSpecimenTypeVS
 				CollectionSite value is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
@@ -33,46 +36,70 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
-		Concept:		LNC#44778-9 
-		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed. 
-		CIMI Alignment: In CIMI Version 0.0.4, specimen processing is represented as a 'SpecimenProcessingPerformed' clinical statement, mapped to FHIR Procedure. However, specimen processing should actually map to FHIR Specimen.processing, part of the Specimen resource. It would be a difficult mapping exercise (beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by (1) finding the corresponding Specimen entity, and (2) mapping the content of (possibly multiple) SpecimenProcessingPerformed into the FHIR Specimen resource. To avoid this complexity, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
+		Concept:		LNC#44778-9 "Cold ischemic time {Organ}"
+		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed.
+		CIMI Alignment: In CIMI Version 0.0.4, specimen processing is represented as a 'SpecimenProcessingPerformed' clinical statement, mapped to FHIR Procedure. However, specimen processing maps to FHIR Specimen.processing, part of the Specimen resource. It would be a difficult mapping exercise (and beyond the scope of this IG) to express the mapping rule that any CIMI SpecimenProcessingPerformed clinical statement needs to mapped to FHIR by (1) finding the corresponding Specimen entity, and (2) mapping the content of (possibly multiple) SpecimenProcessingPerformed into the FHIR Specimen resource. To avoid this complexity, the breast cancer model expresses the cold ischemia time as an attribute of the BreastSpecimen rather than a separate procedure."
 		Value:			TimePeriod
 
 EntryElement:	BreastCancerPresenceStatement
 Based on:		ConditionPresenceStatement
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				ConditionTopic.TopicCode from BreastCancerTypeVS		
+				ConditionAssertionTopic.TopicCode from BreastCancerTypeVS
+0..0			ConditionAssertionTopic.Media
+0..0			ConditionAssertionTopic.AlleviatingFactor
+0..0			ConditionAssertionTopic.ExacerbatingFactor
 				ConditionPresenceContext.Stage.StageDetail value is type BreastCancerStage
-				ConditionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
-				ConditionTopic.AnatomicalLocation is type BreastSite
+0..0			ConditionPresenceContext.Severity
+				ConditionAssertionTopic.FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
+				ConditionAssertionTopic.AnatomicalLocation is type BreastSite  // we're conflating the Breast site with an assertion of the disorder. We need another attribute to group the breast cancer disorder types.
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
-			Concept:		TBD
+			Concept:		SCT#246463000 "Behavior of tumor (attribute)"
 			Description:	"A description of the morphology and behavioral characteristics of the cancer."
 			Value:			CodeableConcept
 
+EntryElement:	BreastTumor
+Based on:		FindingSiteConditionPresenceStatement
+Concept:		SCT#395557000 "Tumor finding (finding)"
+Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
+1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
+1..1			Category is OBSCAT#exam
+0..1			FindingSiteConditionTopic.AnatomicalLocation is type BreastSite 
+0..0			FindingSiteConditionTopic.AlleviatingFactor
+0..0			FindingSiteConditionTopic.ExacerbatingFactor
+				FindingSiteConditionTopic.FindingSiteIdentifier is type TumorIdentifier
+0..0			ConditionPresenceContext.Severity
+				FindingSiteConditionTopic.FindingMethod should be from BreastCancerDetectionVS
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
+
+		Element:		TumorIdentifier
+		Based on:		FindingSiteIdentifier
+		Description:	"A human-readable identifier for the lesion; e.g., a letter or integer."
+
+
 // We need to add an example to the IG!
 // Perhaps move timing prefix to component
-// Perhaps make T, N, M separate observations
 // Do we want to follow Travis' approach of putting the Cancer Staging Encounter Phase in Encounter?
 Element:		BreastCancerStageTopic
 Based on:		ObservationTopic
 Description:	"The topic class for describing a breast cancer staging observation."
 				TopicCode is MTH#C2216702 "Malignant Neoplasm of Breast Staging"
-0..1			StageTimingPrefix				
-				EvaluationComponent			
+0..1			StageTimingPrefix
+0..0			FindingMethod
+0..0			EvaluationComponent
+				PanelMembers.Observation
 includes 0..1 	BreastCancerPrimaryTumorClassification
 includes 0..1 	BreastCancerRegionalNodesClassification
 includes 0..1 	BreastCancerDistantMetastasesClassification
-				PanelMembers.Observation
 includes 0..1	HER2ReceptorStatus
 includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
 includes 0..1	DCISNuclearGrade
-includes 0..1	BreastCancerHistologicGrade	
-0..0			Focus  // only one breast cancer per patient
+includes 0..1	BreastCancerHistologicGrade
+0..0			Media
+0..0			AnatomicalLocation
 0..0			ref(Device)
 0..0			ref(Specimen)
 0..0			Precondition
@@ -82,31 +109,249 @@ includes 0..1	BreastCancerHistologicGrade
 		Concept:		SCT#260869008 "Timing of stage"
 		Description:	"Indicates when the staging was done, in terms of treatment landmarks."
 		Value:			CodeableConcept	from StageTimingPrefixVS
-		
-		Element:		BreastCancerPrimaryTumorClassification
-		Concept:		SCT#78873005 "T category"
-		Based on:		CodedEvaluationComponent
-		Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept
-		0..1			StageSuffix
 
-		Element:		BreastCancerRegionalNodesClassification
-		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
-		Based on:		CodedEvaluationComponent
-		Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept
-		0..1			StageSuffix
 
-				Element:	StageSuffix
-				Concept:	TBD	
-				Description: "A suffix used in conjuction with certain breast cancer stages, based on criteria defined by the staging system being used."
-				Value: 		CodeableConcept
+	EntryElement:	BreastCancerPrimaryTumorClassification
+	Based on:		Observation
+	Concept:		SCT#78873005 "T category"
+	Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
+					ObservationContext.ResultValue.CodeableConcept from TBD
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.TopicCode is SCT#78873005 "T category"
+	0..1			TumorIdentifier  // optionally identifies the tumor considered to be primary
+					ObservationTopic.AnatomicalLocation is type BreastSite
+	0..0			ObservationTopic.Precondition
+	0..0			ObservationTopic.FindingMethod
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
+			 		ObservationTopic.EvaluationComponent
+	includes 0..1	StageSuffix
+					ObservationTopic.PanelMembers.Observation
+	includes 0..1	TumorDimensions
+	includes 0..1	TumorMargins
+
+		Element:   		StageSuffix
+		Based on:       CodedEvaluationComponent
+		Concept:        MTH#C1550721 "suffix"
+		Description:    "A suffix used in conjuction with certain cancer stages, based on criteria defined by the staging system being used."
+		Value:          CodeableConcept
+
+		Element: 		TumorDimensions
+		Based on:		LaboratoryObservation
+		Concept:		SCT#399375005 "Tumor size finding (finding)"
+		Description:	"Dimension size of the tumor sample evaluated for staging.  Dimensions include a size measurements for the longest diameter and the short axis (per RECIST guidelines) as well as margin measurements. "
+		0..0			ObservationContext.ResultValue
+		0..0			ObservationContext.ExceptionValue
+						LaboratoryObservationTopic.TopicCode is SCT#263605001 "Tumor size finding (finding)"
+						LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+		1..1			TumorIdentifier	
+		0..0			LaboratoryObservationTopic.Precondition
+						LaboratoryObservationTopic.EvaluationComponent
+		includes 0..1	SizeOfLongestDiameter
+		includes 0..1	SizeOfShortAxis
+		includes 0..1	SizeOfGrossTumorBed
+		0..0			ReferenceRange
+		0..0			LaboratoryObservationTopic.PanelMembers // mk 8/9/18 removed .Observation to make sure related goes away altogether
+
+				Element:		SizeOfLongestDiameter
+				Description:	"Measurements for the primary tumor size which includes the longest diameter of the primary tumor and the longest perpendicular diameter of the primary tumor."
+				Based on:		EvaluationComponent
+				Concept:		MTH#C0552406 "Longest Diameter"
+				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
+
+				Element:		SizeOfShortAxis
+				Description:	"Measurements for the primary tumor size which includes the longest diameter of the primary tumor and the longest perpendicular diameter of the primary tumor."
+				Based on:		EvaluationComponent
+				Concept:		SCT#103340004 "Short axis (qualifier value)"
+				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
 				
-		Element:		BreastCancerDistantMetastasesClassification
-		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
-		Based on:		CodedEvaluationComponent
-		Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept
+				Element:		SizeOfGrossTumorBed
+				Based on:		EvaluationComponent
+				Concept:		TBD			// mlt_to_rmb: needs new LOINC and SNOMED concept.
+				Description:	"The largest dimension of the gross tumor bed and surrounding fibrotic area."
+				Value:			Quantity with units UCUM#mm
+				0..0			ReferenceRange // no limits here.
+
+		Element: 		TumorMargins
+		Based on:		CodedLaboratoryObservation
+		Concept:		LNC#44669-0 "Margin involvement in Breast tumor"
+		Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+		ObservationContext.ResultValue from http://loinc.org/vs/LL4350-6
+		0..0			ObservationContext.ExceptionValue
+						LaboratoryObservationTopic.TopicCode is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
+		0..0			LaboratoryObservationTopic.FindingMethod
+		0..0			LaboratoryObservationTopic.Precondition
+						LaboratoryObservationTopic.Specimen is type BreastSpecimen
+		0..0			LaboratoryObservationTopic.Device
+		0..0			LaboratoryObservationTopic.Media
+						LaboratoryObservationTopic.EvaluationComponent
+		includes 0..1	TumorMarginDescription
+		0..0			LaboratoryObservationTopic.PanelMembers  // mk 8/9/18 removed .Observation to make sure related goes away altogether
+
+				Element:		TumorMarginDescription
+				Concept:		TBD
+				Based on:		CodedEvaluationComponent
+				Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+				Value:			CodeableConcept from TumorMarginDescriptionVS
+
+
+	EntryElement:	BreastCancerRegionalNodesClassification
+	Based on:		Observation
+	Concept:		SCT#277206009 "N category"
+	Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
+					ObservationContext.ResultValue.CodeableConcept from TBD
+	0..0			ObservationTopic.ReferenceRange
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.TopicCode is SCT#277206009 "N category"
+	0..0			ObservationTopic.Precondition
+	0..0			ObservationTopic.FindingMethod
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
+	0..0			ObservationTopic.AnatomicalLocation // moved to level of Clinical and Path lymph node involvement
+	0..0			ObservationTopic.Specimen  // mlt: moved to level of Clinical and Path lymph node involvement
+			 		ObservationTopic.EvaluationComponent
+	includes 0..1	StageSuffix
+					ObservationTopic.PanelMembers.Observation
+	includes 0..*	BreastPathologicalLymphNodeInvolvement
+	includes 0..*	BreastClinicalLymphNodeInvolvement
+
+
+EntryElement:	BreastPathologicalLymphNodeInvolvement
+Based on:		LaboratoryObservation
+Concept:		MTH#C0806692 "Lymph Node Involvement"
+Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.TopicCode is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Precondition
+				LaboratoryObservationTopic.EvaluationComponent
+includes 0..1 	BreastLymphNodeInvolvement
+includes 0..1	LymphNodeSamplingMethod
+includes 0..1	TotalNumberOfLymphNodesExamined
+includes 0..1	NumberOfRegionalLymphNodes
+includes 0..1	NumberOfSentinelLymphNodes
+includes 0..1	NumberOfLymphNodesWithIsolatedTumorCells
+includes 0..1	NumberOfLymphNodesWithMicrometastases
+includes 0..1	NumberOfLymphNodesWithMacrometastases
+includes 0..1	ExtraCapsularExtensionOfNodalTumorStatus
+0..0			LaboratoryObservationTopic.PanelMembers
+
+EntryElement:	BreastLymphNodeBodySite
+Based on:		AnatomicalLocation
+Description:	"A body site specific to the lymph node structure."
+Value:			CodeableConcept should be from BreastLymphNodeGroupVS if covered
+0..1            Laterality from http://hl7.org/fhir/ValueSet/bodysite-laterality  // mlt: travis had http://hl7.org/fhir/valueset-bodysite-relative-location.html but the one chosen here constrains the list to right, left, and bilateral.
+0..1            AnatomicalDirection
+
+		Element:   		BreastLymphNodeInvolvement
+		Based on:       CodedEvaluationComponent
+		Concept:        SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
+		Description:    "Identification of whether tumor cells have extended to the lymph nodes. Formerly known as BreastNodeInvolvementValues"
+		Value:          CodeableConcept from LymphNodeInvolvementVS
+
+		Element:   		LymphNodeSamplingMethod
+		Based on:       CodedEvaluationComponent
+		Concept:        SCT#118890000 "Procedure on lymph node (procedure)"
+		Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
+		Value:          CodeableConcept from LymphNodeSamplingMethodVS
+
+		Element:		TotalNumberOfLymphNodesExamined
+		Based on:		EvaluationComponent
+		Concept:		SCT#444025001 "Number of lymph nodes examined (observable entity)"
+		Description:	"Total number of lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity
+
+		Element:		NumberOfRegionalLymphNodes
+		Based on:		EvaluationComponent
+		Concept:		LNC#21894-1 "Regional lymph nodes examined [#] Specimen"
+		Description:	"Number of regional lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity
+
+		Element:		NumberOfSentinelLymphNodes
+		Based on:		EvaluationComponent
+		Concept:		LNC#85347-3 "Sentinel lymph nodes examined [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of sentinel lymph nodes examined for the presence of cancer cells"
+		Value:			IntegerQuantity
+
+		Element:		NumberOfLymphNodesWithIsolatedTumorCells
+		Based on:		EvaluationComponent
+		Concept:		LNC#85352-3 "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with isolated metatstatic tumor cells examined for the presence of cancer cells"
+		Value:			IntegerQuantity
+
+		Element:		NumberOfLymphNodesWithMicrometastases
+		Based on:		EvaluationComponent
+		Concept:		LNC#85344-0 "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with micrometastases examined"
+		Value:			IntegerQuantity
+
+		Element:		NumberOfLymphNodesWithMacrometastases
+		Based on:		EvaluationComponent
+		Concept:		LNC#85343-2 "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
+		Description:	"Number of lymph nodes with macrometastases examined"
+		Value:			IntegerQuantity
+
+		Element:		ExtraCapsularExtensionOfNodalTumorStatus
+		Based on:		EvaluationComponent
+		Concept:		LNC#85350-7 "Extranodal extension of carcinoma [Presence] in Cancer specimen by Light microscopy"
+		Description:	"Status for presence of extranodal extension of carcinoma where extranodal extension is the perforation of a cancer through the capsule of a lymph node into the tissue surrounding the node."
+		Value:          CodeableConcept should be from http://loinc.org/vs/LL748-5  // mlt: LL748-5 missing one term from original VS (indeterminate)
+		0..0			ReferenceRange
+
+EntryElement:	BreastClinicalLymphNodeInvolvement
+Based on:		ComponentOnlyNonLaboratoryObservation
+Concept:		MTH#C0806692 "Lymph Node Involvement"
+Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
+				ObservationTopic.TopicCode is MTH#C0806692 "Lymph Node Involvement"
+				ObservationTopic.AnatomicalLocation is type BreastLymphNodeBodySite
+				ObservationTopic.FindingMethod from LymphNodeClinicalMethodVS if covered
+0..0			ObservationTopic.Precondition
+0..0			ObservationTopic.Specimen
+0..0			ObservationTopic.Media
+				ObservationTopic.EvaluationComponent
+includes 0..1 	LymphNodeMobility
+includes 0..1	LymphNodeSize
+
+Element:   		LymphNodeMobility
+Based on:       EvaluationComponent
+Concept:        MTH#C1112395
+Description:    "Lymph node palpable"
+Value:          CodeableConcept from LymphNodeMobilityVS
+0..0			ReferenceRange
+
+Element:		LymphNodeSize
+Based on:		EvaluationComponent
+Concept:		SCT#364109001 "Size of lymph node (observable entity)"
+Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
+Value:			Quantity with units UCUM#mm
+
+
+/* MLT_TO_DO: add in relationships to Met location and FindingMethod since both evaluate M category values.*/
+	EntryElement:	BreastCancerDistantMetastasesClassification
+	Based on:		Observation
+	Concept:		SCT#277208005 "M category (observable entity)"
+	Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
+					ObservationContext.ResultValue value is type CodeableConcept
+					ObservationContext.ResultValue.CodeableConcept from TBD
+	1..1			ObservationTopic.Category is OBSCAT#exam
+					ObservationTopic.TopicCode is SCT#277208005 "M category (observable entity)"
+	0..*			TumorIdentifier  // possibly based on one or more identified tumors
+	0..0			ObservationTopic.Precondition
+					ObservationTopic.FindingMethod from BreastCancerDetectionVS
+	0..0			ObservationTopic.Media
+	0..0			ObservationTopic.Device
+	0..0			ObservationTopic.ReferenceRange
+			 		ObservationTopic.EvaluationComponent
+	includes 0..1	StageSuffix
+	0..0			ObservationTopic.PanelMembers  // mk- removed panel members altogether, not just PanelMembers.Observation 8/9/18
 
 EntryElement:	BreastCancerStage
 Based on:		Observation
@@ -118,51 +363,54 @@ Description:	"The stage of a breast cancer. Different staging systems use differ
 
 
 EntryElement:	DCISNuclearGrade
-Concept:		MTH#C18513  // What is the proper LOINC code?
+Concept:		TBD#TBD "Nuclear Grade"  // TODO: request LOINC code for DCIS nuclear grade (no DCIS-specific code available and DCISNuclearGradeVS specifically references DCIS)
 Based on: 		SimpleCodedLaboratoryObservation
-Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
+Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade. In breast cancer, nuclear grade is typically evaluated for ductal carcinoma in situ (DCIS) only."
 				ObservationContext.ResultValue value is type CodeableConcept
-				ObservationContext.ResultValue.CodeableConcept from NuclearGradeVS
+				ObservationContext.ResultValue.CodeableConcept from DCISNuclearGradeVS
+				LaboratoryObservationTopic.TopicCode is TBD#TBD
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-				LaboratoryObservationTopic.TopicCode is MTH#C18513
-				LaboratoryObservationTopic.DiagnosticService is #pathology
-
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+	0..0		LaboratoryObservationTopic.Media
+	0..0		LaboratoryObservationTopic.Device
 
 EntryElement:	BreastCancerHistologicGrade
-Concept:		LNC#44648-4
+Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 Based on:		CodedLaboratoryObservation
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from NottinghamCombinedGradeVS
-				ObservationContext.ExceptionValue from NottinghamNullVS
-				LaboratoryObservationTopic.TopicCode is LNC#44648-4
+				ObservationContext.ExceptionValue from NottinghamCombinedGradeNullVS
+				LaboratoryObservationTopic.TopicCode is LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
-0..0			LaboratoryObservationTopic.PanelMembers					
+0..0			LaboratoryObservationTopic.PanelMembers
 
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
-			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
+			Concept:		LNC#85321-8 "Granular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham."
+			Description:	"The degree of glandular differentiation or tubule formation in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Less aggressive cancers have more tubule formation."
 			Value:			CodeableConcept from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
 							ExceptionValue from NottinghamComponentNullVS
 
 			Element:		NuclearPleomorphismScore
-			Concept:		LNC#44645-0
+			Concept:		LNC#44645-0 "Nuclear pleomorphism in Breast tumor Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
+			Description:	"The degree of nuclear pleomorphism (variability of nuclei) in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Increasing degrees of pleomorphism are associated with increasingly aggressive cancers."
 			Value:			CodeableConcept from NuclearPleomorphismScoreVS
 							ExceptionValue from NottinghamComponentNullVS
 
 			Element:		MitoticCountScore
-			Concept:		LNC#85300-2
+			Concept:		LNC#85300-2 "Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham"
 			Based on:		CodedEvaluationComponent
-			Description:	"Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
+			Description:	"The degree of mitotic activity in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Mitotic activity is assessed as the number of mitoses per 10 high power fields (HPF), with increasing mitotic activity being an indicator of more aggressive cancer. The specific scores assigned to the number of mitoses depends on the size of the HPF. For example, for a HPF size of 0.274 mm^2, less than 10 mitoses per 10 HPF gets a score of 1, 10-19 gets a score of 2, and greater than or equal to 20 gets a score of 3. When larger or smaller HPFs are used, the cutoffs for the number of mitoses corresponding to a specific score are adjusted according to published guidelines."
 			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
 							ExceptionValue from MitoticCountScoreNullVS
 
@@ -173,12 +421,14 @@ Description:	"Estrogen receptor alpha is the predominant estrogen receptor expre
 The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
-				LaboratoryObservationTopic.TopicCode is LNC#16112-5
-				LaboratoryObservationTopic.DiagnosticService is #pathology	
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				
+				LaboratoryObservationTopic.TopicCode from EstrogenReceptorInterpretationTestsVS
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+	0..0		LaboratoryObservationTopic.Media
+	0..0		LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.EvaluationComponent
-includes 0..1	NuclearPositivity
-includes 0..1	AverageStainingIntensity
+includes 0..1	EstrogenReceptorNuclearPositivity
+includes 0..1	EstrogenReceptorAverageStainingIntensity
 0..0			LaboratoryObservationTopic.PanelMembers
 /* additional components from CAP form
 includes 0..1	StainingControl
@@ -189,34 +439,46 @@ includes 0..1	AllredTotalScore
 includes 0..1	OtherReceptorScoringSystem
 */
 
+	Element:		EstrogenReceptorNuclearPositivity
+	Based on:		EvaluationComponent
+	Concept:		LNC#14228-1 "Cells.estrogen receptor/​100 cells in Tissue by Immune stain"  // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85329-1 "Cells.estrogen receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
+	Description:	"The percentage of cells that test (stain) positive for the presence of estrogen receptors. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
+	Value:			Range
+	0..0			ReferenceRange
+
+	Element:		EstrogenReceptorAverageStainingIntensity
+	Concept:		LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain" //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
+	Based on:		CodedEvaluationComponent
+	Description:	"The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
+	Value:			CodeableConcept from StainingIntensityVS
+
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		CodedLaboratoryObservation
-Concept:		LNC#16113-3
-Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity. 
+Concept:		LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
+Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity.
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model."
 				ObservationContext.ResultValue value is type CodeableConcept
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeVS
-				LaboratoryObservationTopic.TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
-				LaboratoryObservationTopic.DiagnosticService is #pathology	
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				
+				LaboratoryObservationTopic.TopicCode from ProgesteroneReceptorInterpretationTestsVS
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
-includes 0..1	NuclearPositivity
-includes 0..1	AverageStainingIntensity
+includes 0..1	ProgesteroneReceptorNuclearPositivity
+includes 0..1	ProgesteroneReceptorAverageStainingIntensity
 0..0			LaboratoryObservationTopic.PanelMembers
 
-		Element:		NuclearPositivity
-		Based on:		EvaluationComponent
-		Concept:		TBD  // apparently no LOINC code
-		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor.
-		We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
-		Value:			Range
-		0..0			ReferenceRange
+	Element:		ProgesteroneReceptorNuclearPositivity
+	Based on:		EvaluationComponent
+	Concept:		LNC#14230-7 "Cells.progesterone receptor/​100 cells in Tissue by Immune stain" // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85325-9 "Cells.progesterone receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
+	Description:	"The percentage of cells that test (stain) positive for the presence of progesterone receptors. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
+	Value:			Range
+	0..0			ReferenceRange
 
-		Element:		AverageStainingIntensity
-		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
-		Based on:		CodedEvaluationComponent
-		Description:	"The degree or magnitude of staining (nuclear positivity) across cells in the specimen."
-		Value:			CodeableConcept from StainingIntensityVS
+	Element:		ProgesteroneReceptorAverageStainingIntensity
+	Concept:		LNC#85331-7 "Progesterone receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain	" //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
+	Based on:		CodedEvaluationComponent
+	Description:	"The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
+	Value: CodeableConcept from StainingIntensityVS
 
 EntryElement:	HER2ReceptorStatus
 Based on:		CodedLaboratoryObservation
@@ -224,27 +486,32 @@ Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 				ObservationContext.ResultValue.CodeableConcept from PositiveNegativeEquivocalVS
 				LaboratoryObservationTopic.TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 0..0			LaboratoryObservationTopic.Precondition
 0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 0..0 			LaboratoryObservationTopic.EvaluationComponent
 				LaboratoryObservationTopic.PanelMembers.Observation
 includes 0..*	HER2byIHC
-includes 0..*	HER2byFISH				
-				
+includes 0..*	HER2byFISH
+
 EntryElement:	HER2byIHC
 // MK 7/14/2018 separated null value from non-null values.
 Based on:		CodedLaboratoryObservation
-Concept:		LNC#85319-2
+Concept:		LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
 Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
 				ObservationContext.ResultValue.CodeableConcept from HER2byIHCScoreVS
 				ObservationContext.ExceptionValue from HER2byIHCScoreNullVS
 				ObservationContext.Interpretation from PositiveNegativeEquivocalVS
 				LaboratoryObservationTopic.TopicCode is LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
 0..0			LaboratoryObservationTopic.FindingMethod  // pre-coordinated in the TopicCode
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	CompleteMembraneStainingPercent
@@ -260,15 +527,17 @@ includes 0..1	CompleteMembraneStainingPercent
 
 EntryElement:	HER2byFISH
 Based on:		LaboratoryObservation
-Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
+Concept:		LNC#85318-4 "HER2 [Presence] in Breast cancer specimen by FISH"
 Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
 0..0			ObservationContext.ResultValue
 0..0			ObservationContext.ExceptionValue
 				LaboratoryObservationTopic.TopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
 				LaboratoryObservationTopic.FindingMethod from HER2FISHMethodVS // single or double probe
 				ObservationContext.Interpretation from PositiveNegativeEquivocalVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
 				LaboratoryObservationTopic.EvaluationComponent
 includes 0..1	AverageHER2SignalsPerCell
@@ -278,88 +547,153 @@ includes 0..1	HER2toCEP17Ratio
 
 		Element:		AverageHER2SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		LNC#74860-8
+		Concept:		LNC#74860-8 "HER2 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number of HER2 signals per cell"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 		Element:		AverageCEP17SignalsPerCell
 		Based on:		EvaluationComponent
-		Concept:		LNC#74861-6
+		Concept:		LNC#74861-6 "CEP17 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 		Element:		HER2toCEP17Ratio
 		Based on:		EvaluationComponent
-		Concept:		LNC#49683-6
+		Concept:		LNC#49683-6 "HER2/CEP17 [Ratio] in Tissue by FISH"
 		Description:	"HER2 to CEP17 Ratio (dual probe only)"
 		Value:			Quantity
 		0..0			ReferenceRange
-		
+
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C1709318
+Concept:		MTH#C1709318 "Oncotype DX Breast Cancer Assay" //TODO: Request LOINC code.
 Description:	"The Oncotype DX test for invasive breast cancer examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value from 0 to 100 indicates the estimated risk of recurrence, with the highest risk indicated by a score greater than 31.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is MTH#C1709318
+				LaboratoryObservationTopic.TopicCode is MTH#C1709318 "Oncotype DX Breast Cancer Assay"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen			
-
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C3898101
+Concept:		MTH#C3898101 "Oncotype DX DCIS Score"
 Description:	"The Oncotype DX test for DCIS (Ductal Carcinoma in Situ) breast cancer. Risk scores range from 0 to 100 with the following interpretations: 0-38: Low-Risk, 39-54: Intermediate-Risk, 55+: High-Risk.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is MTH#C3898101
+				LaboratoryObservationTopic.TopicCode is MTH#C3898101 "Oncotype DX DCIS Score"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen	
-				
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+
 EntryElement:	ProsignaRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		LNC#76544-6
+Concept:		LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Prosigna.
 The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptor positive, early stage breast cancer."
 				ObservationContext.ResultValue value is type Quantity
 				ObservationContext.ResultValue.Quantity with units UCUM#1
-				LaboratoryObservationTopic.TopicCode is LNC#76544-6
+				LaboratoryObservationTopic.TopicCode is LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
 				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
 
 EntryElement:	MammaprintRecurrenceScore
 Based on:		SimpleLaboratoryObservation
-Concept:		MTH#C2827401
+Concept:		MTH#C2827401 "MammaPrint"
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Mammaprint.
 In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
 The is currently no LOINC code for Mammaprint test."
 				ObservationContext.ResultValue value is type Quantity
-				LaboratoryObservationTopic.TopicCode is MTH#C2827401
+				LaboratoryObservationTopic.TopicCode is MTH#C2827401 "MammaPrint"
 				ObservationContext.Interpretation from RecurrenceRiskScoreInterpretationVS
-				LaboratoryObservationTopic.DiagnosticService is #pathology
-				LaboratoryObservationTopic.Specimen is type BreastSpecimen				 
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+
+EntryElement:	BreastCancerGeneticAnalysisObservation
+Concept:		TBD
+Based on:		LaboratoryObservation
+Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
+0..0			ObservationContext.ResultValue
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.TopicCode is TBD#TBD
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+				LaboratoryObservationTopic.DiagnosticService is #genetics
+0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+	 			LaboratoryObservationTopic.EvaluationComponent
+includes 1..1	BRCA1Variant
+includes 1..1	BRCA2Variant
+0..0			LaboratoryObservationTopic.PanelMembers // mk 8/9/18 removed .Observation to make sure related goes away altogether
+
+	Element:		BRCA1Variant
+	Concept:		LNC#21639-0 "BRCA1 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
+	Based on:		EvaluationComponent
+	Description:	"Whether the patient has a mutation in the BRCA1 gene."
+	Value:			CodeableConcept from PositiveNegativeVS
+
+	Element:		BRCA2Variant
+	Concept:		LNC#38531-0 "BRCA2 gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
+	Based on:		EvaluationComponent
+	Description:	"Whether the patient has a mutation in the BRCA2 gene."
+	Value:			CodeableConcept from PositiveNegativeVS
+
+EntryElement:	Ki-67NuclearAntigen
+Based on:		CodedLaboratoryObservation
+Concept:		LNC#33055-5 "Ki-67 nuclear Ag [Presence] in Tissue by Immune stain"
+Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence.  The Ki-67 antigen is measured numerically as a percentage, and as an ordinal. The more positive cells there are, the more quickly they are dividing and forming new cells. ReferenceRange: Low <10, Intermediate 10-20, >20 High."
+				ObservationContext.ResultValue.CodeableConcept from Ki-67NuclearAntigenVS
+				LaboratoryObservationTopic.TopicCode is LNC#33055-5 "Ki-67 nuclear Ag [Presence] in Tissue by Immune stain"
+0..0			ObservationContext.ExceptionValue
+				LaboratoryObservationTopic.DiagnosticService is HL7V20074#PAT
+				LaboratoryObservationTopic.Specimen is type BreastSpecimen
+0..0			LaboratoryObservationTopic.Precondition
+0..0			LaboratoryObservationTopic.FindingMethod
+0..0			LaboratoryObservationTopic.Media
+0..0			LaboratoryObservationTopic.Device
+	 			LaboratoryObservationTopic.EvaluationComponent
+includes 0..1	Ki-67NuclearAntigenValue  // separated to its own element since the quantitative measurement is assigned a different LOINC code
+0..0			LaboratoryObservationTopic.PanelMembers // mk 8/9/18 removed .Observation to make sure related goes away altogether
+
+	Element: 		Ki-67NuclearAntigenValue
+	Based on:		EvaluationComponent
+	Concept:		LNC#29593-1 "Cells.Ki-67 nuclear Ag/​100 cells in Tissue by Immune stain"
+	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene.  The Ki-67 antigen is measured quantitatively as a percentage."
+	Value:		 	Quantity with units UCUM#%
+	0..1			ReferenceRange
 
 
-/*	
+/*
+// ************** Reserved for Future Use ****************
+
 		Element:		Aneusomy
 		Based on:		CodedEvaluationComponent
 		Concept:		CAP#30478
 		Description:	"Aneusomy (as defined by vendor kit used)"
 		Value:			CodeableConcept from YesNoVS
-	
+
 		Element:		HeterogeneousSignals
 		Based on:		CodedEvaluationComponent
-		Concept:		CAP#30482 
+		Concept:		CAP#30482
 		Description:	"Whether In Situ Hybridization signals were heterogeneous."
 		Value:			CodeableConcept from YesNoVS
-		
+
 		Element:		PercentageAmplified
 		Based on:		EvaluationComponent
 		Concept:		CAP#31073
@@ -371,91 +705,6 @@ The is currently no LOINC code for Mammaprint test."
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
-	
-
-		Element:		PrimaryAntibody
-		Based on:		CodedEvaluationComponent
-		Concept:		CAP#31092
-		Description:	""
-		Value:			CodeableConcept
-		
-		Element:		StainingControl
-		Based on:		CodedEvaluationComponent
-		Concept:		CAP#25895
-		Description:	"Whether control cells were present."
-		Value:			CodeableConcept from StainingControlVS if covered
-		
-		Element:		AllredProportionScore
-		Concept:		CAP#31054
-		Based on:		EvaluationComponent
-		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
-		Value:			Quantity with units UCUM#1
-
-		Element:		AllredIntensityScore
-		Concept:		CAP#29749
-		Based on:		EvaluationComponent
-		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
-		Value:			Quantity with units UCUM#1
-							
-		Element:		AllredTotalScore
-		Concept:		CAP#31056
-		Based on:		EvaluationComponent
-		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
-		Value:			Quantity with units UCUM#1  // unsignedInt -  limit to max of 8				
-
-		Element:		OtherReceptorScoringSystem
-		Concept:		CAP#31062
-		Based on:		CodedEvaluationComponent
-		Description:	"A scoring system other than Allred."
-
-EntryElement: 	TumorDimensions
-Based on:		SimpleCodedObservation
-Concept:		MTH#C4086369
-0..0			Value
-				TopicCode is TBD#TBD
-				ObservationTopic.DiagnosticService is #pathology
-				EvaluationComponent
-includes 0..1	TumorPrimaryDimensionSize
-includes 0..1	TumorSecondaryDimensionSize
-includes 0..1	SizeOfGrossTumorBed
-
-		Element:		TumorPrimaryDimensionSize
-		Description:	"The longest diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Value:			Quantity with units UCUM#mm		
-		
-		Element:		TumorSecondaryDimensionSize
-		Description:	"The longest perpendicular diameter of the primary tumor."
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Value:			Quantity with units UCUM#mm
-
-		Element:		SizeOfGrossTumorBed
-		Based on:		EvaluationComponent
-		Concept:		TBD
-		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
-		Value:			Quantity with units UCUM#mm
-
-
-EntryElement: 	TumorMargins
-Based on:		SimpleCodedObservation
-Concept:		MTH#C4086369
-Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-Value: 			CodeableConcept from PositiveNegativeVS
-				TopicCode is MTH#C4086369
-				ObservationTopic.DiagnosticService is #pathology
-				EvaluationComponent
-includes 0..1	TumorMarginDescription
-includes 0..1	Cellularity   // not sure this belongs here
-includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
-// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
-
-		Element:		TumorMarginDescription
-		Concept:		TBD
-		Based on:		CodedEvaluationComponent
-		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
-		Value:			CodeableConcept from TumorMarginDescriptionVS
 
 		Element:		Cellularity
 		Concept:		MTH#C4055283
@@ -469,24 +718,47 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 		Value:			Quantity with units UCUM#%
 
-	
+		Element:		PrimaryAntibody
+		Based on:		CodedEvaluationComponent
+		Concept:		CAP#31092
+		Description:	""
+		Value:			CodeableConcept
 
-	Element: 		Ki-67LabelingIndex
-	Based on:		SimpleCodedObservation		
-	Concept:		MTH#C4049944
-	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
-	Value:		 	Quantity with units UCUM#%
-					TopicCode is LNC#29593-1
-					ObservationTopic.DiagnosticService is #pathology
-					EvaluationComponent
-	includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
+		Element:		StainingControl
+		Based on:		CodedEvaluationComponent
+		Concept:		CAP#25895
+		Description:	"Whether control cells were present."
+		Value:			CodeableConcept from StainingControlVS if covered
+
+		Element:		AllredProportionScore
+		Concept:		CAP#31054
+		Based on:		EvaluationComponent
+		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
+		Value:			Quantity with units UCUM#1
+
+		Element:		AllredIntensityScore
+		Concept:		CAP#29749
+		Based on:		EvaluationComponent
+		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
+		Value:			Quantity with units UCUM#1
+
+		Element:		AllredTotalScore
+		Concept:		CAP#31056
+		Based on:		EvaluationComponent
+		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
+		Value:			Quantity with units UCUM#1  // unsignedInt -  limit to max of 8
+
+		Element:		OtherReceptorScoringSystem
+		Concept:		CAP#31062
+		Based on:		CodedEvaluationComponent
+		Description:	"A scoring system other than Allred."
 
 	Element:		S-PhaseFraction
 	Based on:		SimpleCodedObservation
 	Concept:		MTH#C0812425
 	Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
 	Value:			Quantity with units UCUM#%
-					ObservationTopic.DiagnosticService is #pathology
+					ObservationTopic.DiagnosticService is HL7V20074#PAT
 					TopicCode is LNC#29593-1
 
 EntryElement:	GeneticVariant
@@ -494,7 +766,6 @@ Based on:		Observation
 Concept:		MTH#C0678941
 Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
-				Focus.CodeableConcept from GeneIdentifierVS
 				ObservationTopic.DiagnosticService is #genetics
 0..0			Precondition
 0..0			ReferenceRange
@@ -509,37 +780,9 @@ includes 0..1	Refseq
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept from RefseqVS
 
-EntryElement:	BreastCancerGeneticAnalysisObservation
-Concept:		TBD
-Based on:		Observation
-Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
-				Observation.TopicCode is TBD#TBD
-				ObservationTopic.DiagnosticService is #genetics
-0..0			EvaluationComponent
-				PanelMembers.EvaluationresultRecorded
-includes 1..1	BRCA1Variant
-includes 1..1	BRCA2Variant
-
-	Element:		BRCA1Variant
-	Concept:		TBD
-	Based on:		GeneticVariant
-	Description:	"Whether the patient has a mutation in the BRCA1 gene."
-	Value:			CodeableConcept from PositiveNegativeVS
-					Focus.CodeableConcept is HGNC#BRCA1Gene
-					
-
-	Element:		BRCA2Variant
-	Concept:		TBD
-	Based on:		GeneticVariant
-	Description:	"Whether the patient has a mutation in the BRCA2 gene."
-	Value:			CodeableConcept from PositiveNegativeVS
-					Focus.CodeableConcept is HGNC#BRCA2Gene
-
-
 FHIR Genomics:
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
 https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
 https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
 */
-
