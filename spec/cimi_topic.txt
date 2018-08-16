@@ -47,18 +47,12 @@ Concept:		MTH#C1554188
 Description:	"The base class, independent of context for evaluations (measurements, tests, or questions). The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
-0..1			Focus
 0..1			ref(Device)
 0..1			ref(Specimen)
 0..*			Precondition
 0..*			ReferenceRange  // applies to a quantitative measurement only
 0..* 			EvaluationComponent
 0..1			PanelMembers
-
-
-		Element:		Focus
-		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor. These are entities that are implied by clinical statements (see cimi.entity.MaterializedAssertion)"
-		Value:			string or CodeableConcept or Identifier or ref(EntityOrRole)
 
 		Element:		EvaluationComponent
 		Description:	"A simplified, non-separable evaluation consisting of a finding code (represented by the Concept), value (or exception value), reference range, and interpretation. The subject of the evaluation component is the same as in the parent evaluation."
@@ -108,7 +102,7 @@ Based on:		ObservationTopic
 Description:	"The topic composition for laboratory observations. A specimen is required, anatomical location is excluded (since the specimen indicates the collection body site). Also includes a diagnostic service (indicating the type of laboratory), not present in general observations."
 1..1			ref(Specimen)
 0..0			AnatomicalLocation  // AnatomicalLocation is where the Specimen was collected
-					Category is OBSCAT#laboratory
+				Category is OBSCAT#laboratory
 0..*			DiagnosticService
 
 		Element:		DiagnosticService
