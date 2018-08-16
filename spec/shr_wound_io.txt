@@ -11,7 +11,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 EntryElement:	ClinicalInputForm-PatientWoundSummary
 Based on:		Composition
 Description:	"Clinical input form for the initial observation of a wound or wounds on a patient. Includes only basic who/what/where aspects, not the complete assessment. Addresses the use case of a new patient being evaluated for the presence or absence of wounds."
-				Subject value is type Patient
+				Subject value is type Person
 				TypeCode is LNC#39135-9
 				Statement
 includes 0..*	WoundPresentCluster
@@ -21,7 +21,8 @@ includes 0..*	WoundAbsent
 	Based on:		Cluster
 	Description:	"A group of observations that together describe initial observations about a wound."
 					Statement
-	includes 1..1	Wound				
+	includes 1..1	Wound
+	includes 1..1	WoundLocationObservation			
 	includes 1..1	WoundType
 	includes 0..1	TimeOfOnset
 	includes 0..1	ConditionPresentOnAdmission
@@ -30,16 +31,11 @@ includes 0..*	WoundAbsent
 	includes 0..1	WoundEpisode		
 
 
-EntryElement:	ClinicalInputForm-WoundAssessment
-Based on:		Composition
-Description:	"Information about a wound at a single time, structured into logical groupings for input or display."
-				Subject value is type Wound
-				TypeCode is LNC#39135-9
-//				Cluster
-//includes 1..1	WoundAssessmentCluster
-//
-//	Element:		WoundAssessmentCluster
-//	Based on:		Cluster
+EntryElement:		ClinicalInputForm-WoundAssessment
+Based on:			Composition
+Description:		"Information about a wound at a single time, structured into logical groupings for input or display."
+					Subject value is type Wound
+					TypeCode is LNC#39135-9
 					Statement
 	includes 0..1	WoundAssessmentInterpretation
 	includes 0..*	PhotographicImage
@@ -143,6 +139,7 @@ Description:	"A collection of all information about a single wound, possibly inc
 				TypeCode is LNC#39135-9
 				Statement
 includes 1..*	WoundType
+includes 1..1	WoundLocationObservation
 includes 0..*	TimeOfOnset
 includes 0..*	ConditionPresentOnAdmission
 includes 0..*	WoundTypeEtiology

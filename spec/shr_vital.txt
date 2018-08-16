@@ -12,7 +12,7 @@ EntryElement:   VitalSignsComposition
 Based on:       Composition
 Description:    "An aggregation of information on vital signs, weight, height, head circumference, oxygen saturation, BMI, etc. 
 The aggregation can contain some or all information about vital signs. A snapshot might include only the most recent vital signs, while a history could be comprised of many vital signs observations taken by different people at different times."
-                Subject value is type Patient
+                Subject value is type Person
                 TypeCode is LNC#85353-1
                 Statement
 //includes 1..1   VitalSignsCluster
@@ -40,14 +40,7 @@ Description:	"The rate of breathing (inhalation and exhalation) measured within 
                 Subject value is type Person
                 ObservableCode is LNC#9279-1
                 ResultValue.Quantity with units UCUM#/min "/min"
-
-EntryElement:   RespiratoryRateMeasurementQualifier
-Based on:       CodedObservation
-Concept:        TBD#TBD  // not SCT#362981000 "Qualifier value (qualifier value)"
-Description:    "Information to help interpret the respiratory rate, for example, during exercise, or at rest."
-                Subject value is type RespiratoryRateMeasurement
-                ObservableCode is TBD#TBD
-                ResultValue from RespiratoryRateMeasurementQualifierVS
+                Qualifier from RespiratoryRateMeasurementQualifierVS
 
 EntryElement:   RespiratoryRateMeasurementMethod
 Based on:       CodedObservation
@@ -64,22 +57,9 @@ Description:	"The number of times the heart ventricles contract per unit of time
                 Subject value is type Person
                 ObservableCode is LNC#8867-4
                 ResultValue.Quantity with units UCUM#/min "/min"
+                FindingMethod from HeartRateMeasurementMethodVS
+                Qualifier from HeartRateMeasurementQualifierVS
 
-EntryElement:   HeartRateMeasurementQualifier
-Based on:       CodedObservation
-Concept:        TBD#TBD
-Description:    "A modifier to help interpret the heart rate measurement, such as during exercise, or at rest."
-                Subject value is type HeartRateMeasurement
-                ObservableCode is TBD#TBD
-                ResultValue from HeartRateMeasurementQualifierVS
-
-EntryElement:   HeartRateMeasurementMethod
-Based on:       CodedObservation
-Concept:        TBD#TBD
-Description:    "The method of measurement of heart rate, for example, manually counting of the pulse."
-                Subject value is type HeartRateMeasurement
-                ObservableCode is TBD#TBD
-                ResultValue from HeartRateMeasurementMethodVS
 
 EntryElement:	OxygenSaturationMeasurement
 Based on:		QuantitativeObservation
@@ -91,8 +71,8 @@ Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
 
 EntryElement:   OxygenSaturationMeasurementBodySite
 Based on:       CodedObservation
-Concept:        TBD#TBD
-Description:    "The location where the oxygen saturation measurement was taken."
+Concept:        TBD
+Description:    "Body Location measurement is taken."
                 Subject value is type OxygenSaturationMeasurement
                 ObservableCode is TBD#TBD
                 ResultValue from OxygenSaturationMeasurementBodySiteVS
@@ -104,8 +84,15 @@ Description:	"The measure of the level of heat in a human or animal."
                 Subject value is type Person
                 ObservableCode is LNC#8310-5
                 ResultValue.Quantity with units UCUM#Cel "C"
-                AnatomicalLocation from BodyTemperatureMeasurementBodySiteVS
                 Qualifier from BodyTemperatureMeasurementQualifierVS
+
+EntryElement:   BodyTemperatureMeasurementBodySite
+Based on:       CodedObservation
+Concept:        TBD
+Description:    "Body Location measurement is taken."
+                Subject value is type BodyTemperatureMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BodyTemperatureMeasurementBodySiteVS
 
 EntryElement:	BodyHeightMeasurement
 Based on:		QuantitativeObservation
@@ -163,9 +150,16 @@ Concept:        TBD#TBD
 Description:    "Parent class for measurements of systolic and diastolic pressures."
                 Subject value is type Person
                 ResultValue.Quantity with units UCUM#mm[Hg] "mmHg"
-                AnatomicalLocation from BloodPressureMeasurementBodySiteVS
                 FindingMethod from BloodPressureMeasurementMethodVS
                 Qualifier from BloodPressureMeasurementQualifierVS
+
+EntryElement:   BodyPressureMeasurementBodySite
+Based on:       CodedObservation
+Concept:        TBD
+Description:    "Body Location measurement is taken."
+                Subject value is type SystolicOrDiastolicMeasurement
+                ObservableCode is TBD#TBD
+                ResultValue from BloodPressureMeasurementBodySiteVS
 
 EntryElement:	SystolicPressureMeasurement
 Based on:       SystolicOrDiastolicMeasurement
@@ -188,9 +182,6 @@ Description:	"The angle at which the head is tilted relative to a level position
                 ObservableCode is LNC#8360-0
                 ResultValue.Quantity with units UCUM#deg "deg"
 
-
-
-  
 
 
 
