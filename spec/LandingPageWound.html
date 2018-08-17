@@ -52,7 +52,7 @@
 	
 	<p>In addition, there are several convenience classes, such as CodedObservation, which is simply an Observation whose result is constrained to be a concept code.</p>
 	<h1>Mini-CIMI Applied to Skin and Wound Assessment</h1>
-	<p>One of the key features of wound assessment is that one patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient has a length. The &ldquo;nestedness&rdquo; has led to debates about what should be modeled as an assertion versus an observation, or an observation component, or a panel, or as a &ldquo;sub-observation&rdquo;. The debate has also touched on immutability of clinical statements versus versioning of clinical statements, and whether information should exist in denormalized or normalized form.&nbsp;&nbsp;</p>
+	<p>One of the key features of wound assessment is that one patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient has a length. The &ldquo;nestedness&rdquo; has led to debates about what should be modeled as an assertion versus an observation, or an observation component, or a panel, or as a &ldquo;sub-observation&rdquo;. In a larger sense, the CIMI group has debated for a long time what the base class hierarchy should look like, and there are still significant disagreements.&nbsp;</p>
 	
 	<p>Mini-CIMI forces all models towards a canonical form, tolerating little variation, and thus sidesteps these debates. Furthermore, if users have different opinions on what information is needed or how it should be hierarchically arranged, they are free to create their own compositions, which can exist without conflict and still be perfectly interoperable at the information level.</p>
 	
@@ -64,13 +64,16 @@
 	
 	<p>Based on the Skin and Wound Assessment results presented here, Mini-CIMI does not appear to compromise expressibility, even though the models are cookie-cutter (cookie-cutter being a huge positive in this context). As noted above, Mini-CIMI does not yet address Actions, since Actions were not required in the Skin and Wound Assessment demonstration project.</p>
 	<h1>How Mini-CIMI Relates to FHIR</h1>
-	<p>This implementation guide proves that Mini-CIMI can be mapped successfully to FHIR.</p>
+	<p>This implementation guide proves that Mini-CIMI can be mapped successfully to FHIR. The mapping still uses Basic resource, which is not optimal. We think this can be fixed.</p>
 	
 	<p>A FHIR resource like Patient is an aggregate of many separate Mini-CIMI clinical statements (the patient is a clinical statement, date of birth is a clinical statement, administrative gender is a clinical statement, etc.). To produce a FHIR Patient from Mini-CIMI, you would first create a composition containing the model elements corresponding to the elements in FHIR Patient, and then do the mapping from that composition to the Patient resource.</p>
 	
-	<p>Though seemingly awkward, the composition strategy is actually quite beautiful. FHIR&rsquo;s Patient is only an 80% solution &ndash; meaning, it isn&rsquo;t a 100% solution to any use case. One set of patient information is needed for patient matching, a different set for patient registration, yet another set for insurance eligibility, and still another set for vital statistics reporting. In Mini-CIMI, each use case is satisfied with different compositions, but all compositions employ the same &ldquo;atomic&rdquo; model elements, thus making all data interoperable across all these use cases.</p>
+	<p>Though seemingly awkward, the composition strategy is actually very elegant. FHIR&rsquo;s Patient is only an 80% solution &ndash; meaning, it isn&rsquo;t a 100% solution to any use case. One set of patient information is needed for patient matching, a different set for patient registration, yet another set for insurance eligibility, and still another set for vital statistics reporting. In Mini-CIMI, each use case is satisfied with different compositions, but all compositions employ the same &ldquo;atomic&rdquo; model elements, thus making all data interoperable across all these use cases.</p>
 	
-	<p>Something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition, subtraction, and constraints, and there&rsquo;s no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There&rsquo;s far less assurance that FHIR profiles will be interoperable.</p>
+	<p>Something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition and subtraction of attributes and addition of constraints, and there&rsquo;s no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There&rsquo;s far less assurance that FHIR profiles will be interoperable.</p>
+
+	<p>The author believes Mini-CIMI is NOT just shifting complexity from one place (base class hierarchy) to another (compositions), but actually significantly simplifying the modeling problem. Mini-CIMI could be the answer to stopping our endless debates about what MIGHT be generally good things to have in base classes. Mini-CIMI defers questions about compositional structure until (a) the standard building blocks are defined, and (b) there is a specific use case that motivates a particular collection of information.</p>
+
 	<h1>Conclusion</h1>
 	<p>Mini-CIMI should be considered as possible approach to increase CIMI&rsquo;s reproducibility, scalability, and ultimately, adoption.</p>
 	<p>&nbsp;</p>
