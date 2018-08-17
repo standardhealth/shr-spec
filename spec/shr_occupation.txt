@@ -52,7 +52,7 @@ EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
 Concept:		LNC#87510-4 "Date of Retirement"
 Description:	"A self-reported date that a person considers themselves to have ‘retired’.
-A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job.
+A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job. Multiple retirement dates should be recorded using multiple FHIR resources.
 Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 				TopicCode is LNC#87510-4 "Date of Retirement"
 				ResultValue value is type dateTime
@@ -64,7 +64,7 @@ EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
 Concept:		LNC#87511-2
 Description:	"Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work.
-Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones."
+Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
 				TopicCode is LNC#87511-2
 				ResultValue value is type TimePeriod
 0..0			EvaluationComponent
@@ -108,7 +108,7 @@ EntryElement:	PastOrPresentJob
 Based on:		CodedSocialHistoryObservation
 Concept:		LNC#11341-5 "History of Occupation"
 Description:	"Related data elements for a current or previous job, as reported by the person, i.e., a work situation or position held for a specified time period.
-A person can have more than one job at the same time and multiple jobs over time, so the data related to each job must remain in the record in perpetuity. 
+A person can have more than one job at the same time and multiple jobs over time, so the data related to each job must remain in the record in perpetuity. Each job should be recorded in a separate instance of PastOrPresentJob.
 A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 				TopicCode is LNC#11341-5 "History of Occupation"
@@ -207,9 +207,9 @@ includes 0..1	IsCurrentJob
 
 // Last minute addition 8/17 based on Genny's comment 
 	Element:		IsCurrentJob
-	Based on:		EvaluationComponent
-	Description:	"A true/false flag indicating if this is the person's current job (at the time the resource was last updated)."
-	Value:			boolean
+	Based on:		CodedEvaluationComponent
+	Description:	"A flag indicating if this is the person's current job (at the time the resource was last updated)."
+	Value:			CodeableConcept from YesNoVS
 	
 Element:		SocialHistoryObservation
 Based on:		Observation
