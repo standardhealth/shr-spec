@@ -1,0 +1,51 @@
+<h2><a name="Modeling"></a>Modeling Approach</h2>
+<h3>Major sources of information</h3>
+<p>Specifications consulted for the development of this IG include:</p>
+<ul>
+<li><a href="https://cancerstaging.org/references-tools/deskreferences/Pages/Breast-Cancer-Staging.aspx">American Joint Committee on Cancer (AJCC) Staging Manual (8th Edition) Breast Cancer Chapter</a></li>
+<li>College of American Pathologists (CAP) Cancer Protocols:
+<ul>
+<li><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-invasive-18protocol-4100.pdf">Protocol for the Examination of Specimens From Patients With<br />Invasive Carcinoma of the Breast</a></li>
+<li><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-dcis-18protocol-4100.pdf">Protocol for the Examination of Specimens From Patients With Ductal</a><br /><a href="http://www.cap.org/ShowProperty?nodePath=/UCMCon/Contribution%20Folders/WebContent/pdf/cp-breast-dcis-18protocol-4100.pdf">Carcinoma In Situ (DCIS) of the Breast</a></li>
+</ul>
+</li>
+<li><a href="https://www.naaccr.org/SSDI/SSDI-Manual.pdf?v=1531675132">North American Association of Central Cancer Registries (NAACCR) 2018 Site-Specific Data Items Manual (May 2018) (Breast Cancer Section)</a></li>
+<li><a href="http://www.hl7.org/implement/standards/product_brief.cfm?product_id=383">HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</a></li>
+<li><a href="http://www.hl7.org/implement/standards/product_brief.cfm?product_id=327">HL7 CDA R2 IG: Clinical Oncology Treatment Plan and Summary</a></li>
+<li><a href="https://www.cdisc.org/standards/therapeutic-areas/breast-cancer">CDISC Therapeutic Area Users Guide - Breast Cancer (TAUG-BrCa)</a></li>
+<li><a href="https://www.nccn.org/professionals/physician_gls/default.aspx#site">National Comprehensive Cancer Network (NCCN) Clinical Practice Guidelines in Oncology - Breast Cancer</a></li>
+<li><a href="http://recist.eortc.org/wp-content/uploads/2015/03/RECISTGuidelines.pdf">RECIST Guidelines v1.1</a></li>
+</ul>
+<p>In addition to sources specifically providing clinical content related to cancer and breast cancer, from a modeling perspective, CIMI and FHIR models were also used as a source.</p>
+<p>Data elements were initially prioritized based on the identified scope. Consideration was given to existing representations of the elements across the source material, which varied in complexity from a simple data element dictionary to more well-formed logical models which included relationships between concepts. Value sets for coded elements were also compared across the sources.</p>
+<p>Differences across sources drove the development of harmonized detailed clinical models. Final decisions on the inclusion of data elements and attributes were driven by 1) their impact in driving clinical decision making for breast cancer treatment, and 2) their presence in multiple sources, indicative of the importance of the data element across practice areas.</p>
+<h3>Logical Modeling</h3>
+<p>The intention of a logical model is to represent the structure of the model without implementation-specific considerations. The logical model can then be transformed into one or more implementable forms, for example, V2 messages, FHIR profies, C-CDA templates, etc. In theory, this allows logical model retain its value, while implementation fashions come and go.</p>
+<p>Of course, the logical model itself must be implemented in some concrete form. In this case, the logical model has been implemented in two formats: FHIR StructureDefinition and Archetype Description Language/Basic Meta Model (ADL/BMM). The latter is the current preferred format for CIMI conformance purposes. Only the FHIR StructureDefinitions are included in the ballot package.</p>
+<h4>Class Hierarchy</h4>
+<p>The logical model itself can be described as an object-oriented class hierarchy, with domain-specific classes defined by progressive specialization of more generic parents. For example, a BreastSpecimen is defined by the following class hierarchy:</p>
+<ul>
+<li>Locatable* &gt; Independent &gt; EntityOrRole &gt; Entity &gt; Specimen &gt; BreastSpecimen</li>
+</ul>
+<p>A typical observation, such as BreastCancerHistologicGrade, is defined in the following hierarchy:</p>
+<ul>
+<li>
+Locatable* &gt; Independent &gt; Content &gt; InformationEntry &gt; ClinicalStatement &gt; FindingStatement &gt; Observation &gt; LaboratoryObservation &gt;&nbsp;CodedLaboratoryObservation &gt;&nbsp;BreastCancerHistologicGrade
+</li>
+</ul>
+<p>(note: While CIMI uses the term "EvaluationResultRecorded", we have adopted the more concise term, "Observation".)</p>
+<p>This class hierarchy is a central feature of CIMI.&nbsp; To fully describe the CIMI modeling approach is beyond the scope of this IG, and the reader is referred to&nbsp;<a href="http://wiki.hl7.org/images/e/e6/2007-01_CIMI_Modeling%2C_Architecture_Methodology_and_Style_Guide_.pdf">CIMI Modeling&nbsp;Architecture, Methodology &amp; Style Guide</a>. However, it is important to understand a central CIMI tenet, the Topic-Context pattern.&nbsp;</p>
+
+<h4>The CIMI Topic-Context Pattern</h4>
+<p>CIMI develops several class hierarchies. The first is the ClinicalStatement hierarchy, exemplified by the BreastCancerHistologicGrade hierarchy, above. A clinical statement represents a fact, opinion, or observation that relates to a patient, for example, "the patient has a diagnosis of congestive heart failure" or "patient has an order for physical therapy" [<a href="https://issues.osehra.org/secure/attachment/15835/cimi_modeling_quality_guide.pdf">CIMI Modeling and Quality Guide</a>].&nbsp;</p>
+<p>However, ClinicalStatement is not the only class needed to construct a clinical statement. The clinical statement itself has no clinical content; to gain content, the ClinicalStatement class must reference a topic and a context. The topic is the clinical entity being described by the Clinical Statement, for example, a laboratory test. The context describes the circumstance applied to the topic. For example, we can speak of "blood pressure of 120/80" as an observation or a goal; similarly, we can speak of a procedure as recommended, ordered, planned, performed, or not performed. Both the topic and context are defined in class hierarchies of their own. For example, for the BreastCancerHistologicGrade, the topic hierarchy is as follows:</p>
+<ul>
+<li><span>Locatable* &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementTopic &gt;&nbsp;FindingTopic &gt;&nbsp;ObservationTopic &gt; LaboratoryObservationTopic</li>
+</ul>
+The context hierarchy for the same observation is as follows:
+<ul>
+<li><span>Locatable* &gt;&nbsp;</span>NonIndependent &gt;&nbsp;StatementContext &gt;&nbsp;FindingContext &gt;&nbsp;RecordedContext &gt;&nbsp;ObservationContext</li>
+</ul>
+<p>It is important to understand the both the benefits and costs of this design choice. Separating topic and context increases consistency and reuse. For example, the same procedure topic can be used whether the context is recommending the procedure, planning the procedure, or performing the procedure. In addition, by reusing the contexts, each recommendation will have the same set of recommendation-related attributes, courtesy of the shared context. The same is true for each plan or performance, regardless of topic.</p>
+<p>Under the topic-context pattern, creating one new domain class can require creating multiple classes. For example, the BreastCancerStage observation requires two new classes: a BreastCancerStageTopic class, where the StageTiming attribute is added, and the BreastCancerStage class itself, which extends and constrains Observation. In the ADL/BMM serialization, the BreastCancerStageTopic properties would form a new class in the BMM, extending the reference model, and the terminology and other constraints would be applied in an archetype. Modelers must weave three threads together form new classes. It is possible that the right user-friendly tooling could mitigate the resulting "what-goes-where?" and "what-comes-from-where?" problems, but tooling cannot decide which of the three hierarchies should be extended. Even in CIMI circles, this is frequently a gray area.&nbsp;</p>
+<p>Exploration of alternatives is beyond the scope of this IG, but we briefly method that there is a potential simplification that could retain the key benefits of the topic-context pattern, while greatly simplifying the class hierarchy by eliminating the separate topic and context hierarchies. This involves extending the clinical statement hierarchy with classes that represent different contexts, creating, for example, OrderedStatement, ActionPerformedStatement, ActionNotPerformedStatement, ObservationStatement, etc. This approach creates a fixed set of classes from which all other classes derive.</p>
