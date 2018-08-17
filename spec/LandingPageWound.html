@@ -1,38 +1,36 @@
 	<p>This is an experimental "Mini-CIMI" version of a Skin and Wound Assessment FHIR Implementation Guide, based on a simplified modeling strategy and Standard Health Record (SHR) base classes.</p>
-	<p>&nbsp;</p>
+	
 	<h1>The Skin and Wound Assessment Demonstration Project</h1>
 	<p>&nbsp;The Clinical Information Modeling Initiative (CIMI) is focused on creating logical models of healthcare information, independent of implementation technologies and patterns, decoupling clinical content from periodic changes in implementation technology. This Implementation Guide (IG) is part of a demonstration project showing how different groups, with different tools, approach CIMI modeling. To expedite comparison, each group has implemented the same Skin and Wound Assessment domain.</p>
-	<p>&nbsp;</p>
+	
 	<p>Since 2011, CIMI has worked on an approach to modeling clinical information. It has established a core object-oriented hierarchy that consists of over 200 base classes and datatypes, an <a href="http://wiki.hl7.org/images/e/e6/2007-01_CIMI_Modeling%2C_Architecture_Methodology_and_Style_Guide_.pdf">architecture and methodology guide</a>, tooling, repositories, and other artifacts for CIMI modeling.</p>
-	<p>&nbsp;</p>
-	<p>Using CIMI to model a clinical domain such as Skin and Wound Assessment entails many activities and decisions, including:</p>
-	<p>&nbsp;</p>
+	
+	<p>Using CIMI to model a clinical domain such as Skin and Wound Assessment involves many modeling decisions, including:</p>
 	<ul>
-	<li>Factoring the clinical domain into discrete pieces that map to particular CIMI base classes;</li>
-	<li>Determining how to capture unique attributes of the domain by extending selected base classes;</li>
-	<li>Determining how to combine the classes to create the desired domain objects (e.g., choosing the right topic and context classes to create clinical statements),</li>
-	<li>Deciding where to apply constraints on model structures, fixing units of measure, assigning concept codes, restricting cardinality, binding properties to value sets, and constraining the type of attributes;</li>
-	<li>Manipulating the logical model and mappings to obtain reasonable FHIR profiles (or other implementation artifacts)</li>
-	<li>Determining how to partition the interconnected logical model to produce a modular implementation guide covering only the domain of interest.</li>
+	<li>How to factor the clinical domain into discrete pieces that map to particular CIMI base classes;</li>
+	<li>How to capture unique attributes of the domain by extending selected base classes;</li>
+	<li>How to combine the classes to create the desired domain objects (e.g., choosing the right topic and context classes to create clinical statements),</li>
+	<li>Deciding where to apply constraints on model structures: fixing units of measure, assigning concept codes, restricting cardinality, binding properties to value sets, and constraining the type of attributes;</li>
+	<li>How to fine-tune the logical model and mappings to obtain reasonable FHIR profiles (or other implementation artifacts);</li>
+	<li>How to partition the interconnected logical model to produce a modular implementation guide covering only the domain of interest.</li>
 	</ul>
-	<p>&nbsp;</p>
-	<p>The current author (Mark Kramer) has a wealth of experience in CIMI: creating a toolchain and domain-specific language for CIMI modeling, making dozens of contributions to the CIMI reference model, leading a CIMI/FHIR Connectathon track, etc. The author and his MITRE colleagues have used CIMI to produce several balloted FHIR implementation guides: <a href="http://hl7.org/fhir/us/breastcancer/">HL7 FHIR Implementation Guide: Breast Cancer Data, Release 1 - US Realm</a>&nbsp; and <a href="http://build.fhir.org/ig/HL7/us-odh/index.html">HL7 FHIR Profile: Occupational Data for Health (ODH), Release 1 (Standard for Trial Use)</a>. The author has also produced a &ldquo;Full CIMI&rdquo; version of the Skin and Wound Assessment Domain, for this very demonstration project. Despite this experience (or because of it), the author has reservations about the complexity of CIMI modeling.</p>
-	<p>&nbsp;</p>
+	
+	<p>In the author's experience, none of these steps are straightforward. This is not from lack of CIMI knowledge; the author (Mark Kramer) has a wealth of experience in CIMI including creating a toolchain and domain-specific language for CIMI modeling, making dozens of contributions to the CIMI reference model, leading a CIMI/FHIR Connectathon track, creating ADL/BMM tools, etc. The author and his MITRE colleagues have used CIMI to produce several balloted FHIR implementation guides (including this one), for example, <a href="http://hl7.org/fhir/us/breastcancer/">HL7 FHIR Implementation Guide: Breast Cancer Data, Release 1 - US Realm</a>&nbsp; and <a href="http://build.fhir.org/ig/HL7/us-odh/index.html">HL7 FHIR Profile: Occupational Data for Health (ODH), Release 1 (Standard for Trial Use)</a>. The author has also produced a &ldquo;Full CIMI&rdquo; version of the Skin and Wound Assessment Domain for this demonstration project. Therefore it is not without basis that the author expresses reservations about the complexity of CIMI modeling.</p>
+	
 	<h1>Mini-CIMI</h1>
 	<p>&ldquo;Mini-CIMI&rdquo; is an attempt to simplify CIMI modeling by reducing the number of modeling decisions and degrees of freedom involved in CIMI modeling. Mini-CIMI aims to increase the reproducibility of CIMI modeling, while making it possible for non-CIMI experts to create CIMI models. Mini-CIMI may seem reductionist, but it is reductionist with a purpose.</p>
-	<p>&nbsp;</p>
+	
 	<p>Mini-CIMI attempts to simplify the modeling problem by separating data standardization from data structure. It is an attempt to rationalize a world where some groups approach standardization through data element libraries, while others approach the same problem by building complex information models like FHIR, CIMI, V3, etc. In Mini-CIMI, data standardization happens on the level of &ldquo;atomic&rdquo; model elements, which are then combined into purpose-specific aggregations that address particular clinical workflows and/or use cases.</p>
-	<p>&nbsp;</p>
+	
 	<p>Disclaimers:</p>
 	<ul>
 	<li>Mini-CIMI is an experiment, not a finished product.</li>
 	<li>Mini-CIMI is not a particularly original idea, borrowing from CIMI, ISO 11179 standard data elements, resource description framework (RDF), Intermountain Clinical Element Models, FHIR questionnaires, OpenEHR, CDA, and more.</li>
 	<li>Mini-CIMI&rsquo;s simplicity is partly an illusion, because it doesn&rsquo;t yet cover actions and the classes that do exist don&rsquo;t have all the &ldquo;bells and whistles&rdquo; necessary for a full implementation.</li>
 	</ul>
-	<p>&nbsp;</p>
+	
 	<h2>The Basics</h2>
-	<p>&nbsp;</p>
-	<ul>
+		<ul>
 	<li>Everything in Mini-CIMI is a clinical statement (including entities like patients and organizations)</li>
 	<li>Each clinical statement includes the same set of metadata about the origin of the statement.</li>
 	<li>Each clinical statement is associated with a person of record.</li>
@@ -42,37 +40,37 @@
 	<li>Every clinical statement carries a concept code from a formal terminology that identifies the type (model meaning) of the clinical statement. The class name is for convenience only and is never required to understand the clinical statement.</li>
 	<li>Clinical statements are immutable</li>
 	</ul>
-	<p>&nbsp;</p>
+	
 	<p>There are four key types of clinical statement:</p>
-	<p>&nbsp;</p>
+	
 	<ul>
 	<li><strong>Observation</strong>: The Observation class represents a finding regarding an aspect or property of a subject.</li>
 	<li><strong>ObjectPresentOrAbsent</strong>: This class represents a finding that something (a thing, process, condition, etc.) exists or does not exist, or is present or absent. For example, a person is a represented by this type of clinical statement, and so is a disease, a wound, and a wound tunnel. The statement that something exists, or is present, is a proxy for the thing itself.</li>
 	<li><strong>RelationshipPresentOrAbsent:</strong> This class represents a finding that a relationship that exists, or does not exist, between two clinical statements.</li>
 	<li><strong>Composition</strong>: Compositions are used to combine &ldquo;atomic&rdquo; clinical statements together into purpose-specific hierarchical aggregates, that are also clinical statements. For example, aggregate could be the model elements comprising a complete blood count, the model elements necessary for patient identification, the model elements necessary to determine patient eligibility for a clinical trial, or the model elements necessary to present to an oncologist prior to an initial patient meeting. Compositions can be used to describe data clinicians should or must enter, or data clinicians should view, or data that systems should exchange.</li>
 	</ul>
-	<p>&nbsp;</p>
+	
 	<p>In addition, there are several convenience classes, such as CodedObservation, which is simply an Observation whose result is constrained to be a concept code.</p>
 	<h1>Mini-CIMI Applied to Skin and Wound Assessment</h1>
 	<p>One of the key features of wound assessment is that one patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient has a length. The &ldquo;nestedness&rdquo; has led to debates about what should be modeled as an assertion versus an observation, or an observation component, or a panel, or as a &ldquo;sub-observation&rdquo;. The debate has also touched on immutability of clinical statements versus versioning of clinical statements, and whether information should exist in denormalized or normalized form.&nbsp;&nbsp;</p>
-	<p>&nbsp;</p>
+	
 	<p>Mini-CIMI forces all models towards a canonical form, tolerating little variation, and thus sidesteps these debates. Furthermore, if users have different opinions on what information is needed or how it should be hierarchically arranged, they are free to create their own compositions, which can exist without conflict and still be perfectly interoperable at the information level.</p>
-	<p>&nbsp;</p>
+	
 	<p>Mini-CIMI detangles nested observations by requiring that each clinical statement name its subject. The subject is simply what object is being observed. For example, the subject of a &ldquo;wound present&rdquo; finding is a person; the subject of a wound size observation is a wound; and the subject of a wound tunnel length observation is a wound tunnel. Each subject (patient, wound, wound tunnel) is represented by clinical statement. In this design, each Observation is structurally like every other Observation, and all Observations are self-contained, independent statements &ndash; under the restriction that no Observation can exist without a Subject.</p>
-	<p>&nbsp;</p>
+	
 	<p>In Mini-CIMI, each class standardizes a single model element, in isolation from other model elements. For example, the wound length observation is standardized by virtue of having a certain LOINC code (39126-8), a certain data type (quantity with units cm), and certain subject (a wound). Thus standardized, the same wound length model element can be included in any number of purpose-specific compositions, exchanged in messages, or FHIR bundles.</p>
-	<p>&nbsp;</p>
+	
 	<p>For illustration, we have created several different (notional) compositions using the elements, one for patient review, one for assessment of an existing wound, and one for exchange; both hierarchical and flat.</p>
-	<p>&nbsp;</p>
+	
 	<p>Based on the Skin and Wound Assessment results presented here, Mini-CIMI does not appear to compromise expressibility, even though the models are cookie-cutter (cookie-cutter being a huge positive in this context). As noted above, Mini-CIMI does not yet address Actions, since Actions were not required in the Skin and Wound Assessment demonstration project.</p>
 	<h1>How Mini-CIMI Relates to FHIR</h1>
 	<p>This implementation guide proves that Mini-CIMI can be mapped successfully to FHIR.</p>
-	<p>&nbsp;</p>
+	
 	<p>A FHIR resource like Patient is an aggregate of many separate Mini-CIMI clinical statements (the patient is a clinical statement, date of birth is a clinical statement, administrative gender is a clinical statement, etc.). To produce a FHIR Patient from Mini-CIMI, you would first create a composition containing the model elements corresponding to the elements in FHIR Patient, and then do the mapping from that composition to the Patient resource.</p>
-	<p>&nbsp;</p>
+	
 	<p>Though seemingly awkward, the composition strategy is actually quite beautiful. FHIR&rsquo;s Patient is only an 80% solution &ndash; meaning, it isn&rsquo;t a 100% solution to any use case. One set of patient information is needed for patient matching, a different set for patient registration, yet another set for insurance eligibility, and still another set for vital statistics reporting. In Mini-CIMI, each use case is satisfied with different compositions, but all compositions employ the same &ldquo;atomic&rdquo; model elements, thus making all data interoperable across all these use cases.</p>
-	<p>&nbsp;</p>
-	<p>Superficially, something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition, subtraction, and constraints, and there&rsquo;s no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There&rsquo;s far less assurance that FHIR profiles will be interoperable.</p>
+	
+	<p>Something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition, subtraction, and constraints, and there&rsquo;s no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There&rsquo;s far less assurance that FHIR profiles will be interoperable.</p>
 	<h1>Conclusion</h1>
 	<p>Mini-CIMI should be considered as possible approach to increase CIMI&rsquo;s reproducibility, scalability, and ultimately, adoption.</p>
 	<p>&nbsp;</p>
