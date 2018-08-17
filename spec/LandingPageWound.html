@@ -70,7 +70,7 @@
 	
 	<p>Though seemingly awkward, the composition strategy is actually very elegant. FHIR&rsquo;s Patient is only an 80% solution &ndash; meaning, it isn&rsquo;t a 100% solution to any use case. One set of patient information is needed for patient matching, a different set for patient registration, yet another set for insurance eligibility, and still another set for vital statistics reporting. In Mini-CIMI, each use case is satisfied with different compositions, but all compositions employ the same &ldquo;atomic&rdquo; model elements, thus making all data interoperable across all these use cases.</p>
 	
-	<p>Something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition and subtraction of attributes and addition of constraints, and there&rsquo;s no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There&rsquo;s far less assurance that FHIR profiles will be interoperable.</p>
+	<p>Something similar could be accomplished through FHIR profiling, but profiling requires a mix of addition and subtraction of attributes and addition of constraints, and there is no assurance that that extensions and constraints applied for one use case are the same as those created for another use case, even if the information needs overlap. There is far less assurance that FHIR profiles will be interoperable.</p>
 
 	<p>The author believes Mini-CIMI is NOT just shifting complexity from one place (base class hierarchy) to another (compositions), but actually significantly simplifying the modeling problem. Mini-CIMI could be the answer to stopping our endless debates about what MIGHT be generally good things to have in base classes. Mini-CIMI defers questions about compositional structure until (a) the standard building blocks are defined, and (b) there is a specific use case that motivates a particular collection of information.</p>
 
@@ -78,13 +78,22 @@
 	<p>Mini-CIMI should be considered as possible approach to increase CIMI&rsquo;s reproducibility, scalability, and ultimately, adoption.</p>
 	<p>&nbsp;</p>
 
+
 	<h2>Credits:</h2>
 	<p>Domain content was provided by Susan Matney (Intermountain Healthcare). Help, guidance, and wisdom was generously provided by all members of the CIMI Work Group especially the co-chairs, Dr. Stan Huff, Claude Nanjo, Galen Mulrooney, and Richard Esmond.</p>
 	<p>This IG was authored by Dr. Mark Kramer using the <a href="https://github.com/standardhealth/shr-cli/wiki">Clinical Information Modeling and Profiling Language (CIMPL),</a> a free, open source toolchain from <a href="https://www.mitre.org/">MITRE Corporation</a>.</p>
 
 
-	<h1>Appendix: Key Mini-CIMI Classes</h1>
-	<h2>Observation</h2>
+	<h1>Appendix</h1>
+	<h2>Known Limitations/Bugs</h2>
+	<ul>
+		<li>Units of measure do not appear correctly in the logical models. They do, however, appear correctly in the profiles.</li>
+		<li>Because the model is not structured exactly like the source spreadsheet, some observations are missing LOINC codes.</li>
+		<li>Some refinement may be needed in how deeply-nested compositions appear in profiles. They appear more optimally in logical models.</li>
+		<li>Currently, all subclasses of ObjectPresenceOrAbsence are mapped to FHIR Basic. This is probably not optimal.</li>
+	</ul>	
+	<h2>Key Mini-CIMI Classes</h2>
+	<h3>Observation</h3>
 	<ul>
 	<li>Subject [type: Statement]&nbsp;</li>
 	<li>ObservableCode [Coding]</li>
@@ -95,7 +104,7 @@
 	<li>FindingMethod [Coding]</li>
 	</ul>
 	<p>&nbsp;</p>
-	<h2>ObjectPresentOrAbsent</h2>
+	<h3>ObjectPresentOrAbsent</h3>
 	<ul>
 	<li>Subject [type: Statement]</li>
 	<li>ObjectTypeCode [Coding]</li>
@@ -103,7 +112,7 @@
 	<li>PresentOrAbsent [Coding]</li>
 	</ul>
 	<p>&nbsp;</p>
-	<h2>RelationshipPresentOrAbsent</h2>
+	<h3>RelationshipPresentOrAbsent</h3>
 	<ul>
 	<li>Subject [type: Statement]</li>
 	<li>RelationshipCode [Coding]</li>
@@ -111,7 +120,7 @@
 	<li>PresentOrAbsent [Coding]</li>
 	</ul>
 	<p>&nbsp;</p>
-	<h2>Composition</h2>
+	<h3>Composition</h3>
 	<ul>
 	<li>Subject [Statement]</li>
 	<li>TypeCode [Coding]</li>
