@@ -1,0 +1,91 @@
+Grammar:		DataElement 6.0
+Namespace:		cimi.element
+Description:	"The Element Package defines reusable data elements that are used across multiple packages."
+Uses:			shr.core, shr.base, cimi.core, cimi.entity
+
+
+Element:		Annotation
+Description:	"An added or follow-up note, often after the fact, that contains metadata about who made the statement and when."
+Value:               string  // change to language-text
+Property:            1..1 Author
+Property:            1..1 OccurrenceTime
+
+	Element:		Author
+	Concept:		TBD
+	Description:	"The person or organization who created the entry and is responsible for (and may certify) the content."
+	//Value:		string or ref(EntityOrRole)
+	Value:          string or Patient or Group or Device or RelatedPerson or Organization
+
+Element:	Signature
+Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
+Property:       1..* SignatureType // note: constraint handled separately!
+Property:       1..1 CreationTime
+Property:       1..1 Signatory
+Property:       0..1 OnBehalfOf
+Property:       0..1 ContentType
+Property:       0..1 BinaryData
+Constraint:     SignatureType from http://hl7.org/fhir/ValueSet/signature-type (extensible)
+
+	Element:   	 	SignatureType
+	Concept:        MTH#C0332307
+	Description:    "Type of signature"
+	Value:          conceptCode
+
+	Element:		Signatory
+	Concept:		TBD
+	Description:	"The party signing."
+	Value:          uri or Entity
+
+	Element:		OnBehalfOf
+	Concept:		TBD
+	Description:	"The party represented by the actual participant."
+	Value:          uri or Organization
+
+Element:		RouteIntoBody
+Concept:		MTH#C0013153
+Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
+Value:          conceptCode from http://hl7.org/fhir/ValueSet/route-codes
+
+Element:		AnatomicalLocation
+Concept:		LNC#72369-2  // Body site identification panel
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
+Value:          conceptCode from AnatomicalLocationVS
+Property:       0..1 Laterality
+Property:       0..1 AnatomicalDirection
+
+	Element:		Laterality
+	Concept:		MTH#C0925205 "Anatomical laterality"
+	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
+	Value:          CodeableConcept from http://hl7.org/fhir/ValueSet/bodysite-laterality
+
+	Element:		AnatomicalDirection
+	Concept:		NCI#C99074
+	Description:	"Anatomical location or specimen further detailing directionality."
+	Value:          conceptCode from AnatomicalDirectionVS
+
+Element:		Identifier
+Concept:		MTH#C0600091
+Description:	"A unique string that identifies a specific person or thing."
+Value:          string  // or id or code or CodeableConcept?
+Property:       0..1 Purpose
+Property:       0..1 Type
+Property:       0..1 CodeSystem
+Property:       0..1 EffectiveTimePeriod
+Property:       0..1 Issuer
+Constraint:     Purpose from http://hl7.org/fhir/ValueSet/identifier-use
+Constraint:     Type from http://hl7.org/fhir/ValueSet/identifier-type (extensible)
+
+		Element:		Issuer
+		Concept:		TBD
+		Description:	"An organization who issues a qualification, identifier, or license."
+		Value:          Organization
+
+Element:		PartOf
+Description:	"The larger entity that this is a portion of. For example, an organization might be part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
+Value:			Independent
+
+
+Element:		Status
+Concept:		MTH#C0449438
+Description:	"The current standing or state."
+Value:			conceptCode
