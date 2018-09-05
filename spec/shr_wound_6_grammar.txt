@@ -1,0 +1,351 @@
+Grammar:	DataElement 5.0
+Namespace:	sw
+Description: "Assertions, observations and measurements related to wounds."
+Uses:  		shr.base, shr.core, shr.entity
+
+CodeSystem:  	UCUM = http://unitsofmeasure.org
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:     SCT = http://snomed.info/sct
+
+EntryElement:	WoundPresentOrAbsent
+Based on:		BodyStructurePresentOrAbsent
+Concept:		TBD
+Description:	"The presence or absence of a wound.
+Observations and measurements associated with the same wound must link back to the same wound assertion. Therefore, the same wound should not be asserted more than once. The 'same-as' relationship can be used to link multiple assertions of the same wound, if necessary."
+Constraint:		Subject.Value is type Person
+Constraint:		ObjectTypeCode = SCT#416462003 "Wound (disorder)"
+
+EntryElement:   WoundLocationObservation
+Based on:       CodedObservation
+Concept:        LNC#39111-0
+Description:    "Body location of a wound."
+Constraint:		Subject.Value is type WoundPresentOrAbsent
+Constraint:		ObservableCode = LNC#39111-0
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion 
+
+EntryElement:	Wound
+Based on:		WoundPresentOrAbsent
+Concept:		SCT#416462003 "Wound (disorder)"
+Description:	"The presence of a wound."
+Constraint:		PresentOrAbsent = SCT#705057003
+
+EntryElement:	WoundAbsent
+Based on:		WoundPresentOrAbsent
+Concept:		TBD
+Description:	"Documents the absence of a wound."
+Constraint:		PresentOrAbsent = SCT#2667000
+
+EntryElement:	WoundTunnelPresentOrAbsent
+Based on:		BodyStructurePresentOrAbsent
+Concept:		LNC#72298-3
+Description:	"The presence or absence of a discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. Each wound tunnel can be persistently identified to enable tracking of the condition of the tunnel over time."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObjectTypeCode = SCT#1561000124108 "Wound tunneling (observable entity)"
+
+EntryElement:	WoundTunnel
+Based on:		WoundTunnelPresentOrAbsent
+Concept:		SCT#1561000124108 "Wound tunneling (observable entity)"
+Description:	"The presence of a wound tunnel."
+Constraint:		PresentOrAbsent = SCT#705057003
+
+EntryElement:	WoundUnderminingPresentOrAbsent
+Based on:		BodyStructurePresentOrAbsent
+Concept:		LNC#72295-9
+Description:	"The presence or absence of deep tissue (subcutaneous fat and muscle) damage around the wound margin.
+Undermining are narrow sinus tracts away from the wound margins and go downward into the wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObjectTypeCode = SCT#454341000124104 "Wound undermining (observable entity)"
+
+EntryElement:	WoundUndermining
+Based on:		WoundUnderminingPresentOrAbsent
+Concept:		SCT#454341000124104 "Wound undermining (observable entity)"
+Description:	"The presence of wound undermining."
+Constraint:		PresentOrAbsent = SCT#705057003
+
+
+//-------------- Evaluation Results -------------------
+
+EntryElement:	WoundType
+Based on:		CodedObservation
+Concept:        LNC#72300-7
+Description:	"The type of wound, for example, abrasion or laceration."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72300-7 
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion //WoundTypeVS
+
+EntryElement:	WoundTypeEtiology
+Based on:		CodedObservation
+Concept:        LNC#11373-8 "InjuryCause"
+Description:	"The source or key factor in the formation or acquisition of the wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#11373-8 "InjuryCause"
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.3/expansion 
+		// http://loinc.org/vs/LL4936-2 
+
+EntryElement:	PhotographicImage
+Based on:		Observation
+Concept:        LNC#72170-4
+Description:	"A photographic documentation of a condition, location, person, etc..."
+Constraint:		ObservableCode = LNC#72170-4
+Constraint:		ResultValue.Value is type Media
+
+EntryElement:	WoundEpisode
+Based on:		CodedObservation
+Concept:        LNC#89252-1  "Episode of Wound"
+Description:	"Whether the wound is initial or recurrent."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#89252-1  "Episode of Wound"
+Constraint:		ResultValue from http://loinc.org/vs/LL4937-0		
+
+EntryElement:	WoundPressureUlcerAssociation
+Based on:		CodedObservation
+Concept:        TBD#TBD
+Description:	"Is the wound associated with a device or pressure point?"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode is TBD#TBD
+Constraint:		ResultValue from YesNoUnknownVS
+
+EntryElement:	WoundAssessmentInterpretation
+Based on:		CodedObservation
+Concept:        LNC#80338-7
+Description:	"Overall assessement of whether the wound is within normal parameters."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#80338-7
+Constraint:		ResultValue from http://loinc.org/vs/LL3816-7 (extensible)
+
+EntryElement:	WoundTrend
+Based on:		CodedObservation
+Concept:        LNC#89253-9
+Description:	"Whether a condition is improving, worsening, stable, or resolved."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#89253-9
+Constraint:		ResultValue from http://loinc.org/vs/LL4938-8 (preferred) // improved, deteriorated, stablized or resolved
+
+EntryElement:	WoundPeriwoundDescription
+Based on:		CodedObservation
+Concept:        LNC#72301-5
+Description:	 "A description of the skin around the wound (periwound)."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72301-5
+Constraint:		ResultValue from http://loinc.org/vs/LL2216-1 (example)
+
+EntryElement:	WoundVisibleInternalStructure
+Based on:		CodedObservation
+Concept:        LNC#89250-5
+Description: 	"Exposed body structures, devices, and/or foreign bodies visible by the naked eye in a wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#89250-5
+Constraint:		ResultValue from http://loinc.org/vs/LL4935-4 (preferred)
+
+EntryElement:	WoundBedAppearance
+Based on:		CodedObservation
+Concept:        LNC#72371-8
+Description:	"Appearance of wound base (bed)"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72371-8
+Constraint:		ResultValue from http://loinc.org/vs/LL2237-7  (example)
+
+EntryElement:	WoundBedAppearancePercentage
+Based on:		QuantitativeObservation
+Concept:        LNC#72370-0
+Description:	"Area of wound bed portion appearance/Entire ​Area of wound bed -- Linked to a wound bed appearance"
+Constraint:		Subject.Value is type WoundBedAppearance
+Constraint:		ObservableCode = LNC#72370-0
+Constraint:		ResultValue.Quantity with units UCUM#% 
+
+Element:		WoundBedColor
+Based on:		CodedObservation
+Concept:        LNC#39132-6 
+Description:	"Color of a portion or entire wound base (bed)."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39132-6
+Constraint:		ResultValue from http://loinc.org/vs/LL2338-3 (example)
+
+Element:		WoundBedColorPercentage
+Based on:		QuantitativeObservation
+Concept:        LNC#89255-4
+Description:	"Wound bed area identified by color/​Area of wound bed."
+Constraint:		Subject.Value is type WoundBedColor
+Constraint:		ObservableCode = LNC#89255-4
+Constraint:		ResultValue.Quantity with units UCUM#%
+
+EntryElement:	WoundEdgeDescription
+Based on:		CodedObservation
+Concept:        LNC#89256-2
+Description:	"The state of the tissue at the edge of the wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#89256-2
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.8/expansion  // possibly from http://loinc.org/vs/LL2230-2
+
+EntryElement:	WoundEdgeColor
+Based on:		CodedObservation
+Concept:        LNC#39133-4
+Description:	"Color of Wound edge."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39133-4
+Constraint:		ResultValue from http://loinc.org/vs/LL2338-3 (example)
+
+EntryElement:	WoundTunnelLength
+Based on:		QuantitativeObservation
+Concept:        LNC#72296-7
+Description:	"The length of a wound tunnel, in cm."
+Constraint:		Subject.Value is type WoundTunnel
+Constraint:		ObservableCode = LNC#72296-7
+Constraint:		ResultValue.Quantity with units UCUM#cm
+
+Element:		WoundTunnelClockDirection
+Based on:		CodedObservation
+Concept:        LNC#72297-5
+Description:	"Clock position of wound tunnel"
+Constraint:		Subject.Value is type WoundTunnel
+Constraint:		ObservableCode = LNC#72297-5
+Constraint:		ResultValue from ClockDirectionVS
+
+EntryElement:	WoundUnderminingLength
+Based on:		QuantitativeObservation 
+Concept:        LNC#72293-4
+Description:	"Length of wound undermining."
+Constraint:		Subject.Value is type WoundUndermining
+Constraint:		ObservableCode = LNC#72293-4
+Constraint:		ResultValue.Quantity with units UCUM#cm
+
+EntryElement:	WoundUnderminingClockDirection
+Based on:		CodedObservation
+Concept:        LNC#72294-2
+Description:	"Clock position of wound undermining"
+Constraint:		Subject.Value is type WoundUndermining
+Constraint:		ObservableCode = LNC#72294-2
+Constraint:		ResultValue from ClockDirectionVS
+
+EntryElement:	WoundExudateAmount
+Based on:		CodedObservation
+Concept:        LNC#39116-9
+Description:	"Drainage amount of wound"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39116-9
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.10/expansion // could be from http://loinc.org/vs/LL2222-9
+
+EntryElement:	WoundExudateVolume
+Based on:		QuantitativeObservation
+Concept:        LNC#39122-7
+Description:	"Appearance of exudate from wound"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39122-7
+Constraint:		ResultValue.Quantity with units UCUM#mL
+
+EntryElement:	WoundExudateAppearance
+Based on:		CodedObservation
+Concept:        LNC#72290-0
+Description:	"Appearance of exudate from wound"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72290-0
+Constraint:		ResultValue from http://loinc.org/vs/LL2220-3 (example)
+
+EntryElement:	WoundExudateColor
+Based on:		CodedObservation
+Concept:        LNC#72289-2 
+Description:	"Color of exudate from wound"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72289-2 
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.12/expansion // could be from http://loinc.org/vs/LL2219-5
+
+EntryElement:	WoundExudateOdor
+Based on:		CodedObservation
+Concept:        LNC#72288-4
+Description:	"Odor of exudate from wound"
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#72288-4
+Constraint:		ResultValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.13/expansion
+
+EntryElement:	WoundLength
+Based on:		QuantitativeObservation 
+Concept:        LNC#39126-8
+Description:	"Length of the wound (longest dimension)."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39126-8
+Constraint:		ResultValue.Quantity with units UCUM#cm
+
+EntryElement:	WoundWidth
+Based on:		QuantitativeObservation
+Concept:        LNC#39125-0
+Description:	"Width of the wound (perpendicular to longest dimension)."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39125-0
+Constraint:		ResultValue.Quantity with units UCUM#cm
+
+EntryElement:	WoundDepth
+Based on:		QuantitativeObservation
+Concept:        LNC#39127-6
+Description:	"Depth of the wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#39127-6
+Constraint:		ResultValue.Quantity with units UCUM#cm
+
+EntryElement:	WoundArea
+Based on:		QuantitativeObservation
+Concept:        LNC#89260-4
+Description:	"Area of the wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode = LNC#89260-4
+Constraint:		ResultValue.Quantity with units UCUM#cm2
+
+//------------- Complex Concepts ---------
+/*
+EntryElement:	WoundAnatomicalLocation
+Based on:		AnatomicalLocation
+Concept:        LNC#39111-0  // WoundAnatomicalLocation should not have the same LOINC code as generic body site since the value set binding is different.
+Description:	"The location of a wound, based on areas of the skin. For wound absence, the anatomical location indicates areas with no wounds. Currently does not include the distance or direction of the wound from anatomical landmarks, and does not describe the size, depth, or direction of wound."
+Constraint:		BodySiteOrLandmarkCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion  
+*/
+
+
+/*  Not used, for discussion only
+
+EntryElement:	Injury
+Based on:		
+Description:	"Physical harm or damage done to a living thing."
+Constraint:		Subject.Value is type Person
+Constraint:		ObjectTypeCode from InjuryVS
+
+EntryElement:	Interpretation
+Based on:		CodedObservation
+Concept:        MTH#C0420833	
+Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
+Constraint:		Subject.Value is type Statement   // note the ability to interpret any type of statement :)
+Constraint:		ObservableCode is MTH#C0420833
+Constraint:		ResultValue from http://hl7.org/fhir/ValueSet/observation-interpretation (extensible)
+
+EntryElement:	Ethnicity
+Based on:		CodedObservation
+Concept:        SCT#372148003 "Ethnic group (ethnic group)"
+Description:    "Indicator of Hispanic or Latino origin."
+Constraint:		Subject.Value is type Person  // applies to any person, not just patient
+Constraint:		ObservableCode = SCT#372148003 "Ethnic group (ethnic group)"
+Constraint:		ResultValue from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+
+
+EntryElement:	ClockDirection
+Based on:		CodedObservation
+Concept:        SCT#272485000 "Clockface position (qualifier value)"
+Description:	"A direction indicated by an angle relative to 12 o'clock."
+Constraint:		Subject.Value is type BodyStructure // A wound is a body structure, so this applies	
+Constraint:		ObservableCode = SCT#272485000 "Clockface position (qualifier value)"
+Constraint:		ResultValue from ClockDirectionVS
+
+EntryElement:	WoundMorphology
+Based on:		CodedObservation
+Concept:        TBD "Associated morphology (attribute)"
+Description:	"Structure of a wound."
+Constraint:		Subject.Value is type Wound
+Constraint:		ObservableCode is TBD#TBD
+Constraint:		ResultValue from WoundMorphologyVS
+
+EntryElement:	DetailedEthnicity
+Based on:		CodedObservation
+Concept:        TBD#TBD
+Description:	"Additional description of ethnicity."
+Constraint:		Subject.Value is type Person
+Constraint:		ObservableCode is TBD#TBD
+Constraint:		ResultValue from DetailedEthnicityVS
+
+*/
