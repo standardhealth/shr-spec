@@ -120,16 +120,31 @@ Populate:       PanelMembers.Observation
 	Constraint:		ObservationTopic.Category = OBSCAT#exam
 	Constraint:		ObservationTopic.TopicCode = SCT#78873005 "T category"
 	Constraint:		ObservationTopic.AnatomicalLocation substitute BreastSite
-	Forbid:         ObservationTopic.Precondition   // just suggesting 
-	Forbid:         ObservationTopic.FindingMethod
-	Forbid:         ObservationTopic.Media
-	Forbid:         ObservationTopic.Device
-	Forbid:         ObservationTopic.ReferenceRange
-	Populate:		ObservationTopic.EvaluationComponent
-                    0..1	StageSuffix
-	Populate:   	ObservationTopic.PanelMembers.Observation
-	                0..1	TumorDimensions
-                    0..1	TumorMargins
+	Forbid: 		ObservationTopic.Precondition   // just suggesting 
+	Forbid: 		ObservationTopic.FindingMethod
+	Forbid: 		ObservationTopic.Media
+	Forbid: 		ObservationTopic.Device
+	Forbid: 		ObservationTopic.ReferenceRange
+	Populate: 		ObservationTopic.EvaluationComponent
+    		0..1	StageSuffix
+	Populate: 		ObservationTopic.PanelMembers.Observation
+	    	0..1	TumorDimensions
+        	0..1	TumorMargins
+
+/*
+	Entry:	        BreastCancerPrimaryTumorClassification
+	Based on:		Observation
+	Concept:		SCT#78873005 "T category"
+	Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
+	Add:		0..1 TumorIdentifier
+	Fix:  		ObservationTopic.Category to OBSCAT#exam
+	Replace: 	ObservationTopic.AnatomicalLocation with BreastSite
+	Constrain: 	ObservationContext.ResultValue.Value to type conceptCode
+	Populate: 	ObservationTopic.EvaluationComponent with
+           		0..1	StageSuffix
+	Forbid: 	ObservationTopic.FindingMethod
+	Require: 	Property1
+*/		
 
 	    Element:   		StageSuffix
 		Based on:       CodedEvaluationComponent
