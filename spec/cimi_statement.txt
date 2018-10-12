@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.statement
-Description:	"The namespace containing cimi-derived classes representing complete clinical statements. In this specification, these classes derive from the StatementTopic class hierarchy, not ClinicalStatement, which is a significant departure from CIMI. This simplifies the resulting logical models."
-Uses:			shr.core, cimi.core, cimi.element, cimi.topic,  cimi.entity, cimi.encounter, cimi.datatypes
+Description:	"The namespace containing cimi-derived classes representing complete clinical statements."
+Uses:			shr.core, cimi.core, cimi.element,  cimi.entity, cimi.encounter, cimi.datatypes
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
@@ -13,26 +13,22 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 Element:		ClinicalStatement
 Based on:		InformationEntry
 Concept:		TBD
-Description: 	"A special type of information entry consisting of a topic and a context. 
-The ClinicalStatement class provides the core pattern for more specific clinical statement classes, such as a statement that a finding has been found in a patient or that a procedure has been proposed by a clinical decision support system. The ClinicalStatement pattern defines the core attributes common to most clinical statements and specifies a composition pattern that encourage model component reuse and better alignment with the SNOMED CT Concept Model."
+Description: 	"A clinical statement is something an agent (human or machine) says and/or records, e.g., an observation, opinion, directive, record of action, or administrative entry."
+0..1			PersonOfRecord
 0..1			ContextCode
-0..1			StatementTopic
 0..1			Encounter  // clinical statements are often associated with specific encounters
 
 		Element:		ContextCode
 		Description:	"Code representing the sense in which the statement is interpreted, for example, the degree of presence in a PresenceStatement."
 		Value:			CodeableConcept
 
-
-
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action."
-1..1				PersonOfRecord
-1..1				StatementTopic
-					StatementTopic is type ActionTopic
+1..1				PersonOfRecord   // constrain to required
+1..1				ActionTopic  // introduce topics at this point
 0..*				Reason
 
 	Element:		Reason
@@ -164,17 +160,34 @@ Abstract Element:	ActionRequestedAgainstStatement
 Based on:			ActionStatement
 Description:		"Abstract class representing a request to not perform any type of action."
 
+Abstract Element:	ActionTopic
+Based on:			NonIndependent
+Description:		"Compositional and reusable grouping of attributes that make up the clinical focus of an action statement, independent whether the action is potential or actual, past or future."
+0..1				Category
+1..1				TopicCode
+
+		Element:		TopicCode
+		Concept:		TBD
+		Description:	"The concept representing the finding or action that is the topic of the statement. 
+		
+		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic  of the action or the finding."
+		Value:			CodeableConcept
+
 //-------------Findings------------
 
 Abstract Element:	FindingStatement
 Based on:			ClinicalStatement
-Description:		"Any clinical statement representing a finding."
-0..1				PersonOfRecord
+Description:		"A clinical statement representing a finding."
+0..1				Focus
 0..1				Interpretation
 //1..1				FindingStatus
 0..1				RelevantTime   // CIMI's ClinicallyRelevantTime isn't a good name when it comes to employment and other life history events
 0..1				FindingMethod
 0..*				Media
+
+		Element:		Focus
+		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. For example, the finding could deal with a condition, a behavior, a wound, or tumor."
+		Value:			string or CodeableConcept or Identifier or ref(EntityOrRole) or ref(ClinicalStatement)
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -203,7 +216,6 @@ Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 1..1			PersonOfRecord
-0..0			StatementTopic  // eliminate to avoid making everything more complicated
 1..1			TopicCode
 				ContextCode is SCT#424975005 "Record Entity"
 //0..0			SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
@@ -473,12 +485,22 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 					Description:	"The full staging information"
 					Value:			ref(Observation)
 
+			Element:		AlleviatingFactor
+			Concept:		LNC#55258-8
+			Description:	"Activities that reduce the severity of the pathology"
+			Value:			CodeableConcept
+
+			Element:		ExacerbatingFactor
+			Concept:		LNC#55258-8
+			Description:	"Activities that increase the severity of the pathology"
+			Value:			CodeableConcept
+
 
 
 EntryElement:	ConditionAbsenceStatement
 Based on:		AssertionAbsenceStatement
 Concept:		MTH#C0277541  "no disease present"
-Description:	"A finding that a condition is or was not present in the subject at a certain time, not necessarily the time the information is gathered."
+Description:	"A finding that a condition is or was not present in the subject at a certain time or time period, not necessarily the time the information is gathered."
 1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation

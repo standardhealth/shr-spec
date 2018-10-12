@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		odh
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, cimi.core,  cimi.topic, cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter, cimi.datatypes
+Uses:  			shr.core, shr.base, cimi.core,  cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter, cimi.datatypes
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     UCUM = http://unitsofmeasure.org 
@@ -112,10 +112,10 @@ A person can have more than one job at the same time and multiple jobs over time
 A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 				TopicCode is LNC#11341-5 "History of Occupation"
-//				ResultValue from OccupationVS
-				ResultValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
+0..0			ResultValue
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				EvaluationComponent
+includes 0..1	Occupation
 includes 0..1	PastOrPresentIndustry
 includes 0..1	WorkClassification
 includes 0..1	SupervisoryLevel
@@ -128,7 +128,11 @@ includes 0..1	IsCurrentJob
 1..1			RelevantTime 
 				RelevantTime value is type TimePeriod
 
-// Question -- organization only, or person or organization
+	Element:		Occupation
+	Based on:		CodedEvaluationComponent
+	Concept:		LNC#85659-1 "Occupation CDC Census code"
+	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
+
 	Element:		Employer
 	Based on:		Role
 	Concept:		SCT#394571004 "Employer (person)"
@@ -210,7 +214,7 @@ includes 0..1	IsCurrentJob
 	Based on:		CodedEvaluationComponent
 	Description:	"A flag indicating if this is the person's current job (at the time the resource was last updated)."
 	Value:			CodeableConcept from YesNoVS
-	
+
 Element:		SocialHistoryObservation
 Based on:		Observation
 Description:	"A simplified observation for social histories."
