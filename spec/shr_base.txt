@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, cimi.entity, cimi.statement, cimi.datatypes
+Uses:			shr.core, cimi.element, cimi.entity, cimi.statement, cimi.datatypes
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 
@@ -15,15 +15,21 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 1..1			EntryType
 1..1    		CreationTime
 1..1			LastUpdated
+0..1			RecordStatus
 0..1			Narrative
 0..1			Language
 0..*			SecurityLabel
 0..*			Tag
 0..*			DerivedFrom
+0..1			RecordedBy
+0..1			SignedBy  // Author
+//0..*			CosignedBy
+//0..*			VerifiedBy
+
 
 	Element:		ShrId
 	Concept:		TBD
-	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the PersonOfRecord."
+	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
 	Value:			id
 	
 	Element:    	EntryId
@@ -40,6 +46,10 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:		TBD
 	Description:	"The most recent date the entry was changed."
 	Value:			instant
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Value:			CodeableConcept
 
 	Element:		Narrative
 	Concept:		TBD
@@ -67,6 +77,31 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
 	Value:			ref(ClinicalStatement)
 	
+	Element:		RecordedBy
+	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
+	Value:			Attribution
+	
+	Element:		SignedBy
+	Description:	"Provenance information specific to the signing of the clinical statement."
+	Value:			Attribution
+
+	Element:		CosignedBy
+	Description:	"Provenance information specific to the cosigning of the clinical statement."
+	Value:			Attribution
+
+	Element:		VerifiedBy
+	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
+	Value:			Attribution
+		
+		Element:		Attribution
+		Description:	"Information ascribing the record to a particular contributor or responsible person."
+		1..1			EntityOrRole
+		0..1			RecordedOn
+		0..1			Signature
+
+			Element:		RecordedOn
+			Description:	"The time of the attribution action."
+			Value:			instant
 		
 /*
 	Element:    	HealthRecordId

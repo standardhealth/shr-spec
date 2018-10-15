@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		cimi.statement
 Description:	"The namespace containing cimi-derived classes representing complete clinical statements."
-Uses:			shr.core, cimi.core, cimi.element,  cimi.entity, cimi.encounter, cimi.datatypes
+Uses:			shr.core, cimi.element,  cimi.entity, cimi.encounter, cimi.datatypes
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
@@ -10,24 +10,49 @@ CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
+Element: 		InformationEntry
+Concept:		MTH#C1705654
+Description:	"Parent class for any entry in clinical or administrative health-related system, including information about organizations, providers, patients, services, payments, decision support artifacts, etc."
+
+
 Element:		ClinicalStatement
 Based on:		InformationEntry
 Concept:		TBD
 Description: 	"A clinical statement is something an agent (human or machine) says and/or records, e.g., an observation, opinion, directive, record of action, or administrative entry."
-0..1			PersonOfRecord
-0..1			ContextCode
+0..1			Patient
+0..*			SubjectOfInformation
 0..1			Encounter  // clinical statements are often associated with specific encounters
+//0..1			SourceOfInformation 
+//0..*			Annotation
+0..1			AdditionalText
+	
+	Element:		SubjectOfInformation
+	Description:	"The specific thing whose property is being observed. This is only required if the thing observed is different than the person of record. For example, the subject of observatoin could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length."
+	Value:			ref(InformationEntry)
 
-		Element:		ContextCode
-		Description:	"Code representing the sense in which the statement is interpreted, for example, the degree of presence in a PresenceStatement."
-		Value:			CodeableConcept
+	Element:    	SourceOfInformation
+	Concept:        MTH#C0449416
+	Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
+	Value:			ref(EntityOrRole) //string or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)
+	0..1			RelationshipToPersonOfRecord
+
+		Element:		RelationshipToPersonOfRecord
+		Concept:		MTH#C0015608
+		Description: 	"The relationship to the person of record."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype if covered
+
+	Element:		AdditionalText
+	Concept: 		MTH#C0947611
+	Description:	"A text note containing additional details, explanation, description, comment, or summarization. Details can discuss, support, explain changes to, or dispute information."
+	Value:			string  // change to language-text
+
 
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action."
-1..1				PersonOfRecord   // constrain to required
+1..1				Patient   // constrain from 0..1 to 1..1 
 1..1				ActionTopic  // introduce topics at this point
 0..*				Reason
 
@@ -214,9 +239,8 @@ Based on:		FindingStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The subject of a finding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-1..1			PersonOfRecord
+1..1			Patient
 1..1			TopicCode
-				ContextCode is SCT#424975005 "Record Entity"
 //0..0			SourceOfInformation value is type AnyPersonOrOrganization // mapped to performer (who made the observation)
 0..1			ResultValue
 0..1			ExceptionValue from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
@@ -382,12 +406,12 @@ Description:	"A coded finding from a laboratory test without further panel membe
 Abstract Element:	AssertionStatement
 Based on:			FindingStatement
 Description:		"A clinical statement that asserts presence or absence."
-1..1				PersonOfRecord
+1..1				Patient
 
 Abstract Element:	AssertionPresenceStatement  // AssertPresence
 Based on:			AssertionStatement
 Description:		"Statement that a finding is present."
-					ContextCode from PresenceContextVS
+// PresenceContextVS
 1..1				VerificationStatus			
 0..1				Onset
 0..1				Abatement
@@ -419,7 +443,7 @@ Description:		"Statement that a finding is present."
 Abstract Element:	AssertionAbsenceStatement  // AssertAbsence
 Based on:			AssertionStatement
 Description:		"Statement that a finding is absent."
-					ContextCode from AbsenceContextVS
+// AbsenceContextVS
 
 EntryElement:	ConditionPresenceStatement
 Based on:		AssertionPresenceStatement
@@ -508,8 +532,7 @@ EntryElement:	ClinicalNote
 Based on:		FindingStatement
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text."
-1..1			PersonOfRecord
-				ContextCode is SCT#424975005 "Record Entity"
+1..1			Patient
 1..1			AdditionalText // make required
 
 	
