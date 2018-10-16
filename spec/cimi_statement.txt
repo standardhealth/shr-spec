@@ -14,44 +14,20 @@ Element: 		InformationItem
 Concept:		MTH#C1705654
 Description:	"Parent class for any entry in clinical or administrative health-related system, including information about organizations, providers, patients, services, payments, decision support artifacts, etc."
 
-Element:		Finding
-Based on:		InformationItem
-Description:	"A determination, opinion, result, or measurement."
-0..1			Patient
-0..1			Encounter  // findings are often associated with specific encounters
-0..1			FindingMethod
-//1..1			FindingStatus
-
-		Element:		FindingMethod
-		Concept:		TBD
-		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-		Value:			CodeableConcept should be from FindingMethodVS
-
-		Element:		FindingStatus
-		Concept:		TBD
-		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
-		Value:			code from http://hl7.org/fhir/ValueSet/observation-status
-
 //------------- Data Item (aka data element) ------------
 
-Abstract Element:	DataItem
-Based on:			Finding
-Description:		"A non-separable question-answer pair (data element) consisting of an observable property (represented by a code), value (or exception value), reference range, and interpretation. An observation component represents question-answer pair, and lack sufficient context for full interpretation, e.g., a reference to a patient, problem, or body structure. They do not stand alone, but can be included in observations."
-Value:				0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
+Element:		DataElementItem
+Based on:		InformationItem
+Description:	"A non-separable question-answer pair (data element) consisting of an observable property (represented by a code), value (or exception value), reference range, and interpretation. An observation component represents question-answer pair, and lack sufficient context for full interpretation, e.g., a reference to a patient, problem, or body structure. They do not stand alone, but can be included in observations."
+Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
 // exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
-1..1				ObservableCode   // redundant with Concept
-0..1				ExceptionValue from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
-0..*				ReferenceRange
-//	0..1			Interpretation
+1..1			DataItemCode   // redundant with Concept
+0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
+0..1			ExceptionValue
 
-		Element:		ObservableCode
-		Description:	"A code describing the aspect or property of the subject being observed or measured. The ObservableCode is the 'question code' that pairs to the 'answer' contained in the Value."
+		Element:		DataItemCode
+		Description:	"A code describing the data item. In an observation, the code reprsents the 'question': the aspect or property of the subject being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist, for example, the SNOMED-CT code for pneumonia." 
 		Value:			CodeableConcept
-
-		Element:		ExceptionValue
-		Concept:		TBD
-		Description:	"Reason that a value associated with a test or other finding is missing."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
 
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
@@ -71,22 +47,57 @@ Value:				0..1 (Quantity or CodeableConcept or string or Range or Ratio or time 
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
 
-		Element:		CodedDataItem
-		Based on:		DataItem
-		Description:	"An data item whose value is a code (concept)."
-		Value:			CodeableConcept
-		0..0			ReferenceRange 
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
+
+Element:		CodedDataElement
+Based on:		DataElementItem
+Description:	"An data item whose value is a code (concept)."
+Value:			0..1 CodeableConcept
+0..0			ReferenceRange
+
+Element:		QuantitativeDataElement
+Based on:		DataElementItem
+Description:	"An data item whose value is a code (concept)."
+Value:			0..1 Quantity
 
 //-------------Findings------------
 
+Element:		Finding
+Based on:		DataElementItem
+Description:	"A data item with context, representing a determination, opinion, result, or measurement."
+0..1			Patient
+0..*			Focus
+0..1			Encounter  // findings are often associated with specific encounters
+0..1			FindingMethod
+1..1			FindingStatus
+
+		Element:		Focus
+		Description:	"The aspect or attribute of the subject of information that the finding relates to. The Focus is only required if the thing observed is different than the person of record (patient). For example, the subject of observation could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length. Focus should not be used to record anatomical location."
+		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		0..1			RelationshipToPersonOfRecord
+
+		Element:		FindingMethod
+		Concept:		TBD
+		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
+		Value:			CodeableConcept should be from FindingMethodVS
+
+		Element:		FindingStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			code or CodeableConcept
+
+
 EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
-Based on:		DataItem
+Based on:		Finding
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-0..*			Focus
 0..1			RelevantTime
 //0..0			Observer
+//	0..1		Interpretation
 0..1			DeltaFlag
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
@@ -96,13 +107,11 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..1			Specimen
 0..*			Precondition
 0..*			Media
-0..* 			DataItem
+				FindingStatus value is type code 
+				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
+0..* 			DataElementItem
 0..1			PanelMembers
-	
-		Element:		Focus
-		Description:	"The aspect or attribute of the subject of information that the finding relates to, other than an anatomical location. The Focus is only required if the thing observed is different than the person of record (patient). For example, the subject of observation could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
-		0..1			RelationshipToPersonOfRecord
+
 
 		Element:    	Observer
 		Concept:        MTH#C0449416
@@ -162,7 +171,7 @@ Description:	"An observation not based on a specimen."
 EntryElement:	SimpleNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation having no components or panel members"
-0..0			DataItem
+0..0			DataElementItem
 0..0			PanelMembers
 
 EntryElement:	CodedNonLaboratoryObservation
@@ -175,7 +184,7 @@ Value:			CodeableConcept
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
-0..0			DataItem
+0..0			DataElementItem
 0..0			PanelMembers
 
 EntryElement:	ComponentOnlyNonLaboratoryObservation
@@ -192,7 +201,7 @@ Description:	"An observation with panel members, but without a result value or c
 0..0			Value
 0..0			ExceptionValue
 0..0			ReferenceRange
-0..0			DataItem
+0..0			DataElementItem
 1..1			PanelMembers
 
 // Laboratory Measurements and Results
@@ -220,13 +229,13 @@ Value:			CodeableConcept
 EntryElement:	SimpleLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			DataItem
+0..0			DataElementItem
 0..0			PanelMembers
 
 EntryElement:	SimpleCodedLaboratoryObservation
 Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			DataItem
+0..0			DataElementItem
 0..0			PanelMembers
 
 //---------- Assertions -------------
@@ -234,33 +243,17 @@ Description:	"A coded finding from a laboratory test without further panel membe
 Abstract Element:	ExistenceAssertion
 Based on:			Finding
 Description:		"An assertion that an event has or has not taken place, or a relationship, situation, condition, or other phenomenon is present or absent."
+Value:				CodeableConcept from PresentAbsentVS
+0..0				ReferenceRange
+0..0				ExceptionValue
 0..*				PartOf
-1..1				PresentOrAbsent
-1..1				ObjectTypeCode
-1..1				VerificationStatus
 0..1				ObjectIdentifier
 0..1				Certainty
+					FindingStatus value is type CodeableConcept
 
 		Element:		PartOf
-		Description:	"The larger entity that the asserted item is a portion of. For example, a wound tunnel might be part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
+		Description:	"The larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
 		Value:			ref(InformationItem)
-
-		Element:		BelongsTo
-		Description:	"The person, place, event, condition, other statement that this object belongs to, if other than the patient. For example, a wound tunnel belongs to a wound."
-		Value:			ref(InformationItem)
-
-		Element:		PresentOrAbsent	
-		Description:	"Whether the object is present or absent, exists or does not exist."
-		Value:			CodeableConcept from PresentAbsentVS
-
-		Element:		ObjectTypeCode
-		Description: 	"A code representing the type of event, condition, or phenomenon that is being asserted to exist or not exist, for example, the SNOMED-CT code for pneumonia."
-		Value:			CodeableConcept
-
-		Element:		VerificationStatus
-		Concept:		TBD
-		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			CodeableConcept	
 
 		Element: 		ObjectIdentifier
 		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
@@ -271,10 +264,10 @@ Description:		"An assertion that an event has or has not taken place, or a relat
 		Description:	"The degree of confidence in a conclusion or assertion."
 		Value:			CodeableConcept
 
-Abstract Element:	PresenceAssertion  // AssertPresence
+Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Statement that a finding is present."
-					PresentOrAbsent is SCT#52101004 "Present (qualifier value)"			
+					Value is SCT#52101004 "Present (qualifier value)"			
 0..1				Onset
 0..1				Abatement
 0..1				Certainty from PresenceCertaintyVS
@@ -292,14 +285,15 @@ Description:		"Statement that a finding is present."
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Statement that an entity, person, role, condition, or phenomenon is absent."
+					Value is SCT#2667000 "Absent (qualifier value)"	
 0..1				Certainty from AbsenceCertaintyVS
 
-EntryElement:	ConditionPresenceStatement
+EntryElement:	ConditionPresenceAssertion
 Based on:		PresenceAssertion
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
-1..1			ObjectTypeCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				DataItemCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 0..*			ConditionCause
@@ -363,11 +357,11 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 
 
 
-EntryElement:	ConditionAbsenceStatement
+EntryElement:	ConditionAbsenceAssertion
 Based on:		AbsenceAssertion
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time or time period, not necessarily the time the information is gathered."
-				ObjectTypeCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				DataItemCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 				
