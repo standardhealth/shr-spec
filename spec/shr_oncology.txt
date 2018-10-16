@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, cimi.element,  cimi.statement, cimi.entity
+Uses:  			shr.core, shr.base, cimi.element, cimi.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -62,7 +62,7 @@ Description:	"The stage of a breast cancer. Different staging systems use differ
 Value:			CodeableConcept should be from http://loinc.org/LL240-3
 				DataItemCode is MTH#C2216702 "Malignant Neoplasm of Breast Staging"
 0..1			StageTimingPrefix				
-				DataElementItem			
+				DependentDataElement			
 includes 0..1 	BreastCancerPrimaryTumorClassification
 includes 0..1 	BreastCancerRegionalNodesClassification
 includes 0..1 	BreastCancerDistantMetastasesClassification
@@ -127,7 +127,7 @@ Value:			CodeableConcept from NottinghamCombinedGradeVS
 				DataItemCode is LNC#44648-4
 				Specimen is type BreastSpecimen
 				DiagnosticService is #pathology
-				DataElementItem
+				DependentDataElement
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
@@ -164,7 +164,7 @@ Value:			CodeableConcept from PositiveNegativeVS
 				DataItemCode is LNC#16112-5
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen			
-				DataElementItem
+				DependentDataElement
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 0..0			PanelMembers
@@ -186,13 +186,13 @@ Value:			CodeableConcept from PositiveNegativeVS
 				DataItemCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen			
-				DataElementItem
+				DependentDataElement
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 0..0			PanelMembers
 
 		Element:		NuclearPositivity
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD  // apparently no LOINC code
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor.
 		We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
@@ -214,7 +214,7 @@ Value:			CodeableConcept from PositiveNegativeEquivocalVS
 				Specimen is type BreastSpecimen
 0..0			Precondition
 0..0			FindingMethod
-0..0 			DataElementItem
+0..0 			DependentDataElement
 				PanelMembers.Observation
 includes 0..*	HER2byIHC
 includes 0..*	HER2byFISH				
@@ -232,7 +232,7 @@ Value:			CodeableConcept from HER2byIHCScoreVS
 				DiagnosticService is #pathology
 0..0			Precondition
 				Specimen is type BreastSpecimen
-				DataElementItem
+				DependentDataElement
 includes 0..1	CompleteMembraneStainingPercent
 0..0			PanelMembers
 
@@ -256,7 +256,7 @@ Description:	"HER2 receptor status as determined by single-probe or dual-probe F
 				DiagnosticService is #pathology
 0..0			Precondition
 				Specimen is type BreastSpecimen
-				DataElementItem
+				DependentDataElement
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
 includes 0..1	HER2toCEP17Ratio
@@ -336,7 +336,7 @@ Value: 			CodeableConcept from ProgressionVS
 0..*			ProgressionEvidence
 //    "ProgressionEvidence" is somewhat related to FindingMethod, which represents the test or procedure used to generate the result; it is typically a LOINC code (0..1)
 0..0			Specimen
-0..0			DataElementItem
+0..0			DependentDataElement
 0..0			Precondition
 0..0			ReferenceRange  // applies to a quantitative measurement only			
 
@@ -361,13 +361,13 @@ Value: 			CodeableConcept from ProgressionVS
 		Value:			CodeableConcept from YesNoVS
 		
 		Element:		PercentageAmplified
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		CAP#31073
 		Description:	"Percentage of cells with amplified HER2 signals"
 		Value:			Quantity with units UCUM#%
 
 		Element:		NuclearPositivity
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
@@ -387,19 +387,19 @@ Value: 			CodeableConcept from ProgressionVS
 		
 		Element:		AllredProportionScore
 		Concept:		CAP#31054
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
 		Value:			Quantity with units UCUM#1
 
 		Element:		AllredIntensityScore
 		Concept:		CAP#29749
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			Quantity with units UCUM#1
 							
 		Element:		AllredTotalScore
 		Concept:		CAP#31056
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
 		Value:			Quantity with units UCUM#1  // unsignedInt -  limit to max of 8				
 
@@ -414,25 +414,25 @@ Concept:		MTH#C4086369
 0..0			Value
 				DataItemCode is TBD#TBD
 				DiagnosticService is #pathology
-				DataElementItem
+				DependentDataElement
 includes 0..1	TumorPrimaryDimensionSize
 includes 0..1	TumorSecondaryDimensionSize
 includes 0..1	SizeOfGrossTumorBed
 
 		Element:		TumorPrimaryDimensionSize
 		Description:	"The longest diameter of the primary tumor."
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD
 		Value:			Quantity with units UCUM#mm		
 		
 		Element:		TumorSecondaryDimensionSize
 		Description:	"The longest perpendicular diameter of the primary tumor."
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD
 		Value:			Quantity with units UCUM#mm
 
 		Element:		SizeOfGrossTumorBed
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD
 		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
 		Value:			Quantity with units UCUM#mm
@@ -445,7 +445,7 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 Value: 			CodeableConcept from PositiveNegativeVS
 				DataItemCode is MTH#C4086369
 				DiagnosticService is #pathology
-				DataElementItem
+				DependentDataElement
 includes 0..1	TumorMarginDescription
 includes 0..1	Cellularity   // not sure this belongs here
 includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
@@ -459,12 +459,12 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 
 		Element:		Cellularity
 		Concept:		MTH#C4055283
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Description:	"Percentage of cells in a sample that are cancerous"
 		Value:			Quantity with units UCUM#%
 
 		Element:		PercentageInSituCarcinoma
-		Based on:		DataElementItem
+		Based on:		DependentDataElement
 		Concept:		TBD
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 		Value:			Quantity with units UCUM#%
@@ -478,7 +478,7 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 	Value:		 	Quantity with units UCUM#%
 					DataItemCode is LNC#29593-1
 					DiagnosticService is #pathology
-					DataElementItem
+					DependentDataElement
 	includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
 
 	Element:		S-PhaseFraction
@@ -500,11 +500,11 @@ Value:			CodeableConcept from PositiveNegativeVS
 0..0			ReferenceRange
 0..0			DeltaFlag
 0..0			AnatomicalLocation
-				DataElementItem
+				DependentDataElement
 includes 0..1	Refseq
 
 			Element:		Refseq
-			Based on:		DataElementItem
+			Based on:		DependentDataElement
 			Concept:		TBD
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept from RefseqVS
@@ -515,7 +515,7 @@ Based on:		Observation
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 				Observation.DataItemCode is TBD#TBD
 				DiagnosticService is #genetics
-0..0			DataElementItem
+0..0			DependentDataElement
 				PanelMembers.EvaluationresultRecorded
 includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant

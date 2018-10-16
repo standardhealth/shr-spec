@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		odh
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, cimi.statement, cimi.composition, cimi.entity, cimi.element, cimi.encounter
+Uses:  			shr.core, shr.base, cimi.composition, cimi.entity, cimi.element, shr.encounter
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     UCUM = http://unitsofmeasure.org 
@@ -43,7 +43,7 @@ A person's Employment Status could change over time, for example, a person could
 Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status.' However, in ODH Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
 Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 				DataItemCode is LNC#74165-2 "HistoryOfEmploymentStatus"
-0..0			DataElementItem
+0..0			DependentDataElement
 0..0			FocalSubjectModifier
 
 EntryElement:	RetirementDate
@@ -54,7 +54,7 @@ A person can be both retired and employed (an Employment Status); most often, a 
 Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 Value:			dateTime
 				DataItemCode is LNC#87510-4 "Date of Retirement"
-0..0			DataElementItem
+0..0			DependentDataElement
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
 0..0			FocalSubjectModifier
 
@@ -65,7 +65,7 @@ Description:	"Self-reported date range(s) when a person worked in what is consid
 Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
 Value:			TimePeriod
 				DataItemCode is LNC#87511-2
-0..0			DataElementItem
+0..0			DependentDataElement
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
 0..0			FocalSubjectModifier // only patient
 
@@ -78,7 +78,7 @@ Example: a person has worked for a total of 30 years as a 'secretary' (Occupatio
 Usual Work does not include work that was unpaid or voluntary."
 Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 				DataItemCode is LNC#21843-8	
-				DataElementItem
+				DependentDataElement
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
 1..1			RelevantTime 
@@ -111,7 +111,7 @@ At a minimum, it is important to have a record of a person's current job(s); i.e
 0..0			Value
 				DataItemCode is LNC#11341-5 "History of Occupation"
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
-				DataElementItem
+				DependentDataElement
 includes 0..1	Occupation
 includes 0..1	PastOrPresentIndustry
 includes 0..1	WorkClassification
@@ -168,14 +168,14 @@ includes 0..1	IsCurrentJob
 					DataItemCode is LNC#87707-6
 
 	Element:		JobDuty
-	Based on:		DataElementItem
+	Based on:		DependentDataElement
 	Concept:		LNC#63761-1
 	Description:	"A regular action performed by a person at a job, as reported by the person. For example, a Job Duty could be 'carry construction supplies' for a job with the Occupation 'construction laborer.' "
 	Value:			string
 					DataItemCode is LNC#63761-1
 	
 	Element:		OccupationalHazard
-	Based on:		DataElementItem
+	Based on:		DependentDataElement
 	Concept:		LNC#87729-0
 	Description:	"A hazard that is specific to a person's work or work environment at one job and with which the person might come in contact, as reported by the person. A hazard is a source of potential harm to a person’s physical or mental health. Hazards can be biological, physical, psychological, chemical, or radiological in nature."
 	Value:			string
@@ -254,7 +254,7 @@ Based on:		CodedSocialHistoryObservation
 Description:	"History of service in the US military."
 				Category is OBSCAT#social-history
 				DataItemCode is MTH#C3714797
-				DataElementItem
+				DependentDataElement
 includes 1..1	MilitaryStatus
 includes 0..1 	MilitaryServiceDischargeStatus
 includes 0..1	MilitaryBranch
@@ -288,7 +288,7 @@ includes 0..1	ServiceConnectedDisability
 	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
-	Based on:		DataElementItem
+	Based on:		DependentDataElement
 	Concept:		TBD
 	Description:	"Percentage disability resulting from US Military Service."
 	Value:			Quantity with units UCUM#%
