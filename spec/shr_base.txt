@@ -121,10 +121,11 @@ Description:	"Parent class for any entry in clinical or administrative health-re
 
 Element:		DependentDataElement
 Based on:		InformationItem
-Description:	"A non-separable question-answer pair (data element) consisting of an observable property (represented by a code), value (or exception value), reference range, and interpretation. An observation component represents question-answer pair, and lack sufficient context for full interpretation, e.g., a reference to a patient, problem, or body structure. They do not stand alone, but can be included in observations."
+Description:	"A question-answer or phenomena-present/absent pair, independent of context. 
+A dependent data element lacks sufficient context for full interpretation, e.g., a reference to a patient, problem, or body structure, whereas a finding includes the necesssary context. A data element consists of an observable property or item (represented by a code), value or present/absent, and optionally, an exception value and reference range. Data elements can be included in observations as components."
 Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
 // exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
-1..1			DataItemCode   // redundant with Concept
+1..1			DataItemCode   // perhaps redundant with Concept
 0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 0..1			ExceptionValue
 
@@ -170,17 +171,11 @@ Value:			0..1 Quantity
 
 Element:		Finding
 Based on:		DependentDataElement
-Description:	"A data item with context, representing a determination, opinion, result, or measurement."
+Description:	"A data element with context, representing a determination, opinion, result, or measurement."
 0..1			Patient
-0..*			Focus
 0..1			Encounter  // findings are often associated with specific encounters
 0..1			FindingMethod
 1..1			FindingStatus
-
-		Element:		Focus
-		Description:	"The aspect or attribute of the subject of information that the finding relates to. The Focus is only required if the thing observed is different than the person of record (patient). For example, the subject of observation could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length. Focus should not be used to record anatomical location."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
-		0..1			RelationshipToPersonOfRecord
 
 		Element:		FindingMethod
 		Concept:		TBD
@@ -199,6 +194,7 @@ Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 0..1			RelevantTime
+0..*			Focus
 //0..0			Observer
 //	0..1		Interpretation
 0..1			DeltaFlag
@@ -214,6 +210,17 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..* 			DependentDataElement
 0..1			PanelMembers
+
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the finding addresses.
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
+
+		Element:		Focus
+		Description:	"The specific observed item finding relates to. The Focus is only required if the thing observed is different than the person of record (patient). For example, the subject of observation could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length. Focus should not be used to record anatomical location."
+		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		0..1			RelationshipToPersonOfRecord
 
 		Element:    	Observer
 		Concept:        MTH#C0449416
@@ -235,12 +242,6 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
-
-		Element:		RelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the finding addresses.
-		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
 
 		Element:		PanelMembers
 		Concept:		TBD
