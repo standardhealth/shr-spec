@@ -9,129 +9,23 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-Element: 		Entry
-Concept:		MTH#C1705654
-Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
-0..1			ShrId
-1..1			EntryId
-0..1			Version
-				Version value is type id
-1..1			EntryType
-1..1    		CreationTime
-1..1			LastUpdated
-0..1			RecordStatus
-0..1			Narrative
-0..1			Language
-0..*			SecurityLabel
-0..*			Tag
-0..*			DerivedFrom
-0..1			RecordedBy
-0..1			SignedBy  // Author
-//0..*			CosignedBy
-//0..*			VerifiedBy
-
-	Element:		ShrId
-	Concept:		TBD
-	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
-	Value:			id
-	
-	Element:    	EntryId
-	Concept:        MTH#C0600091
-	Description:    "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
-	Value:          id
-	
-	Element:		EntryType  // Would EntryClass be clearer?
-	Concept:		TBD
-	Description:	"SHR data element identifier, as a URI."
-	Value:			uri
-
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The most recent date the entry was changed."
-	Value:			instant
-
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
-	Value:			CodeableConcept
-
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	Value:			xhtml
-	1..1			NarrativeQualifier
-
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
-	
-	Element:		SecurityLabel
-	Concept:		TBD
-	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
-	Value:			Coding
-	
-	Element:		Tag
-	Concept:		TBD
-	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
-	Value:			Coding
-	
-	Element:		DerivedFrom
-	Concept:		TBD
-	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
-	Value:			ref(InformationItem)
-	
-	Element:		RecordedBy
-	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
-	Value:			Attribution
-	
-	Element:		SignedBy
-	Description:	"Provenance information specific to the signing of the clinical statement."
-	Value:			Attribution
-
-	Element:		CosignedBy
-	Description:	"Provenance information specific to the cosigning of the clinical statement."
-	Value:			Attribution
-
-	Element:		VerifiedBy
-	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
-	Value:			Attribution
-		
-		Element:		Attribution
-		Description:	"Information ascribing the record to a particular contributor or responsible person."
-		1..1			EntityOrRole
-		0..1			RecordedOn
-		0..1			Signature
-
-			Element:		RecordedOn
-			Description:	"The time of the attribution action."
-			Value:			instant
-		
-/*
-	Element:    	HealthRecordId
-	Concept:        MTH#C1549718
-	Description:    "A unique, persistent, permanent identifier for a health record."
-	Value:          id
-*/
-
 Element: 		InformationItem
 Concept:		MTH#C1705654
 Description:	"Parent class for any entry in clinical or administrative health-related system, including information about organizations, providers, patients, services, payments, decision support artifacts, etc."
 
-//------------- Data Item (aka data element) ------------
-
-Element:		DependentDataElement
-Based on:		InformationItem
-Description:	"A question-answer or phenomena-present/absent pair, independent of context. 
-A dependent data element lacks sufficient context for full interpretation, e.g., a reference to a patient, problem, or body structure, whereas a finding includes the necesssary context. A data element consists of an observable property or item (represented by a code), value or present/absent, and optionally, an exception value and reference range. Data elements can be included in observations as components."
+Abstract Element:	NonIndependentFinding
+Based on:			InformationItem
+Description:		"A finding that is part of another finding, does not or cannot stand alone."
 Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
 // exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
-1..1			DataItemCode   // perhaps redundant with Concept
-0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
+1..1			MostSpecificCode
 0..1			ExceptionValue
+0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 
-		Element:		DataItemCode
-		Description:	"A code describing the data item. In an observation, the code reprsents the 'question': the aspect or property of the subject being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist, for example, the SNOMED-CT code for pneumonia." 
-		Value:			CodeableConcept
+		Element:		ExceptionValue
+		Concept:		TBD
+		Description:	"Reason that a value associated with a test or other finding is missing."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
 
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
@@ -151,31 +45,31 @@ Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time o
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
 
-		Element:		ExceptionValue
-		Concept:		TBD
-		Description:	"Reason that a value associated with a test or other finding is missing."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/data-absent-reason if covered
-
-Element:		CodedDataElement
-Based on:		DependentDataElement
-Description:	"An data item whose value is a code (concept)."
-Value:			0..1 CodeableConcept
-0..0			ReferenceRange
-
-Element:		QuantitativeDataElement
-Based on:		DependentDataElement
-Description:	"An data item whose value is a code (concept)."
-Value:			0..1 Quantity
-
-//-------------Findings------------
-
-Element:		Finding
-Based on:		DependentDataElement
-Description:	"A data element with context, representing a determination, opinion, result, or measurement."
+Abstract Element:	Finding
+Based on:		NonIndependentFinding // Although the parent is NonIndependentFinding, a Finding can be independent. It's a modeling compromise that allows better mapping. 
+Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 0..1			Patient
+0..1			SpecificFocusOfFinding
 0..1			Encounter  // findings are often associated with specific encounters
 0..1			FindingMethod
 1..1			FindingStatus
+0..1			RelevantTime
+0..*			NonIndependentFinding
+
+		Element:		SpecificFocusOfFinding
+		Description:	"The specific observed item finding relates to. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. The SpecificFocusOfFinding could be a relative of the patient, a location, or a group. The SpecificFocusOfFinding for cancer progression would be the cancer condition. If the property is wound length, the SpecificFocusOfFinding would be an instance of a wound. In the case of an assertion of existence, the SpecificFocusOfFinding is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter. SpecificFocusOfFinding should not be used to record anatomical location."
+		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		0..1			RelationshipToPersonOfRecord
+
+		Element:		MostSpecificCode
+		Description:	"A code describing the data item. In an observation, the code reprsents the 'question': the aspect or property of the subject being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist, for example, the SNOMED-CT code for pneumonia." 
+		Value:			CodeableConcept
+
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the statement addresses.
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
 
 		Element:		FindingMethod
 		Concept:		TBD
@@ -188,13 +82,11 @@ Description:	"A data element with context, representing a determination, opinion
 		Value:			code or CodeableConcept
 
 
-EntryElement:	Observation   // TODO: be consistent, or stop using the word "Statement" in class names 
+EntryElement:	Observation  
 Based on:		Finding
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
-0..1			RelevantTime
-0..*			Focus
+Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
 //0..0			Observer
 //	0..1		Interpretation
 0..1			DeltaFlag
@@ -208,19 +100,7 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..*			Media
 				FindingStatus value is type code 
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
-0..* 			DependentDataElement
 0..1			PanelMembers
-
-		Element:		RelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the finding addresses.
-		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
-
-		Element:		Focus
-		Description:	"The specific observed item finding relates to. The Focus is only required if the thing observed is different than the person of record (patient). For example, the subject of observation could be a specific condition if the property is progression, or a specific instance of a wound if the property is wound length. Focus should not be used to record anatomical location."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
-		0..1			RelationshipToPersonOfRecord
 
 		Element:    	Observer
 		Concept:        MTH#C0449416
@@ -274,7 +154,7 @@ Description:	"An observation not based on a specimen."
 EntryElement:	SimpleNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation having no components or panel members"
-0..0			DependentDataElement
+0..0			NonIndependentFinding
 0..0			PanelMembers
 
 EntryElement:	CodedNonLaboratoryObservation
@@ -287,7 +167,7 @@ Value:			CodeableConcept
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
-0..0			DependentDataElement
+0..0			NonIndependentFinding
 0..0			PanelMembers
 
 EntryElement:	ComponentOnlyNonLaboratoryObservation
@@ -304,7 +184,7 @@ Description:	"An observation with panel members, but without a result value or c
 0..0			Value
 0..0			ExceptionValue
 0..0			ReferenceRange
-0..0			DependentDataElement
+0..0			NonIndependentFinding
 1..1			PanelMembers
 
 // Laboratory Measurements and Results
@@ -332,62 +212,45 @@ Value:			CodeableConcept
 EntryElement:	SimpleLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			DependentDataElement
+0..0			NonIndependentFinding
 0..0			PanelMembers
 
 EntryElement:	SimpleCodedLaboratoryObservation
 Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			DependentDataElement
+0..0			NonIndependentFinding
 0..0			PanelMembers
 
 //---------- Assertions -------------
 
 Abstract Element:	ExistenceAssertion
 Based on:			Finding
-Description:		"An assertion that an event has or has not taken place, or a relationship, situation, condition, or other phenomenon is present or absent."
+Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place."
 Value:				CodeableConcept from PresentAbsentVS
 0..0				ReferenceRange
-0..0				ExceptionValue
-0..*				PartOf
-0..1				ObjectIdentifier
+0..1				ObjectIdentifier  // TODO: 0..* business identifier?
 0..1				Certainty
 					FindingStatus value is type CodeableConcept
-
-		Element:		PartOf
-		Description:	"The larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
-		Value:			ref(InformationItem)
 
 		Element: 		ObjectIdentifier
 		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
 		Value:			string
 
-		Element:		Certainty
+		Element:		Certainty   // TODO: why not move to Finding?
 		Concept:		TBD
 		Description:	"The degree of confidence in a conclusion or assertion."
 		Value:			CodeableConcept
 
 Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
-Description:		"Statement that a finding is present."
+Description:		"Finding that a phenomena is present."
 					Value is SCT#52101004 "Present (qualifier value)"			
-0..1				Onset
-0..1				Abatement
 0..1				Certainty from PresenceCertaintyVS
 
-			Element:		Onset
-			Concept:		LNC#85585-8
-			Description:	"The beginning or first appearance of a mental or physical disorder."
-			Value:			dateTime or Age or TimePeriod or Range or string
-			
-			Element:		Abatement
-			Concept:		LNC#88878-4
-			Description:	"The end, remission or resolution."
-			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
-Description:		"Statement that an entity, person, role, condition, or phenomenon is absent."
+Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
 					Value is SCT#2667000 "Absent (qualifier value)"	
 0..1				Certainty from AbsenceCertaintyVS
 
@@ -396,7 +259,7 @@ Based on:		PresenceAssertion
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
-				DataItemCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				MostSpecificCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 0..*			ConditionCause
@@ -406,6 +269,8 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 0..1			Severity
 0..1			Criticality
 0..1			Stage
+0..1			Onset
+0..1			Abatement   // TODO: change to observation
 
 			Element:		ConditionCause
 			Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
@@ -458,13 +323,22 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Description:	"Activities that increase the severity of the pathology"
 			Value:			CodeableConcept
 
+			Element:		Onset
+			Concept:		LNC#85585-8
+			Description:	"The beginning or first appearance of a mental or physical disorder."
+			Value:			dateTime or Age or TimePeriod or Range or string
+			
+			Element:		Abatement
+			Concept:		LNC#88878-4
+			Description:	"The end, remission or resolution."
+			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
 
 EntryElement:	ConditionAbsenceAssertion
 Based on:		AbsenceAssertion
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time or time period, not necessarily the time the information is gathered."
-				DataItemCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+				MostSpecificCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 				
@@ -626,4 +500,110 @@ Description:		"Compositional and reusable grouping of attributes that make up th
 		
 		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic  of the action or the finding."
 		Value:			CodeableConcept
+
+
+
+Element: 		Entry
+Concept:		MTH#C1705654
+Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
+0..1			ShrId
+1..1			EntryId
+0..1			Version
+				Version value is type id
+1..1			EntryType
+1..1    		CreationTime
+1..1			LastUpdated
+0..1			RecordStatus
+0..1			Narrative
+0..1			Language
+0..*			SecurityLabel
+0..*			Tag
+0..*			DerivedFrom
+0..1			RecordedBy
+0..1			SignedBy  // Author
+//0..*			CosignedBy
+//0..*			VerifiedBy
+
+	Element:		ShrId
+	Concept:		TBD
+	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
+	Value:			id
+	
+	Element:    	EntryId
+	Concept:        MTH#C0600091
+	Description:    "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
+	Value:          id
+	
+	Element:		EntryType  // Would EntryClass be clearer?
+	Concept:		TBD
+	Description:	"SHR data element identifier, as a URI."
+	Value:			uri
+
+	Element: 		LastUpdated
+	Concept:		TBD
+	Description:	"The most recent date the entry was changed."
+	Value:			instant
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Value:			CodeableConcept
+
+	Element:		Narrative
+	Concept:		TBD
+	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+	Value:			xhtml
+	1..1			NarrativeQualifier
+
+			Element:		NarrativeQualifier
+			Concept:		TBD
+			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+			Value:			code from http://hl7.org/fhir/ValueSet/narrative-status
+	
+	Element:		SecurityLabel
+	Concept:		TBD
+	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
+	Value:			Coding
+	
+	Element:		Tag
+	Concept:		TBD
+	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
+	Value:			Coding
+	
+	Element:		DerivedFrom
+	Concept:		TBD
+	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
+	Value:			ref(InformationItem)
+	
+	Element:		RecordedBy
+	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
+	Value:			Attribution
+	
+	Element:		SignedBy
+	Description:	"Provenance information specific to the signing of the clinical statement."
+	Value:			Attribution
+
+	Element:		CosignedBy
+	Description:	"Provenance information specific to the cosigning of the clinical statement."
+	Value:			Attribution
+
+	Element:		VerifiedBy
+	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
+	Value:			Attribution
+		
+		Element:		Attribution
+		Description:	"Information ascribing the record to a particular contributor or responsible person."
+		1..1			EntityOrRole
+		0..1			RecordedOn
+		0..1			Signature
+
+			Element:		RecordedOn
+			Description:	"The time of the attribution action."
+			Value:			instant
+		
+/*
+	Element:    	HealthRecordId
+	Concept:        MTH#C1549718
+	Description:    "A unique, persistent, permanent identifier for a health record."
+	Value:          id
+*/
 
