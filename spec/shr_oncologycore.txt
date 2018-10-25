@@ -12,10 +12,10 @@ CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 EntryElement:   CancerDisorder
-Based on:		ConditionPresenceAssertion
+Based on:		ConditionPresentAssertion
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
 Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
-    MostSpecificCode from CancerDisorderVS  // BASECHANGE: to FindingTopicCode ... global replace.
+    FindingTopicCode from CancerDisorderVS  // BASECHANGE: to FindingTopicCode ... global replace.
 //    0..0    Stage.Value
   	Stage.StageDetail value is type CancerStage  
 //    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
@@ -24,7 +24,7 @@ EntryElement:   CancerStage
 Based on:       Observation
 Description:    "The extent a cancer has spread in the body (source: NCI Dictionary of Cancer Terms)"
 Concept:        SCT#258232002 "Cancer staging (tumor staging)"
-    MostSpecificCode is SCT#258232002 "Cancer staging (tumor staging)"
+    FindingTopicCode is SCT#258232002 "Cancer staging (tumor staging)"
     0..0 Value
     SpecificFocusOfFinding value is type CancerDisorder
     NonIndependentFinding
@@ -45,14 +45,14 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:        SCT#260869008 "Timing of stage"
     Description:	"Indicates when the staging was done, in terms of treatment landmarks."
     Value:			CodeableConcept	from StageTimingPrefixVS
-                    MostSpecificCode is SCT#260869008 "Timing of stage"  // BASECHANGE: Change MostSpecificCode to "FindingTopicCode" ...etc.
+                    FindingTopicCode is SCT#260869008 "Timing of stage"  // BASECHANGE: Change MostSpecificCode to "FindingTopicCode" ...etc.
 
     Element:		StagingSystem
     Based on:		NonIndependentFinding
     Concept:        SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.
     Description:	"A systematic method for clinicopathologic evaluation of tumors. (source: NCI Metathesaurus)"
     Value:          CodeableConcept from CancerStagingSystemVS
-                    MostSpecificCode is SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.  BASECHANGE:  do global replace for all Observations.
+                    FindingTopicCode is SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.  BASECHANGE:  do global replace for all Observations.
 
     EntryElement:   StageGroup
     // did not use precoordinated codes because only available for clinical and pathologic.
@@ -60,7 +60,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
     Concept:        MTH#C1302362 "Stage Grouping"
     Value:          CodeableConcept from http://loinc.org/vs/LL240-3
-                    MostSpecificCode is MTH#C1302362 "Stage Grouping"   // BASECHANGE: Change MostSpecificCode to "FindingCode"
+                    FindingTopicCode is MTH#C1302362 "Stage Grouping"   // BASECHANGE: Change MostSpecificCode to "FindingCode"
                     SpecificFocusOfFinding value is type CancerStage
 
     Element:        TNMClinicalPrimaryTumorClassification
@@ -77,14 +77,14 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:	TBD#TBD	    // TODO: Needs a new LOINC or SNOMED code + value set terms.  assign a local value set until we get something assigned.
     Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
     Value: 		CodeableConcept from StageSuffixVS  // local value set created 
-                MostSpecificCode is TBD#TBD  // TODO: Needs a new LOINC or SNOMED code + value set terms.
+                FindingTopicCode is TBD#TBD  // TODO: Needs a new LOINC or SNOMED code + value set terms.
 
     Element: 	TNMClinicalRegionalNodesClassification
     Based on:		CodedNonLaboratoryObservation
     Concept:		LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
     Description:    "" //TODO: pull from LOINC
     Value:          CodeableConcept from http://loinc.org/vs/LL238-7 // normative answer list for LNC#21906-3
-                    MostSpecificCode is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
+                    FindingTopicCode is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
                     SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
                         includes 0..1 StageSuffix
@@ -94,7 +94,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:		LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
     Description:    "" //TODO: pull from LOINC
     Value: CodeableConcept from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
-                    MostSpecificCode is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
+                    FindingTopicCode is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
                     SpecificFocusOfFinding value is type CancerStage
 
     Element:        TNMPathologicPrimaryTumorClassification
@@ -102,7 +102,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:		LNC#21899-0 "Primary tumor.pathology Cancer"
     Description:    "" //TODO: pull from LOINC
     Value:          CodeableConcept from http://loinc.org/vs/LL232-0 // normative
-            	    MostSpecificCode is LNC#21899-0 "Primary tumor.pathology Cancer"
+            	    FindingTopicCode is LNC#21899-0 "Primary tumor.pathology Cancer"
                     SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
                         includes    0..1 StageSuffix
@@ -112,7 +112,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:		LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
     Description:    "" //TODO: pull from LOINC
     Value:          CodeableConcept from http://loinc.org/vs/LL3136-0 // normative
-                    MostSpecificCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
+                    FindingTopicCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
                     SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
                     includes    0..1 StageSuffix
@@ -122,7 +122,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Concept:		LNC#21901-4 "Distant metastases.pathology [Class] Cancer"
     Description:    "" //TODO: pull from LOINC
     Value: CodeableConcept from http://loinc.org/vs/LL3137-8
-                    MostSpecificCode is LNC#21901-4 "Distant metastases.pathology [Class] Cancer" // normative
+                    FindingTopicCode is LNC#21901-4 "Distant metastases.pathology [Class] Cancer" // normative
                     SpecificFocusOfFinding value is type CancerStage
 
 /********** Assessments **************/
