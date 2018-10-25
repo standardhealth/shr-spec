@@ -1,0 +1,117 @@
+Grammar:		DataElement 5.0
+Namespace:		mcode
+Description:	"SHR implementation of ASCO requirements."
+Uses:  			shr.core, shr.base, shr.entity
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:		HGNC = http://www.genenames.org
+CodeSystem:		CAP = https://sdt.cap.org
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+EntryElement:   CancerDisorder
+Based on:		ConditionPresenceAssertion
+Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
+Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
+    MostSpecificCode from CancerDisorderVS
+//  	Stage.StageDetail value is type CancerStage  // mlt: CancerDisorder is not a grouping.
+//    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
+
+EntryElement:   CancerStage
+Based on:       Observation
+Description:    "The extent a cancer has spread in the body (source: NCI Dictionary of Cancer Terms)"
+Concept:        SCT#258232002 "Cancer staging (tumor staging)"
+    MostSpecificCode is SCT#258232002 "Cancer staging (tumor staging)"
+    0..0 Value
+//    Observation.SpecificFocusOfFinding.value is type CancerDisorder  // mlt_to_mk: SpecificFocusOfFinding seems constrained to PersonOfRecord.  How do we fix this?
+    PanelMembers.Observation
+        includes   0..1 StageGroup
+        includes   0..1 StageTiming // retained StageTiming because if using TNM staging, the StageGroup still needs a prefix (even if we're using precoordinated categories). There are LOINC codes for clinical and pathologic stage groups in LOINC, but we back ourselves into TNM for stage group if we use them.
+        includes   0..1 StagingSystem
+            //RM: my gut is telling me to add a TNM wrapper that could contain the TNM categories below
+        includes  0..1 TNMClinicalPrimaryTumorClassification
+        includes  0..1 TNMClinicalRegionalNodesClassification
+        includes  0..1 TNMClinicalDistantMetastasesClassification
+        includes  0..1 TNMPathologicPrimaryTumorClassification
+        includes  0..1 TNMPathologicRegionalNodesClassification
+        includes  0..1 TNMPathologicDistantMetastasesClassification
+
+    Element:        StageGroup
+    // did not use precoordinated codes because only available for clinical and pathologic.
+    Based on:       CodedNonLaboratoryObservation
+    Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
+    Concept:        MTH#C1302362 "Stage Grouping"
+    Value:          CodeableConcept from http://loinc.org/vs/LL240-3
+                    MostSpecificCode is MTH#C1302362 "Stage Grouping"
+    
+    Element:        StageTiming
+    Based on:       CodedNonLaboratoryObservation
+    Concept:        SCT#260869008 "Timing of stage"
+    Description:	"Indicates when the staging was done, in terms of treatment landmarks."
+    Value:			CodeableConcept	from StageTimingPrefixVS
+
+    Element:		StagingSystem
+    Based on:		CodedNonLaboratoryObservation
+    Concept:        SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.
+    Description:	"A systematic method for clinicopathologic evaluation of tumors. (source: NCI Metathesaurus)"
+    Value:          CodeableConcept from CancerStagingSystemVS
+     //   MostSpecificCode is SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.  
+
+
+    Element:        TNMClinicalPrimaryTumorClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21905-5 "Primary tumor.clinical [Class] Cancer"
+    Description:    "Detailed site-specific codes for the clinical tumor (T) as defined by AJCC and recorded by the physician."
+    Value:          CodeableConcept from http://loinc.org/vs/LL237-9 // normative answer list for LNC#21905-5
+        NonIndependentFinding
+        includes 0..1 StageSuffix
+
+    Element:    StageSuffix
+    Based on:   NonIndependentFinding
+    Concept:	TBD#TBD	    // TODO: Needs a new LOINC or SNOMED code + value set terms.  assign a local value set until we get something assigned.
+    Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
+    Value: 		CodeableConcept from StageSuffixVS
+
+
+    Element: 	TNMClinicalRegionalNodesClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
+    Description:    "" //TODO: pull from LOINC
+    Value:          CodeableConcept from http://loinc.org/vs/LL238-7 // normative answer list for LNC#21906-3
+        MostSpecificCode is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
+        NonIndependentFinding
+        includes 0..1 StageSuffix
+
+    Element: TNMClinicalDistantMetastasesClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
+    Description:    "" //TODO: pull from LOINC
+    Value: CodeableConcept from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
+        MostSpecificCode is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
+
+
+    Element:        TNMPathologicPrimaryTumorClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21899-0 "Primary tumor.pathology Cancer"
+    Description:    "" //TODO: pull from LOINC
+    Value:          CodeableConcept from http://loinc.org/vs/LL232-0 // normative
+	    MostSpecificCode is LNC#21899-0 "Primary tumor.pathology Cancer"
+        0..1 StageSuffix
+
+    Element: 	TNMPathologicRegionalNodesClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
+    Description:    "" //TODO: pull from LOINC
+    Value:          CodeableConcept from http://loinc.org/vs/LL3136-0 // normative
+        MostSpecificCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
+        0..1 StageSuffix
+
+    Element:   TNMPathologicDistantMetastasesClassification
+    Based on:		CodedNonLaboratoryObservation
+    Concept:		LNC#21901-4 "Distant metastases.pathology [Class] Cancer"
+    Description:    "" //TODO: pull from LOINC
+    Value: CodeableConcept from http://loinc.org/vs/LL3137-8
+        MostSpecificCode is LNC#21901-4 "Distant metastases.pathology [Class] Cancer" // normative
+
