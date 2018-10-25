@@ -33,7 +33,7 @@ Description:	"The self-reported current and historical data about a person's eco
 A person's Employment Status could change over time, for example, a person could be employed following a period of choosing to not be in the labor force.
 Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status.' However, in ODH Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
 Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
-				MostSpecificCode is LNC#74165-2 "HistoryOfEmploymentStatus"
+				FindingTopicCode is LNC#74165-2 "HistoryOfEmploymentStatus"
 0..0			NonIndependentFinding
 0..0			FocalSubjectModifier
 
@@ -44,7 +44,7 @@ Description:	"A self-reported date that a person considers themselves to have â€
 A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job. Multiple retirement dates should be recorded using multiple FHIR resources.
 Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 Value:			dateTime
-				MostSpecificCode is LNC#87510-4 "Date of Retirement"
+				FindingTopicCode is LNC#87510-4 "Date of Retirement"
 0..0			NonIndependentFinding
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
 0..0			FocalSubjectModifier
@@ -55,7 +55,7 @@ Concept:		LNC#87511-2
 Description:	"Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work.
 Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
 Value:			TimePeriod
-				MostSpecificCode is LNC#87511-2
+				FindingTopicCode is LNC#87511-2
 0..0			NonIndependentFinding
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
 0..0			FocalSubjectModifier // only patient
@@ -68,7 +68,7 @@ Knowledge of person's Usual Work can potentially assist in diagnosis, treatment 
 Example: a person has worked for a total of 30 years as a 'secretary' (Occupation), but in various industries, mostly hotel construction. Her Usual Occupation is 'secretary' and her Usual Industry is 'hotel construction.'
 Usual Work does not include work that was unpaid or voluntary."
 Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
-				MostSpecificCode is LNC#21843-8	
+				FindingTopicCode is LNC#21843-8	
 				NonIndependentFinding
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
@@ -83,14 +83,14 @@ includes 0..1	UsualOccupationDuration
 	//Value:			CodeableConcept from IndustryVS 
 	Value:			CodeableConcept from 
 	https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7187
-					MostSpecificCode is LNC#21844-6 "History of Usual industry"
+					FindingTopicCode is LNC#21844-6 "History of Usual industry"
 
 	Element:		UsualOccupationDuration
 	Based on:		NonIndependentFinding
 	Concept:		LNC#74163-7 "Usual occupation duration"
 	Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
 	Value:			Quantity with units UCUM#a
-					MostSpecificCode is LNC#74163-7 "Usual occupation duration"
+					FindingTopicCode is LNC#74163-7 "Usual occupation duration"
 	
 EntryElement:	PastOrPresentJob
 Based on:		CodedSocialHistoryObservation
@@ -100,7 +100,7 @@ A person can have more than one job at the same time and multiple jobs over time
 A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 0..0			Value
-				MostSpecificCode is LNC#11341-5 "History of Occupation"
+				FindingTopicCode is LNC#11341-5 "History of Occupation"
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				NonIndependentFinding
 includes 0..1	Occupation
@@ -117,7 +117,7 @@ includes 0..1	IsCurrentJob
 				RelevantTime value is type TimePeriod
 
 	Element:		Occupation
-	Based on:		Observation
+	Based on:		CodedSocialHistoryObservation
 	Concept:		LNC#85659-1 "Occupation CDC Census code"
 	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 
@@ -135,20 +135,20 @@ includes 0..1	IsCurrentJob
 		Description:	"An Organization as defined in FHIR"
 
 	Element:		PastOrPresentIndustry
-	Based on:		Observation
+	Based on:		CodedSocialHistoryObservation
 	Concept:		LNC#86188-0 	
 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
 //	Value:			CodeableConcept from IndustryVS 
 	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7187
-					MostSpecificCode is LNC#86188-0
+					FindingTopicCode is LNC#86188-0
 
 	Element:		WorkClassification
-	Based on:		Observation
+	Based on:		CodedSocialHistoryObservation
 	Concept:		LNC#85104-8 "Compensation and sector employment type"
 	Description:	"Type of compensation and sector for a person's job, such as 'paid work, self-employed' or 'voluntary work', as reported by the person."
 	//Value:			CodeableConcept from WorkClassificationVS  
 	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7597 
-					MostSpecificCode is LNC#85104-8 "Compensation and sector employment type"
+					FindingTopicCode is LNC#85104-8 "Compensation and sector employment type"
 
 	Element:		SupervisoryLevel
 	Based on:		NonIndependentFinding
@@ -156,21 +156,21 @@ includes 0..1	IsCurrentJob
 	Description:	"A coded indicator of responsibilities for directing work and personnel management responsibilities for a person's job, as reported by the person. For US military jobs, this is pay grade."
 	//Value:			CodeableConcept from SupervisoryLevelVS 
 	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7613	 
-					MostSpecificCode is LNC#87707-6
+					FindingTopicCode is LNC#87707-6
 
 	Element:		JobDuty
 	Based on:		NonIndependentFinding
 	Concept:		LNC#63761-1
 	Description:	"A regular action performed by a person at a job, as reported by the person. For example, a Job Duty could be 'carry construction supplies' for a job with the Occupation 'construction laborer.' "
 	Value:			string
-					MostSpecificCode is LNC#63761-1
+					FindingTopicCode is LNC#63761-1
 	
 	Element:		OccupationalHazard
 	Based on:		NonIndependentFinding
 	Concept:		LNC#87729-0
 	Description:	"A hazard that is specific to a person's work or work environment at one job and with which the person might come in contact, as reported by the person. A hazard is a source of potential harm to a personâ€™s physical or mental health. Hazards can be biological, physical, psychological, chemical, or radiological in nature."
 	Value:			string
-					MostSpecificCode is LNC#87729-0
+					FindingTopicCode is LNC#87729-0
 					
 	Element:		WorkSchedule
 	Based on:		NonIndependentFinding
@@ -178,13 +178,14 @@ includes 0..1	IsCurrentJob
 	Description:	"Typical arrangement of working hours for a person's job, as reported by the person."
 	//Value:			CodeableConcept from WorkScheduleVS 
 	Value:			CodeableConcept from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7130
-					MostSpecificCode is LNC#74159-5
+					FindingTopicCode is LNC#74159-5
 
 	Element:		WeeklyWorkDays
 	Based on:		NonIndependentFinding
 	Concept:		LNC#74160-3
 	Description:	"The average number of days per week that a person spends performing their duties for work."
 	Value:			Quantity with units UCUM#d
+					FindingTopicCode is LNC#74160-3
 	0..0			ReferenceRange
 							
 	Element:		DailyWorkHours
@@ -192,7 +193,7 @@ includes 0..1	IsCurrentJob
 	Concept:		LNC#87512-0
 	Description:	"The average number of hours in a day that a person spends performing their duties for work."
 	Value:			Quantity with units UCUM#h
-					MostSpecificCode is LNC#87512-0
+					FindingTopicCode is LNC#87512-0
 	0..0			ReferenceRange
 
 // Last minute addition 8/17 based on Genny's comment 
@@ -243,7 +244,7 @@ EntryElement:	MilitaryServiceHistory
 Based on:		CodedSocialHistoryObservation
 Description:	"History of service in the US military."
 				Category is OBSCAT#social-history
-				MostSpecificCode is MTH#C3714797
+				FindingTopicCode is MTH#C3714797
 				NonIndependentFinding
 includes 1..1	MilitaryStatus
 includes 0..1 	MilitaryServiceDischargeStatus
