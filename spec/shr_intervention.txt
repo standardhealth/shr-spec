@@ -1,0 +1,53 @@
+Grammar:		DataElement 5.0
+Namespace:		mcode
+Description:	"SHR implementation of ASCO requirements."
+Uses:  			shr.core, shr.base, shr.entity
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:		HGNC = http://www.genenames.org
+CodeSystem:		CAP = https://sdt.cap.org
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+
+EntryElement:   ECOGPerformanceStatus
+Based on:       Observation
+Description:	"The Eastern Cooperative Oncology Group (ECOG) performance status grade or score, which indicates a patient’s level of daily functioning and physical ability. Source: LOINC"
+Concept:        LNC#89246-3 "ECOG Performance Status panel"
+                PanelMembers.Observation
+                includes    0..1    ECOGPerformanceStatusScore
+                includes    0..1    ECOGPerformanceStatusInterpretation
+
+Element:	    ECOGPerformanceStatusScore
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#89247-1 "ECOG Performance Status score"
+Description:	"The Eastern Cooperative Oncology Group (ECOG) performance score, which indicates a patient’s level of daily functioning and physical ability. The ECOG grade ranges from 0-5. Source: LOINC"
+Value:          IntegerQuantity
+
+Element:	    ECOGPerformanceStatusInterpretation
+Based on:		CodedNonLaboratoryObservation
+Concept:		LNC#89262-0 "ECOG Performance Status [Interpretation]"
+Description:	"The Eastern Cooperative Oncology Group (ECOG) Performance Status represents the patient's functional status and is used to determine their ability to tolerate therapies in serious illness, specifically for chemotherapy. (Source: LOINC)"
+Value:          CodeableConcept from http://loinc.org/vs/LL529-9 // normative answer list for LNC#89262-0, the scores are included in descriptions of answers
+
+/******* **********/
+//KPS is a panel in LOINC with score and interpretation as two components of the panel.
+
+EntryElement:   KarnofskyPerformanceStatus
+Based on:       Observation
+Description:	"The Eastern Cooperative Oncology Group (ECOG) performance status grade or score, which indicates a patient’s level of daily functioning and physical ability. Source: LOINC"
+Concept:        LNC#89245-5 "Karnofsky Performance Status panel"
+                PanelMembers.Observation
+                includes    0..1    KarnofskyPerformanceStatusScore
+                includes    0..1    KarnofskyPerformanceStatusInterpretation
+
+Element:	    KarnofskyPerformanceStatusScore
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#89243-0 "Karnofsky Performance Status score"	
+Value:          IntegerQuantity
+
+Element:	    KarnofskyPerformanceStatusInterpretation
+Based on:		CodedNonLaboratoryObservation
+Concept:		LNC#89245-5 "Karnofsky Performance Status [Interpretation]"
+Value:          CodeableConcept from http://loinc.org/vs/LL4986-7 // normative answer list
