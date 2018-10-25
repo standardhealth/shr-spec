@@ -9,12 +9,12 @@ Based on:			InformationItem
 Description:		"A finding that is part of another finding, does not or cannot stand alone."
 Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
 // exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
-1..1			FindingCode
+1..1			FindingTopicCode
 0..1			ExceptionValue
 0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 
-		Element:		FindingCode
-		Description:	"A code describing the finding. In an observation, the code represents the 'question': the aspect or property of the Patient or SpecificFocusOfFinding being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist."
+		Element:		FindingTopicCode
+		Description:	"A code describing what the finding concerns, such as a lab test or existence of a certain item. In an observation, the code represents the 'question': the aspect or property of the Patient or SpecificFocusOfFinding being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist."
 		Value:			CodeableConcept
 
 		Element:		ExceptionValue
@@ -76,7 +76,8 @@ EntryElement:	Observation
 Based on:		Finding
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments."
+Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+For an Observation, the FindingTopicCode describes the aspect or property of the subject being observed or measured. The FindingTopicCode is the 'question code' that pairs to the 'answer' contained in the ResultValue."
 //0..0			Observer
 0..1			DeltaFlag
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
@@ -87,15 +88,9 @@ Observation has a value representing the result (answer), or an ExceptionValue i
 0..1			Specimen
 0..*			Precondition
 0..*			Media
-				FindingCode is type ObservableCode
 				FindingStatus value is type code 
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			PanelMembers
-
-		Element:		ObservableCode
-		Based on:		FindingCode
-		Description: 	"A code describing the aspect or property of the subject being observed or measured. The ObservableCode is the 'question code' that pairs to the 'answer' contained in the ResultValue."
-		Value:			CodeableConcept
 
 		Element:    	Observer
 		Concept:        MTH#C0449416
@@ -211,18 +206,13 @@ Description:	"A coded finding from a laboratory test without further panel membe
 
 Abstract Element:	ExistenceAssertion
 Based on:			Finding
-Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place."
+Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place.
+For assertions, the FindingTopicCode represents the thing asserted to be present or absent; i.e., the type of condition, event, relationship or phenomenon that is being asserted to exist or not exist."
 Value:				CodeableConcept from PresentAbsentVS
-					FindingCode is type ThingAssertedCode 
 0..0				ReferenceRange
 0..1				ObjectIdentifier  // TODO: 0..* business identifier?
 0..1				Certainty
 					FindingStatus value is type CodeableConcept
-
-		Element:		ThingAssertedCode
-		Based on:		FindingCode
-		Description: 	"A code representing the thing asserted to be present or absent; i.e., the type of condition, event, relationship or phenomenon that is being asserted to exist or not exist."
-		Value:			CodeableConcept
 
 		Element: 		ObjectIdentifier
 		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
@@ -236,7 +226,7 @@ Value:				CodeableConcept from PresentAbsentVS
 Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
-					Value is SCT#52101004 "Present (qualifier value)"			
+					Value is SCT#52101004 "Present (qualifier value"			
 0..1				Certainty from PresenceCertaintyVS
 
 
@@ -252,8 +242,7 @@ Based on:		PresenceAssertion
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
-				ThingAssertedCode is type ConditionCode
-				ConditionCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make binding weaker because US Core requires an extensible binding
+				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make binding weaker because US Core requires an extensible binding
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 0..*			ConditionCause
@@ -265,11 +254,6 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 0..1			Stage
 0..1			Onset
 0..1			Abatement   // TODO: change abatement to an Observation
-
-			Element:		ConditionCode
-			Based on:		ThingAssertedCode
-			Description: 	"The code describing the relationship, e.g., Father or Mother."
-			Value:			CodeableConcept
 
 			Element:		ConditionCause
 			Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
@@ -337,8 +321,7 @@ EntryElement:	ConditionAbsentAssertion
 Based on:		AbsenceAssertion
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time or time period, not necessarily the time the information is gathered."
-				ThingAssertedCode is type ConditionCode
-				ConditionCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
+				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 				
@@ -349,14 +332,8 @@ Description:	"An entry concerning a patient where the result is a narrative text
 1..1			Patient
 1..1			AdditionalText // make required
 
-
 Abstract Element:	RelationshipExistenceAssertion
 Based on:			ExistenceAssertion
-Description:		"An assertion of a realtionship between two things being either present or absent. The subject of the relationship is is the Patient (or SpecificFocusOfFinding, if given) and ."
+Description:		"An assertion of a realtionship between two things being either present or absent. The subject of the relationship is is the Patient (or SpecificFocusOfFinding, if given) and the object of the relationship is .
+For relationships, FindingTopicCode describes the relationship, e.g., Father or Mother."
 Value:				CodeableConcept from PresentAbsentVS
-					ThingAssertedCode is type RelationshipCode
-
-		Element:		RelationshipCode
-		Based on:		ThingAssertedCode
-		Description: 	"The code describing the relationship, e.g., Father or Mother."
-		Value:			CodeableConcept
