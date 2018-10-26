@@ -20,6 +20,41 @@ Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
   	Stage.StageDetail value is type CancerStage  
 //    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
 
+
+EntryElement:   CancerHistologicType
+// did not use precoordinated codes because only available for clinical and pathologic.
+Based on:       CodedNonLaboratoryObservation
+Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
+Concept:        SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
+Value:          CodeableConcept from CancerHistologicTypeVS
+                FindingTopicCode is SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"
+
+EntryElement:   CancerHistologicGrade
+// did not use precoordinated codes because only available for clinical and pathologic.
+Based on:       CodedNonLaboratoryObservation
+Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
+Concept:        LNC#21858-6 "Grade Cancer"
+Value:          CodeableConcept from http://loinc.org/vs/LL213-0
+                FindingTopicCode is LNC#21858-6 "Grade Cancer"
+/*
+
+Element:		CancerHistologicType
+Based on:		CodedObservation
+Concept:        TBD#TBD "Histology Cancer"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
+Description:	"The study of tissues and cells under a microscope. (source: NCI Cancer Dictionary)"
+				Subject value is type CancerDisorder 
+				ObservableCode is TBD#TBD  
+				ResultValue from CancerHistologicTypeVS 
+
+Element:		CancerHistologicGrade
+Based on:		CodedObservation
+Concept:		LNC#21858-6 "Grade Cancer"
+			    Subject value is type CancerDisorder                   
+			    ObservableCode is LNC#21858-6 "Grade Cancer"           // This is a NAACCR originated code with a normative answer list; system is Cancer. TODO: not sure that's right since grade is generally determined based on a tissue sample.
+			    Value from http://loinc.org/vs/LL213-0                  // LOINC internally defined answer list.
+
+*/
+
 EntryElement:   CancerStage
 Based on:       Observation
 Description:    "The extent a cancer has spread in the body (source: NCI Dictionary of Cancer Terms)"
@@ -71,6 +106,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
 //                    SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
                         includes 0..1 StageSuffix
+                        includes 0..1 StageTiming
 
     Element:    StageSuffix
     Based on:   NonIndependentFinding
@@ -78,6 +114,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
     Value: 		CodeableConcept from StageSuffixVS  // local value set created 
                 FindingTopicCode is TBD#TBD  // TODO: Needs a new LOINC or SNOMED code + value set terms.
+
 
     Element: 	TNMClinicalRegionalNodesClassification
     Based on:		CodedNonLaboratoryObservation
@@ -88,6 +125,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
 //                    SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
                         includes 0..1 StageSuffix
+                        includes 0..1 StageTiming
 
     Element: TNMClinicalDistantMetastasesClassification
     Based on:		CodedNonLaboratoryObservation
@@ -105,7 +143,8 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
             	    FindingTopicCode is LNC#21899-0 "Primary tumor.pathology Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
-                        includes    0..1 StageSuffix
+                        includes 0..1 StageSuffix
+                        includes 0..1 StageTiming
 
     Element: 	TNMPathologicRegionalNodesClassification
     Based on:		CodedNonLaboratoryObservation
@@ -115,7 +154,8 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
                     FindingTopicCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
                     NonIndependentFinding
-                    includes    0..1 StageSuffix
+                        includes 0..1 StageSuffix
+                        includes 0..1 StageTiming
 
     Element:   TNMPathologicDistantMetastasesClassification
     Based on:		CodedNonLaboratoryObservation
