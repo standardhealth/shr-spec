@@ -11,7 +11,7 @@ Concept:		TBD
 Description:	"Description of a healthcare procedure. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
 1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			AnatomicalLocation
-0..1			PartOf value is type ref(ProcedurePerformedStatement)
+0..1			PartOf value is type ref(ProcedurePerformed)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
 0..1			Reason
@@ -128,7 +128,7 @@ Description:	"Base class for actions related to the collection of a specimen."
 	Description:	"The quantity of specimen collected"
 	Value:			SimpleQuantity
 
-EntryElement:	ProcedurePerformedStatement
+EntryElement:	ProcedurePerformed
 Based on:		ActionPerformed
 Description:	"A procedure that has been performed."
 				ActionTopic is type ProcedureTopic
@@ -136,7 +136,7 @@ Description:	"A procedure that has been performed."
 				Status must be from http://hl7.org/fhir/ValueSet/event-status
 //				Participant.EntityOrRole is type ref(Practitioner)
 				Participant is type FHIRProcedureParticipant
-				RelatedRequest value is type ref(ProcedureRequestedStatement)
+				RelatedRequest value is type ref(ProcedureRequested)
 0..*			OutputFinding // in CIMI, this is part of ProcedureTopic, but the definition hinges on performance, so it belongs here, not there.	
 
 		Element:		FHIRProcedureParticipant
@@ -153,61 +153,61 @@ Description:	"A procedure that has been performed."
 		Value:			ref(Finding)
 
 
-EntryElement:	ProcedureNotPerformedStatement
-Based on:		ActionNotPerformedStatement
+EntryElement:	ProcedureNotPerformed
+Based on:		ActionNotPerformed
 				ActionTopic is type ProcedureTopic
-				RelatedRequest value is type ref(ProcedureRequestedStatement)
+				RelatedRequest value is type ref(ProcedureRequested)
 0..1			Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
 
-EntryElement:	ProcedureRequestedStatement
+EntryElement:	ProcedureRequested
 Based on:		ActionRequested
 				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
 				Status must be from http://hl7.org/fhir/ValueSet/request-status
 				ActionTopic is type ProcedureTopic
 
-EntryElement:	ProcedureRequestedAgainstStatement
-Based on:		ActionRequestedAgainstStatement
+EntryElement:	ProcedureRequestedAgainst
+Based on:		ActionRequestedAgainst
 				ActionTopic is type ProcedureTopic
 
-EntryElement:	SpecimenCollectionPerformedStatement
-Based on:		ProcedurePerformedStatement
+EntryElement:	SpecimenCollectionPerformed
+Based on:		ProcedurePerformed
 0..1			AnatomicalLocation  // FHIR limits Specimen.collection.bodySite to 0..1
 				ActionTopic is type SpecimenCollectionTopic
 
-EntryElement:	SpecimenCollectionRequestedStatement
-Based on:		ProcedureRequestedStatement
+EntryElement:	SpecimenCollectionRequested
+Based on:		ProcedureRequested
 				ActionTopic is type SpecimenCollectionTopic
 			
-EntryElement:	ImagingProcedurePerformedStatement
-Based on:		ProcedurePerformedStatement
+EntryElement:	ImagingProcedurePerformed
+Based on:		ProcedurePerformed
 				ActionTopic is type ImagingProcedureTopic
 
-EntryElement:	ImagingProcedureRequestedStatement
-Based on:		ProcedureRequestedStatement
+EntryElement:	ImagingProcedureRequested
+Based on:		ProcedureRequested
 				ActionTopic is type ImagingProcedureTopic
 
-EntryElement:	SurgicalProcedurePerformedStatement
-Based on:		ProcedurePerformedStatement
+EntryElement:	SurgicalProcedurePerformed
+Based on:		ProcedurePerformed
 				ActionTopic is type SurgicalProcedureTopic
 
-EntryElement:	SurgicalProcedureRequestedStatement
-Based on:		ProcedureRequestedStatement
+EntryElement:	SurgicalProcedureRequested
+Based on:		ProcedureRequested
 				ActionTopic is type SurgicalProcedureTopic
 
-EntryElement:	SurgicalProcedureNotPerformedStatement
-Based on:		ProcedureNotPerformedStatement
+EntryElement:	SurgicalProcedureNotPerformed
+Based on:		ProcedureNotPerformed
 				ActionTopic is type SurgicalProcedureTopic
 
-EntryElement:	SurgicalProcedureRequestedAgainstStatement
-Based on:		ProcedureRequestedAgainstStatement
+EntryElement:	SurgicalProcedureRequestedAgainst
+Based on:		ProcedureRequestedAgainst
 				ActionTopic is type SurgicalProcedureTopic
 		
-EntryElement:	LaboratoryProcedurePerformedStatement
-Based on:		ProcedurePerformedStatement
+EntryElement:	LaboratoryProcedurePerformed
+Based on:		ProcedurePerformed
 				ActionTopic is type LaboratoryProcedureTopic
 				
-EntryElement:	LaboratoryProcedureRequestedStatement
-Based on:		ProcedureRequestedStatement
+EntryElement:	LaboratoryProcedureRequested
+Based on:		ProcedureRequested
 				ActionTopic is type LaboratoryProcedureTopic
 		
 

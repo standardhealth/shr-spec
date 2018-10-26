@@ -8,10 +8,22 @@ Uses:			shr.core, shr.entity, shr.encounter
 Abstract Element:	ActionStatement
 Based on:			InformationItem
 Description:		"Abstract class representing any type of action."
+1..1				ActionTopic
 1..1				Patient   // constrain from 0..1 to 1..1 
 0..1				Encounter // actions often take place during an encounter
-1..1				ActionTopic  // introduce topics at this point
 0..*				Reason
+
+	Abstract Element:	ActionTopic
+	Description:		"Compositional and reusable grouping of attributes that make up the clinical focus of an action statement, independent whether the action is potential or actual, past or future."
+	0..1				Category
+	1..1				TopicCode
+
+			Element:		TopicCode
+			Concept:		TBD
+			Description:	"The concept representing the finding or action that is the topic of the statement. 
+			
+			For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic  of the action or the finding."
+			Value:			CodeableConcept
 
 	Element:		Reason
 	Concept:		MTH#C0566251
@@ -132,24 +144,13 @@ Description:		"Abstract class representing a request for any type of action."
 		Value:			CodeableConcept
 
 
-Abstract Element:	ActionNotPerformedStatement
+Abstract Element:	ActionNotPerformed
 Based on:			ActionStatement
 Description:		"Abstract class representing non-performance of any type of action."
 0..1				RelatedRequest 
 1..1				NonOccurrenceTimeOrPeriod
 
-Abstract Element:	ActionRequestedAgainstStatement
+Abstract Element:	ActionRequestedAgainst
 Based on:			ActionStatement
 Description:		"Abstract class representing a request to not perform any type of action."
 
-Abstract Element:	ActionTopic
-Description:		"Compositional and reusable grouping of attributes that make up the clinical focus of an action statement, independent whether the action is potential or actual, past or future."
-0..1				Category
-1..1				TopicCode
-
-		Element:		TopicCode
-		Concept:		TBD
-		Description:	"The concept representing the finding or action that is the topic of the statement. 
-		
-		For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic  of the action or the finding."
-		Value:			CodeableConcept
