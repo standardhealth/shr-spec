@@ -8,26 +8,20 @@ Uses:			shr.core, shr.entity, shr.encounter
 Abstract Element:	ActionStatement
 Based on:			InformationItem
 Description:		"Abstract class representing any type of action."
-1..1				ActionTopic
+1..1				TopicCode
+0..1				Category // Might not need this
 1..1				Patient   // constrain from 0..1 to 1..1 
 0..1				Encounter // actions often take place during an encounter
 0..*				Reason
 
-	Abstract Element:	ActionTopic
-	Description:		"Compositional and reusable grouping of attributes that make up the clinical focus of an action statement, independent whether the action is potential or actual, past or future."
-	0..1				Category
-	1..1				TopicCode
-
-			Element:		TopicCode
-			Concept:		TBD
-			Description:	"The concept representing the finding or action that is the topic of the statement. 
-			
-			For action topics, the TopicCode represents the action being described. For findings, the TopicCode represents the 'question' or property being investigated. For evaluation result findings, the TopicCode contains a concept for an observable entity, such as systolic blood pressure. For assertion findings, the TopicCode contains a code representing the condition, allergy, or other item being asserted. In all cases, the TopicCode describes the topic  of the action or the finding."
-			Value:			CodeableConcept
+	Element:		TopicCode
+	Concept:		TBD
+	Description:	"A code representing the (not) requested or (not) performed action that is the topic of the statement."
+	Value:			CodeableConcept
 
 	Element:		Reason
 	Concept:		MTH#C0566251
-	Description:	"The justification for an action or non-action, conclusion, opinion, etc."
+	Description:	"The justification for an action or non-action, etc."
 	Value:			string or CodeableConcept or ref(Finding)
 
 Abstract Element:	ActionPerformed
@@ -39,7 +33,6 @@ Description:		"Abstract class representing performance of any type of action."
 0..1				Method
 0..*				RelatedRequest
 //0..1				EnactsPlan
-//0..1				FulfillsOrder
 0..1				ref(Facility)
 0..1				Outcome  // e.g., AdverseEvent
 
@@ -76,12 +69,8 @@ Description:		"Abstract class representing performance of any type of action."
 		Concept:		TBD
 		Description:	"The plan that is partly or wholly enacted by the performance of this act."
 		Value:			ref(ActionRequested)
-
-		Element:		FulfillsOrder
-		Concept:		TBD
-		Description:	"The order that is partly or wholly enacted by the performance of this act."
-		Value:			ref()
-	*/	
+*/
+		
 		Element:		Outcome
 		Concept:		TBD
 		Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."

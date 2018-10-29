@@ -6,43 +6,54 @@ Dosage maps to Dosage:
 	DoseAmount maps to dose[x]
 	TimingOfDoses maps to timing
 	AsNeededIndicator maps to asNeeded[x]
-	DoseInstructionsText maps to text
-	AdditionalDoseInstruction maps to additionalInstruction
+	DosageInstructionsText maps to text
+	AdditionalDosageInstruction maps to additionalInstruction
 	RouteIntoBody maps to route
-	AdministrationMethod maps to method
-	AdministrationBodySite.Value maps to site
+	DosageMethod maps to method
+	DosageBodySite.Value maps to site
 	MaximumDosePerTimePeriod maps to maxDosePerPeriod
 
-MedicationUsed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
 //	SourceOfInformation.Value maps to informationSource
-	_Entry.CreationTime maps to dateAsserted  // date asserted and date recorded may not be the same
+	_Entry.CreationTime maps to dateAsserted  // however, date asserted and date recorded may not be the same
 	constrain reasonNotTaken to 0..0
 	constrain dosage to 0..1
-	MedicationUseTopic.Dosage maps to dosage
-	MedicationUseTopic.Medication maps to medication[x]
-	MedicationUseTopic.Category maps to category
+	Dosage maps to dosage
+	Medication maps to medication[x]
+	Category maps to category
 	fix taken to #y
 	Reason maps to reasonCode
 	OccurrenceTimeOrPeriod maps to effective[x]
 	Status maps to status
 
-MedicationNotUsed maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+MedicationAdministered maps to MedicationAdministration:
 //	SourceOfInformation.Value maps to informationSource
-	_Entry.CreationTime maps to dateAsserted
-	MedicationUseTopic.Medication maps to medication[x]
-	MedicationUseTopic.Category maps to category
-	fix taken to #n
+	constrain notGiven to 0..0
+	constrain reasonNotGiven to 0..0
+	Dosage maps to dosage
+	Medication maps to medication[x]
+	Category maps to category
+	Reason maps to reasonCode
+	OccurrenceTimeOrPeriod maps to effective[x]
+	Status maps to status
+
+MedicationNotAdministered maps to MedicationAdministration:
+//	SourceOfInformation.Value maps to informationSource
+	Medication maps to medication[x]
+	Category maps to category
+	fix notGiven to true
 	constrain dosage to 0..0
-	Reason maps to reasonNotTaken
+	Reason maps to reasonNotGiven
 	NonOccurrenceTimeOrPeriod maps to effective[x]
-	
-MedicationDispenseRequested maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
-	MedicationDispenseTopic.Medication maps to medication[x]
-	MedicationDispenseTopic.NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
-	MedicationDispenseTopic.QuantityPerDispense maps to dispenseRequest.quantity
-	MedicationDispenseTopic.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+
+
+MedicationRequested maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	Medication maps to medication[x]
+	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	QuantityPerDispense maps to dispenseRequest.quantity
+	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
 	constrain dosageInstruction to 0..1
-	MedicationDispenseTopic.Dosage maps to dosageInstruction
+	Dosage maps to dosageInstruction
 	Reason maps to reasonCode
 	Status maps to status
 	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod

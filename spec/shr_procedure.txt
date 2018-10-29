@@ -5,10 +5,67 @@ Uses:  			shr.core, shr.base, shr.entity
 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-Element:		ProcedureTopic
-Based on:		ActionTopic
-Concept:		TBD
-Description:	"Description of a healthcare procedure. This can be a physical intervention like an operation, or less invasive like counseling or hypnotherapy."
+
+
+EntryElement:	ProcedurePerformed
+Based on:		ActionPerformed
+Description:	"A procedure that has been performed."
+1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
+0..*			AnatomicalLocation
+0..1			PartOf value is type ref(ProcedurePerformed)
+0..1			Category  // this is a constraint on the cardinality of Action.Category
+0..*			Annotation
+0..1			Reason
+0..1			Method
+0..*			Precondition
+0..*			InputFinding
+0..*			Indication
+0..*			ref(Device)
+0..1			Location
+				Participant.OnBehalfOf value is type ref(Organization)
+				Status must be from http://hl7.org/fhir/ValueSet/event-status
+//				Participant.EntityOrRole is type ref(Practitioner)
+				Participant is type FHIRProcedureParticipant
+				RelatedRequest value is type ref(ProcedureRequested)
+0..*			OutputFinding // in CIMI, this is part of ProcedureTopic, but the definition hinges on performance, so it belongs here, not there.
+
+		Element:		InputFinding
+		Description:	"Patient findings expected for the performance of the specified procedure. For instance, an x-ray of a fracture prior to a surgical procedure for a bone fracture."
+		Value:			ref(Observation)
+
+		Element:		Indication
+		Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
+		Value:			CodeableConcept	
+
+		Element:		FHIRProcedureParticipant
+		Based on:		Participant
+		Description:	"Constraints participants to classes that are accepted by FHIR as actors in procedures."
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
+// inherited attributes:
+//		0..1 			ParticipationType  // role
+//		0..1			ParticipationPeriod
+//		0..1			OnBehalfOf
+
+		Element:		OutputFinding
+		Description:	"Patient findings documented during the performance of the procedure."
+		Value:			ref(Finding)
+
+
+EntryElement:	ProcedureNotPerformed
+Based on:		ActionNotPerformed				
+0..1			Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
+1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
+0..*			AnatomicalLocation
+//0..1			PartOf value is type ref(ProcedurePerformed) ???
+0..1			Category  // this is a constraint on the cardinality of Action.Category
+0..*			Annotation
+1..1			Status must be from http://hl7.org/fhir/ValueSet/event-status
+				RelatedRequest value is type ref(ProcedureRequested)
+
+EntryElement:	ProcedureRequested
+Based on:		ActionRequested
+				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
+				Status must be from http://hl7.org/fhir/ValueSet/request-status
 1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			AnatomicalLocation
 0..1			PartOf value is type ref(ProcedurePerformed)
@@ -22,19 +79,17 @@ Description:	"Description of a healthcare procedure. This can be a physical inte
 0..*			ref(Device)
 0..1			Location
 
-		Element:		InputFinding
-		Description:	"Patient findings expected for the performance of the specified procedure. For instance, an x-ray of a fracture prior to a surgical procedure for a bone fracture."
-		Value:			ref(Observation)
+EntryElement:	ProcedureRequestedAgainst
+Based on:		ActionRequestedAgainst
+1..1			TopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
+0..*			AnatomicalLocation
 
-		Element:		Indication
-		Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
-		Value:			CodeableConcept
 
 
 //---------- Specialized Types of Procedure Topics ----------------
 
-Element:		ImagingProcedureTopic
-Based on:		ProcedureTopic
+Element:		ImagingProcedurePerformed
+Based on:		ProcedurePerformed
 Concept:		TBD
 Description:	"Experimental class for an imaging procedure. This class is still incomplete at this time."
 0..*			ImagingSubstance
@@ -44,8 +99,9 @@ Description:	"Experimental class for an imaging procedure. This class is still i
 	Description:	"Substance used for this imaging procedure such as a contrast agent."
 	Value:			CodeableConcept
 
-Element:		LaboratoryProcedureTopic
-Based on:		ProcedureTopic
+
+Element:		LaboratoryProcedurePerformed
+Based on:		ProcedurePerformed
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
 1..1			TopicCode from http://hl7.org/fhir/ValueSet/observation-codes
@@ -53,9 +109,9 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 0..1			ref(Specimen)
 //0..1 			ref(Device)   // constraint from 0..*
 
-	
-Element:		SurgicalProcedureTopic
-Based on:		ProcedureTopic
+
+Element:		SurgicalProcedurePerformed
+Based on:		ProcedurePerformed
 Concept:		TBD
 Description:	"A surgical action, independent of action context."
 0..*			DirectSite
@@ -119,96 +175,13 @@ Description:	"A surgical action, independent of action context."
 		Description:	"An indirect device used for this procedure."
 		Value:			CodeableConcept
 
-Element:		SpecimenCollectionTopic
-Based on:		ProcedureTopic
+Element:		SpecimenCollectionPerformed
+Based on:		ProcedurePerformed
 Description:	"Base class for actions related to the collection of a specimen."
 0..*			AmountOrSize
+0..1			AnatomicalLocation  // FHIR limits Specimen.collection.bodySite to 0..1
 
 	Element:		AmountOrSize
 	Description:	"The quantity of specimen collected"
 	Value:			SimpleQuantity
-
-EntryElement:	ProcedurePerformed
-Based on:		ActionPerformed
-Description:	"A procedure that has been performed."
-				ActionTopic is type ProcedureTopic
-				Participant.OnBehalfOf value is type ref(Organization)
-				Status must be from http://hl7.org/fhir/ValueSet/event-status
-//				Participant.EntityOrRole is type ref(Practitioner)
-				Participant is type FHIRProcedureParticipant
-				RelatedRequest value is type ref(ProcedureRequested)
-0..*			OutputFinding // in CIMI, this is part of ProcedureTopic, but the definition hinges on performance, so it belongs here, not there.	
-
-		Element:		FHIRProcedureParticipant
-		Based on:		Participant
-		Description:	"Constraints participants to classes that are accepted by FHIR as actors in procedures."
-		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
-// inherited attributes:
-//		0..1 			ParticipationType  // role
-//		0..1			ParticipationPeriod
-//		0..1			OnBehalfOf
-
-		Element:		OutputFinding
-		Description:	"Patient findings documented during the performance of the procedure."
-		Value:			ref(Finding)
-
-
-EntryElement:	ProcedureNotPerformed
-Based on:		ActionNotPerformed
-				ActionTopic is type ProcedureTopic
-				RelatedRequest value is type ref(ProcedureRequested)
-0..1			Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
-
-EntryElement:	ProcedureRequested
-Based on:		ActionRequested
-				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
-				Status must be from http://hl7.org/fhir/ValueSet/request-status
-				ActionTopic is type ProcedureTopic
-
-EntryElement:	ProcedureRequestedAgainst
-Based on:		ActionRequestedAgainst
-				ActionTopic is type ProcedureTopic
-
-EntryElement:	SpecimenCollectionPerformed
-Based on:		ProcedurePerformed
-0..1			AnatomicalLocation  // FHIR limits Specimen.collection.bodySite to 0..1
-				ActionTopic is type SpecimenCollectionTopic
-
-EntryElement:	SpecimenCollectionRequested
-Based on:		ProcedureRequested
-				ActionTopic is type SpecimenCollectionTopic
-			
-EntryElement:	ImagingProcedurePerformed
-Based on:		ProcedurePerformed
-				ActionTopic is type ImagingProcedureTopic
-
-EntryElement:	ImagingProcedureRequested
-Based on:		ProcedureRequested
-				ActionTopic is type ImagingProcedureTopic
-
-EntryElement:	SurgicalProcedurePerformed
-Based on:		ProcedurePerformed
-				ActionTopic is type SurgicalProcedureTopic
-
-EntryElement:	SurgicalProcedureRequested
-Based on:		ProcedureRequested
-				ActionTopic is type SurgicalProcedureTopic
-
-EntryElement:	SurgicalProcedureNotPerformed
-Based on:		ProcedureNotPerformed
-				ActionTopic is type SurgicalProcedureTopic
-
-EntryElement:	SurgicalProcedureRequestedAgainst
-Based on:		ProcedureRequestedAgainst
-				ActionTopic is type SurgicalProcedureTopic
-		
-EntryElement:	LaboratoryProcedurePerformed
-Based on:		ProcedurePerformed
-				ActionTopic is type LaboratoryProcedureTopic
-				
-EntryElement:	LaboratoryProcedureRequested
-Based on:		ProcedureRequested
-				ActionTopic is type LaboratoryProcedureTopic
-		
-
 
