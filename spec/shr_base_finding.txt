@@ -6,10 +6,13 @@ Uses:			shr.core, shr.entity, shr.encounter
 
 Abstract Element:	NonIndependentFinding
 Based on:			InformationItem
-Description:		"A finding that is part of another finding, does not or cannot stand alone."
+Description:		"A finding that does not or cannot stand alone, or a component of another finding."
 Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)   
 // exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
-1..1			FindingTopicCode
+// should we have finding protocol, finding precondition, finding question, finding data, finding interpretation?
+// how do we handle normal? (physical exam normal)
+// exclusions?
+1..1			FindingTopicCode  // Question, test name, or assertion
 0..1			ExceptionValue
 0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 
@@ -95,7 +98,7 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 		Element:    	Observer
 		Concept:        MTH#C0449416
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
-		Value:			ref(InformationItem) //string or ref(Practitioner) or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)  
+		Value:			ref(EntityOrRole) //string or ref(Practitioner) or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)  
 		0..1			RelationshipToPersonOfRecord
 
 			Element:		RelationshipToPersonOfRecord
