@@ -327,26 +327,6 @@ Description:	"A finding that a condition is or was not present in the subject at
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
 
-EntryElement:	FamilyMemberHistory
-// This should map to FamilyMemberHistory FHIR resource. Did not use ConditionPresentAssertion because we don't care about the clinical status, severity or other details about the condition.
-// TODO_discussion: ok to have SpecificFocusOfFinding on both the condition and the family history?
-Based on:		Finding
-Concept:		LNC#54114-4 "Family member health history [USSG-FHT] Family member" //This is part of a US General Surgeon general family health LOINC panel 
-Description:	"The health history of a patient's family member."
-1..1			Patient
-//1..1   		SpecificFocusOfFinding value is type FamilyMember
-				FindingStatus from http://hl7.org/fhir/ValueSet/history-status
-0..*			FamilyMemberConditionPresentAssertion
-
-EntryElement:	FamilyMemberConditionPresentAssertion
-Based on:		PresenceAssertion
-Concept:		LNC#8670-2 "History of family member diseases"
-0..1			Onset
-0..1			ConditionOutcome
-0..0			FindingMethod
-				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
-//              SpecificFocusOfFinding value is type FamilyMember
-
 	Element:		ConditionOutcome
 	Concept:		TBD#TBD
 	Description:	"The lasting effects of a disease, e.g. death, functional impairment."
@@ -358,13 +338,6 @@ Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text."
 1..1			Patient
 1..1			AdditionalText // make required
-
-EntryElement:	EarliestDateOfDiagnosis
-//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of ConditionPresentAssertion.
-Based on:		SimpleNonLaboratoryObservation
-Concept:		LNC#77975-1 "Earliest date of diagnosis"
-Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition. (Source: LOINC)"
-Value:			date or Age // added age because patient might not remember a full date (WhenClinicallyRecognized only allows for a date)
 
 Abstract Element:	RelationshipExistenceAssertion
 Based on:			ExistenceAssertion

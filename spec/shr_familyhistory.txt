@@ -1,0 +1,29 @@
+Grammar:		DataElement 5.0
+Namespace:		familyhistory
+Description:	"Contains elements related to the health history of a patient's family members."
+Uses:  			shr.core, shr.base, shr.entity
+
+CodeSystem:     LNC = http://loinc.org
+
+EntryElement:	FamilyMember
+Based on:		RelatedPerson
+Description:	"A related person that is a family member of the patient. This includes biological and non-biological family, as well as extended family."
+1..1			RelationshipToPersonOfRecord from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion // Family member value VS used in CCDA. 2015 Ed ONC Cert Criteria indicate relationship to patient should be coded in SCT, and allows for pre- or post-coordination with condition. TODO: consider SCT value set (maybe allow both?)
+
+EntryElement:	FamilyMemberhealthlHistory
+Based on:		Finding
+Concept:		LNC#54114-4 "Family member health history [USSG-FHT] Family member" //This is part of a US General Surgeon general family health LOINC panel 
+Description:	"The health history of a patient's family member."
+1..1			Patient
+//		   		SpecificFocusOfFinding value is type FamilyMember
+				FindingStatus from http://hl7.org/fhir/ValueSet/history-status
+0..*			FamilyMemberConditionPresentAssertion
+
+EntryElement:	FamilyMemberConditionPresentAssertion
+Based on:		PresenceAssertion
+Concept:		LNC#8670-2 "History of family member diseases"
+0..1			Onset
+0..1			ConditionOutcome
+0..0			FindingMethod
+				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+//              SpecificFocusOfFinding value is type FamilyMember
