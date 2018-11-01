@@ -319,7 +319,6 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
-
 EntryElement:	ConditionAbsentAssertion
 Based on:		AbsenceAssertion
 Concept:		MTH#C0277541  "no disease present"
@@ -327,7 +326,48 @@ Description:	"A finding that a condition is or was not present in the subject at
 				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
-				
+
+EntryElement:	FamilyMemberHistory
+// This should map to FamilyMemberHistory FHIR resource. Did not use ConditionPresentAssertion because we don't care about the clinical status, severity or other details about the condition.
+// TODO_discussion: ok to have SpecificFocusOfFinding on both the condition and the family history?
+Based on:		Finding
+Concept:		LNC#54114-4 "Family member health history [USSG-FHT] Family member" //This is part of a US General Surgeon general family health LOINC panel 
+Description:	"The health history of a patient's family member."
+1..1			Patient
+//1..1   		SpecificFocusOfFinding value is type FamilyMember
+				FindingStatus from http://hl7.org/fhir/ValueSet/history-status
+0..*			FamilyMemberConditionPresentAssertion
+
+EntryElement:	FamilyMemberConditionPresentAssertion
+Based on:		PresenceAssertion
+Concept:		LNC#8670-2 "History of family member diseases"
+0..1			Onset
+0..1			ConditionOutcome
+0..0			FindingMethod
+				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+//              SpecificFocusOfFinding value is type FamilyMember
+
+	Element:		ConditionOutcome
+	Concept:		TBD#TBD
+	Description:	"The lasting effects of a disease, e.g. death, functional impairment."
+	Value: 			CodeableConcept could be from http://hl7.org/fhir/ValueSet/condition-outcome
+
+
+
+
+/*
+Abstract Element:	Finding
+Based on:		NonIndependentFinding // Although the parent is NonIndependentFinding, a Finding can be independent. It's a modeling compromise that allows better mapping. 
+Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
+0..1			Patient
+0..1			SpecificFocusOfFinding
+0..1			Encounter  // findings are often associated with specific encounters
+0..1			FindingMethod
+1..1			FindingStatus
+0..1			RelevantTime
+0..*			NonIndependentFinding
+*/
+
 EntryElement:	ClinicalNote
 Based on:		Finding
 Concept:		MTH#C0747978 "Progress Note"
