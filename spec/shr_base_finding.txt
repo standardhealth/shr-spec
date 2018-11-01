@@ -352,28 +352,19 @@ Concept:		LNC#8670-2 "History of family member diseases"
 	Description:	"The lasting effects of a disease, e.g. death, functional impairment."
 	Value: 			CodeableConcept could be from http://hl7.org/fhir/ValueSet/condition-outcome
 
-
-
-
-/*
-Abstract Element:	Finding
-Based on:		NonIndependentFinding // Although the parent is NonIndependentFinding, a Finding can be independent. It's a modeling compromise that allows better mapping. 
-Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
-0..1			Patient
-0..1			SpecificFocusOfFinding
-0..1			Encounter  // findings are often associated with specific encounters
-0..1			FindingMethod
-1..1			FindingStatus
-0..1			RelevantTime
-0..*			NonIndependentFinding
-*/
-
 EntryElement:	ClinicalNote
 Based on:		Finding
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text."
 1..1			Patient
 1..1			AdditionalText // make required
+
+EntryElement:	EarliestDateOfDiagnosis
+//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of ConditionPresentAssertion.
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#77975-1 "Earliest date of diagnosis"
+Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition. (Source: LOINC)"
+Value:			date or Age // added age because patient might not remember a full date (WhenClinicallyRecognized only allows for a date)
 
 Abstract Element:	RelationshipExistenceAssertion
 Based on:			ExistenceAssertion
