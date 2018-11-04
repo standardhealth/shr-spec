@@ -6,7 +6,6 @@ Uses:  			shr.core, shr.base, shr.entity
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
-
 EntryElement:	ProcedurePerformed
 Based on:		ActionPerformed
 Description:	"A procedure that has been performed."
@@ -22,10 +21,10 @@ Description:	"A procedure that has been performed."
 0..*			Indication
 0..*			ref(Device)
 0..1			Location
-				Participant.OnBehalfOf value is type ref(Organization)
+				Participation.OnBehalfOf value is type ref(Organization)
 				Status must be from http://hl7.org/fhir/ValueSet/event-status
-//				Participant.EntityOrRole is type ref(Practitioner)
-				Participant is type FHIRProcedureParticipant
+//				Participation.Participant.EntityOrRole is type ref(Practitioner)
+				Participation.Participant is type FHIRProcedureParticipant
 				RelatedRequest value is type ref(ProcedureRequested)
 0..*			OutputFinding // in CIMI, this is part of ProcedureTopic, but the definition hinges on performance, so it belongs here, not there.
 
@@ -39,12 +38,8 @@ Description:	"A procedure that has been performed."
 
 		Element:		FHIRProcedureParticipant
 		Based on:		Participant
-		Description:	"Constraints participants to classes that are accepted by FHIR as actors in procedures."
+		Description:	"Constraints participants to classes that are accepted by FHIR as actors in procedures in STU 3."
 		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
-// inherited attributes:
-//		0..1 			ParticipationType  // role
-//		0..1			ParticipationPeriod
-//		0..1			OnBehalfOf
 
 		Element:		OutputFinding
 		Description:	"Patient findings documented during the performance of the procedure."
@@ -114,6 +109,7 @@ Element:		SurgicalProcedurePerformed
 Based on:		ProcedurePerformed
 Concept:		TBD
 Description:	"A surgical action, independent of action context."
+				TopicCode from SurgicalProcedureVS
 0..*			DirectSite
 0..*			DirectSiteCode
 0..*			IndirectSite

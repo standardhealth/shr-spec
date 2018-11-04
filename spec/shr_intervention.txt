@@ -12,59 +12,25 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 
 
-EntryElement:   MedicationTreatmentPerformed
-Based on:       MedicationStatement  // the therapy itself could be a procedure. 
-Description:    "A medication that is part of a drug treatment regimen"
-Concept:        SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
-Value:          CodeableConcept from http://www.nlm.nih.gov/research/umls/rxnorm
-//              SpecificFocusOfFinding value is type TreatmentRegimen
-                TopicCode is SCT#416608005 "Drug therapy (procedure)" 
-                0..1    TreatmentIntent
-                0..1    LineOfTherapy
-                0..1    RegimenIdentifier
-                0..1    RegimenName
-                0..1    RegimenStartDate
-                0..1    RegimenStopDate
 
-EntryElement:   RadiationTreatmentPerformed
+EntryElement:   CourseOfTreatment
 Based on:       ProcedurePerformed
-Description:    "A medication that is part of a radiation oncology related regimen"
-Concept:        SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)"  
-//              SpecificFocusOfFinding value is type TreatmentRegimen
-                TopicCode is SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)" 
-                0..1    TreatmentIntent
+Description:    "A series of interventions, typically grouped in time and including several medications, tests, and/or procedures. A course of treatment may follow (with possible deviation) from a predetermined regimen, which provides a set of orders that result in instances of ProcedurePerformed, MedicationStatement, or MedicationAdministration. If the course of treatment is based on a known or defined regimen, the regimen name should be put into the TopicCode, and the start and stop dates recorded in the OccurrenceTimeOrPeriod. External identifiers for the regimen should be put into the Identifier."
+                0..*    TreatmentIntent
                 0..1    LineOfTherapy
-                0..1    RegimenIdentifier
-                0..1    RegimenName
-                0..1    RegimenStartDate    // equivalent to ASTRO Treatment Start Date
-                0..1    RegimenStopDate     // equivalent to ASTRO Treatment End Date
-                0..1    RadiationModality
-                0..1    RadiationDosePerFraction
-                0..1    RadiationFractionsDelivered
-                0..1    TotalRadiationDoseDelivered
+                0..*    ActionPerformed
 
-EntryElement:   SurgicalTreatmentPerformed
-Based on:       SurgicalProcedurePerformed
-Description:    "A medication that is part of a drug treatment regimen"
-Concept:        SCT#387713003 "Surgical procedure (procedure)"  
-//              SpecificFocusOfFinding value is type TreatmentRegimen
-                TopicCode is SCT#387713003 "Surgical procedure (procedure)"
-                0..1    TreatmentIntent
-                0..1    LineOfTherapy
-                0..1    RegimenIdentifier
-                0..1    RegimenName
-                0..1    RegimenStartDate
-                0..1    RegimenStopDate
+        Element:        TreatmentIntent
+        Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
+        Description:	"The intended result from a given treatment.  Examples include curative, diagnostic, palliative, and supportive."
+        Value:          CodeableConcept from ActionIntentVS
 
-Element:        TreatmentIntent
-Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
-Description:	"The intended result from a given treatment.  Examples include curative, palliative, and supportive."
-Value:          CodeableConcept from TreatmentIntentVS
+        Element:        LineOfTherapy
+        Description:	"The sequence of therapies administered to a patient."
+        Concept:		MTH#C133518 "Line of Therapy"		// TODO: Need new LOINC and SNOMED codes
+        Value:          CodeableConcept from LineOfTherapyVS
 
-Element:        LineOfTherapy
-Description:	"The sequence of therapies administered to a patient."
-Concept:		MTH#C133518 "Line of Therapy"		// TODO: Need new LOINC and SNOMED codes
-Value:          CodeableConcept from LineOfTherapyVS
+/*
 
 Element:	    RegimenIdentifier
 Concept:	    TBD#TBD  // TODO: Needs new LOINC and/or SNOMED codes
@@ -85,6 +51,18 @@ Element:		RegimenStopDate
 Concept:		TBD#TBD  // TODO: Needs new LOINC and/or SNOMED codes
 Description:	"The date that the treatment regimen began."
 Value:			date
+*/
+
+EntryElement:   RadiationTreatmentPerformed
+Based on:       ProcedurePerformed
+Description:    "A radiation oncology procedure. If the treatment is part of a course of treatment, the PartOf attribute should indicate the CourseOfTreatment."
+Concept:        SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)"  
+                TopicCode is SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)" 
+                0..1    RadiationModality
+                0..1    RadiationDosePerFraction
+                0..1    RadiationFractionsDelivered
+                0..1    TotalRadiationDoseDelivered
+
 
 Element:        RadiationModality
 Concept:        SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)"
