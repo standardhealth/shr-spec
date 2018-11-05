@@ -7,14 +7,19 @@ Uses:			shr.core, shr.entity, shr.encounter
 Abstract Element:	NonIndependentFinding
 Based on:			InformationItem
 Description:		"A finding that does not or cannot stand alone, or a component of another finding."
-Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)
-// exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
 // should we have finding protocol, finding precondition, finding question, finding data, finding interpretation?
 // how do we handle normal? (physical exam normal)
-// exclusions?
+// exclusions? (diabetes excluded)
 1..1			FindingTopicCode  // Question, test name, or assertion
+0..1			FindingValue
 0..1			ExceptionValue
-0..1			ReferenceRange  // included here because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
+0..1			ReferenceRange  // included here only because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
+
+		Element:		FindingValue
+		Concept:		TBD
+		Description:	"The observed value associated with a finding."
+		Value:			Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod
+		// exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
 
 		Element:		FindingTopicCode
 		Description:	"A code describing what the finding concerns, such as a lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property of the Patient or SpecificFocusOfFinding being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist. The topic code is not the result of the evaluation, which is found in the value. "
@@ -28,7 +33,7 @@ Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time o
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
-		Value:			Range   // TODO: align this with FHIR
+		0..1			Range   // TODO: align this with FHIR
 		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
 		0..1			ApplicableSubpopulation
 		0..1			ApplicableAgeRange
@@ -55,9 +60,14 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 0..*			NonIndependentFinding
 
 		Element:		SpecificFocusOfFinding
-		Description:	"The specific observed item finding relates to. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. The SpecificFocusOfFinding could be a relative of the patient, a location, or a group. The SpecificFocusOfFinding for cancer progression would be the cancer condition. If the property is wound length, the SpecificFocusOfFinding would be an instance of a wound. In the case of an assertion of existence, the SpecificFocusOfFinding is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter. SpecificFocusOfFinding should not be used to record anatomical location."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		Description:	"The specific observed item finding relates to. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. SpecificFocusOfFinding should not be used to record anatomical location."
+		1..1			FindingFocus
 		0..1			RelationshipToPersonOfRecord
+
+		Element:		FindingFocus
+		Description:	"The FindingFocus could be a relative of the patient, a location, or a group. The FindingFocus for cancer progression would be the cancer condition. If the property is wound length, the FindingFocus would be an instance of a wound. In the case of an assertion of existence, the FindingFocus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."	
+		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -82,6 +92,8 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the FindingTopicCode describes the aspect or property of the subject being observed or measured. The FindingTopicCode is the 'question code' that pairs to the 'answer' contained in the Value."
 //0..0			Observer
+				FindingStatus value is type code 
+				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			DeltaFlag
 1..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
 0..1			AnatomicalLocation  // TODO: Change from element to code to align with FHIR??
@@ -91,14 +103,12 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 0..1			Specimen
 0..*			Precondition
 0..*			Media
-				FindingStatus value is type code 
-				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			PanelMembers
 
 		Element:    	Observer
 		Concept:        MTH#C0449416
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
-		Value:			ref(EntityOrRole) //string or ref(Practitioner) or ref(Patient) or ref(Group) or ref(Device) or ref(RelatedPerson) or ref(Organization)  
+		1..1			ref(EntityOrRole) 
 		0..1			RelationshipToPersonOfRecord
 
 			Element:		RelationshipToPersonOfRecord
@@ -154,7 +164,7 @@ EntryElement:	CodedNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
-Value:			CodeableConcept
+				FindingValue value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
@@ -166,7 +176,7 @@ Description:	"An observation whose result is a code, and also having no componen
 EntryElement:	ComponentOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
-0..0			Value
+0..0			FindingValue
 0..0			ExceptionValue
 0..0			PanelMembers
 0..0			ReferenceRange
@@ -190,7 +200,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
-Value:			CodeableConcept
+				FindingValue value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
@@ -211,7 +221,8 @@ Abstract Element:	ExistenceAssertion
 Based on:			Finding
 Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place.
 For assertions, the FindingTopicCode represents the thing asserted to be present or absent; i.e., the type of condition, event, relationship or phenomenon that is being asserted to exist or not exist."
-Value:				CodeableConcept from PresentAbsentVS
+					FindingValue value is type CodeableConcept
+					FindingValue from PresentAbsentVS
 0..0				ReferenceRange
 0..1				ObjectIdentifier  // TODO: 0..* business identifier?
 0..1				Certainty
@@ -229,14 +240,14 @@ Value:				CodeableConcept from PresentAbsentVS
 Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
-					Value is SCT#52101004 "Present (qualifier value"			
+					FindingValue.CodeableConcept is SCT#52101004 "Present (qualifier value)"			
 0..1				Certainty from PresenceCertaintyVS
 
 
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
-					Value is SCT#2667000 "Absent (qualifier value)"	
+					FindingValue.CodeableConcept is SCT#2667000 "Absent (qualifier value)"	
 0..1				Certainty from AbsenceCertaintyVS
 
 
@@ -290,10 +301,15 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 
 			Element:		Stage
 			Concept:		MTH#C0699749
-			Description:	"The relative advancement in the course of a disease. The value is the summary stage or stage group. StageDetail optionally contains the full staging information."
-			Value:			0..1 CodeableConcept
+			Description:	"The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
+			0..1			StageSummary
 			0..1			StageDetail
 			
+					Element:		StageSummary
+					Concept:		TBD
+					Description:	"A code representing the current stage of a disease."
+					Value:			CodeableConcept
+
 					Element:		StageDetail
 					Concept:		TBD
 					Description:	"The full staging information"
@@ -332,6 +348,8 @@ EntryElement:	ClinicalNote
 Based on:		Finding
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text."
+0..0			FindingValue
+0..0			ReferenceRange
 1..1			Patient
 1..1			AdditionalText // make required
 
@@ -339,4 +357,5 @@ Abstract Element:	RelationshipExistenceAssertion
 Based on:			ExistenceAssertion
 Description:		"An assertion of a realtionship between two things being either present or absent. The subject of the relationship is is the Patient (or SpecificFocusOfFinding, if given) and the object of the relationship is .
 For relationships, FindingTopicCode describes the relationship, e.g., Father or Mother."
-Value:				CodeableConcept from PresentAbsentVS
+				FindingValue value is type CodeableConcept
+				FindingValue from PresentAbsentVS

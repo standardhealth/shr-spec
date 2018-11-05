@@ -5,7 +5,7 @@ Target:		FHIR_STU_3
 
 // Code types map direction to FHIR
 Coding maps to Coding:
-	Value maps to code
+	Code maps to code
 	CodeSystem maps to system
 	CodeSystemVersion maps to version
 	DisplayText maps to display
@@ -15,8 +15,8 @@ CodeableConcept maps to CodeableConcept:
 	DisplayText maps to text
 
 Quantity maps to Quantity:
-	Value maps to value
-	Units.Coding.code maps to code
+	DecimalValue maps to value
+	Units.Coding.Code maps to code
 	Units.Coding.CodeSystem maps to system
 	Units.Coding.DisplayText maps to unit
 	Comparator maps to comparator
@@ -31,7 +31,7 @@ Duration maps to Duration:
 Money maps to Money:
 
 Address maps to Address:
-	Purpose maps to use
+	Purpose.Coding.Code maps to use
 	Type maps to type
 	DisplayText maps to text
 	AddressLine maps to line
@@ -48,7 +48,7 @@ HumanName maps to HumanName:
 	GivenName maps to given
 	FamilyName maps to family
 	Suffix maps to suffix
-	Purpose maps to use
+	Purpose.Coding.Code maps to use
 	EffectiveTimePeriod maps to period
 
 TimePeriod maps to Period:
@@ -64,7 +64,7 @@ Geoposition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-loca
 ContactPoint maps to ContactPoint:
 	TelecomNumberOrAddress maps to value
 	Type maps to system
-	Purpose maps to use
+	Purpose.Coding.Code maps to use
 	PriorityRank maps to rank
 	EffectiveTimePeriod maps to period	
 	
@@ -83,12 +83,15 @@ Ratio maps to Ratio:
 Timing maps to Timing:
 	OccurrenceTime maps to event
 	TimingCode maps to code
-	EventDuration.Value.LowerBound maps to repeat.duration
-	EventDuration.Value.UpperBound maps to repeat.durationMax
-	EventDuration.Value.LowerBound.Value.Units.Value.Value maps to repeat.durationUnit
-	RecurrencePattern.RecurrenceInterval.Value maps to repeat.period
+//	EventDuration.Value.LowerBound maps to repeat.duration
+//	EventDuration.Value.UpperBound maps to repeat.durationMax
+//	EventDuration.Value.LowerBound.Value.Units.Value.Value maps to repeat.durationUnit
+	EventDuration.DurationRange.LowerBound.SimpleQuantity.DecimalValue maps to repeat.duration
+	EventDuration.DurationRange.UpperBound.SimpleQuantity.DecimalValue maps to repeat.durationMax
+	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.Code maps to repeat.durationUnit
+	RecurrencePattern.RecurrenceInterval.Duration.DecimalValue maps to repeat.period
+	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.Code maps to repeat.periodUnit
 	constrain repeat.periodMax to 0..0
-	RecurrencePattern.RecurrenceInterval.Value.Units.Value.Value maps to repeat.periodUnit
 	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek
 	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay
 	RecurrencePattern.DailyLifeEvent maps to repeat.when
@@ -97,7 +100,7 @@ Timing maps to Timing:
 	RecurrencePattern.CountPerInterval.MaxCount maps to repeat.frequencyMax
 	
 SampledData maps to SampledData:
-	Value maps to data
+	Text maps to data
 	Origin maps to origin
 	MillisecondsBetweenSamples maps to period
 	CorrectionFactor maps to factor
@@ -117,18 +120,18 @@ Media maps to Attachment:
 
 	// From FHIR 3.5 documentation: "The BodyStructure resource is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient."
 AnatomicalLocation maps to BodySite:
-	Value maps to code
+	AnatomicalLocationCode maps to code
 	Laterality maps to qualifier (slice on = coding.code)
 	AnatomicalDirection maps to qualifier
 
 Annotation maps to Annotation:
-	Value maps to text
+	Text maps to text
 	Author maps to author[x]
 	OccurrenceTime maps to time
 	
 Identifier maps to Identifier:
-	Value maps to value
-	Purpose maps to use
+	Text maps to value
+	Purpose.Coding.Code maps to use
 	Type maps to type
 	CodeSystem maps to system 
 	EffectiveTimePeriod maps to period

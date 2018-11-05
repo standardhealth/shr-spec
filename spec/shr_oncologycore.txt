@@ -15,8 +15,8 @@ EntryElement:   CancerDisorder
 Based on:		ConditionPresentAssertion
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
 Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
-    FindingTopicCode from CancerDisorderVS  // BASECHANGE: to FindingTopicCode ... global replace.
-//    0..0    Stage.Value
+    FindingTopicCode from CancerDisorderVS
+//    0..0    Stage.StageGroup
   	Stage.StageDetail value is type CancerStage  
 //    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
 
@@ -26,7 +26,7 @@ EntryElement:   CancerHistologicType
 Based on:       CodedNonLaboratoryObservation
 Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
 Concept:        SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
-Value:          CodeableConcept from CancerHistologicTypeVS
+                FindingValue.CodeableConcept from CancerHistologicTypeVS
 // FindingValue from 
                 FindingTopicCode is SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"
 
@@ -35,7 +35,7 @@ EntryElement:   CancerHistologicGrade
 Based on:       SimpleCodedNonLaboratoryObservation
 Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
 Concept:        LNC#21858-6 "Grade Cancer"
-Value:          CodeableConcept from http://loinc.org/vs/LL213-0
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL213-0
                 FindingTopicCode is LNC#21858-6 "Grade Cancer"
 //                SpecificFocusOfFinding value is type CancerDisorder  // TODO: this is failing; bug reported
 0..0            AnatomicalLocation
@@ -45,7 +45,7 @@ EntryElement:   CancerProgression
 Based on:       CodedNonLaboratoryObservation
 Description:    "The course of a disease, such as cancer, as it becomes worse or spreads in the body. (source: NCI Dictionary)"
 Concept:        SCT#246453008 "Course of illness (attribute)"
-Value:          CodeableConcept from CancerProgressionVS
+                FindingValue.CodeableConcept from CancerProgressionVS
                 FindingTopicCode is SCT#246453008 "Course of illness (attribute)"
 
 EntryElement:   CancerStage
@@ -53,7 +53,7 @@ Based on:       Observation
 Description:    "The extent a cancer has spread in the body (source: NCI Dictionary of Cancer Terms)"
 Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     FindingTopicCode is SCT#258232002 "Cancer staging (tumor staging)"
-    0..0 Value
+    0..0 FindingValue
 //    SpecificFocusOfFinding value is type CancerDisorder
     NonIndependentFinding
         includes   0..1 StageTiming // retained StageTiming because if using TNM staging, the StageGroup still needs a prefix (even if we're using precoordinated categories). There are LOINC codes for clinical and pathologic stage groups in LOINC, but we back ourselves into TNM for stage group if we use them.
@@ -72,14 +72,14 @@ Element:        StageTiming
 Based on:       NonIndependentFinding
 Concept:        SCT#260869008 "Timing of stage"
 Description:	"Indicates when the staging was done, in terms of treatment landmarks."
-Value:			CodeableConcept	from StageTimingPrefixVS
+                FindingValue.CodeableConcept from StageTimingPrefixVS
                 FindingTopicCode is SCT#260869008 "Timing of stage"  
 
 Element:		StagingSystem
 Based on:		NonIndependentFinding
 Concept:        SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.
 Description:	"A systematic method for clinicopathologic evaluation of tumors. (source: NCI Metathesaurus)"
-Value:          CodeableConcept from CancerStagingSystemVS
+                FindingValue.CodeableConcept from CancerStagingSystemVS
                 FindingTopicCode is SCT#254292007 "Tumor staging (tumor staging)"  // TODO: Needs LOINC code.  
 
 EntryElement:   StageGroup
@@ -87,7 +87,7 @@ EntryElement:   StageGroup
 Based on:       CodedNonLaboratoryObservation
 Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
 Concept:        MTH#C1302362 "Stage Grouping"
-Value:          CodeableConcept from http://loinc.org/vs/LL240-3
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL240-3
                 FindingTopicCode is MTH#C1302362 "Stage Grouping"   
 //                    SpecificFocusOfFinding value is type CancerStage
 
@@ -95,7 +95,7 @@ Element:        TNMClinicalPrimaryTumorClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21905-5 "Primary tumor.clinical [Class] Cancer"
 Description:    "Detailed site-specific codes for the clinical tumor (T) as defined by AJCC and recorded by the physician."
-Value:          CodeableConcept from http://loinc.org/vs/LL237-9 // normative answer list for LNC#21905-5
+                FindingValue.CodeableConcept  from http://loinc.org/vs/LL237-9 // normative answer list for LNC#21905-5
 //                    SpecificFocusOfFinding value is type CancerStage
                 NonIndependentFinding
                     includes 0..1 StageSuffix
@@ -105,15 +105,15 @@ Element:    StageSuffix
 Based on:   NonIndependentFinding
 Concept:	TBD#TBD	    // TODO: Needs a new LOINC or SNOMED code + value set terms.  assign a local value set until we get something assigned.
 Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
-Value: 		CodeableConcept from StageSuffixVS  // local value set created 
+            FindingValue.CodeableConcept from StageSuffixVS  // local value set created 
             FindingTopicCode is TBD#TBD  // TODO: Needs a new LOINC or SNOMED code + value set terms.
 
 
-Element: 	TNMClinicalRegionalNodesClassification
+Element: 	    TNMClinicalRegionalNodesClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
 Description:    "" //TODO: pull from LOINC
-Value:          CodeableConcept from http://loinc.org/vs/LL238-7 // normative answer list for LNC#21906-3
+                FindingValue.CodeableConcept  from http://loinc.org/vs/LL238-7 // normative answer list for LNC#21906-3
                 FindingTopicCode is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
                 NonIndependentFinding
@@ -124,7 +124,7 @@ Element:        TNMClinicalDistantMetastasesClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
 Description:    "" //TODO: pull from LOINC
-Value:          CodeableConcept from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
                 FindingTopicCode is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
 
@@ -132,29 +132,29 @@ Element:        TNMPathologicPrimaryTumorClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21899-0 "Primary tumor.pathology Cancer"
 Description:    "" //TODO: pull from LOINC
-Value:          CodeableConcept from http://loinc.org/vs/LL232-0 // normative
+                FindingValue.CodeableConcept  from http://loinc.org/vs/LL232-0 // normative
                 FindingTopicCode is LNC#21899-0 "Primary tumor.pathology Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
                 NonIndependentFinding
                     includes 0..1 StageSuffix
                     includes 0..1 StageTiming  // TODO: make this a fixed value to pathologic.
 
-Element: 	TNMPathologicRegionalNodesClassification
+Element: 	    TNMPathologicRegionalNodesClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
 Description:    "" //TODO: pull from LOINC
-Value:          CodeableConcept from http://loinc.org/vs/LL3136-0 // normative
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL3136-0 // normative
                 FindingTopicCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
 //                    SpecificFocusOfFinding value is type CancerStage
                 NonIndependentFinding
                     includes 0..1 StageSuffix
                     includes 0..1 StageTiming  // TODO: make this a fixed value to pathologic.
 
-Element:   TNMPathologicDistantMetastasesClassification
+Element:        TNMPathologicDistantMetastasesClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21901-4 "Distant metastases.pathology [Class] Cancer"
 Description:    "" //TODO: pull from LOINC
-Value: CodeableConcept from http://loinc.org/vs/LL3137-8
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL3137-8
                 FindingTopicCode is LNC#21901-4 "Distant metastases.pathology [Class] Cancer" // normative
 //                    SpecificFocusOfFinding value is type CancerStage
 
@@ -174,7 +174,7 @@ Element:        PrimaryTumorIndicator
 Based on:       CodedNonLaboratoryObservation
 Description:    "Whether the tumor is the original, or first, tumor in the body, for a particular cancer."
 Concept:        SCT#260716003 "Site of Primary Tumor (attribute)"
-Value: 		    CodeableConcept from YesNoVS    // TODO: Open a bug for Observation Value to support boolean data type.  This is possible in the FHIR Observation.value.valueBoolean attribute.  Change back to boolean after fix.
+                FindingValue.CodeableConcept from YesNoVS    // TODO: Open a bug for Observation Value to support boolean data type.  This is possible in the FHIR Observation.value.valueBoolean attribute.  Change back to boolean after fix.
                 FindingTopicCode is SCT#260716003 "Site of Primary Tumor (attribute)"
 //              SpecificFocusOfFinding value is type Tumor
 
@@ -193,18 +193,19 @@ Concept:        LNC#89246-3 "ECOG Performance Status panel"
                 includes    0..1    ECOGPerformanceStatusScore
                 includes    0..1    ECOGPerformanceStatusInterpretation
 
-Element:	ECOGPerformanceStatusScore
+Element:	    ECOGPerformanceStatusScore
 Based on:		SimpleNonLaboratoryObservation
 Concept:		LNC#89247-1 "ECOG Performance Status score"
 Description:	"The Eastern Cooperative Oncology Group (ECOG) performance score, which indicates a patient’s level of daily functioning and physical ability. The ECOG grade ranges from 0-5. Source: LOINC"
-Value:          IntegerQuantity
+                FindingValue value is type Quantity
+                FindingValue.Quantity.Units.Coding is UCUM#1
 //                SpecificFocusOfFinding value is type Patient
 
-Element:	ECOGPerformanceStatusInterpretation
+Element:	    ECOGPerformanceStatusInterpretation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#89262-0 "ECOG Performance Status [Interpretation]"
 Description:	"The Eastern Cooperative Oncology Group (ECOG) Performance Status represents the patient's functional status and is used to determine their ability to tolerate therapies in serious illness, specifically for chemotherapy. (Source: LOINC)"
-Value:          CodeableConcept from http://loinc.org/vs/LL529-9 // normative answer list for LNC#89262-0, the scores are included in descriptions of answers
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL529-9 // normative answer list for LNC#89262-0, the scores are included in descriptions of answers
 //                SpecificFocusOfFinding value is type Patient
 
 //KPS is a panel in LOINC with score and interpretation as two components of the panel.
@@ -221,11 +222,12 @@ Concept:        LNC#89245-5 "Karnofsky Performance Status panel"
 Element:	    KarnofskyPerformanceStatusScore
 Based on:		SimpleNonLaboratoryObservation
 Concept:		LNC#89243-0 "Karnofsky Performance Status score"	
-Value:          IntegerQuantity
+                FindingValue value is type Quantity
+                FindingValue.Quantity.Units.Coding is UCUM#1
 //                SpecificFocusOfFinding value is type Patient
 
 Element:	    KarnofskyPerformanceStatusInterpretation
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#89245-5 "Karnofsky Performance Status [Interpretation]"
-Value:          CodeableConcept from http://loinc.org/vs/LL4986-7 // normative answer list
+                FindingValue.CodeableConcept from http://loinc.org/vs/LL4986-7 // normative answer list
 //                SpecificFocusOfFinding value is type Patient
