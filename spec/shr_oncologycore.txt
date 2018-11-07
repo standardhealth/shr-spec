@@ -93,7 +93,6 @@ Description:	"Indicates when the staging was done using pathologic evidence."
                 Value is SCT#405978005   "Pathologic stage (observable entity)"
 
 
-
 Element:        StageGroup
 // did not use precoordinated codes because only available for clinical and pathologic.
 //Based on:       NonIndependentFinding
@@ -215,27 +214,21 @@ Description:    "" //TODO: pull from LOINC
                     includes 0..1 StageSuffix
                     includes 0..1 PathologicStageTiming 
 
-//  A tumor is a morphologic abnormality observation about a CancerDisorder, rather than ConditionPresentAssertion.
-EntryElement:   Tumor   // NOTE: Includes TumorLocation as AnatomicalLocation because there are no site constraints. 
-Based on:		NonLaboratoryObservation
-Description:    "An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI Dictionary)."
+
+EntryElement:   TumorPresent
+Based on:		BodyStructurePresent
+Description:    "The presence of an abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI Dictionary)."
 Concept:        SCT#395557000 "Tumor finding (finding)"
-                FindingTopicCode is SCT#395557000 "Tumor finding (finding)"
-0..0            ReferenceRange
-                NonIndependentFinding
-                    includes 0..1 PrimaryTumorIndicator
-        0..0    StageInformation
+                Morphology from TumorMorphologyVS
+0..1            IsPrimaryTumor
+
+        Element:        IsPrimaryTumor
+        Concept:        TBD
+        Description:    "Whether the tumor is the original, or first, tumor in the body, for a particular cancer."
+        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but VS allows for unknown
 
 
-Element:        PrimaryTumorIndicator
-Based on:       NonIndependentFinding
-Description:    "Whether the tumor is the original, or first, tumor in the body, for a particular cancer."
-Concept:        SCT#260716003 "Site of Primary Tumor (attribute)"
-Value:          CodeableConcept from YesNoUnknownVS    // TODO: Open a bug for Observation Value to support boolean data type.  This is possible in the FHIR Observation.value.valueBoolean attribute.  Change back to boolean after fix.
-0..0            ReferenceRange
-                FindingTopicCode is SCT#260716003 "Site of Primary Tumor (attribute)"
-
-/*
+/**** replaced by Onset of CancerDisorder 
 EntryElement:	EarliestDateOfCancerDiagnosis
 //TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of ConditionPresentAssertion.
 Based on:		SimpleNonLaboratoryObservation
@@ -246,6 +239,7 @@ Value:			dateTime // parent class only allows time, dateTime or TimePeriod as ch
 0..0            AnatomicalLocation
 //              SpecificFocusOfFinding value is type CancerDisorder
 */
+
 /********** Assessments **************/
 
 EntryElement:   ECOGPerformanceStatus

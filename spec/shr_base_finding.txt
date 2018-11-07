@@ -65,7 +65,7 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 		Element:		FindingMethod
 		Concept:		TBD
 		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-		Value:			CodeableConcept should be from FindingMethodVS
+		Value:			CodeableConcept
 
 		Element:		FindingStatus
 		Concept:		TBD
@@ -174,6 +174,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 1..*			Category
 1..1			Patient
 1..1			Specimen
+				FindingMethod should be from LaboratoryMethodVS
 0..0			AnatomicalLocation  // AnatomicalLocation is determined indirectly from Specimen.CollectionSite
 				Category is OBSCAT#laboratory
 0..*			DiagnosticService
@@ -226,14 +227,16 @@ Value:				CodeableConcept from PresentAbsentVS
 Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
-					Value is SCT#52101004 "Present (qualifier value)"		
+					Value is SCT#52101004 "Present (qualifier value)"
+0..0				ExceptionValue	
 0..1				Certainty from PresenceCertaintyVS
 
 
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
-					Value is SCT#2667000 "Absent (qualifier value)"	
+					Value is SCT#2667000 "Absent (qualifier value)"
+0..0				ExceptionValue		
 0..1				Certainty from AbsenceCertaintyVS
 
 
@@ -347,3 +350,20 @@ Based on:			ExistenceAssertion
 Description:		"An assertion of a realtionship between two things being either present or absent. The subject of the relationship is is the Patient (or SpecificFocusOfFinding, if given) and the object of the relationship is .
 For relationships, FindingTopicCode describes the relationship, e.g., Father or Mother."
 Value:				CodeableConcept from PresentAbsentVS
+
+
+EntryElement:	BodyStructurePresent
+Based on:		PresenceAssertion
+Description:	"A body structure such as wound or tumor, observed to be present in a patient."
+1..1			Patient
+0..1			AnatomicalLocation
+1..1			Morphology
+0..*			Media
+0..1			RelevantTime
+0..0			SpecificFocusOfFinding
+0..0			ReferenceRange
+0..0			ExceptionValue
+
+		Element:	Morphology
+		Concept:	SCT#116676008 "Associated morphology (attribute)"
+		Value:		CodeableConcept
