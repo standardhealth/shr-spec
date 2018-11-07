@@ -48,12 +48,9 @@ Abstract Element:	Finding
 Based on:		NonIndependentFinding // A Finding has elements that allow it to be independently observed. It's a modeling compromise that allows better mapping. 
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 0..1			Patient
-0..1			SpecificFocusOfFinding
 0..1			Encounter  // findings are often associated with specific encounters
-0..1			FindingMethod
 1..1			FindingStatus
-0..1			RelevantTime
-0..*			NonIndependentFinding
+0..1			SpecificFocusOfFinding
 
 		Element:		SpecificFocusOfFinding
 		Description:	"The specific observed item finding relates to. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. SpecificFocusOfFinding should not be used to record anatomical location."
@@ -63,7 +60,6 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 		Element:		FindingFocus
 		Description:	"The FindingFocus could be a relative of the patient, a location, or a group. The FindingFocus for cancer progression would be the cancer condition. If the property is wound length, the FindingFocus would be an instance of a wound. In the case of an assertion of existence, the FindingFocus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."	
 		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
-
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -88,6 +84,9 @@ Description:	"Represents the result of evaluations (measurements, tests, or ques
 Observation has a value representing the result (answer), or an ExceptionValue indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the FindingTopicCode describes the aspect or property of the subject being observed or measured. The FindingTopicCode is the 'question code' that pairs to the 'answer' contained in the Value."
 //0..0			Observer
+0..1			FindingMethod
+0..1			RelevantTime
+0..*			NonIndependentFinding
 				FindingStatus value is type code 
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			DeltaFlag
@@ -247,13 +246,16 @@ Based on:		PresenceAssertion
 Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
+1..1			Patient
 				FindingTopicCode from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make binding weaker because US Core requires an extensible binding
+0..0			SpecificFocusOfFinding  // always the patient?
+0..0			FindingMethod
 1..*			Category from ConditionCategoryVS
 0..*			AnatomicalLocation
-0..*			ConditionCause
+//0..*			ConditionCause  MK - reduce clutter
 1..1			ClinicalStatus
-0..1			WhenClinicallyRecognized
-0..1			PresentOnAdmission
+//0..1			WhenClinicallyRecognized  MK - reduce clutter
+//0..1			PresentOnAdmission
 0..1			Severity
 0..1			Criticality
 0..1			StageInformation
