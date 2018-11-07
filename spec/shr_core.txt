@@ -367,9 +367,9 @@ Concept:		MTH#C0750480
 Description:	"The number of items (0 or more), as an integer."
 Value:			unsignedInt
 
-Element:		Details
+Element:		CommentOrDescription
 Concept: 		MTH#C0947611
-Description:	"A text note containing additional details, explanation, description, comment, or summarization. Details can discuss, support, explain changes to, or dispute information."
+Description:	"A text note containing additional details, explanation, description, comment, or summarization."
 Value:			string  // change to language-text
 
 /*  Can't restrict "value is type" to a primitive
@@ -413,27 +413,21 @@ Description:	"A qualitative (subjective) likelihood."
 Value:			CodeableConcept from QualitativeLikelihoodVS
 
 /*Element:		Length
-Based on:		NonIndependentFinding
 Concept:		MTH#C1444754
 Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
-Value:			Quantity 
-//				with units from UnitsOfLengthVS
-				Value.Units with Coding from UnitsOfLengthVS
+Value:			Quantity with Coding from UnitsOfLengthVS
 */
 Element:		Depth
-Based on:		NonIndependentFinding
 Concept:		SCT#131197000 "Depth (qualifier value)"
 Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
 Value:			Quantity with units UCUM#cm
 
 Element:		Area
-Based on:		NonIndependentFinding
 Concept:		SCT#42798000 "Area (qualifier value)"
 Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
 Value:			Quantity with units UCUM#cm2
 
 Element:		ClockDirection
-Based on:		NonIndependentFinding
 Concept:		LNC#72294-2
 Description:	"A direction indicated by an angle relative to 12 o'clock."
 Value:			CodeableConcept from ClockDirectionVS
@@ -441,13 +435,11 @@ Value:			CodeableConcept from ClockDirectionVS
 
 /*
 Element:		Volume
-Based on:		???
 Concept:		MTH#C0449468
 Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
 Value:			Quantity with units UCUM#TBD
 
 Element:		Circumference
-Based on:		???
 Concept:		MTH#C0332520
 Description:	"The length of such a boundary line of a figure, area, or object."
 */
@@ -744,15 +736,20 @@ Description:	"The way a substance enters an organism after contact, particularly
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
 Element:		AnatomicalLocation
-Concept:		LNC#72369-2  // Body site identification panel
+Concept:		LNC#72369-2  // Body site identification panel  
+// Perhaps SCT#758637006 "Anatomical location (property) (qualifier value)"
 Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
-1..1			AnatomicalLocationCode
+1..1			AnatomicalLocationOrLandmarkCode
 0..1 			Laterality
+0..1			DistanceFromLandmark
 0..1			AnatomicalDirection
+0..1			ClockDirection
+0..1			CommentOrDescription
+0..*			Media
 
-	Element:		AnatomicalLocationCode
+	Element:		AnatomicalLocationOrLandmarkCode
 	Concept:		TBD
-	Description:	"Code for the anatomical location, with or without laterality."
+	Description:	"Code for the anatomical location or landmark, with or without laterality."
 	Value:			CodeableConcept should be from AnatomicalLocationVS
 
 	Element:		Laterality
@@ -764,6 +761,12 @@ Description:	"A location or structure in the body, including tissues, regions, c
 	Concept:		NCI#C99074
 	Description:	"Anatomical location or specimen further detailing directionality."
 	Value:			CodeableConcept from AnatomicalDirectionVS
+
+	Element:		DistanceFromLandmark
+	Concept:		TBD
+	Description:	""
+	Value:			Distance
+
 	
 Element:		Identifier
 Concept:		MTH#C0600091
