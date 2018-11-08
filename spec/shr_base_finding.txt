@@ -10,12 +10,15 @@ Description:		"A finding that does not or cannot stand alone, or a component of 
 // should we have finding protocol, finding precondition, finding question, finding data, finding interpretation?
 // how do we handle normal? (physical exam normal)
 // exclusions? (diabetes excluded)
-Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time or dateTime or TimePeriod)
-		// exclude boolean because component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
+0..1			FindingResult
 1..1			FindingTopicCode  // Question, test name, or condition
 0..1			ExceptionValue
 0..1			ReferenceRange  // included here only because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 
+		Element:		FindingResult
+		Description:	"The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
+		Value:			0..1 (CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod)
+		// exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
 
 		Element:		FindingTopicCode
 		Description:	"A code describing what the finding concerns, such as a lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property of the Patient or SpecificFocusOfFinding being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist or not exist. The topic code is not the result of the evaluation, which is found in the value. "
@@ -43,6 +46,17 @@ Value:			0..1 (Quantity or CodeableConcept or string or Range or Ratio or time o
 				Concept:	TBD
 				Description:	"The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."  // FHIR: how exactly does one indicate a neonatal or prenatal age?
 				Value:		Range
+
+Abstract Element:	CodedNonIndependentFinding
+Based on:			NonIndependentFinding
+Description:		"A non-independent finding whose result is a concept code."
+					FindingResult value is type CodeableConcept
+0..0				ReferenceRange					
+
+Abstract Element:	QuantitativeNonIndependentFinding
+Based on:			NonIndependentFinding
+Description:		"A non-independent finding whose result is a quantity."
+					FindingResult value is type Quantity
 
 Abstract Element:	Finding
 Based on:		NonIndependentFinding // A Finding has elements that allow it to be independently observed. It's a modeling compromise that allows better mapping. 
@@ -149,7 +163,7 @@ EntryElement:	CodedNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
-Value:			CodeableConcept
+				FindingResult value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
@@ -161,7 +175,7 @@ Description:	"An observation whose result is a code, and also having no componen
 EntryElement:	ComponentOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
-0..0			Value
+0..0			FindingResult
 0..0			ExceptionValue
 0..0			PanelMembers
 0..0			ReferenceRange
@@ -187,7 +201,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
-Value:			CodeableConcept
+				FindingResult value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
@@ -208,7 +222,8 @@ Abstract Element:	ExistenceAssertion
 Based on:			Finding
 Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place.
 For assertions, the FindingTopicCode represents the thing asserted to be present or absent; i.e., the type of condition, event, relationship or phenomenon that is being asserted to exist or not exist."
-Value:				CodeableConcept from PresentAbsentVS
+					FindingResult value is type CodeableConcept
+					FindingResult from PresentAbsentVS
 // Leave ExceptionValue in, to represent the case where the presence or absence of something was not evaluated
 0..0				ReferenceRange
 0..1				ObjectIdentifier  // TODO: 0..* business identifier?
@@ -227,7 +242,8 @@ Value:				CodeableConcept from PresentAbsentVS
 Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
-					Value is SCT#52101004 "Present (qualifier value)"
+// TODO: Not sure we should have to say .CodeableConcept for the constraint below to work (currently causes error)
+					FindingResult.CodeableConcept is SCT#52101004 "Present (qualifier value)"
 0..0				ExceptionValue	
 0..1				Certainty from PresenceCertaintyVS
 
@@ -235,7 +251,7 @@ Description:		"Finding that a phenomena is present."
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
-					Value is SCT#2667000 "Absent (qualifier value)"
+					FindingResult.CodeableConcept is SCT#2667000 "Absent (qualifier value)"
 0..0				ExceptionValue		
 0..1				Certainty from AbsenceCertaintyVS
 
