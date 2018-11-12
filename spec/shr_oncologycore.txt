@@ -21,12 +21,14 @@ Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
 
 EntryElement:   CancerHistologicType
 // did not use precoordinated codes because only available for clinical and pathologic.
-Based on:       CodedNonLaboratoryObservation
+Based on:       SimpleCodedNonLaboratoryObservation
 Description:    "The classification resulting from cancer staging. Each type of cancer has its own Each type of cancer has its own stage groups based on where the cancer has grown and spread. There are either four or five stage groups per cancer. (Source: NCCN Cancer Staging Guide)"
-Concept:        SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
+Concept:        SCT#371441004 "Histologic type (observable entity)"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
 //        SpecificFocusOfFinding value is type CancerDisorder or TumorPresent?
                 FindingResult from CancerHistologicTypeVS
-                FindingTopicCode is SCT#86049000 "Malignant neoplasm, primary (morphologic abnormality)"
+                FindingTopicCode is SCT#371441004 "Histologic type (observable entity)"
+0..0            AnatomicalLocation
+0..0            Device
 
 EntryElement:   CancerHistologicGrade
 // did not use precoordinated codes because only available for clinical and pathologic.
@@ -40,12 +42,14 @@ Concept:        LNC#21858-6 "Grade Cancer"
 0..0            Device
 
 EntryElement:   CancerProgression
-Based on:       CodedNonLaboratoryObservation
+Based on:       SimpleCodedNonLaboratoryObservation
 Description:    "The course of a disease, such as cancer, as it becomes worse or spreads in the body. (source: NCI Dictionary)"
 Concept:        SCT#246453008 "Course of illness (attribute)"
                 FindingResult from CancerProgressionVS
                 FindingTopicCode is SCT#246453008 "Course of illness (attribute)"
-//    SpecificFocusOfFinding value is type CancerDisorder                
+//    SpecificFocusOfFinding value is type CancerDisorder 
+0..0            AnatomicalLocation
+0..0            Device               
 
 EntryElement:   CancerStageInformation
 Based on:       Observation
@@ -63,9 +67,9 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
     0..1        FindingMethod from CancerStagingSystemVS
 //    SpecificFocusOfFinding value is type CancerDisorder
     NonIndependentFinding
-        includes  0..1 StageGroup  // MK - Should this be the value?
+        includes  0..1 StageGroup  // MK - should this be the FindingResult?
         includes  0..1 StageTiming // retained StageTiming because if using TNM staging, the StageGroup still needs a prefix (even if we're using precoordinated categories). There are LOINC codes for clinical and pathologic stage groups in LOINC, but we back ourselves into TNM for stage group if we use them.
-    PanelMembers.Observation // MK - why aren't these components?
+    PanelMembers.Observation // MK - could these be components?
         includes  0..1 TNMClinicalPrimaryTumorClassification
         includes  0..1 TNMClinicalRegionalNodesClassification
         includes  0..1 TNMClinicalDistantMetastasesClassification
@@ -79,19 +83,18 @@ Concept:        SCT#260869008 "Timing of stage"
 Description:	"Indicates when the staging was done, in terms of treatment landmarks."
                 FindingResult from StageTimingPrefixVS
                 FindingTopicCode is SCT#260869008 "Timing of stage"
-0..0            ReferenceRange  
+ 
+        Element:        ClinicalStageTiming
+        Based on:       StageTiming
+        Concept:        SCT#260869008 "Timing of stage"
+        Description:	"Indicates staging was done from clinical evidence."
+                        FindingResult.CodeableConcept is SCT#385349001 "Clinical stage (observable entity)"
 
-Element:        ClinicalStageTiming
-Based on:       StageTiming
-Concept:        SCT#260869008 "Timing of stage"
-Description:	"Indicates staging was done from clinical evidence."
-                FindingResult.CodeableConcept is SCT#385349001 "Clinical stage (observable entity)"
-
-Element:        PathologicStageTiming
-Based on:       StageTiming
-Concept:        SCT#260869008 "Timing of stage"
-Description:	"Indicates when the staging was done using pathologic evidence."
-                FindingResult.CodeableConcept is SCT#405978005   "Pathologic stage (observable entity)"
+        Element:        PathologicStageTiming
+        Based on:       StageTiming
+        Concept:        SCT#260869008 "Timing of stage"
+        Description:	"Indicates when the staging was done using pathologic evidence."
+                        FindingResult.CodeableConcept is SCT#405978005   "Pathologic stage (observable entity)"
 
 
 Element:        StageGroup
@@ -102,7 +105,6 @@ Description:    "The classification resulting from cancer staging. Each type of 
                 FindingResult from http://loinc.org/vs/LL240-3
                 FindingTopicCode is MTH#C1302362 "Stage Grouping"   
 //                    SpecificFocusOfFinding value is type CancerStageInformation
-0..0            ReferenceRange
 
 Element:        StageSuffix
 Based on:       CodedNonIndependentFinding
@@ -110,7 +112,6 @@ Concept:	    TBD#TBD	    // TODO: Needs a new LOINC or SNOMED code + value set t
 Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
                 FindingResult from StageSuffixVS  // local value set created 
                 FindingTopicCode is TBD#TBD  // TODO: Needs a new LOINC or SNOMED code + value set terms.
-0..0            ReferenceRange
 
 EntryElement:   TNMClinicalPrimaryTumorClassification
 Based on:		CodedNonLaboratoryObservation

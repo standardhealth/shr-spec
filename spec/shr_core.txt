@@ -12,7 +12,11 @@ CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:     UCUM = http://unitsofmeasure.org 
 
 
-//------------ Complex Types aligned to FHIR ---------------
+//------------ Types aligned to FHIR ---------------
+
+Element:		Text
+Description:	"A simple string."
+Value:			string
 
 Element:		Quantity
 Description:	"A quantity with units, whose value may be bounded from above or below, as defined in FHIR"
@@ -88,7 +92,6 @@ Description:	"Coding of a concept, drawn from a controlled vocabulary. Includes 
 	Description:	"A description of the purpose or origin of the code that assists in understanding the code."
 	Value:			code from CodingQualifierVS
 */
-
 	Element:		CodeSystem
 	Concept:		TBD
 	Description:	"A formal terminology system."
@@ -269,11 +272,10 @@ Timing offers a choice of multiple OccurrenceTime (used is used to specify speci
 		Value:			positiveInt
 
 
-
 Element:	SampledData
 Concept:	TBD
 Description:	"Data that comes from a series of measurements taken by a device, which may have upper and lower limits. The data type also supports more than one dimension in the data."
-1..1		Text
+1..1		DataAsText
 1..1		Origin
 1..1		MillisecondsBetweenSamples
 0..1		CorrectionFactor
@@ -281,7 +283,7 @@ Description:	"Data that comes from a series of measurements taken by a device, w
 0..1		UpperLimit
 1..1		Dimensions
 
-	Element:	Text
+	Element:	DataAsText
 	Description:	"A value that is a sting."
 	Value:		string
 
@@ -302,10 +304,10 @@ Description:	"Data that comes from a series of measurements taken by a device, w
 	Description:	"The lower limit of detection of the measured points. This is needed if any of the data points have the value 'L' (lower than detection limit)."
 	Value:		decimal
 	
-	Element:		UpperLimit
-	Concept:		TBD
+	Element:	UpperLimit
+	Concept:	TBD
 	Description:	"The upper limit of detection of the measured points. This is needed if any of the data points have the value 'U' (higher than detection limit)."
-	Value:			decimal
+	Value:		decimal
 	 
 	Element:	Dimensions
 	Concept:	TBD
@@ -412,11 +414,12 @@ Concept:		TBD
 Description:	"A qualitative (subjective) likelihood."
 Value:			CodeableConcept from QualitativeLikelihoodVS
 
-/*Element:		Length
+/*
+Element:		Length
 Concept:		MTH#C1444754
 Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
 Value:			Quantity with Coding from UnitsOfLengthVS
-*/
+
 Element:		Depth
 Concept:		SCT#131197000 "Depth (qualifier value)"
 Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
@@ -427,13 +430,6 @@ Concept:		SCT#42798000 "Area (qualifier value)"
 Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
 Value:			Quantity with units UCUM#cm2
 
-Element:		ClockDirection
-Concept:		LNC#72294-2
-Description:	"A direction indicated by an angle relative to 12 o'clock."
-Value:			CodeableConcept from ClockDirectionVS
-
-
-/*
 Element:		Volume
 Concept:		MTH#C0449468
 Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
@@ -762,12 +758,16 @@ Description:	"A location or structure in the body, including tissues, regions, c
 	Description:	"Anatomical location or specimen further detailing directionality."
 	Value:			CodeableConcept from AnatomicalDirectionVS
 
+	Element:		ClockDirection
+	Concept:		LNC#72294-2
+	Description:	"A direction indicated by an angle relative to 12 o'clock."
+	Value:			CodeableConcept from ClockDirectionVS
+
 	Element:		DistanceFromLandmark
 	Concept:		TBD
-	Description:	""
+	Description:	"How far the anatomical location of interest is from the given landmark"
 	Value:			Distance
 
-	
 Element:		Identifier
 Concept:		MTH#C0600091
 Description:	"A unique string that identifies a specific person or thing."
