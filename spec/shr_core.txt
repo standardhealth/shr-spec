@@ -275,7 +275,7 @@ Timing offers a choice of multiple OccurrenceTime (used is used to specify speci
 Element:	SampledData
 Concept:	TBD
 Description:	"Data that comes from a series of measurements taken by a device, which may have upper and lower limits. The data type also supports more than one dimension in the data."
-1..1		DataAsText
+1..1		DataAsString
 1..1		Origin
 1..1		MillisecondsBetweenSamples
 0..1		CorrectionFactor
@@ -283,8 +283,8 @@ Description:	"Data that comes from a series of measurements taken by a device, w
 0..1		UpperLimit
 1..1		Dimensions
 
-	Element:	DataAsText
-	Description:	"A value that is a sting."
+	Element:	DataAsString
+	Description:	"Data represented as a text sting."
 	Value:		string
 
 	Element:	Origin
@@ -732,9 +732,18 @@ Description:	"The way a substance enters an organism after contact, particularly
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
 Element:		AnatomicalLocation
-Concept:		LNC#72369-2  // Body site identification panel  
-// Perhaps SCT#758637006 "Anatomical location (property) (qualifier value)"
+Concept:		SCT#758637006 "Anatomical location (property) (qualifier value)"
 Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
+Value:			AnatomicalLocationPrecoordinated or AnatomicalLocationStructured
+
+Element:		AnatomicalLocationPrecoordinated
+Concept:		TBD
+Description:	"A single code representing a body site, without the need for further elaboration (such as laterality)."
+Value:			CodeableConcept should be from AnatomicalLocationVS
+
+Element:		AnatomicalLocationStructured
+Concept:		LNC#72369-2  // Body site identification panel  
+Description:	"A body site represented as a relative location, code and laterality, or other post-coordinated form."
 1..1			AnatomicalLocationOrLandmarkCode
 0..1 			Laterality
 0..1			DistanceFromLandmark
@@ -745,7 +754,7 @@ Description:	"A location or structure in the body, including tissues, regions, c
 
 	Element:		AnatomicalLocationOrLandmarkCode
 	Concept:		TBD
-	Description:	"Code for the anatomical location or landmark, with or without laterality."
+	Description:	"Code for the anatomical location or landmark, without laterality, direction, or other modifiers needed to completely specify the body site."
 	Value:			CodeableConcept should be from AnatomicalLocationVS
 
 	Element:		Laterality
