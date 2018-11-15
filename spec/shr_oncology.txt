@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		oncology
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.entity
+Uses:  			shr.core, shr.base, shr.entity, mcode
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -11,24 +11,20 @@ CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-/************* LEGACY BEGIN ************
+
 EntryElement:	BreastSite
 Based on:		AnatomicalLocationStructured
 Description:	"A body site specific to the breast structure."
-Value:			CodeableConcept from BreastSiteVS
-0..1			ClockDirection
-0..1			DistanceFromBreastSiteToNipple
+				AnatomicalLocationOrLandmarkCode from BreastSiteVS
+1..1 			Laterality
 0..0			AnatomicalDirection
-
-		Element:		DistanceFromBreastSiteToNipple
-		Description:	"Distance between the feature of interest (e.g., the tumor) and the nipple."
-		Value:			Quantity with units UCUM#cm
+				DistanceFromLandmark.Distance.Units is UCUM#cm
 
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
 				Type from BreastSpecimenTypeVS
-				CollectionSite value is type BreastSite
+				CollectionSite.AnatomicalLocation.AnatomicalLocationStructured is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
 				SourceSpecimen value is type ref(BreastSpecimen)
 0..1			ColdIschemiaTime
@@ -38,14 +34,15 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 		Description:	"The time period between the chilling of a tissue or tissue sample and the time it is warmed."
 		Value:			TimePeriod
 
-EntryElement:	BreastCancerPresent
-Based on:		ConditionPresentAssertion
+
+EntryElement:	BreastCancerDisorderPresent
+Based on:		CancerDisorderPresent
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
 				FindingTopicCode from BreastCancerTypeVS		
-				StageInformation.StageDetail value is type BreastCancerStage
+				StageInformation.StageDetail value is type BreastCancerStageInformation
 0..1			FindingMethod should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
-				AnatomicalLocationStructured is type BreastSite
+				AnatomicalLocation.AnatomicalLocationStructured is type BreastSite
 0..1			MorphologyBehavior from MorphologyBehaviorVS
 
 			Element:		MorphologyBehavior
@@ -54,138 +51,119 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 			Value:			CodeableConcept
 
 
-
-EntryElement:	BreastCancerStage
-Based on:		Observation
+EntryElement:	BreastCancerStageInformation
+Based on:		CancerStageInformation
 Concept:		MTH#C2216702 "Malignant Neoplasm of Breast Staging" //Not LNC#21908-9 since that is AJCC-specific and also not breast cancer specific. We do however, give the LOINC list of stage values as the preferred codes.
-Description:	"The stage of a breast cancer. Different staging systems use different staging groups, so there are currently no terminology bindings associated with this class."
-Value:			CodeableConcept should be from http://loinc.org/LL240-3
+Description:	"The stage of a breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
 				FindingTopicCode is MTH#C2216702 "Malignant Neoplasm of Breast Staging"
-0..1			StageTimingPrefix				
-				NonIndependentFinding			
-includes 0..1 	BreastCancerPrimaryTumorClassification
-includes 0..1 	BreastCancerRegionalNodesClassification
-includes 0..1 	BreastCancerDistantMetastasesClassification
+//    	SpecificFocusOfFinding value is type BreastCancerDisorderPresent			
 				PanelMembers.Observation
 includes 0..1	HER2ReceptorStatus
 includes 0..1	EstrogenReceptorStatus
 includes 0..1	ProgesteroneReceptorStatus
 includes 0..1	DCISNuclearGrade
 includes 0..1	BreastCancerHistologicGrade	
-0..0			Device
-0..0			Specimen
-0..0			Precondition
-0..0			ReferenceRange
-
-		Element:		StageTimingPrefix
-		Concept:		SCT#260869008 "Timing of stage"
-		Description:	"Indicates when the staging was done, in terms of treatment landmarks."
-		Value:			CodeableConcept	from StageTimingPrefixVS
-		
-		Element:		BreastCancerPrimaryTumorClassification
-		Concept:		SCT#78873005 "T category"
-		Based on:		NonIndependentFinding
-		Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept
-		0..1			StageSuffix
-
-		Element:		BreastCancerRegionalNodesClassification
-		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
-		Based on:		NonIndependentFinding
-		Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept
-		0..1			StageSuffix
-
-				Element:	StageSuffix
-				Concept:	TBD	
-				Description: "A suffix used in conjuction with certain breast cancer stages, based on criteria defined by the staging system being used."
-				Value: 		CodeableConcept
-				
-		Element:		BreastCancerDistantMetastasesClassification
-		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
-		Based on:		NonIndependentFinding
-		Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
-		Value:			CodeableConcept				
 
 
-EntryElement:	DCISNuclearGrade
-Concept:		MTH#C18513  // What is the proper LOINC code?
-Based on: 		SimpleCodedLaboratoryObservation
-Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
-Value:			CodeableConcept from NuclearGradeVS
-				Specimen is type BreastSpecimen
-				FindingTopicCode is MTH#C18513
-				DiagnosticService is #pathology
 
-
-EntryElement:	BreastCancerHistologicGrade
-Concept:		LNC#44648-4
+EntryElement:	HER2ReceptorStatus
 Based on:		CodedLaboratoryObservation
-Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
-Value:			CodeableConcept from NottinghamCombinedGradeVS
-				ExceptionValue from NottinghamNullVS
-				FindingTopicCode is LNC#44648-4
-				Specimen is type BreastSpecimen
+Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
+Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
+			    FindingResult from PositiveNegativeEquivocalVS
+				FindingTopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
 				DiagnosticService is #pathology
+				Specimen is type BreastSpecimen
+//0..0			Precondition
+0..0			FindingMethod
+0..0 			NonIndependentFinding
+				PanelMembers.Observation
+includes 0..*	HER2byIHC
+includes 0..*	HER2byFISH				
+				
+EntryElement:	HER2byIHC
+// MK 7/14/2018 separated null value from non-null values.
+Based on:		CodedLaboratoryObservation
+Concept:		LNC#85319-2
+Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
+				FindingResult from HER2byIHCScoreVS
+				ExceptionValue from HER2byIHCScoreNullVS
+				Interpretation from PositiveNegativeEquivocalVS
+				FindingTopicCode is LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
+0..0			FindingMethod  // pre-coordinated in the FindingTopicCode
+				DiagnosticService is #pathology
+//0..0			Precondition
+				Specimen is type BreastSpecimen
 				NonIndependentFinding
-includes 0..1 	TubuleFormationScore
-includes 0..1 	NuclearPleomorphismScore
-includes 0..1 	MitoticCountScore
-0..0			PanelMembers					
+includes 0..1	CompleteMembraneStainingPercent
+0..0			PanelMembers
 
-//RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
-			Element:		TubuleFormationScore
-			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
-			Based on:		NonIndependentFinding
-			Description:	"Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham."
-			Value:			CodeableConcept from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
-							ExceptionValue from NottinghamComponentNullVS
+		Element:		CompleteMembraneStainingPercent
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		LNC#85328-3 "Cells.HER2 uniform intense membrane staining/100 cells"
+		Description:	"Percentage of cells with uniform intense complete membrane staining."
+// Awaiting bug fix
+//						FindingResult.Quantity.Units is UCUM#%
+		0..0			ReferenceRange
+//		0..0			Interpretation
 
-			Element:		NuclearPleomorphismScore
-			Concept:		LNC#44645-0
-			Based on:		NonIndependentFinding
-			Description:	"Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
-			Value:			CodeableConcept from NuclearPleomorphismScoreVS
-							ExceptionValue from NottinghamComponentNullVS
+EntryElement:	HER2byFISH
+Based on:		LaboratoryObservation
+Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
+Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
+0..0			FindingResult
+0..0			ExceptionValue
+				FindingTopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
+				FindingMethod from HER2FISHMethodVS // single or double probe
+				Interpretation from PositiveNegativeEquivocalVS
+				DiagnosticService is #pathology
+//0..0			Precondition
+				Specimen is type BreastSpecimen
+				NonIndependentFinding
+includes 0..1	AverageHER2SignalsPerCell
+includes 0..1	AverageCEP17SignalsPerCell
+includes 0..1	HER2toCEP17Ratio
+0..0			PanelMembers
 
-			Element:		MitoticCountScore
-			Concept:		LNC#85300-2
-			Based on:		NonIndependentFinding
-			Description:	"Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
-			Value:			CodeableConcept from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
-							ExceptionValue from MitoticCountScoreNullVS
+		Element:		AverageHER2SignalsPerCell
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		LNC#74860-8
+		Description:	"Average number of HER2 signals per cell"
+		0..0			ReferenceRange
+		
+		Element:		AverageCEP17SignalsPerCell
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		LNC#74861-6
+		Description:	"Average number CEP17 signals per cell (dual probe only)"
+		0..0			ReferenceRange
+		
+		Element:		HER2toCEP17Ratio
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		LNC#49683-6
+		Description:	"HER2 to CEP17 Ratio (dual probe only)"
+		0..0			ReferenceRange
 
 EntryElement:	EstrogenReceptorStatus
 Based on:		CodedLaboratoryObservation
 Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue"
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
-Value:			CodeableConcept from PositiveNegativeVS
 				FindingTopicCode is LNC#16112-5
+				FindingResult from PositiveNegativeVS
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen			
 				NonIndependentFinding
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 0..0			PanelMembers
-************* LEGACY END ************/
 
-/* additional components from CAP form
-includes 0..1	StainingControl
-includes 0..1	PrimaryAntibody //from EstrogenAntibodyVS if covered
-includes 0..1	AllredProportionScore
-includes 0..1	AllredIntensityScore
-includes 0..1	AllredTotalScore
-includes 0..1	OtherReceptorScoringSystem
-*/
-/************* LEGACY BEGIN ************
 EntryElement:	ProgesteroneReceptorStatus
 Based on:		CodedLaboratoryObservation
 Concept:		LNC#16113-3
 Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity. 
 Based on discussion with Cancer Interoperability Group subject matter experts, there was insufficient rationale to include the following components in the data model: StainingControl, PrimaryAntibody, Allred Score (both total and component scores). We are seeking feedback on whether or not those components should be included in this model."
-Value:			CodeableConcept from PositiveNegativeVS
 				FindingTopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
+				FindingResult from PositiveNegativeVS
 				DiagnosticService is #pathology	
 				Specimen is type BreastSpecimen			
 				NonIndependentFinding
@@ -198,96 +176,68 @@ includes 0..1	AverageStainingIntensity
 		Concept:		TBD  // apparently no LOINC code
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor.
 		We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
-		Value:			Range
+						FindingResult value is type Range
 
 		Element:		AverageStainingIntensity
 		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
-		Based on:		NonIndependentFinding
+		Based on:		CodedNonIndependentFinding
 		Description:	"The degree or magnitude of staining (nuclear positivity) across cells in the specimen."
-		Value:			CodeableConcept from StainingIntensityVS
+						FindingResult from StainingIntensityVS
 
-EntryElement:	HER2ReceptorStatus
-Based on:		CodedLaboratoryObservation
-Concept:		LNC#48676-1 "HER2 [Interpretation] in Tissue"
-Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
-Value:			CodeableConcept from PositiveNegativeEquivocalVS
-				FindingTopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
-				DiagnosticService is #pathology
+EntryElement:	DCISNuclearGrade
+Concept:		MTH#C18513  // What is the proper LOINC code?
+Based on: 		SimpleCodedLaboratoryObservation
+Description:	"An evaluation of the size and shape of the nucleus in tumor cells and the percentage of tumor cells that are in the process of dividing or growing. Cancers with low nuclear grade grow and spread less quickly than cancers with high nuclear grade."
+				FindingResult from NuclearGradeVS
 				Specimen is type BreastSpecimen
-0..0			Precondition
-0..0			FindingMethod
-0..0 			NonIndependentFinding
-				PanelMembers.Observation
-includes 0..*	HER2byIHC
-includes 0..*	HER2byFISH				
-				
-EntryElement:	HER2byIHC
-// MK 7/14/2018 separated null value from non-null values.
-Based on:		CodedLaboratoryObservation
-Concept:		LNC#85319-2
-Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
-Value:			CodeableConcept from HER2byIHCScoreVS
-				ExceptionValue from HER2byIHCScoreNullVS
-				Interpretation from PositiveNegativeEquivocalVS
-				FindingTopicCode is LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
-0..0			FindingMethod  // pre-coordinated in the FindingTopicCode
+				FindingTopicCode is MTH#C18513
 				DiagnosticService is #pathology
-0..0			Precondition
+
+EntryElement:	BreastCancerHistologicGrade
+Concept:		LNC#44648-4
+Based on:		CancerHistologicGrade
+Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
+				FindingTopicCode is LNC#44648-4
+				FindingResult from NottinghamCombinedGradeVS
+				ExceptionValue from NottinghamNullVS
 				Specimen is type BreastSpecimen
+				DiagnosticService is #pathology
 				NonIndependentFinding
-includes 0..1	CompleteMembraneStainingPercent
+includes 0..1 	TubuleFormationScore
+includes 0..1 	NuclearPleomorphismScore
+includes 0..1 	MitoticCountScore
 0..0			PanelMembers
 
-		Element:		CompleteMembraneStainingPercent
-		Based on:		NonIndependentFinding
-		Concept:		LNC#85328-3 "Cells.HER2 uniform intense membrane staining/100 cells"
-		Description:	"Percentage of cells with uniform intense complete membrane staining."
-		Value:			Quantity with units UCUM#%  // TODO: Percentage causes CLI error
-		0..0			ReferenceRange
-//		0..0			Interpretation
 
-EntryElement:	HER2byFISH
-Based on:		LaboratoryObservation
-Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
-Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
-0..0			Value
-0..0			ExceptionValue
-				FindingTopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
-				FindingMethod from HER2FISHMethodVS // single or double probe
-				Interpretation from PositiveNegativeEquivocalVS
-				DiagnosticService is #pathology
-0..0			Precondition
-				Specimen is type BreastSpecimen
-				NonIndependentFinding
-includes 0..1	AverageHER2SignalsPerCell
-includes 0..1	AverageCEP17SignalsPerCell
-includes 0..1	HER2toCEP17Ratio
-0..0			PanelMembers
+//RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
+			Element:		TubuleFormationScore
+			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
+			Based on:		CodedNonIndependentFinding
+			Description:	"Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham."
+							FindingResult from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
+							ExceptionValue from NottinghamComponentNullVS
 
-		Element:		AverageHER2SignalsPerCell
-		Based on:		NonIndependentFinding
-		Concept:		LNC#74860-8
-		Description:	"Average number of HER2 signals per cell"
-		0..0			ReferenceRange
-		
-		Element:		AverageCEP17SignalsPerCell
-		Based on:		NonIndependentFinding
-		Concept:		LNC#74861-6
-		Description:	"Average number CEP17 signals per cell (dual probe only)"
-		0..0			ReferenceRange
-		
-		Element:		HER2toCEP17Ratio
-		Based on:		NonIndependentFinding
-		Concept:		LNC#49683-6
-		Description:	"HER2 to CEP17 Ratio (dual probe only)"
-		0..0			ReferenceRange
-		
+			Element:		NuclearPleomorphismScore
+			Concept:		LNC#44645-0
+			Based on:		CodedNonIndependentFinding
+			Description:	"Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
+							FindingResult from NuclearPleomorphismScoreVS
+							ExceptionValue from NottinghamComponentNullVS
+
+			Element:		MitoticCountScore
+			Concept:		LNC#85300-2
+			Based on:		CodedNonIndependentFinding
+			Description:	"Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
+							FindingResult from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
+							ExceptionValue from MitoticCountScoreNullVS
+
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimpleLaboratoryObservation
 Concept:		MTH#C1709318
 Description:	"The Oncotype DX test for invasive breast cancer examines the activity of 21 genes in a patient’s breast tumor tissue to provide personalized information for tailoring treatment based on the biology of their individual disease. The value from 0 to 100 indicates the estimated risk of recurrence, with the highest risk indicated by a score greater than 31.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
-Value:			Quantity with units UCUM#1
+				FindingResult value is type Quantity 
+//				FindingResult.Quantity.Units is UCUM#1
 				FindingTopicCode is MTH#C1709318
 				Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
@@ -299,7 +249,8 @@ Based on:		SimpleLaboratoryObservation
 Concept:		MTH#C3898101
 Description:	"The Oncotype DX test for DCIS (Ductal Carcinoma in Situ) breast cancer. Risk scores range from 0 to 100 with the following interpretations: 0-38: Low-Risk, 39-54: Intermediate-Risk, 55+: High-Risk.
 No LOINC code currently exists for this test. We are seeking feedback on the value of separating OncotypeDx scores for DCIS and invasive breast carcinomas. Does it make more sense to report the OncotypeDx as a single score, regardless of the type of cancer?"
-Value:			Quantity with units UCUM#1
+				FindingResult value is type Quantity 
+//				FindingResult.Quantity.Units is UCUM#1
 				FindingTopicCode is MTH#C3898101
 				Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
@@ -310,7 +261,8 @@ Based on:		SimpleLaboratoryObservation
 Concept:		LNC#76544-6
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Prosigna.
 The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptor positive, early stage breast cancer."
-Value:			Quantity with units UCUM#1
+				FindingResult value is type Quantity 
+//				FindingResult.Quantity.Units is UCUM#1
 				FindingTopicCode is LNC#76544-6
 				Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
@@ -322,12 +274,14 @@ Concept:		MTH#C2827401
 Description:	"Breast cancer genomic signature assay for 10-year risk of distant recurrence score calculated by Mammaprint.
 In the United States, MammaPrint can only be used on cancers that are stage I or stage II, invasive, smaller than 5 centimeters, and estrogen-receptor-positive or -negative. Scores range from -1.0 to +1.0, with scores less than 0 indicating high risk, and scores greater than 0 indicating low risk.
 The is currently no LOINC code for Mammaprint test."
-Value:			Quantity
+				FindingResult value is type Quantity
 				FindingTopicCode is MTH#C2827401
 				Interpretation from RecurrenceRiskScoreInterpretationVS
 				DiagnosticService is #pathology
-				Specimen is type BreastSpecimen			 
+				Specimen is type BreastSpecimen	
 
+				
+/************* LEGACY BEGIN ************		 
 
 EntryElement:	DiseaseProgression
 Based on:		Observation
@@ -339,17 +293,47 @@ Value: 			CodeableConcept from ProgressionVS
 //    "ProgressionEvidence" is somewhat related to FindingMethod, which represents the test or procedure used to generate the result; it is typically a LOINC code (0..1)
 0..0			Specimen
 0..0			NonIndependentFinding
-0..0			Precondition
+//0..0			Precondition
 0..0			ReferenceRange  // applies to a quantitative measurement only			
 
 		Element:		ProgressionEvidence
 		Description:	"The type of evidence considered in determining disease progression."
 		Value:			CodeableConcept from ProgressionEvidenceVS	
 
+		Element:		BreastCancerPrimaryTumorClassification
+		Concept:		SCT#78873005 "T category"
+		Based on:		CodedNonIndependentFinding
+		Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
+		Value:			CodeableConcept
+		0..1			StageSuffix
+
+		Element:		BreastCancerRegionalNodesClassification
+		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
+		Based on:		NonIndependentFinding
+		Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
+		Value:			CodeableConcept
+		0..1			StageSuffix
+
+		Element:		BreastCancerDistantMetastasesClassification
+		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
+		Based on:		NonIndependentFinding
+		Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
+		Value:			CodeableConcept	
+
 ********** LEGACY END ************/
 
 
 /*	
+
+ additional components from CAP form
+includes 0..1	StainingControl
+includes 0..1	PrimaryAntibody //from EstrogenAntibodyVS if covered
+includes 0..1	AllredProportionScore
+includes 0..1	AllredIntensityScore
+includes 0..1	AllredTotalScore
+includes 0..1	OtherReceptorScoringSystem
+
+
 		Element:		Aneusomy
 		Based on:		NonIndependentFinding
 		Concept:		CAP#30478
@@ -374,7 +358,6 @@ Value: 			CodeableConcept from ProgressionVS
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
 	
-
 		Element:		PrimaryAntibody
 		Based on:		NonIndependentFinding
 		Concept:		CAP#31092
@@ -471,7 +454,6 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 		Value:			Quantity with units UCUM#%
 
-	
 
 	Element: 		Ki-67LabelingIndex
 	Based on:		SimpleCodedObservation		
@@ -498,7 +480,7 @@ Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			CodeableConcept from PositiveNegativeVS
 //				SpecificFocusOfFinding.CodeableConcept from GeneIdentifierVS
 				DiagnosticService is #genetics
-0..0			Precondition
+//0..0			Precondition
 0..0			ReferenceRange
 0..0			DeltaFlag
 0..0			AnatomicalLocationd
