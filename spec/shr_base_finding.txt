@@ -14,6 +14,7 @@ Description:		"A finding that does not or cannot stand alone, or a component of 
 1..1			FindingTopicCode  // Question, test name, or condition
 0..1			ExceptionValue
 0..1			ReferenceRange  // included here only because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
+// TODO:  0..1			Interpretation
 
 		Element:		FindingResult
 		Description:	"The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
@@ -359,13 +360,28 @@ Description:	"A finding that a condition is or was not present in the subject at
 0..*			AnatomicalLocation
 				
 EntryElement:	ClinicalNote
-Based on:		Finding
+Based on:		SimpleNonLaboratoryObservation
 Concept:		MTH#C0747978 "Progress Note"
-Description:	"An entry concerning a patient where the result is a narrative text."
-// 0..0			Value
+Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the FindingResult field, since this is the first place to look for a result that is a narrative."
+				FindingTopicCode is MTH#C0747978 "Progress Note"
+				FindingResult value is type string
 0..0			ReferenceRange
 1..1			Patient
-1..1			CommentOrDescription // make required
+//1..1			CommentOrDescription // put into FindingResult
+
+EntryElement:	QuestionAnswer
+Based on:		SimpleNonLaboratoryObservation
+Concept:		TBD
+Description:	"A simple question-answer pair. FindingTopicCode should contain the identifying code for the question, and the FindingResult the answer. FindingResult is not constrained because the answer could be a string, concept code, number, etc."
+0..0			ReferenceRange
+1..1			Patient
+0..1			QuestionText
+
+		Element:	QuestionText
+		Concept:	TBD
+		Description: "The text of the question as it should be asked or is phrased in questionnaire."
+		Value:		string
+
 
 Abstract Element:	RelationshipExistenceAssertion
 Based on:			ExistenceAssertion

@@ -1,0 +1,80 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.adverse
+Description:	"The CIMI Adverse domain contains definitions for describing adverse events and adverse reactions."
+Uses:  			shr.core, shr.base, shr.entity, shr.medication, shr.research
+
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
+
+
+// Adverse drug eactions are a subset of adverse events, and are specifically associated with an exposure to a substance
+
+
+Element:		AdverseEvent
+Based on:		InformationItem
+Description:	"A record of an untoward or unexpected event in a patient under treatment, and which does not necessarily have to have a causal relationship with that treatment. Adverse events may capture either a workflow breach that may or may not result in harm, but must be documented for quality improvement purposes, or an adverse finding whether or not it can be traceable to an actual workflow breach."
+//				SignedBy.Attribution.EntityOrRole is type PatientOrPractitionerOrRelatedPerson <--to facilitate mapping to FHIR, which only allows Patient, Practitioner, or RelatedPerson as recorder (note: CLI crashes if we write this as Signed.Value.EntityOrRole)
+1..1			Patient
+0..1			Type from MedDRAVS 
+1..1			OccurrenceTime
+1..1			Seriousness from SeriousnessVS  // to be replaced with http://hl7.org/fhir/ValueSet/adverse-event-seriousness in FHIR 4
+//0..1			TBD "PatternOfEvent"  // from STDM
+0..1			Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome
+0..1			CommentOrDescription
+0..*			Manifestation
+0..*			CausalAttribution
+0..*			ActionTaken
+0..1			AssociatedStudy
+
+	Element:		Seriousness
+	Concept:		MTH#C2985911
+	Description:	"A coded value specifying the level of injury suffered by the subject for whom the event is reported, using the CTCAE coding system."
+	Value:			CodeableConcept
+
+	Element:		Manifestation
+	Concept:		MTH#C1280464
+	Description:	"A sign or symptom of an underlying condition."
+	Value:			CodeableConcept from ManifestationVS
+	0..1			Severity    // OK as is, same values as http://hl7.org/fhir/ValueSet/reaction-event-severity
+
+	Element:		CausalAttribution
+	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
+	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
+	1..1			PossibleCause
+	1..1			CauseCategory 
+	1..1			Certainty
+	0..1			RouteIntoBody  // aka exposure route
+
+			Element:		PossibleCause
+			Concept:		TBD
+			Description:	"The possible cause of the adverse event."
+			Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(Medication) or ref(MedicationAdministered) or ref(MedicationStatement) or ref(Device)
+
+			Element:		CauseCategory
+			Concept:		TBD
+			Description:	"Whether the adverse event is attributed to a treatment, course of the disease, unrelated to either, or unknown. "
+			Value:			CodeableConcept from AttributionCategoryVS
+	
+	Element:		ActionTaken
+	Concept:		TBD
+	Description:	"The action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
+	1..1			CommentOrDescription
+	0..1			ref(ActionStatement)  // such as MedicationChangeStatement
+
+	Element:		AssociatedStudy
+	Description:	"The related clinical trial or other formal study."
+	Value:			ref(Study)
+
+// ***********NOT COMPLETE*************
+EntryElement:	AdverseDrugReaction
+Based on:		AdverseEvent
+Description:	"A noxious and unintended response to a medicinal product. To be considered an ADR, a causal relationship must be at least suspected by the medical practitioner. The principal difference between an adverse drug reaction (ADR) an adverse event (AE) and is that a causal relationship is suspected for the ADR, but is not required for the AE. Adverse drug reactions are therefore a subset of adverse event reports."
+//1..*			CausalAttribution
+//				CausalAttribution.PossibleCause value is type ref(Medication) or ref(MedicationAdministered) or ref(MedicationStatement)
+
+
+EntryElement:	ToxicAdversedDrugReaction 
+// In truth, this should be a filter on AdverseReaction, not a separate class
+Based on:		AdverseDrugReaction
+Concept:		MTH#C0542243
+Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."
+				Seriousness from ToxicSeriousnessVS			

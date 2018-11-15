@@ -1,0 +1,79 @@
+Grammar:		DataElement 5.0
+Namespace:		tumor
+Description:	"SHR implementation of ASCO requirements."
+Uses:  			shr.core, shr.base, shr.entity, mcode
+
+
+EntryElement: 	TumorDimensions
+Based on:		CodedLaboratoryObservation
+Concept:		SCT#263605001 "Tumor size (observable entity)"
+0..0			FindingResult
+//            SpecificFocusOfFinding value is type TumorPresent
+				FindingTopicCode is SCT#263605001 "Tumor size (observable entity)"
+0..0            PanelMembers
+				NonIndependentFinding
+includes 0..1	TumorDimension1
+includes 0..1	TumorDimension2
+includes 0..1   TumorDimension3
+includes 0..1	SizeOfGrossTumorBed
+
+		Element:		TumorDimension1
+		Description:	"The longest dimension of the tumor."
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		SCT#372299002 "Tumor size, dimension 1 (observable entity)"
+                        FindingTopicCode is SCT#372299002 "Tumor size, dimension 1 (observable entity)"
+//		                FindingResult.Quantity.Units is UCUM#mm		
+		
+		Element:		TumorDimension2
+		Description:	"The second longest dimension of the tumor, perpendicular to the longest dimension."
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+                        FindingTopicCode is SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+//		                FindingResult.Quantity.Units is UCUM#mm	
+
+		Element:		TumorDimension3
+		Description:	"The third longest dimension of the tumor, perpendicular to the two longest dimensions."
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+                        FindingTopicCode is SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+//		                FindingResult.Quantity.Units is UCUM#mm	
+
+		Element:		SizeOfGrossTumorBed
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		TBD
+		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
+                        FindingTopicCode is TBD#TBD
+//		                FindingResult.Quantity.Units is UCUM#mm	
+
+
+EntryElement: 	TumorMargins
+Based on:		CodedLaboratoryObservation
+Concept:		MTH#C4086369
+Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+                FindingResult from PositiveNegativeVS
+				FindingTopicCode is MTH#C4086369
+				DiagnosticService is #pathology
+0..0            PanelMembers
+				NonIndependentFinding
+includes 0..1	TumorMarginDescription
+includes 0..1	Cellularity   // not sure this belongs here
+includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
+// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
+
+		Element:		TumorMarginDescription
+		Concept:		TBD
+		Based on:		CodedNonIndependentFinding
+		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+		                FindingResult from TumorMarginDescriptionVS
+
+		Element:		Cellularity
+		Concept:		MTH#C4055283
+		Based on:		QuantitativeNonIndependentFinding
+		Description:	"Percentage of cells in a sample that are cancerous"
+	//		            FindingResult.Quantity.Units is UCUM#%
+
+		Element:		PercentageInSituCarcinoma
+		Based on:		QuantitativeNonIndependentFinding
+		Concept:		TBD
+		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+	//		            FindingResult.Quantity.Units is UCUM#%
