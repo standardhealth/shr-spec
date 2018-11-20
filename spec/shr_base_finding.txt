@@ -100,7 +100,7 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 //				FindingStatus value is type code 
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			DeltaFlag
-0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			AnatomicalLocation
 0..1			CommentOrDescription	
 0..1			Interpretation
@@ -115,11 +115,6 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
 		1..1			ref(EntityOrRole) 
 		0..1			RelationshipToPersonOfRecord
-
-			Element:		RelationshipToPersonOfRecord
-			Concept:		MTH#C0015608
-			Description: 	"The relationship to the person of record."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype if covered
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -189,7 +184,7 @@ EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
 				FindingTopicCode from LaboratoryCodeVS if covered
-1..*			Category
+1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 1..1			Specimen
 0..0			AnatomicalLocation  // Location is determined indirectly from Specimen.CollectionSite
@@ -273,7 +268,7 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 1..1			Patient
 0..0			SpecificFocusOfFinding  // always the patient?
 0..1			FindingMethod
-1..*			Category from ConditionCategoryVS
+1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			AnatomicalLocation
 //0..*			ConditionCause  MK - reduce clutter
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical

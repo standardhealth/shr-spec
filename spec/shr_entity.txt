@@ -73,7 +73,7 @@ Description:	"A person who practices a healing art."
 	Description:	"A right to practice medicine obtained by training and certification."
 	1..1			Type from http://hl7.org/fhir/ValueSet/c80-practice-codes
 	0..1			EffectiveTimePeriod
-	0..1			Issuer
+	0..1			ref(Issuer)
 // or http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
 
@@ -83,6 +83,12 @@ Description:	"A person in a role defined in relationship to a patient"
 0..1			ref(Person)
 0..1			RelationshipToPersonOfRecord
 0..1			EffectiveTimePeriod
+1..1			Person.HumanName   // DSTU 2 change (max cardinality of 1 imposed by DSTU 2)
+
+			Element:		RelationshipToPersonOfRecord
+			Concept:		MTH#C0015608
+			Description: 	"The relationship to the person of record."
+			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype // DSTU 2 change -- change from extensible to required since this value set is required in DSTU 2
 
 Element:		PatientOrPractitioner
 Based on:		EntityOrRole
@@ -148,12 +154,17 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 	Description:	"A person or entity in a group."
 	1..1		Member
 	0..1		ParticipationPeriod
-	1..1		ActiveFlag
+	1..1		InactiveFlag
 
 		Element:		Member
 		Concept:		TBD
 		Description:	"A person or entity in a group."
 		Value:			ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance)
+
+		Element:		InactiveFlag
+		Concept:		TBD
+		Description:	"Indicates if the member is inactive in the context of the group."
+		Value:			boolean
 
 
 EntryElement:	Facility
@@ -165,7 +176,7 @@ Description:	"Services and space and equipment provided for a particular purpose
 1..1			Location
 0..1			MobileFacility
 0..1			ContactPoint
-1..1			ManagingOrganization
+1..1			ref(ManagingOrganization)
 
 	Element:		FacilityName
 	Concept:		MTH#C3261404
@@ -287,16 +298,16 @@ Description:	"A person relevant to the health or social situation of the subject
 0..1			DateOfBirth
 1..1			AdministrativeGender
 0..*			Address
-0..*			Headshot
+0..*			Photo
 0..*			ContactPoint
 0..*			LanguageUsed
 0..1			ActiveFlag
-0..1		 	MaritalStatus
+0..1		 	MaritalStatus 
 //0..1			PlaceOfBirth
 //0..1			MultipleBirth
-//0..1			BirthSex
-//0..1		 	Race
-//0..1		 	Ethnicity
+0..1			BirthSex
+0..1		 	Race
+0..1		 	Ethnicity
 //0..1			MothersMaidenName
 //0..1			FathersName
 //0..1			SocialSecurityNumber
@@ -425,7 +436,7 @@ Description:	"A person relevant to the health or social situation of the subject
 	Element:   		MaritalStatus
 	Concept:		MTH#C0024819
 	Description:	"The most recent marital status of a person."
-	Value:			CodeableConcept from FHIR/marital-status if covered
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/marital-status // if covered  // DSTU 2 change -- MaritalStatus has a required binding in Argonaut
 
 	Element:		AnonymizedFlag
 	Concept:		MTH#C3858751
@@ -447,7 +458,7 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
 	Value:          CodeableConcept from http://hl7.org/fhir/ValueSet/administrative-gender
 
-	Element:		Headshot
+	Element:		Photo
 	Concept:		TBD
 	Description:	"A photograph showing a person's face."
 	Value:			Media
@@ -537,7 +548,7 @@ Element:		Device
 Based on:		Entity
 Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients."
 1..1			Type from DeviceVS   // currently (4/2018) called 'key' in CIMI 
-0..*			DeviceUdi
+1..1			DeviceUdi  // DSTU 2 change -- Argonaut requires 1..1 Udi (see http://build.fhir.org/ig/Healthedata1/Argo-DSTU2/StructureDefinition-argo-device.html)
 0..1 			VendorModelNumber  // called 'model' in CIMI
 0..1 			ManufacturerName // string, not ref(Organization) - only because of mapping to FHIR
 0..1			ManufactureDate
