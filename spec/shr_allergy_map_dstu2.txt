@@ -3,19 +3,19 @@ Namespace:	shr.allergy
 Target:		FHIR_DSTU_2
 
 
-AllergyIntolerance maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance:
+AllergyIntolerance maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-allergyintolerance:
 //	PersonOfRecord maps to patient
 //	SourceOfInformation.Value maps to asserter 
 //	Signed.Value.EntityOrRole maps to recorder 
-	_Entry.CreationTime maps to assertedDate
-	FindingResult maps to code
+	_Entry.CreationTime maps to recordedDate
+	FindingResult maps to substance
 	AllergyIntoleranceType maps to type
 	SubstanceCategory maps to category
-	FindingStatus maps to verificationStatus
-	ClinicalStatus maps to clinicalStatus
+//	FindingStatus maps to verificationStatus  // DSTU 2 change (FindingStatus and ClinicalStatus map to one DSTU 2 attribute, status)
+//	ClinicalStatus maps to status
 	Criticality maps to criticality
-	Onset maps to onset[x]
-	MostRecentOccurrenceTime maps to lastOccurrence
+	Onset maps to onset  // DSTU 2 change (onset only dateTime, not a choice [x])
+	MostRecentOccurrenceTime maps to lastOccurence  // DSTU 2 change (attribute name spelling error was corrected in STU 3)
 	AllergyIntoleranceReaction.SubstanceCode maps to reaction.substance
 	AllergyIntoleranceReaction.Manifestation maps to reaction.manifestation
 	AllergyIntoleranceReaction.BeginDateTime maps to reaction.onset
@@ -24,7 +24,7 @@ AllergyIntolerance maps to http://hl7.org/fhir/us/core/StructureDefinition/us-co
 	AllergyIntoleranceReaction.CommentOrDescription maps to reaction.description
 
 /*
-NoAdverseSensitivityToSubstance maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance:
+NoAdverseSensitivityToSubstance maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-allergyintolerance:
 //	PersonOfRecord maps to patient
 //	SourceOfInformation.Value maps to asserter
 //	Signed.Value.EntityOrRole maps to recorder
@@ -38,7 +38,7 @@ NoAdverseSensitivityToSubstance maps to http://hl7.org/fhir/us/core/StructureDef
 	constrain lastOccurrence to 0..0
 	constrain reaction to 0..0
 		
-NoKnownAllergy maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance:
+NoKnownAllergy maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-allergyintolerance:
 constrain clinicalStatus to 0..0
 constrain criticality to 0..0
 	fix code to SCT#716186003
