@@ -69,7 +69,7 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 
 		Element:		SpecificFocusOfFinding
 		Description:	"The specific observed item finding relates to, for example, a related person or condition. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. It should not be an anatomical location. The focus for cancer progression would be the cancer condition. If the property is wound length, the focus would be an instance of a wound. In the case of an assertion of existence, the focus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		Value:			ref(InformationItem) // or CodeableConcept or string or CodeableConcept or Identifier 
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -247,7 +247,7 @@ Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
 // TODO: Not sure we should have to say .CodeableConcept for the constraint below to work (currently causes error)
-					FindingResult.CodeableConcept is SCT#52101004 "Present (qualifier value)"
+1..1				FindingResult.CodeableConcept is SCT#52101004 "Present (qualifier value)"
 0..0				ExceptionValue	
 0..1				Certainty from PresenceCertaintyVS
 
@@ -255,7 +255,7 @@ Description:		"Finding that a phenomena is present."
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
-					FindingResult.CodeableConcept is SCT#2667000 "Absent (qualifier value)"
+1..1				FindingResult.CodeableConcept is SCT#2667000 "Absent (qualifier value)"
 0..0				ExceptionValue		
 0..1				Certainty from AbsenceCertaintyVS
 
@@ -266,7 +266,7 @@ Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
 1..1			Patient
-0..0			SpecificFocusOfFinding  // always the patient?
+0..0			SpecificFocusOfFinding  // maybe a family member?
 0..1			FindingMethod
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			AnatomicalLocation
