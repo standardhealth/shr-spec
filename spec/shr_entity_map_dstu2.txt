@@ -1,0 +1,145 @@
+Grammar:	Map 5.1
+Namespace:	shr.entity
+Target:		FHIR_DSTU_2
+
+Patient maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-patient: // dstu 2 change (different mapping target)
+	Person.ActiveFlag maps to active
+	Person.HumanName maps to name
+	Person.AdministrativeGender maps to gender
+	Person.Photo maps to photo
+	Person.Address maps to address
+	Person.ContactPoint maps to telecom
+	Person.LanguageUsed.Language maps to communication
+	Person.DateOfBirth maps to birthDate
+	Person.MaritalStatus maps to maritalStatus
+//	PlaceOfBirth maps to http://hl7.org/fhir/StructureDefinition/birthPlace
+//	MultipleBirthInformation.IsMultipleBirth maps to multipleBirth[x].boolean
+//	MultipleBirthInformation.MultipleBirthOrder maps to multipleBirth[x].integer
+	Person.BirthSex maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex
+	Person.Race maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-race
+	Person.Ethnicity maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity
+//	MothersMaidenName maps to http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName
+//	MedicalInterpreterNeeded maps to http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired
+//	Deceased maps to deceased[x].boolean
+//	Deceased.DateOfDeath maps to deceased[x].dateTime
+
+Practitioner maps to Practitioner:  // dstu 2 change (different mapping target)
+	Person.ActiveFlag maps to active
+	Person.HumanName maps to name
+	Person.AdministrativeGender maps to gender
+	Person.Photo maps to photo
+	Person.Address maps to address
+	Person.ContactPoint maps to telecom
+	Person.LanguageUsed.Language maps to communication
+	NationalProviderIdentifier maps to identifier
+	Qualification maps to qualification
+	Qualification.Type maps to qualification.code
+	Qualification.EffectiveTimePeriod maps to qualification.period
+	Qualification.Issuer maps to qualification.issuer
+	
+RelatedPerson maps to RelatedPerson:
+//	Person.ActiveFlag maps to active   // dstu 2 change (no such attribute)
+	Person.HumanName maps to name
+	Person.DateOfBirth maps to birthDate
+	Person.AdministrativeGender maps to gender
+	Person.Address maps to address
+	Person.Photo maps to photo
+	Person.ContactPoint maps to telecom
+	RelationshipToPersonOfRecord maps to relationship
+	EffectiveTimePeriod maps to period
+	
+Organization maps to Organization:
+	OrganizationName maps to name
+//	OrganizationAlias maps to alias    // dstu 2 change (no such attribute)
+	Type maps to type
+	OrganizationIdentifier maps to identifier
+	Address maps to address
+	ContactPoint maps to telecom
+	constrain contact to 0..0
+	ActiveFlag maps to active
+	PartOf maps to partOf
+
+Group maps to Group:
+//	ActiveFlag maps to active  // dstu 2 change (no such attribute)
+	Type maps to type
+	Actual maps to actual
+	constrain code to 0..0   // why?
+	Title maps to name
+	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]
+	GroupCharacteristic.GroupCharacteristicCode maps to characteristic.code
+	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
+	GroupCharacteristic.TimePeriod maps to characteristic.period
+	MemberParticipation.Member maps to member.entity
+	MemberParticipation.ParticipationPeriod maps to member.period
+	MemberParticipation.InactiveFlag maps to member.inactive
+	Count maps to quantity
+	
+Facility maps to Location:
+	FacilityName maps to name
+	Location[Address] maps to address
+	Location[Geoposition].Latitude maps to position.latitude
+	Location[Geoposition].Longitude maps to position.longitude
+	Location[Geoposition].Altitude maps to position.altitude
+	ContactPoint maps to telecom
+	ManagingOrganization maps to managingOrganization
+	Type maps to type
+
+Substance maps to Substance:
+	Type maps to code
+	Ingredient maps to ingredient
+	Ingredient.IngredientAmount maps to ingredient.quantity
+	Ingredient.SubstanceOrCode[Substance] maps to ingredient.substance
+
+Medication maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medication:
+	Type maps to code
+	// dstu 2 change (different attribute)
+	DoseForm maps to product.form  
+	// dstu 2 change (different attribute)
+	Ingredient.SubstanceOrCode maps to product.ingredient.item
+	// dstu 2 change (different attribute)  
+	Ingredient.IngredientAmount maps to product.ingredient.amount 
+	// dstu 2 change (no such attribute)  
+	//	Ingredient.IsActiveIngredient maps to ingredient.isActive   
+	Brand.IsBrand maps to isBrand
+	// dstu 2 change (no such attribute)
+	//	OverTheCounter maps to isOverTheCounter
+	Manufacturer maps to manufacturer
+	// dstu 2 change (different attribute)
+	constrain product.batch to 0..1 
+	// dstu 2 change (different attribute)
+	LotNumber maps to product.batch.lotNumber  
+	// dstu 2 change (different attribute)
+	ExpirationDate maps to product.batch.expirationDate   
+	Package maps to package.container
+	
+Specimen maps to Specimen:
+	AccessionIdentifier maps to accessionIdentifier
+	SpecimenStatus maps to status
+	Type maps to type
+	CollectionSource maps to subject
+	SourceSpecimen maps to parent
+	ReceivedTime maps to receivedTime
+//	SpecimenCollectionPerformed.AmountOrSize maps to collection.quantity
+//	SpecimenCollectionPerformed.BodySite maps to collection.bodySite
+//	SpecimenCollectionPerformed.OccurrenceTimeOrPeriod maps to collection.collected[x]
+//	SpecimenCollectionPerformed.Participation.Participant maps to collection.collector
+//	SpecimenCollectionPerformed.Method maps to collection.method
+//	SpecimenCollectionPerformed.RelatedRequest.Value maps to request
+	SpecimenContainer.Identifier maps to container.identifier
+	SpecimenContainer.CommentOrDescription maps to container.description
+	SpecimenContainer.Type maps to container.type
+	SpecimenContainer.Capacity maps to container.capacity
+	SpecimenContainer.SpecimenQuantity maps to container.specimenQuantity
+	SpecimenContainer.Additive maps to container.additive[x]
+
+Device maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-device:
+	Type maps to type
+	// dstu 2 change (different attribute)	
+	DeviceUdi maps to udi 
+	VendorModelNumber maps to model
+	ManufacturerName maps to manufacturer
+	ManufactureDate maps to manufactureDate
+	// dstu 2 change (different attribute)
+	ExpirationDate maps to expiry  
+	Version maps to version
+	Url maps to url

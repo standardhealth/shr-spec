@@ -1,6 +1,6 @@
 Grammar:	Map 5.1
 Namespace:	shr.core
-Target:		FHIR_STU_3
+Target:		FHIR_DSTU_2
 
 
 // Code types map direction to FHIR
@@ -21,9 +21,8 @@ Quantity maps to Quantity:
 	Units.Coding.DisplayText maps to unit
 	Comparator maps to comparator
 	
-SimpleQuantity maps to SimpleQuantity:
-
 // The following are profiles on Quantity; no additional attributes are defined in SHR
+SimpleQuantity maps to SimpleQuantity:
 Age maps to Age:
 IntegerQuantity maps to Count:
 Distance maps to Distance:
@@ -31,7 +30,7 @@ Duration maps to Duration:
 Money maps to Money:
 
 Address maps to Address:
-	Purpose.Coding.Code maps to use
+	Purpose maps to use
 	Type maps to type
 	DisplayText maps to text
 	AddressLine maps to line
@@ -48,29 +47,33 @@ HumanName maps to HumanName:
 	GivenName maps to given
 	FamilyName maps to family
 	Suffix maps to suffix
-	Purpose.Coding.Code maps to use
+	Purpose maps to use
 	EffectiveTimePeriod maps to period
 
 TimePeriod maps to Period:
-	TimePeriodStart maps to start
-	TimePeriodEnd maps to end
+	BeginDateTime maps to start
+	EndDateTime maps to end
 
-Geoposition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-location:
+// dstu 2 change (different mapping target)
+Geoposition maps to Location:  
 	constrain position to 1..1
 	Latitude maps to position.latitude
 	Longitude maps to position.longitude
 	Altitude maps to position.altitude
-	
+
+
 ContactPoint maps to ContactPoint:
 	TelecomNumberOrAddress maps to value
 	Type maps to system
-	Purpose.Coding.Code maps to use
+	Purpose maps to use
 	PriorityRank maps to rank
 	EffectiveTimePeriod maps to period	
-	
+
+/*  dstu 2 change (no suitable target)
 ContactDetail maps to ContactDetail:
 	HumanName.NameAsText maps to name
 	ContactPoint maps to telecom
+*/
 
 Range maps to Range:
  	LowerBound maps to low
@@ -85,14 +88,15 @@ Timing maps to Timing:
 	TimingCode maps to code
 	EventDuration.DurationRange.LowerBound.SimpleQuantity.Number maps to repeat.duration
 	EventDuration.DurationRange.UpperBound.SimpleQuantity.Number maps to repeat.durationMax
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.Code maps to repeat.durationUnit
+	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.Code maps to repeat.durationUnits // dstu 2 change (attribute name)
 	RecurrencePattern.RecurrenceInterval.Duration.Number maps to repeat.period
-	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.Code maps to repeat.periodUnit
-	constrain repeat.periodMax to 0..0
-	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek
-	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay
+	// dstu 2 change (attribute name)
+	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.Code maps to repeat.periodUnits 
+	constrain repeat.periodMax to 0..0   // TODO: why?
+//	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek // dstu 2 change (no such attribute)
+//	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay // dstu 2 change (no such attribute)
 	RecurrencePattern.DailyLifeEvent maps to repeat.when
-	RecurrencePattern.LifeEventOffset maps to repeat.offset
+//	RecurrencePattern.LifeEventOffset maps to repeat.offset  // dstu 2 change (no such attribute)
 	RecurrencePattern.CountPerInterval.MinCount maps to repeat.frequency
 	RecurrencePattern.CountPerInterval.MaxCount maps to repeat.frequencyMax
 	
@@ -115,11 +119,14 @@ Media maps to Attachment:
 	Title maps to title
 	CreationTime maps to creation
 
-	// Note that AnatomicalLocationStructured does not have a patient, whereas FHIR BodySite (BodyStructure in r4) does. From FHIR 3.5 documentation: "The BodyStructure resource is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient."
+	// Note that AnatomicalLocationStructured does not have a patient, whereas FHIR BodySite does (and it is required!). From FHIR 3.5 documentation: "The BodyStructure resource is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient."  Note that BodySite is renamed BodyStructure in r4.
+
 AnatomicalLocationStructured maps to BodySite:
 	AnatomicalLocationOrLandmarkCode maps to code
-	Laterality maps to qualifier (slice on = coding.code)
-	AnatomicalDirection maps to qualifier
+	// dstu 2 change (attribute name)
+	Laterality maps to modifier (slice on = coding.code)  
+	// dstu 2 change (attribute name)
+	AnatomicalDirection maps to modifier      
 	CommentOrDescription maps to description
 	Media maps to image
 
@@ -130,7 +137,7 @@ Annotation maps to Annotation:
 	
 Identifier maps to Identifier:
 	Text maps to value
-	Purpose.Coding.Code maps to use
+	Purpose maps to use
 	Type maps to type
 	CodeSystem maps to system 
 	EffectiveTimePeriod maps to period
@@ -140,6 +147,7 @@ Signature maps to Signature:
 	SignatureType maps to type
 	CreationTime maps to when
 	Signatory maps to who[x]
-	OnBehalfOf maps to onBehalfOf[x]
+// dstu 2 change (no such attribute)
+//	OnBehalfOf maps to onBehalfOf[x]    
 	ContentType maps to contentType
 	BinaryData maps to blob		

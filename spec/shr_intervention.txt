@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
-Namespace:		mcode
+Namespace:		oncocore
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.entity, shr.medication, shr.composition, shr.procedure
+Uses:  			shr.core, shr.base, shr.entity, shr.medication, shr.procedure
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -17,18 +17,17 @@ EntryElement:   CourseOfTreatmentPerformed
 Based on:       ProcedurePerformed  // mlt: questionable to call CourseOfTreatment a procedure. It is modeled as a series of activities including medications administered and procedures.
 Description:    "A series of coordinated treatment actions taken with a certain treatment intention."
 Concept:        SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)"  
-//                ProcedureCode from ???? if covered 
-                0..1    TreatmentIntent
-                0..1    LineOfTherapy
-//                0..*    ActionPerformed       // mlt: removed and made more explicit. ActionPerformed is too abstract and appears mapped to DomainResource in the FHIR IG.  There is no explicit reference to any of the treatment types which would have made this difficult to implement.
-                0..*    MedicationStatement     // mlt: to cover patient-asserted medications taken at home.
-                0..*    MedicationAdministered  // mlt: to cover clinician-administered meds in a clinical setting.
-                0..*    SurgicalProcedurePerformed
-                0..*    RadiationTreatmentPerformed
-                0..*	AnatomicalLocation  // anatomical location is given in the individual actions
-                0..0    Device
-                0..0    Location
-
+                ProcedureCode is SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure)"  
+        0..1    TreatmentIntent
+        0..1    LineOfTherapy
+        0..*    MedicationStatement     // mlt: to cover patient-asserted medications taken at home.
+        0..*    MedicationAdministered  // mlt: to cover clinician-administered meds in a clinical setting.
+        0..*    SurgicalProcedurePerformed
+        0..*    RadiationTreatmentPerformed
+        0..*	AnatomicalLocation  // anatomical location is given in the individual actions
+        0..0    Device
+        0..0    Location
+        0..0    Method
 
         Element:        TreatmentIntent
         Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
@@ -37,7 +36,7 @@ Concept:        SCT#108290001 "Radiation oncology AND/OR radiotherapy (procedure
 
         Element:        LineOfTherapy
         Description:	"The sequence of therapies administered to a patient."
-        Concept:	MTH#C133518 "Line of Therapy"		// TODO: Need new LOINC and SNOMED codes
+        Concept:	    MTH#C133518 "Line of Therapy"		// TODO: Need new LOINC and SNOMED codes
         Value:          CodeableConcept from LineOfTherapyVS
 
 

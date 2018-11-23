@@ -20,7 +20,7 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 //0..1			TBD "PatternOfEvent"  // from STDM
 0..1			Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome
 0..1			CommentOrDescription
-0..*			Manifestation
+0..*			AdverseEventCondition
 0..*			CausalAttribution
 0..*			ActionTaken
 0..1			AssociatedStudy
@@ -30,11 +30,10 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 	Description:	"A coded value specifying the level of injury suffered by the subject for whom the event is reported, using the CTCAE coding system."
 	Value:			CodeableConcept
 
-	Element:		Manifestation
+	Element:		AdverseEventCondition
 	Concept:		MTH#C1280464
-	Description:	"A sign or symptom of an underlying condition."
-	Value:			CodeableConcept from ManifestationVS
-	0..1			Severity    // OK as is, same values as http://hl7.org/fhir/ValueSet/reaction-event-severity
+	Description:	"The condition, sign or symptom triggering the adverse event report."
+	1..1			ref(ConditionPresentAssertion)
 
 	Element:		CausalAttribution
 	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or ProcedurePerformed"
@@ -64,16 +63,20 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 	Description:	"The related clinical trial or other formal study."
 	Value:			ref(Study)
 
-// ***********NOT COMPLETE*************
 EntryElement:	AdverseDrugReaction
 Based on:		AdverseEvent
 Description:	"A noxious and unintended response to a medicinal product. To be considered an ADR, a causal relationship must be at least suspected by the medical practitioner. The principal difference between an adverse drug reaction (ADR) an adverse event (AE) and is that a causal relationship is suspected for the ADR, but is not required for the AE. Adverse drug reactions are therefore a subset of adverse event reports."
-//1..*			CausalAttribution
-//				CausalAttribution.PossibleCause value is type ref(Medication) or ref(MedicationAdministered) or ref(MedicationStatement)
+1..*			CausalAttribution
+				CausalAttribution.PossibleCause is type PossibleDrugCause
 
+			Element:		PossibleDrugCause
+			Based on:		PossibleCause
+			Concept:		TBD
+			Description:	"Drug suspected as possible cause of the adverse event."
+			Value:			ref(Medication) or ref(MedicationAdministered) or ref(MedicationStatement)
 
-EntryElement:	ToxicAdversedDrugReaction 
-// In truth, this should be a filter on AdverseReaction, not a separate class
+// In truth, this should be a filter on AdverseDrugReaction, not a separate class
+EntryElement:	ToxicAdverseDrugReaction
 Based on:		AdverseDrugReaction
 Concept:		MTH#C0542243
 Description:	"A grade 3 or 4 adverse reaction to medication, radiation treatment, or other therapy."

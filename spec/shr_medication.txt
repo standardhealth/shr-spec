@@ -74,7 +74,7 @@ Description:	"A record of the use of a medication. If the medication is given as
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
 				Status from http://hl7.org/fhir/ValueSet/medication-statement-status
 0..0			Method // because of Dosage.Method				
-
+0..1			Reason // DSTU 2 change (upper card imposed by DSTU 2)
 
 EntryElement:	MedicationAdministered
 Based on:		ActionPerformed
@@ -86,7 +86,8 @@ Description:	"A record of the use of a medication. If the medication is given as
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
 				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..0			Method // because of Dosage.Method
-				Participation.Participant is type FHIRMedicationAdministrationParticipant
+0..1			Participation
+				Participation.Participant is type FHIRMedicationAdministrationParticipant  //  DSTU 2 change (max cardinality = 1)
 0..0			Participation.ParticipationType				
 				RelatedRequest value is type ref(MedicationRequested)		
 		
@@ -103,7 +104,7 @@ Description:	"Information on the ability and cooperation of the patient in takin
 Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time."
 				FindingResult from QualitativeFrequencyVS
 				FindingTopicCode is MTH#C2364172
-1..1			SpecificFocusOfFinding  // TODO: constrain type!
+1..1			SpecificFocusOfFinding value is type ref(Medication)
 				NonIndependentFinding
 includes 		0..* MedicationNonAdherenceReason
 
@@ -125,7 +126,7 @@ EntryElement:	MedicationRequested
 Based on:		ActionRequested
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
-				Status from http://hl7.org/fhir/ValueSet/medication-request-status
+				Status //from http://hl7.org/fhir/ValueSet/medication-request-status  DSTU 2 change (incompatible required value sets)
 				PriorityRank from http://hl7.org/fhir/ValueSet/medication-request-priority
 1..1			Medication
 0..1			Dosage
@@ -133,6 +134,7 @@ Description:	"An order for a medication to be dispensed and instructions for use
 0..1			QuantityPerDispense
 0..1			SupplyDuration
 0..1			SubstitutionAllowed
+0..1			Reason // DSTU 2 change (upper cardinality of 1 imposed by DSTU 2)
 
 	Element:		NumberOfRefillsAllowed
 	Concept:		TBD

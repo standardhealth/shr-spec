@@ -22,7 +22,7 @@ Description:	"A procedure that has been performed."
 0..*			ref(Device)
 0..1			Location
 				Participation.OnBehalfOf value is type ref(Organization)
-				Status must be from http://hl7.org/fhir/ValueSet/event-status
+				Status // must be from http://hl7.org/fhir/ValueSet/event-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant is type FHIRProcedureParticipant
 				RelatedRequest value is type ref(ProcedureRequested)
@@ -59,13 +59,13 @@ Based on:		ActionNotPerformed
 //0..1			PartOf value is type ref(ProcedurePerformed) ???
 0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
-1..1			Status must be from http://hl7.org/fhir/ValueSet/event-status
+1..1			Status // must be from http://hl7.org/fhir/ValueSet/event-status  // DSTU 2 change (different required value sets in v2 and v3)
 				RelatedRequest value is type ref(ProcedureRequested)
 
 EntryElement:	ProcedureRequested
 Based on:		ActionRequested
-				PriorityRank must be from http://hl7.org/fhir/ValueSet/request-priority  // required
-				Status must be from http://hl7.org/fhir/ValueSet/request-status
+				PriorityRank // must be from http://hl7.org/fhir/ValueSet/request-priority // DSTU 2 change (different required value sets in v2 and v3)
+				Status // must be from http://hl7.org/fhir/ValueSet/request-status  // DSTU 2 change(different required value sets in v2 and v3)
 1..1			ProcedureCode from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			AnatomicalLocation
 0..1			PartOf value is type ref(ProcedurePerformed)
@@ -191,6 +191,6 @@ EntryElement:   DiagnosticImagingPerformed
 Based on:       ProcedurePerformed
 Description:    "Diagnostic imaging procedure performed."
 Concept:        SCT#363679005 "Imaging (procedure)"  
-//              SpecificFocusOfFinding value is type Patient
+0..0            SpecificFocusOfFinding
                 ProcedureCode from DiagnosticImagingVS
  

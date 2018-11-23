@@ -69,7 +69,7 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 
 		Element:		SpecificFocusOfFinding
 		Description:	"The specific observed item finding relates to, for example, a related person or condition. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. It should not be an anatomical location. The focus for cancer progression would be the cancer condition. If the property is wound length, the focus would be an instance of a wound. In the case of an assertion of existence, the focus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
-		Value:			string or CodeableConcept or Identifier or ref(InformationItem)
+		Value:			ref(InformationItem) // or CodeableConcept or string or CodeableConcept or Identifier 
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -85,7 +85,7 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 		Element:		FindingStatus
 		Concept:		TBD
 		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
-		Value:			code or CodeableConcept
+		Value:			CodeableConcept
 
 EntryElement:	Observation
 Based on:		Finding
@@ -97,10 +97,10 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 0..1			FindingMethod
 0..1			RelevantTime
 0..*			NonIndependentFinding
-				FindingStatus value is type code 
+//				FindingStatus value is type code 
 				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			DeltaFlag
-0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered
+0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			AnatomicalLocation
 0..1			CommentOrDescription	
 0..1			Interpretation
@@ -115,11 +115,6 @@ For an Observation, the FindingTopicCode describes the aspect or property of the
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
 		1..1			ref(EntityOrRole) 
 		0..1			RelationshipToPersonOfRecord
-
-			Element:		RelationshipToPersonOfRecord
-			Concept:		MTH#C0015608
-			Description: 	"The relationship to the person of record."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype if covered
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -189,7 +184,7 @@ EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
 				FindingTopicCode from LaboratoryCodeVS if covered
-1..*			Category
+1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 1..1			Specimen
 0..0			AnatomicalLocation  // Location is determined indirectly from Specimen.CollectionSite
@@ -252,7 +247,7 @@ Abstract Element:	PresenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that a phenomena is present."
 // TODO: Not sure we should have to say .CodeableConcept for the constraint below to work (currently causes error)
-					FindingResult.CodeableConcept is SCT#52101004 "Present (qualifier value)"
+1..1				FindingResult.CodeableConcept is SCT#52101004 "Present (qualifier value)"
 0..0				ExceptionValue	
 0..1				Certainty from PresenceCertaintyVS
 
@@ -260,7 +255,7 @@ Description:		"Finding that a phenomena is present."
 Abstract Element:	AbsenceAssertion
 Based on:			ExistenceAssertion
 Description:		"Finding that an entity, person, role, condition, or phenomenon is absent."
-					FindingResult.CodeableConcept is SCT#2667000 "Absent (qualifier value)"
+1..1				FindingResult.CodeableConcept is SCT#2667000 "Absent (qualifier value)"
 0..0				ExceptionValue		
 0..1				Certainty from AbsenceCertaintyVS
 
@@ -271,15 +266,15 @@ Concept:		TBD
 Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //0..0			SourceOfInformation //value is type PatientOrPractitionerOrRelatedPerson
 1..1			Patient
-0..0			SpecificFocusOfFinding  // always the patient?
+0..0			SpecificFocusOfFinding  // maybe a family member?
 0..1			FindingMethod
-1..*			Category from ConditionCategoryVS
+1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			AnatomicalLocation
 //0..*			ConditionCause  MK - reduce clutter
-1..1			ClinicalStatus
+1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 //0..1			WhenClinicallyRecognized  MK - reduce clutter
 //0..1			PresentOnAdmission
-0..1			Severity
+0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			Criticality
 0..1			StageInformation
 0..1			Onset
@@ -293,7 +288,7 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Element:		ClinicalStatus
 			Concept:		TBD
 			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
-			Value:			code from http://hl7.org/fhir/ValueSet/condition-clinical
+			Value:			CodeableConcept
 
 			Element:		WhenClinicallyRecognized
 			Concept:		TBD
@@ -308,12 +303,12 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Element:		Severity
 			Concept:		MTH#C0392364
 			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept from http://hl7.org/fhir/ValueSet/condition-severity
+			Value: 			CodeableConcept
 
 			Element:		Criticality
 			Concept:		MTH#C3858539 "Criticality"
 			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			code from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
+			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
 
 			Element:		StageInformation
 			Concept:		MTH#C0699749
