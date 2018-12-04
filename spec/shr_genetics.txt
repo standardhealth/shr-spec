@@ -1,0 +1,90 @@
+Grammar:		DataElement 5.0
+Namespace:		oncocore
+Description:	"Genetics."
+Uses:  			shr.core, shr.base, shr.entity
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+
+/*
+ **** Modeling individual biomarkers does not scale.  
+ * Markers can apply to multiple cancer types, and potentially other non-cancer diseases.
+ * Must model this in a way that constrains biomarkers by cancer type in each value set. 
+ */
+EntryElement:	GeneticMarker
+Based on:		Observation
+Concept:		MTH#C0017393
+Description:	"A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Thesaurus)"
+				FindingTopicCode is MTH#C0017393 "A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Thesaurus)"
+				SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
+				Interpretation from PositiveNegativeEquivocalVS
+0..0			Media
+0..0			AnatomicalLocation
+				NonIndependentFinding
+includes 0..1	Gene		// aligning name with the FHIR Cancer Genomics convention
+includes 0..1	GenomicSourceClass
+includes 0..1	DNARegionName
+includes 0..1	DNASequenceVariantId
+includes 0..1	DNASequenceVariantName
+0..0			PanelMembers.Observation 
+
+Element:		Gene
+Concept:		LNC#48018-6 "Gene studied [ID]"
+Based on:		CodedNonIndependentFinding
+Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: LOINC)"
+				FindingTopicCode is LNC#48018-6 "Gene studied [ID]"
+				FindingResult from http://www.genenames.org		// LOINC preferred answer list LL378-1 for LNC#48018-6.
+
+Element:		GenomicSourceClass
+Concept:		LNC#48002-0 "Genomic source class [Type]"
+Based on:		CodedNonIndependentFinding
+Description:	"The genomic class of the specimen being analyzed: Germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome. (source: LOINC)"
+				FindingTopicCode is LNC#48002-0 "Genomic source class [Type]" 
+				FindingResult from GenomicSourceClassVS	// LOINC preferred answer list for LNC#48002-0.
+
+Element:		DNARegionName
+Concept:		LNC#47999-8 "DNA region name [Identifier]"
+Based on:		NonIndependentFinding
+Description:	"A human readable name for the region of interest. Typically Exon #, Intron # or other. (source: LOINC)"
+				FindingTopicCode is LNC#47999-8 "DNA region name [Identifier]"
+				FindingResult value is type string
+
+Element:		DNASequenceVariantId
+Concept:		LNC#48003-8 "DNA sequence variation identifier [Identifier]"
+Based on:		NonIndependentFinding
+Description:	"A DNA Marker identifier conveys a universal or standard repository identifier for definitive characterstics of a DNA Marker. (recommend using NCBI dbSNP ids - rs#) (source: LOINC)"
+				FindingTopicCode is LNC#48003-8 "DNA sequence variation identifier [Identifier]"
+				FindingResult value is type string
+
+Element:		DNASequenceVariantName
+Concept:		LNC#48004-6 "DNA change (c.HGVS)"
+Based on:		NonIndependentFinding
+Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
+				FindingTopicCode is LNC#48004-6 "DNA change (c.HGVS)"
+				FindingResult value is type string
+
+ // *** MLT: Example DCMs for an individual marker. We don't want to model each marker because that doesn't scale.
+ /* 
+	EntryElement:	PDL1ByCloneSP142ByImmuneStain
+	Based on:		CodedLaboratoryObservation
+	Concept:		LNC#83057-0
+	Description:	"The degree of PD-L1 (CD274) protein expression in tumor cells as determined by immune staining with anti-PD-L1 clone SP142. (source: LOINC)"
+					FindingTopicCode is LNC#83057-0 "PD-L1 by clone SP142 [Presence] in Tissue by Immune stain."
+					FindingResult from ProteinExpressionVS
+					DiagnosticService is #PAT
+				//	Specimen is type BreastSpecimen			
+	0..0			NonIndependentFinding
+					PanelMembers.Observation
+	includes 0..1   PDL1PercentStaining
+
+	EntryElement:	PDL1PercentStaining
+	Based on:		LaboratoryObservation
+	Concept:		LNC#83053-9
+	Description:	"Cells.programmed cell death ligand 1/100 viable tumor cells in Tissue by Immune stain. (source: LOINC)"
+					FindingTopicCode is LNC#83053-9 "Cells.programmed cell death ligand 1/100 viable tumor cells in Tissue by Immune stain."
+					DiagnosticService is #PAT	
+					FindingResult.Quantity with units UCUM#%
+				//	Specimen is type BreastSpecimen			
+*/
