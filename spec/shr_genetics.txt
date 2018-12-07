@@ -17,13 +17,14 @@ EntryElement:	GeneticMarker
 Based on:		Observation
 Concept:		MTH#C0017393
 Description:	"A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Thesaurus)"
-				FindingTopicCode is MTH#C0017393 "A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Thesaurus)"
+				FindingTopicCode is MTH#C0017393 "A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Metathesaurus)"
 				SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-				Interpretation from PositiveNegativeEquivocalVS
+				Interpretation from PositiveNegativeEquivocalVS	// this might not be true for all markers.
 0..0			Media
 0..0			AnatomicalLocation
+0..1			CommentOrDescription
 				NonIndependentFinding
-includes 0..1	Gene		// aligning name with the FHIR Cancer Genomics convention
+includes 0..1	Gene		// aligning property names with the FHIR Cancer Genomics IG
 includes 0..1	GenomicSourceClass
 includes 0..1	DNARegionName
 includes 0..1	DNASequenceVariantId
@@ -35,7 +36,8 @@ Concept:		LNC#48018-6 "Gene studied [ID]"
 Based on:		CodedNonIndependentFinding
 Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: LOINC)"
 				FindingTopicCode is LNC#48018-6 "Gene studied [ID]"
-				FindingResult from http://www.genenames.org		// LOINC preferred answer list LL378-1 for LNC#48018-6.
+				FindingResult from http://www.genenames.org		
+				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
 Element:		GenomicSourceClass
 Concept:		LNC#48002-0 "Genomic source class [Type]"
@@ -64,6 +66,23 @@ Based on:		NonIndependentFinding
 Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
 				FindingTopicCode is LNC#48004-6 "DNA change (c.HGVS)"
 				FindingResult value is type string
+
+EntryElement:	TumorMarker
+Based on:		CodedLaboratoryObservation
+Concept:		LNC#21924-6 "Tumor marker Cancer"
+Description:	"A substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). (Source: NCI Diectionary).  Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis."
+				FindingTopicCode from TumorMarkerVS // should we put TumorMarkerVS with the list of all possible tumor markers?
+//				FindingResult 	// the result is the name of the tumor marker.
+0..0			NonIndependentFinding
+//				PanelMembers.Observation	// each cancer type can further narrow the value set of tumor markers as needed.
+/*
+Element:		TumorMarkerName
+Concept:		LNC#TBD "TBD"
+Based on:		CodedNonIndependentFinding
+Description:	"TBD (source: LOINC)"
+				FindingTopicCode is LNC#TBD 
+				FindingResult from TBD
+*/
 
  // *** MLT: Example DCMs for an individual marker. We don't want to model each marker because that doesn't scale.
  /* 
