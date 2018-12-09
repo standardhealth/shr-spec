@@ -14,8 +14,8 @@ Dosage maps to Dosage:
 	MaximumDosePerTimePeriod maps to maxDosePerPeriod
 
 MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
-//	SourceOfInformation.Value maps to informationSource
-//	_Entry.CreationTime maps to dateAsserted  // however, date asserted and date recorded may not be the same
+	Metadata.OriginatorOrSource maps to informationSource
+	Metadata.AuthoredDateTime maps to dateAsserted
 	Patient maps to subject
 	constrain reasonNotTaken to 0..0
 	constrain dosage to 0..1
@@ -28,7 +28,7 @@ MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-c
 	Status maps to status
 
 MedicationAdministered maps to MedicationAdministration:
-//	SourceOfInformation.Value maps to informationSource
+	Metadata.OriginatorOrSource maps to performer.actor
 	Patient maps to subject
 	Encounter maps to context
 	RelatedRequest maps to prescription
@@ -46,7 +46,7 @@ MedicationAdministered maps to MedicationAdministration:
 	Participation.OnBehalfOf maps to performer.onBehalfOf
 
 MedicationNotAdministered maps to MedicationAdministration:
-//	SourceOfInformation.Value maps to informationSource
+	constrain performer to 0..0
 	Medication maps to medication[x]
 	Category maps to category
 	fix notGiven to true

@@ -2,18 +2,18 @@ Grammar:	Map 5.1
 Namespace:	shr.base
 Target:		FHIR_STU_3
 
-Entry maps to DomainResource:
-	EntryId maps to id
-	constrain meta to 1..1
-	Version maps to meta.versionId
-	EntryType maps to meta.profile
-	LastUpdated maps to meta.lastUpdated
-	Language maps to language
-	Narrative maps to text
-	SecurityLabel maps to meta.security
-	Tag maps to meta.tag
+//Entry maps to DomainResource:
 
 InformationItem maps to DomainResource:
+	EntryId maps to id
+	Language maps to language
+	Narrative maps to text
+	constrain meta to 1..1
+	Metadata.VersionId maps to meta.versionId
+	Metadata.EntryType maps to meta.profile
+	Metadata.LastUpdated maps to meta.lastUpdated
+	Metadata.SecurityLabel maps to meta.security
+	Metadata.Tag maps to meta.tag
 
 Composition maps to Composition:
     Section maps to section
@@ -26,7 +26,7 @@ Narrative maps to Narrative:
 // do not map Observation to US Core Results -- Brett says that's only for labs
 Observation maps to Observation:  // TODO: observationresults is only for labs 
 	Patient maps to subject
-//	SourceOfInformation.Value maps to performer  //  Why doesn't this work???
+//	Metadata.OriginatorOrSource maps to performer
 	FindingTopicCode maps to code
 	FindingMethod maps to method
 	CommentOrDescription maps to comment
@@ -60,9 +60,9 @@ Observation maps to Observation:  // TODO: observationresults is only for labs
 	DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
 
 
-LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:  // TODO: observationresults is only for labs 
+LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:  
 	Patient maps to subject
-//	SourceOfInformation.Value maps to performer  //  Why doesn't this work???
+//	Metadata.OriginatorOrSource maps to performer
 	FindingTopicCode maps to code
 	FindingMethod maps to method
 	CommentOrDescription maps to comment
@@ -96,9 +96,8 @@ LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us
 	DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
 
 ConditionPresentAssertion maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
-//	_Entry.CreationTime maps to assertedDate  // why doesn't this work?
-//	Patient maps to subject
-//	SourceOfInformation.Value maps to asserter    // why doesn't this work?
+	Metadata.AuthoredDateTime maps to assertedDate  
+	Metadata.OriginatorOrSource maps to asserter  
 	Patient maps to subject
 	Category maps to category
 	ObjectIdentifier maps to identifier
