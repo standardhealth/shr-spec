@@ -9,54 +9,30 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
-Element: 		InformationItem
-Concept:		MTH#C1705654
-Description:	"Parent class for any entry in clinical or administrative health-related system, including information about organizations, providers, patients, services, payments, decision support artifacts, etc."
-
 Element: 		Entry
 Concept:		MTH#C1705654
-Description:	"Metadata attributes that apply to any item represented in the standard health record. An Entry may not belong exclusively to a single person's health record, but could represent an entity that surfaces in multiple records, such as organizations or practitioners. If the entry belongs to a single person's record, then the identity of the person of record must be recorded."
-0..1			ShrId
-1..1			EntryId
-0..1			Version
-				Version value is type id
-1..1			EntryType
-1..1    		CreationTime
-1..1			LastUpdated
-0..1			RecordStatus
-0..1			Narrative
-0..1			Language
-0..*			SecurityLabel
-0..*			Tag
-0..*			DerivedFrom
-0..1			RecordedBy
-0..1			SignedBy  // Author
-//0..*			CosignedBy
-//0..*			VerifiedBy
+Description:	"Obsolete. Use InformationItem"
+
+/*0..1			ShrId
 
 	Element:		ShrId
 	Concept:		TBD
 	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
-	Value:			id
+	Value:			id */
 	
+
+Abstract Element: InformationItem
+Concept:		MTH#C1705654
+Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An InformationItem can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
+1..1			EntryId
+0..1			Narrative
+0..1			Language
+0..1			Metadata
+
 	Element:    	EntryId
 	Concept:        MTH#C0600091
 	Description:    "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
 	Value:          id
-	
-	Element:		EntryType  // Would EntryClass be clearer?
-	Concept:		TBD
-	Description:	"SHR data element identifier, as a URI."
-	Value:			uri
-
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The most recent date the entry was changed."
-	Value:			instant
-
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
-	Value:			CodeableConcept
 
 	Element:		Narrative
 	Concept:		TBD
@@ -73,6 +49,29 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 			Concept:		TBD
 			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
+
+
+Element:		Metadata
+Concept:		TBD
+Description:	"Elements that belong to all information items."
+0..1			VersionId
+1..1			EntryType // would EntryConformance be clearer?
+0..1			RecordStatus
+0..*			SecurityLabel
+0..*			Tag
+0..1			OriginatorOrSource
+0..1			InformationRecorder
+0..1			AuthoredDateTime
+1..1			LastUpdated
+
+	Element:		EntryType  // Would EntryClass be clearer?
+	Concept:		TBD
+	Description:	"The class of the item, as a URI."
+	Value:			uri
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Value:			CodeableConcept
 	
 	Element:		SecurityLabel
 	Concept:		TBD
@@ -83,15 +82,88 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 	Concept:		TBD
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
+
+	Element: 		OriginatorOrSource
+	Concept:		TBD
+	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, another health record, an algorithm, device, etc."
+	Value:			Attribution
+
+	Element:		InformationRecorder
+	Concept:		TBD
+	Description:	"The recorder of the information, if other than the information originator. For example, the nurse taking a list of medications reported by the patient."
+	Value:			Attribution
+
+		Element:		Attribution
+		Description:	"Information ascribing the record to a particular contributor or responsible person."
+		Value: 			ref(EntityOrRole)
+
+		Element:		PatientOrPractitioner
+		Based on:		Attribution
+		Description:	"A choice of Patient or Practitioner. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner)
+
+		Element:		PatientOrPractitionerOrRelatedPerson
+		Based on:		Attribution
+		Description:	"A choice of Patient, Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping AdverseEvent.SignedBy to FHIR AdverseEvent."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
+
+		Element:		PractitionerOrRelatedPerson
+		Based on:		Attribution
+		Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
+		Value:			ref(Practitioner) or ref(RelatedPerson)
+
+		Element:		PersonOrOrganization
+		Based on:		Attribution
+		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
+
+		Element:		PersonOrDevice
+		Based on:		Attribution
+		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
+
+
+	Element:		AuthoredDateTime
+	Concept:		TBD
+	Description:	"The time the information was recorded; usually, when the information item was created."
+	Value:			dateTime
+
+	Element: 		LastUpdated
+	Concept:		TBD
+	Description:	"The most recent date the information item was changed."
+	Value:			instant
+
+
+EntryElement:	Composition
+Based on:		InformationItem
+Description:	"A composition represents a set of Entries sharing common provenance, adocument such as an extract from a patient record, a knowledge artifact, or a catalog definition."
+//1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
+//1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
+//1..1            CreationTime  -- from Entry -- maps to date
+0..*            Section
+
+    Element:        Section
+    Based on:       InformationItem
+    Description:    "Represents a section containing entries in a composition."
+    //0..1            Title
+    0..*            InformationItem
+
+
+/*
+	Element:		ShrId
+	Concept:		TBD
+	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
+	Value:			id
+
+	Element:    	HealthRecordId
+	Concept:        MTH#C1549718
+	Description:    "A unique, persistent, permanent identifier for a health record."
+	Value:          id
 	
 	Element:		DerivedFrom
 	Concept:		TBD
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
 	Value:			ref(InformationItem)
-	
-	Element:		RecordedBy
-	Description:	"The person who entered the order on behalf of another individual for example in the case of a verbal or a telephone order."
-	Value:			Attribution
 	
 	Element:		SignedBy
 	Description:	"Provenance information specific to the signing of the clinical statement."
@@ -115,25 +187,6 @@ Description:	"Metadata attributes that apply to any item represented in the stan
 			Description:	"The time of the attribution action."
 			Value:			instant
 
-EntryElement:	Composition
-Based on:		InformationItem
-Description:	"A composition represents a set of Entries sharing common provenance, adocument such as an extract from a patient record, a knowledge artifact, or a catalog definition."
-//1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
-//1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
-//1..1            CreationTime  -- from Entry -- maps to date
-0..*            Section
 
-    Element:        Section
-    Based on:       InformationItem
-    Description:    "Represents a section containing entries in a composition."
-    //0..1            Title
-    0..*            InformationItem
-
-
-/*
-	Element:    	HealthRecordId
-	Concept:        MTH#C1549718
-	Description:    "A unique, persistent, permanent identifier for a health record."
-	Value:          id
 */
 

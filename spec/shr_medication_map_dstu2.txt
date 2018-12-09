@@ -16,8 +16,8 @@ Dosage maps to Dosage:
 */
 
 MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
-//	SourceOfInformation.Value maps to informationSource
-//	_Entry.CreationTime maps to dateAsserted  // however, date asserted and date recorded may not be the same
+	Metadata.OriginatorOrSource maps to informationSource
+	Metadata.AuthoredDateTime maps to dateAsserted  // slight semantic difference?
 	Patient maps to patient
 	constrain wasNotTaken to 0..0
 	constrain reasonNotTaken to 0..0
@@ -45,7 +45,7 @@ MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/
 	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod 
 
 MedicationAdministered maps to MedicationAdministration:
-//	SourceOfInformation.Value maps to informationSource
+	Metadata.OriginatorOrSource maps to perfomer.actor
 	Patient maps to patient
 	// DSTU 2 change (name change)
 	Encounter maps to encounter 
@@ -75,7 +75,7 @@ MedicationAdministered maps to MedicationAdministration:
 
 
 MedicationNotAdministered maps to MedicationAdministration:
-//	SourceOfInformation.Value maps to informationSource
+	constrain performer to 0..0
 	Medication maps to medication[x]
 	//  DSTU 2 change (no such attribute)
 //	Category maps to category  
