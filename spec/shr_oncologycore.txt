@@ -29,7 +29,7 @@ Concept:        SCT#371441004 "Histologic type (observable entity)"  // TODO: LO
                 FindingTopicCode is SCT#371441004 "Histologic type (observable entity)"
 0..0			AnatomicalLocation
 0..0            Device
-0..0            DeltaFlag
+//0..0            DeltaFlag
 
 EntryElement:   CancerHistologicGrade
 // did not use precoordinated codes because only available for clinical and pathologic.
@@ -65,8 +65,8 @@ Description:    "The extent a cancer has spread in the body (source: NCI Diction
 Concept:        SCT#258232002 "Cancer staging (tumor staging)"
                 FindingTopicCode is SCT#258232002 "Cancer staging (tumor staging)"
     0..0        FindingResult
+    0..1        StageTiming  // not a component since it is not a finding, but a further description of the circumstances of the observation
     0..0        ExceptionValue
-    0..0        DeltaFlag
     0..0        ReferenceRange
     0..0		AnatomicalLocation
     0..0        Specimen
@@ -75,8 +75,7 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
     NonIndependentFinding
         includes  0..1 StageGroup  // MK - should this be the FindingResult?
-        includes  0..1 StageTiming // retained StageTiming because if using TNM staging, the StageGroup still needs a prefix (even if we're using precoordinated categories). There are LOINC codes for clinical and pathologic stage groups in LOINC, but we back ourselves into TNM for stage group if we use them.
-    PanelMembers.Observation // MK - could these be components?
+    PanelMembers.Observation
         includes  0..1 TNMClinicalPrimaryTumorClassification
         includes  0..1 TNMClinicalRegionalNodesClassification
         includes  0..1 TNMClinicalDistantMetastasesClassification
@@ -85,24 +84,9 @@ Concept:        SCT#258232002 "Cancer staging (tumor staging)"
         includes  0..1 TNMPathologicDistantMetastasesClassification
 
 Element:        StageTiming
-Based on:       CodedNonIndependentFinding
 Concept:        SCT#260869008 "Timing of stage"
 Description:	"Indicates when the staging was done, in terms of treatment landmarks."
-                FindingResult from StageTimingPrefixVS
-                FindingTopicCode is SCT#260869008 "Timing of stage"
- 
-        Element:        ClinicalStageTiming
-        Based on:       StageTiming
-        Concept:        SCT#260869008 "Timing of stage"
-        Description:	"Indicates staging was done from clinical evidence."
-                        FindingResult.CodeableConcept is SCT#385349001 "Clinical stage (observable entity)"
-
-        Element:        PathologicStageTiming
-        Based on:       StageTiming
-        Concept:        SCT#260869008 "Timing of stage"
-        Description:	"Indicates when the staging was done using pathologic evidence."
-                        FindingResult.CodeableConcept is SCT#405978005   "Pathologic stage (observable entity)"
-
+Value:          CodeableConcept from StageTimingPrefixVS
 
 Element:        StageGroup
 // did not use precoordinated codes because only available for clinical and pathologic.
@@ -126,13 +110,11 @@ Description:    "Detailed site-specific codes for the clinical tumor (T) as defi
                 FindingResult from http://loinc.org/vs/LL237-9 // normative answer list for LNC#21905-5
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0			AnatomicalLocation
 0..0            Device
 0..1            FindingMethod from TNMTumorStagingSystemVS if covered
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 ClinicalStageTiming 
 
 EntryElement: 	TNMClinicalRegionalNodesClassification
 Based on:		CodedNonLaboratoryObservation
@@ -142,29 +124,25 @@ Description:    "" //TODO: pull from LOINC
                 FindingTopicCode is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0			AnatomicalLocation
 0..0            Device
 0..1            FindingMethod from TNMTumorStagingSystemVS if covered
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 ClinicalStageTiming 
 
 EntryElement:   TNMClinicalDistantMetastasesClassification
 Based on:		CodedNonLaboratoryObservation
 Concept:		LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
 Description:    "" //TODO: pull from LOINC
                 FindingResult from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
-0..0            ReferenceRange
                 FindingTopicCode is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0            Device
-0..1            FindingMethod from TNMTumorStagingSystemVS if covered             
+0..1            FindingMethod from TNMTumorStagingSystemVS if covered           
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 ClinicalStageTiming 
+
 
 EntryElement:   TNMPathologicPrimaryTumorClassification
 Based on:		CodedNonLaboratoryObservation
@@ -173,14 +151,12 @@ Description:    "" //TODO: pull from LOINC
                 FindingResult from http://loinc.org/vs/LL232-0 // normative
                 FindingTopicCode is LNC#21899-0 "Primary tumor.pathology Cancer"
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0			AnatomicalLocation
 0..0            Device
 0..1            FindingMethod from TNMTumorStagingSystemVS if covered
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 PathologicStageTiming 
 
 EntryElement: 	TNMPathologicRegionalNodesClassification
 Based on:		CodedNonLaboratoryObservation
@@ -190,13 +166,11 @@ Description:    "" //TODO: pull from LOINC
                 FindingTopicCode is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0			AnatomicalLocation
 0..0            Device
 0..1            FindingMethod from TNMTumorStagingSystemVS if covered
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 PathologicStageTiming 
 
 EntryElement:   TNMPathologicDistantMetastasesClassification
 Based on:		CodedNonLaboratoryObservation
@@ -207,13 +181,11 @@ Description:    "" //TODO: pull from LOINC
                 FindingTopicCode is LNC#21901-4 "Distant metastases.pathology [Class] Cancer" // normative
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 0..0            ReferenceRange
-0..0            DeltaFlag
 0..0			AnatomicalLocation
 0..0            Device
 0..1            FindingMethod from TNMTumorStagingSystemVS if covered
                 NonIndependentFinding
                     includes 0..1 StageSuffix
-                    includes 0..1 PathologicStageTiming 
 
 
 EntryElement:   TumorPresent
@@ -226,8 +198,8 @@ Concept:        SCT#395557000 "Tumor finding (finding)"
 
         Element:        IsPrimaryTumor
         Concept:        TBD
-        Description:    "Whether the tumor is the original, or first, tumor in the body, for a particular cancer."
-        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but VS allows for unknown
+        Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
+        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but this VS allows for unknown
 
 
 /**** replaced by Onset of CancerDisorderPresent 
