@@ -24,7 +24,7 @@ Description:	"Obsolete. Use InformationItem"
 Abstract Element: InformationItem
 Concept:		MTH#C1705654
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An InformationItem can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
-1..1			EntryId
+0..1			EntryId
 0..1			Narrative
 0..1			Language
 0..1			Metadata
@@ -55,14 +55,14 @@ Element:		Metadata
 Concept:		TBD
 Description:	"Elements that belong to all information items."
 0..1			VersionId
-1..1			EntryType // would EntryConformance be clearer?
-0..1			RecordStatus
+0..1			LastUpdated
+0..*			EntryType // would EntryConformance be clearer?
 0..*			SecurityLabel
 0..*			Tag
-0..1			OriginatorOrSource
+//0..1			RecordStatus
+0..1			InformationSource
 0..1			InformationRecorder
 0..1			AuthoredDateTime
-1..1			LastUpdated
 
 	Element:		EntryType  // Would EntryClass be clearer?
 	Concept:		TBD
@@ -70,7 +70,7 @@ Description:	"Elements that belong to all information items."
 	Value:			uri
 
 	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., 'entered in error'."
+	Description:	"Concept indicating the state of this record, e.g., entered in error."
 	Value:			CodeableConcept
 	
 	Element:		SecurityLabel
@@ -83,45 +83,45 @@ Description:	"Elements that belong to all information items."
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
 
-	Element: 		OriginatorOrSource
+	Element: 		InformationSource
 	Concept:		TBD
 	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, another health record, an algorithm, device, etc."
-	Value:			Attribution
+	Value:			Participant  // TODO: might have to change to Participation
 
 	Element:		InformationRecorder
 	Concept:		TBD
 	Description:	"The recorder of the information, if other than the information originator. For example, the nurse taking a list of medications reported by the patient."
-	Value:			Attribution
+	Value:			Participant  // TODO: might have to change to Participation
 
-		Element:		Attribution
-		Description:	"Information ascribing the record to a particular contributor or responsible person."
-		Value: 			ref(EntityOrRole)
+		Element:		Participant
+		Concept:		MTH#C1550369
+		Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
+		Value:			ref(EntityOrRole)
 
 		Element:		PatientOrPractitioner
-		Based on:		Attribution
+		Based on:		Participant
 		Description:	"A choice of Patient or Practitioner. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner)
 
 		Element:		PatientOrPractitionerOrRelatedPerson
-		Based on:		Attribution
+		Based on:		Participant
 		Description:	"A choice of Patient, Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping AdverseEvent.SignedBy to FHIR AdverseEvent."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
 
 		Element:		PractitionerOrRelatedPerson
-		Based on:		Attribution
+		Based on:		Participant
 		Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
 		Value:			ref(Practitioner) or ref(RelatedPerson)
 
 		Element:		PersonOrOrganization
-		Based on:		Attribution
+		Based on:		Participant
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
 		Element:		PersonOrDevice
-		Based on:		Attribution
+		Based on:		Participant
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
-
 
 	Element:		AuthoredDateTime
 	Concept:		TBD
@@ -167,25 +167,15 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 	
 	Element:		SignedBy
 	Description:	"Provenance information specific to the signing of the clinical statement."
-	Value:			Attribution
+	Value:			Participant
 
 	Element:		CosignedBy
 	Description:	"Provenance information specific to the cosigning of the clinical statement."
-	Value:			Attribution
+	Value:			Participant
 
 	Element:		VerifiedBy
 	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
-	Value:			Attribution
-		
-		Element:		Attribution
-		Description:	"Information ascribing the record to a particular contributor or responsible person."
-		1..1			EntityOrRole  // TODO: change to Participant
-		0..1			RecordedOn
-		0..1			Signature
-
-			Element:		RecordedOn
-			Description:	"The time of the attribution action."
-			Value:			instant
+	Value:			Participant
 
 
 */

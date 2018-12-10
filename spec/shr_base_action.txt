@@ -37,11 +37,6 @@ Description:		"Abstract class representing performance of any type of action."
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
 		0..1			OnBehalfOf
-		
-			Element:		Participant
-			Concept:		MTH#C1550369
-			Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
-			Value:			ref(EntityOrRole)
 
 			Element:		ParticipationType
 			Concept:		MTH#C1553854
@@ -80,6 +75,7 @@ Abstract Element:	ActionRequested
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action."
 1..1			Status //should be from http://hl7.org/fhir/ValueSet/request-status  // DSTU2 change (conflicting value sets)
+0..1			Requester
 1..1			RequestIntent
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
@@ -89,6 +85,11 @@ Description:		"Abstract class representing a request for any type of action."
 0..1			PerformerInstructions
 0..1			PatientInstructions	
 0..1			CommunicationMethod
+
+		Element:		Requester
+		Based on:		Participant
+		Concept:		TBD
+		Description:	"The actor making this request."
 
 		Element:		RequestIntent	
 		Concept:		TBD
@@ -130,6 +131,10 @@ Description:		"Abstract class representing a request for any type of action."
 		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
 		Value:			CodeableConcept
 
+		Element:		PractitionerOrDevice
+		Based on:		Requester
+		Description:	"A choice of Practitioner or Device. Needed for mapping to FHIR."
+		Value:			ref(Practitioner) or ref(Device)
 
 Abstract Element:	ActionNotPerformed
 Based on:			ActionStatement
