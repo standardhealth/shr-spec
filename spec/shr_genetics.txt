@@ -1,24 +1,38 @@
 Grammar:		DataElement 5.0
 Namespace:		oncocore
 Description:	"Genetics."
-Uses:  			shr.core, shr.base, shr.entity
+Uses:  			shr.core, shr.base, shr.entity, shr.procedure
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
+
+/*
+ * Diagnostic Test Procedure
+ */
+EntryElement:	GeneticTestPerformed
+Based on:		ProcedurePerformed
+Concept:		SCT#405824009 "Genetic test (procedure)"
+Description:	"Genetic testing is a type of medical test that identifies changes in chromosomes, genes, or proteins. (source: National Institute of Health Genetics Home Reference)"
+				ProcedureCode from https://www.ncbi.nlm.nih.gov/gtr if covered  	// the GTR Identifier here, assigned to the test order.
+				Method from GeneticTestMethodVS
+0..0			OutputFinding
+0..1			GeneticMarker
+
 /*
  **** Modeling individual biomarkers does not scale.  
  * Markers can apply to multiple cancer types, and potentially other non-cancer diseases.
  * Must model this in a way that constrains biomarkers by cancer type in each value set. 
  */
+
 EntryElement:	GeneticMarker
 Based on:		Observation
 Concept:		MTH#C0017393
 Description:	"A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Thesaurus)"
 				FindingTopicCode is MTH#C0017393 "A segment of DNA with an identifiable physical location on a chromosome and whose inheritance can be followed. (source: NCI Metathesaurus)"
-				SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
+				SpecificFocusOfFinding value is type ref(ConditionPresentAssertion)
 				Interpretation from PositiveNegativeEquivocalVS	// this might not be true for all markers.
 0..0			Media
 0..0			AnatomicalLocation
@@ -72,17 +86,11 @@ Based on:		CodedLaboratoryObservation
 Concept:		LNC#21924-6 "Tumor marker Cancer"
 Description:	"A substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). (Source: NCI Diectionary).  Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis."
 				FindingTopicCode from TumorMarkerVS // should we put TumorMarkerVS with the list of all possible tumor markers?
+				SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 //				FindingResult 	// the result is the name of the tumor marker.
 0..0			NonIndependentFinding
 //				PanelMembers.Observation	// each cancer type can further narrow the value set of tumor markers as needed.
-/*
-Element:		TumorMarkerName
-Concept:		LNC#TBD "TBD"
-Based on:		CodedNonIndependentFinding
-Description:	"TBD (source: LOINC)"
-				FindingTopicCode is LNC#TBD 
-				FindingResult from TBD
-*/
+
 
  // *** MLT: Example DCMs for an individual marker. We don't want to model each marker because that doesn't scale.
  /* 
