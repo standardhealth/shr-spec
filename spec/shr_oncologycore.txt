@@ -59,29 +59,42 @@ Concept:        SCT#246453008 "Course of illness (attribute)"
 		Value:			CodeableConcept from CancerProgressionEvidenceVS	
 
 
-EntryElement:   CancerStageInformation
+Abstract Element:   CancerStageGroup
 Based on:       Observation
 Description:    "The extent a cancer has spread in the body (source: NCI Dictionary of Cancer Terms)"
 Concept:        SCT#258232002 "Cancer staging (tumor staging)"
-                FindingTopicCode is SCT#258232002 "Cancer staging (tumor staging)"
-    0..0        FindingResult
-    0..1        StageTiming  // not a component since it is not a finding, but a further description of the circumstances of the observation
+ //               FindingTopicCode is SCT#258232002 "Cancer staging (tumor staging)"
+ //   0..0        FindingResult from http://loinc.org/vs/LL240-3
+                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
+//    0..1        StageTiming  // not a component since it is not a finding, but a further description of the circumstances of the observation
     0..0        ExceptionValue
     0..0        ReferenceRange
     0..0		AnatomicalLocation
     0..0        Specimen
     0..0        Device
     0..1        FindingMethod from CancerStagingSystemVS
-                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-    NonIndependentFinding
-        includes  0..1 StageGroup  // MK - should this be the FindingResult?
-    PanelMembers.Observation
-        includes  0..1 TNMClinicalPrimaryTumorClassification
-        includes  0..1 TNMClinicalRegionalNodesClassification
-        includes  0..1 TNMClinicalDistantMetastasesClassification
-        includes  0..1 TNMPathologicPrimaryTumorClassification
-        includes  0..1 TNMPathologicRegionalNodesClassification
-        includes  0..1 TNMPathologicDistantMetastasesClassification
+
+
+EntryElement:   
+Based on:       CancerStageGroup
+Concept:        SCT#385349001   "Clinical stage (observable entity)"
+                FindingTopicCode is SCT#385349001 "Clinical stage (observable entity)"
+                FindingResult from http://loinc.org/vs/LL240-3
+                PanelMembers.Observation
+                    includes  0..1  CancerClinicalStageGroup
+                    includes  0..1 TNMClinicalPrimaryTumorClassification
+                    includes  0..1 TNMClinicalRegionalNodesClassification
+                    includes  0..1 TNMClinicalDistantMetastasesClassification
+
+EntryElement:   CancerPathologicStageGroup
+Based on:       CancerStageGroup
+Concept:        SCT#405978005   "Pathologic stage (observable entity)"
+                FindingTopicCode is SCT#405978005   "Pathologic stage (observable entity)"
+                FindingResult from http://loinc.org/vs/LL240-3
+                PanelMembers.Observation
+                    includes  0..1 TNMPathologicPrimaryTumorClassification
+                    includes  0..1 TNMPathologicRegionalNodesClassification
+                    includes  0..1 TNMPathologicDistantMetastasesClassification
 
 Element:        StageTiming
 Concept:        SCT#260869008 "Timing of stage"
