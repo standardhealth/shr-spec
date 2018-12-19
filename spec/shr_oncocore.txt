@@ -1,21 +1,21 @@
-Grammar:		DataElement 5.0
-Namespace:		oncocore
+Grammar:	DataElement 5.0
+Namespace:	oncocore
 Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.entity
+Uses:  		shr.core, shr.base, shr.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:	MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
 
 EntryElement:   CancerDisorderPresent
-Based on:		ConditionPresentAssertion
-Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
+Based on:	ConditionPresentAssertion
 Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
+Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
                 FindingTopicCode from CancerDisorderVS
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
-  	            StageInformation.StageDetail value is type CancerStagePanel  
+  	         StageInformation.StageDetail value is type CancerStagePanel  
 //    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
 
 
@@ -27,7 +27,9 @@ Concept:        SCT#371441004 "Histologic type (observable entity)"  // TODO: LO
                 FindingResult from CancerHistologicTypeVS
                 FindingTopicCode is SCT#371441004 "Histologic type (observable entity)"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-0..0			AnatomicalLocation
+0..0	        AnatomicalLocation
+0..0		AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0		AnatomicalLocation.AnatomicalLocationStructured
 0..0            Device
 
 
@@ -39,27 +41,13 @@ Concept:        LNC#21858-6 "Grade Cancer"
                 FindingResult from http://loinc.org/vs/LL213-0
                 FindingTopicCode is LNC#21858-6 "Grade Cancer"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-0..0			AnatomicalLocation
+0..0		    AnatomicalLocation
+0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0		    AnatomicalLocation.AnatomicalLocationStructured
 0..0            Device
+0..0            PanelMembers
 
-
-EntryElement:   TumorPresent
-Based on:		BodyStructurePresent
-Concept:        SCT#395557000 "Tumor finding (finding)"
-Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
-                FindingTopicCode from TumorMorphologyVS
-// note - like other existential findings, the topic code is WHAT is present or absent, and the result code is present or absent (in this case, present)
-0..1            IsPrimaryTumor
-// TODO: Add tumor size
-
-
-        Element:        IsPrimaryTumor
-        Concept:        TBD
-        Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
-        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but this VS allows for unknown
-
-
-EntryElement:   CancerProgression
+EntryElement:   CancerProgression  // aka DiseaseStatus
 Based on:       CodedNonLaboratoryObservation
 Description:    "The course of a disease, such as cancer, as it becomes worse or spreads in the body. (source: NCI Dictionary)"
 Concept:        SCT#246453008 "Course of illness (attribute)"
@@ -68,12 +56,16 @@ Concept:        SCT#246453008 "Course of illness (attribute)"
                 SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
 // CancerProgressionEvidence is not yet part of M-CODE, but I don't see a better way to include it for FluxNotes
 0..*            CancerProgressionEvidence
-0..0			AnatomicalLocation
+0..0		    AnatomicalLocation
+0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0		    AnatomicalLocation.AnatomicalLocationStructured
 0..0            Device	
+0..0            PanelMembers
+0..0            NonIndependentFinding
 
-		Element:		CancerProgressionEvidence
+		Element:	CancerProgressionEvidence
 		Description:	"The type of evidence considered in determining disease progression."
-		Value:			CodeableConcept from CancerProgressionEvidenceVS	
+		Value:		CodeableConcept from CancerProgressionEvidenceVS	
 
 
 /**** replaced by Onset of CancerDisorderPresent 
@@ -97,7 +89,9 @@ Concept:        LNC#89247-1 "ECOG Performance Status score"
                 FindingResult value is type IntegerQuantity
 //0..0            ReferenceRange  // set to 0 to 5
 0..0            SpecificFocusOfFinding
-0..0			AnatomicalLocation
+0..0		    AnatomicalLocation
+0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0		    AnatomicalLocation.AnatomicalLocationStructured
 0..0            Device
                 Interpretation from http://loinc.org/vs/LL529-9
 
@@ -105,9 +99,11 @@ EntryElement:   KarnofskyPerformanceStatus
 Based on:       SimpleNonLaboratoryObservation
 Description:	"The Karnofsky Performance Status (KPS) is a tool used to measure a patient's functional status. It can be used to compare the effectiveness of different therapies and to help assess the prognosis of certain patients, such as those with certain cancers. The KPS score ranges from 0 to 100. Higher scores are associated with better functional status, with 100 representing no symptoms or evidence of disease, and 0 representing death [PMID: 23870327] . This panel contains LOINC terms to report the KPS score [LOINC: 89243-0] and its interpretation [LOINC: 89245-5]."
 Concept:        LNC#89243-0 "Karnofsky Performance Status panel"
-                FindingResult value is type IntegerQuantity
+                FindingResult value is type IntegerQuantity  // THIS ISN'T WORKING!
 0..0            SpecificFocusOfFinding
-0..0			AnatomicalLocation
+0..0		    AnatomicalLocation
+0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0		    AnatomicalLocation.AnatomicalLocationStructured
 0..0            Device
 //	            ReferenceRange.Range.LowerBound.Quantity.Number is 0.0
 //              ReferenceRange.Range.LowerBound.Quantity.Units is UCUM#1  
