@@ -5,12 +5,10 @@ Uses:  			shr.core, shr.base, shr.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:		MTH = http://ncimeta.nci.nih.gov
-CodeSystem:     UCUM = http://unitsofmeasure.org
 
 Element:	GeneticMarkerAnalysisResult
 Based on:		LaboratoryObservation
-Concept:		MTH#C0679560 "Genetic Testing"
+Concept:		SCT#20889005 "Genetic marker function (observable entity)"
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
 				FindingTopicCode from https://www.ncbi.nlm.nih.gov/gtr if covered // the identifier from the Genetic Test Registry
 				FindingMethod from GeneticTestMethodVS if covered
@@ -19,12 +17,14 @@ Description:	"The process of isolating and testing the DNA of an embryo or a per
 //  MK: What gene are we looking at? mlt: identified in two places: 1) FindingTopicCode through the GTR ID, 2) in the GeneName element below.
 0..0			ReferenceRange
 0..1			GenomicSourceClass
-0..1			GeneName	
+0..1			GeneName
 0..1			DNARegionName
 0..1			DNASequenceVariantName
 0..1			DNASequenceVariantId
 0..1			DNASequenceVariantType
 0..0			AnatomicalLocation
+0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0			AnatomicalLocation.AnatomicalLocationStructured
 0..0			PanelMembers
 
 Element:		GenomicSourceClass
@@ -47,22 +47,19 @@ Element:		DNASequenceVariantName
 Based on:		NonIndependentFinding
 Concept:		LNC#48004-6 "DNA change (c.HGVS)"
 Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
-				FindingTopicCode is LNC#48004-6 "DNA change (c.HGVS)"
-				FindingResult value is type	string
+Value:			string
 
 Element:		DNASequenceVariantId
 Based on:		NonIndependentFinding
 Concept:		LNC#48003-8 "DNA sequence variation identifier [Identifier]"
 Description:	"A DNA Marker identifier conveys a universal or standard repository identifier for definitive characterstics of a DNA Marker. (recommend using NCBI dbSNP ids - rs#) (source: LOINC)"
-				FindingTopicCode is LNC#48003-8 "DNA sequence variation identifier [Identifier]"
-				FindingResult value is type	string
+Value:			string
 
 Element:		DNASequenceVariantType
 Based on:		CodedNonIndependentFinding
 Concept:		LNC#48005-3 "DNA change type"
 Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
-				FindingTopicCode is LNC#48005-3 "DNA change type"
-				FindingResult from DNAChangeTypeVS
+Value:			CodeableConcept from DNAChangeTypeVS
 
 
 EntryElement:	TumorMarker
@@ -74,7 +71,19 @@ Description:	"A substance found in tissue or blood or other body fluids that may
 				FindingResult from TumorMarkerVS if covered
 0..0			NonIndependentFinding
 0..0			AnatomicalLocation
-0..0			PanelMembers.Observation	// each cancer type can further narrow the value set of tumor markers as needed.
+0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
+0..0			AnatomicalLocation.AnatomicalLocationStructured
+0..0			PanelMembers	// each cancer type can further narrow the value set of tumor markers as needed.
+0..0			Device
+
+/*
+Element:		TumorMarkerName
+Concept:		LNC#TBD "TBD"
+Based on:		CodedNonIndependentFinding
+Description:	"TBD (source: LOINC)"
+				FindingTopicCode is LNC#TBD 
+				FindingResult from TBD
+*/
 
 
 EntryElement:	CancerGeneticMarkerAnalysisResult
