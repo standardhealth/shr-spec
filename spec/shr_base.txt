@@ -9,30 +9,37 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
+// NOTE: Entry will eventually be deprecated, as its fields are really a part
+// of the implementation, NOT a part of the model. Once the CIMPL tooling
+// makes these implicit, Entry and its field elements can go away.
 Element: 		Entry
 Concept:		MTH#C1705654
 Description:	"Obsolete. Use InformationItem"
+0..1			ShrId
+0..1			EntryId
+0..1			EntryType
 
-/*0..1			ShrId
-
-	Element:		ShrId
-	Concept:		TBD
+	Element:			ShrId
+	Concept:			TBD
 	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
-	Value:			id */
+	Value:				id
 	
+	Element:    	EntryId
+	Concept:      MTH#C0600091
+	Description:  "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
+	Value:        id
+
+	Element:			EntryType  // Would EntryClass be clearer?
+	Concept:			TBD
+	Description:	"The class of the item, as a URI."
+	Value:				uri
 
 Abstract Element: InformationItem
 Concept:		MTH#C1705654
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An InformationItem can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
-0..1			EntryId
 0..1			Narrative
 0..1			Language
 0..1			Metadata
-
-	Element:    	EntryId
-	Concept:        MTH#C0600091
-	Description:    "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
-	Value:          id
 
 	Element:		Narrative
 	Concept:		TBD
@@ -56,18 +63,12 @@ Concept:		TBD
 Description:	"Elements that belong to all information items."
 0..1			VersionId
 0..1			LastUpdated
-0..*			EntryType // would EntryConformance be clearer?
 0..*			SecurityLabel
 0..*			Tag
 //0..1			RecordStatus
 0..1			InformationSource
 0..1			InformationRecorder
 0..1			AuthoredDateTime
-
-	Element:		EntryType  // Would EntryClass be clearer?
-	Concept:		TBD
-	Description:	"The class of the item, as a URI."
-	Value:			uri
 
 	Element:		RecordStatus
 	Description:	"Concept indicating the state of this record, e.g., entered in error."
@@ -150,11 +151,6 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 
 
 /*
-	Element:		ShrId
-	Concept:		TBD
-	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
-	Value:			id
-
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
 	Description:    "A unique, persistent, permanent identifier for a health record."
