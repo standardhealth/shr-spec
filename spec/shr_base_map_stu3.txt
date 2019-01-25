@@ -4,7 +4,7 @@ Target:		FHIR_STU_3
 
 //Entry maps to DomainResource:
 
-InformationItem maps to DomainResource:
+DomainResource maps to DomainResource:
 	_Entry.EntryId maps to id
 	Language maps to language
 	Narrative maps to text
@@ -16,7 +16,7 @@ InformationItem maps to DomainResource:
 
 Composition maps to Composition:
     Section maps to section
-    Section.InformationItem maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
@@ -25,7 +25,7 @@ Narrative maps to Narrative:
 // do not map Observation to US Core Results -- Brett says that's only for labs
 Observation maps to Observation:  // TODO: observationresults is only for labs 
 	Patient maps to subject
-	FindingTopicCode maps to code
+	TopicCode maps to code
 	FindingMethod maps to method
 	CommentOrDescription maps to comment
 	Category maps to category
@@ -39,7 +39,7 @@ Observation maps to Observation:  // TODO: observationresults is only for labs
 	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
 	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
 	NonIndependentFinding maps to component (slice on = code.coding.code; slice strategy = includes)
-	NonIndependentFinding.FindingTopicCode maps to component.code  
+	NonIndependentFinding.TopicCode maps to component.code  
 	NonIndependentFinding.FindingResult maps to component.value[x]
 	NonIndependentFinding.ExceptionValue maps to component.dataAbsentReason
 	//NonIndependentFinding.Interpretation maps to component.interpretation
@@ -67,7 +67,7 @@ ConditionPresentAssertion maps to http://hl7.org/fhir/us/core/StructureDefinitio
 	Patient maps to subject
 	Category maps to category
 	ObjectIdentifier maps to identifier
-	FindingTopicCode maps to code
+	TopicCode maps to code
 	AnatomicalLocation[AnatomicalLocationPrecoordinated] maps to bodySite
 	AnatomicalLocation[AnatomicalLocationStructured] maps to http://hl7.org/fhir/StructureDefinition/condition-targetBodySite 
 	Encounter maps to context

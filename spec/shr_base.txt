@@ -14,7 +14,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 // makes these implicit, Entry and its field elements can go away.
 Element: 		Entry
 Concept:		MTH#C1705654
-Description:	"Obsolete. Use InformationItem"
+Description:	"Obsolete. Use DomainResource"
 0..1			ShrId
 0..1			EntryId
 0..1			EntryType
@@ -34,12 +34,18 @@ Description:	"Obsolete. Use InformationItem"
 	Description:	"The class of the item, as a URI."
 	Value:				uri
 
-Abstract Element: InformationItem
+Abstract Element: DomainResource
 Concept:		MTH#C1705654
-Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An InformationItem can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
+Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
+1..1			TopicCode // Question, test name, encounter type, condition, etc.
 0..1			Narrative
 0..1			Language
-0..1			Metadata
+0..1			Metadata 
+
+		Element:		TopicCode
+		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent). The result of the evaluation is found in the FindingResult. "
+		Value:			CodeableConcept
+
 
 	Element:		Narrative
 	Concept:		TBD
@@ -136,7 +142,7 @@ Description:	"Elements that belong to all information items."
 
 
 EntryElement:	Composition
-Based on:		InformationItem
+Based on:		DomainResource
 Description:	"A composition represents a set of Entries sharing common provenance, adocument such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 //1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
 //1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
@@ -144,10 +150,10 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 0..*            Section
 
     Element:        Section
-    Based on:       InformationItem
+    Based on:       DomainResource
     Description:    "Represents a section containing entries in a composition."
     //0..1            Title
-    0..*            InformationItem
+    0..*            DomainResource
 
 
 /*
@@ -159,7 +165,7 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 	Element:		DerivedFrom
 	Concept:		TBD
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
-	Value:			ref(InformationItem)
+	Value:			ref(DomainResource)
 	
 	Element:		SignedBy
 	Description:	"Provenance information specific to the signing of the clinical statement."

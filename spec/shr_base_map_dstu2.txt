@@ -2,9 +2,8 @@ Grammar:	Map 5.1
 Namespace:	shr.base
 Target:		FHIR_DSTU_2
 
-//Entry maps to DomainResource:
 
-InformationItem maps to DomainResource:
+DomainResource maps to DomainResource:
 	_Entry.EntryId maps to id
 	Language maps to language
 	Narrative maps to text
@@ -16,7 +15,7 @@ InformationItem maps to DomainResource:
 
 Composition maps to Composition:
     Section maps to section
-    Section.InformationItem maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
@@ -25,7 +24,7 @@ Narrative maps to Narrative:
 Observation maps to Observation:
 	Patient maps to subject
 //	Metadata.InformationSource maps to performer
-	FindingTopicCode maps to code
+	TopicCode maps to code
 	FindingMethod maps to method
 	// dstu 2 change (name change)
 	CommentOrDescription maps to comments  
@@ -44,7 +43,7 @@ Observation maps to Observation:
 // dstu 2 change (no such attribute) 
 //	ReferenceRange.ApplicableAgeRange maps to referenceRange.age  
 	NonIndependentFinding maps to component (slice on = code.coding.code; slice strategy = includes)
-	NonIndependentFinding.FindingTopicCode maps to component.code  
+	NonIndependentFinding.TopicCode maps to component.code  
 	NonIndependentFinding.FindingResult maps to component.value[x]
 	NonIndependentFinding.ExceptionValue maps to component.dataAbsentReason
 	 // dstu 2 change (no such attribute)
@@ -76,7 +75,7 @@ ConditionPresentAssertion maps to http://fhir.org/guides/argonaut/StructureDefin
 	Patient maps to patient
 	Category maps to category
 	ObjectIdentifier maps to identifier
-	FindingTopicCode maps to code
+	TopicCode maps to code
 	AnatomicalLocation[AnatomicalLocationPrecoordinated] maps to bodySite
 	AnatomicalLocation[AnatomicalLocationStructured] maps to http://hl7.org/fhir/StructureDefinition/condition-targetBodySite 
 	Encounter maps to encounter
