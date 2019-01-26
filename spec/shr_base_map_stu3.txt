@@ -15,8 +15,10 @@ DomainResource maps to DomainResource:
 	Metadata.Tag maps to meta.tag
 
 Composition maps to Composition:
+	TopicCode maps to type
     Section maps to section
     Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+	Section.Section maps to section.section
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
@@ -38,16 +40,16 @@ Observation maps to Observation:  // TODO: observationresults is only for labs
 	ReferenceRange.Type maps to referenceRange.type
 	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
 	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
-	NonIndependentFinding maps to component (slice on = code.coding.code; slice strategy = includes)
-	NonIndependentFinding.TopicCode maps to component.code  
-	NonIndependentFinding.FindingResult maps to component.value[x]
-	NonIndependentFinding.ExceptionValue maps to component.dataAbsentReason
-	//NonIndependentFinding.Interpretation maps to component.interpretation
-	NonIndependentFinding.ReferenceRange maps to component.referenceRange
+	ObservationComponent maps to component (slice on = code.coding.code; slice strategy = includes)
+	ObservationComponent.TopicCode maps to component.code  
+	ObservationComponent.FindingResult maps to component.value[x]
+	ObservationComponent.DataAbsentReason maps to component.dataAbsentReason
+	//ObservationComponent.Interpretation maps to component.interpretation
+	ObservationComponent.ReferenceRange maps to component.referenceRange
 	fix related.type to #has-member
 	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 	FindingResult maps to value[x]
-	ExceptionValue maps to dataAbsentReason
+	DataAbsentReason maps to dataAbsentReason
 	Interpretation maps to interpretation
 //	Issued maps to issued
 	FindingStatus maps to status

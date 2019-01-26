@@ -34,7 +34,7 @@ A person's Employment Status could change over time, for example, a person could
 Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status.' However, in ODH Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
 				FindingResult from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 				TopicCode is LNC#74165-2 "HistoryOfEmploymentStatus"
-0..0			NonIndependentFinding
+0..0			ObservationComponent
 0..0			FocalSubjectModifier
 
 EntryElement:	RetirementDate
@@ -45,7 +45,7 @@ A person can be both retired and employed (an Employment Status); most often, a 
 Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 				FindingResult value is type dateTime
 				TopicCode is LNC#87510-4 "Date of Retirement"
-0..0			NonIndependentFinding
+0..0			ObservationComponent
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
 0..0			FocalSubjectModifier
 
@@ -56,7 +56,7 @@ Description:	"Self-reported date range(s) when a person worked in what is consid
 Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
 Value:			TimePeriod
 				TopicCode is LNC#87511-2
-0..0			NonIndependentFinding
+0..0			ObservationComponent
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
 0..0			FocalSubjectModifier // only patient
 
@@ -69,14 +69,14 @@ Example: a person has worked for a total of 30 years as a 'secretary' (Occupatio
 Usual Work does not include work that was unpaid or voluntary."
 				FindingResult from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 				TopicCode is LNC#21843-8	
-				NonIndependentFinding
+				ObservationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
 1..1			RelevantTime 
 				RelevantTime value is type TimePeriod
 
 	Element:		UsualIndustry
-	Based on:		CodedNonIndependentFinding
+	Based on:		CodedObservationComponent
 	Concept:		LNC#21844-6 "History of Usual industry"
 	Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
 	For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction."  // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
@@ -86,7 +86,7 @@ includes 0..1	UsualOccupationDuration
 					TopicCode is LNC#21844-6 "History of Usual industry"
 
 	Element:		UsualOccupationDuration
-	Based on:		QuantitativeNonIndependentFinding
+	Based on:		QuantitativeObservationComponent
 	Concept:		LNC#74163-7 "Usual occupation duration"
 	Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
 	//				FindingResult.Quantity.Units is UCUM#a
@@ -100,10 +100,10 @@ A person can have more than one job at the same time and multiple jobs over time
 A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 0..0			FindingResult
-0..0			ExceptionValue
+0..0			DataAbsentReason
 				TopicCode is LNC#11341-5 "History of Occupation"
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	Occupation
 includes 0..1	PastOrPresentIndustry
 includes 0..1	WorkClassification
@@ -118,7 +118,7 @@ includes 0..1	IsCurrentJob
 				RelevantTime value is type TimePeriod
 
 	Element:		Occupation
-	Based on:		CodedSocialHistoryObservation
+	Based on:		CodedObservationComponent
 	Concept:		LNC#85659-1 "Occupation CDC Census code"
 					FindingResult from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 
@@ -136,7 +136,7 @@ includes 0..1	IsCurrentJob
 		Description:	"An Organization as defined in FHIR"
 
 	Element:		PastOrPresentIndustry
-	Based on:		CodedSocialHistoryObservation
+	Based on:		CodedObservationComponent
 	Concept:		LNC#86188-0 	
 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
 //	Value:			CodeableConcept from IndustryVS 
@@ -144,7 +144,7 @@ includes 0..1	IsCurrentJob
 					TopicCode is LNC#86188-0
 
 	Element:		WorkClassification
-	Based on:		CodedSocialHistoryObservation
+	Based on:		CodedObservationComponent
 	Concept:		LNC#85104-8 "Compensation and sector employment type"
 	Description:	"Type of compensation and sector for a person's job, such as 'paid work, self-employed' or 'voluntary work', as reported by the person."
 	//Value:			CodeableConcept from WorkClassificationVS  
@@ -152,7 +152,7 @@ includes 0..1	IsCurrentJob
 					TopicCode is LNC#85104-8 "Compensation and sector employment type"
 
 	Element:		SupervisoryLevel
-	Based on:		CodedNonIndependentFinding
+	Based on:		CodedObservationComponent
 	Concept:		LNC#87707-6
 	Description:	"A coded indicator of responsibilities for directing work and personnel management responsibilities for a person's job, as reported by the person. For US military jobs, this is pay grade."
 	//Value:			CodeableConcept from SupervisoryLevelVS 
@@ -160,21 +160,21 @@ includes 0..1	IsCurrentJob
 					TopicCode is LNC#87707-6
 
 	Element:		JobDuty
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Concept:		LNC#63761-1
 	Description:	"A regular action performed by a person at a job, as reported by the person. For example, a Job Duty could be 'carry construction supplies' for a job with the Occupation 'construction laborer.' "
 					FindingResult value is type string
 					TopicCode is LNC#63761-1
 	
 	Element:		OccupationalHazard
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Concept:		LNC#87729-0
 	Description:	"A hazard that is specific to a person's work or work environment at one job and with which the person might come in contact, as reported by the person. A hazard is a source of potential harm to a person’s physical or mental health. Hazards can be biological, physical, psychological, chemical, or radiological in nature."
 					FindingResult value is type string
 					TopicCode is LNC#87729-0
 					
 	Element:		WorkSchedule
-	Based on:		CodedNonIndependentFinding
+	Based on:		CodedObservationComponent
 	Concept:		LNC#74159-5
 	Description:	"Typical arrangement of working hours for a person's job, as reported by the person."
 	//Value:			CodeableConcept from WorkScheduleVS 
@@ -182,7 +182,7 @@ includes 0..1	IsCurrentJob
 					TopicCode is LNC#74159-5
 
 	Element:		WeeklyWorkDays
-	Based on:		QuantitativeNonIndependentFinding
+	Based on:		QuantitativeObservationComponent
 	Concept:		LNC#74160-3
 	Description:	"The average number of days per week that a person spends performing their duties for work."
 // TODO: bug preventing this
@@ -191,7 +191,7 @@ includes 0..1	IsCurrentJob
 	0..0			ReferenceRange
 							
 	Element:		DailyWorkHours
-	Based on:		QuantitativeNonIndependentFinding
+	Based on:		QuantitativeObservationComponent
 	Concept:		LNC#87512-0
 	Description:	"The average number of hours in a day that a person spends performing their duties for work."
 	//				FindingResult.Quantity.Units is UCUM#h
@@ -200,7 +200,7 @@ includes 0..1	IsCurrentJob
 
 // Last minute addition 8/17 based on Genny's comment 
 	Element:		IsCurrentJob
-	Based on:		CodedNonIndependentFinding
+	Based on:		CodedObservationComponent
 	Description:	"A flag indicating if this is the person's current job (at the time the resource was last updated)."
 					FindingResult from YesNoVS
 
@@ -215,7 +215,7 @@ Description:	"A simplified observation for social histories."
 0..0			PanelMembers
 0..0			Device
 0..0			Specimen
-0..0			ExceptionValue
+0..0			DataAbsentReason
 0..0			Interpretation
 0..0			Encounter
 //0..0			DeltaFlag
@@ -233,7 +233,7 @@ Description:	"The result of social history questions, whose answer is expressed 
 
 /* UsualWork is in the value element
 	Element:		UsualWork
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Concept:		LNC#21843-8 "History of Usual Occupation" // Occupation is LNC#74287-4
 	Description:	"A person's work or business"
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010	// VS defined in FHIR 3.2 and not found in 3.0.1
@@ -243,7 +243,7 @@ Based on:		CodedSocialHistoryObservation
 Description:	"History of service in the US military."
 				Category is OBSCAT#social-history
 				TopicCode is MTH#C3714797
-				NonIndependentFinding
+				ObservationComponent
 includes 1..1	MilitaryStatus
 includes 0..1 	MilitaryServiceDischargeStatus
 includes 0..1	MilitaryBranch
@@ -254,30 +254,30 @@ includes 0..1	ServiceConnectedDisability
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Description:	"The current connection to the US military."
 	Value:			CodeableConcept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
 	Concept:		TBD
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Description:	"How the subject was formally discharged from the US Military."
 	Value:			CodeableConcept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Description:	"The branch of the US military that the subject has served."
 	Value:			CodeableConcept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
 	Concept:		TBD
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Description:	"The time period of US military service."
 	Value:			CodeableConcept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
-	Based on:		NonIndependentFinding
+	Based on:		ObservationComponent
 	Concept:		TBD
 	Description:	"Percentage disability resulting from US Military Service."
 	Value:			Quantity with units UCUM#%

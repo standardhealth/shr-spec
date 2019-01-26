@@ -10,8 +10,8 @@ CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 // NOTE: Entry will eventually be deprecated, as its fields are really a part
-// of the implementation, NOT a part of the model. Once the CIMPL tooling
-// makes these implicit, Entry and its field elements can go away.
+// of the implementation, not part of the model. Once the CIMPL tooling
+// makes these implicit, Entry and its field elements will go away.
 Element: 		Entry
 Concept:		MTH#C1705654
 Description:	"Obsolete. Use DomainResource"
@@ -37,13 +37,13 @@ Description:	"Obsolete. Use DomainResource"
 Abstract Element: DomainResource
 Concept:		MTH#C1705654
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
-1..1			TopicCode // Question, test name, encounter type, condition, etc.
+1..1			TopicCode   // TopicCode makes sense at the DomainResource Level
 0..1			Narrative
 0..1			Language
 0..1			Metadata 
 
 		Element:		TopicCode
-		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent). The result of the evaluation is found in the FindingResult. "
+		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent). The result of the evaluation is found in the FindingResult."
 		Value:			CodeableConcept
 
 
@@ -81,12 +81,12 @@ Description:	"Elements that belong to all information items."
 	Value:			CodeableConcept
 	
 	Element:		SecurityLabel
-	Concept:		TBD
+	Concept:		MTH#C3858779 "security classification"
 	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
 	Value:			CodeableConcept
 	
 	Element:		Tag
-	Concept:		TBD
+	Concept:		MTH#C4280044  "Metatags"
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
 
@@ -143,17 +143,17 @@ Description:	"Elements that belong to all information items."
 
 EntryElement:	Composition
 Based on:		DomainResource
-Description:	"A composition represents a set of Entries sharing common provenance, adocument such as an extract from a patient record, a knowledge artifact, or a catalog definition."
+Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 //1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
 //1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
 //1..1            CreationTime  -- from Entry -- maps to date
 0..*            Section
 
     Element:        Section
-    Based on:       DomainResource
     Description:    "Represents a section containing entries in a composition."
     //0..1            Title
     0..*            DomainResource
+	0..*			Section
 
 
 /*

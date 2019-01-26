@@ -73,7 +73,7 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 				TopicCode is LNC#48676-1 "HER2 [Interpretation] in Tissue"
 				Specimen is type BreastSpecimen
 0..0			FindingMethod
-0..0 			NonIndependentFinding
+0..0 			ObservationComponent
 				PanelMembers.Observation
 includes 0..*	HER2byIHC
 includes 0..*	HER2byFISH				
@@ -84,17 +84,17 @@ Based on:		CodedLaboratoryObservation
 Concept:		LNC#85319-2
 Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
 				FindingResult from HER2byIHCScoreVS
-				ExceptionValue from HER2byIHCScoreNullVS
+				DataAbsentReason from HER2byIHCScoreNullVS
 				Interpretation from PositiveNegativeEquivocalVS
 				TopicCode is LNC#85319-2 "HER2 [Presence] in Breast cancer specimen by Immune stain"
 0..0			FindingMethod  // pre-coordinated in the TopicCode
 				Specimen is type BreastSpecimen
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	CompleteMembraneStainingPercent
 0..0			PanelMembers
 
 		Element:		CompleteMembraneStainingPercent
-		Based on:		QuantitativeNonIndependentFinding
+		Based on:		QuantitativeObservationComponent
 		Concept:		LNC#85328-3 "Cells.HER2 uniform intense membrane staining/100 cells"
 		Description:	"Percentage of cells with uniform intense complete membrane staining."
 // Awaiting bug fix
@@ -107,31 +107,31 @@ Based on:		LaboratoryObservation
 Concept:		LNC#85318-4   // Corrected 5/12/2018 by MK
 Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
 0..0			FindingResult
-0..0			ExceptionValue
+0..0			DataAbsentReason
 				TopicCode is LNC#85318-4  "HER2 [Presence] in Breast cancer specimen by FISH"
 				FindingMethod from HER2FISHMethodVS // single or double probe
 				Interpretation from PositiveNegativeEquivocalVS
 				Specimen is type BreastSpecimen
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	AverageHER2SignalsPerCell
 includes 0..1	AverageCEP17SignalsPerCell
 includes 0..1	HER2toCEP17Ratio
 0..0			PanelMembers
 
 		Element:		AverageHER2SignalsPerCell
-		Based on:		QuantitativeNonIndependentFinding
+		Based on:		QuantitativeObservationComponent
 		Concept:		LNC#74860-8
 		Description:	"Average number of HER2 signals per cell"
 		0..0			ReferenceRange
 		
 		Element:		AverageCEP17SignalsPerCell
-		Based on:		QuantitativeNonIndependentFinding
+		Based on:		QuantitativeObservationComponent
 		Concept:		LNC#74861-6
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 		0..0			ReferenceRange
 		
 		Element:		HER2toCEP17Ratio
-		Based on:		QuantitativeNonIndependentFinding
+		Based on:		QuantitativeObservationComponent
 		Concept:		LNC#49683-6
 		Description:	"HER2 to CEP17 Ratio (dual probe only)"
 		0..0			ReferenceRange
@@ -144,7 +144,7 @@ The current approach is that positive/negative designation is a value, even thou
 				TopicCode is LNC#16112-5
 				FindingResult from PositiveNegativeVS
 				Specimen is type BreastSpecimen			
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 0..0			PanelMembers
@@ -157,13 +157,13 @@ Based on discussion with Cancer Interoperability Group subject matter experts, t
 				TopicCode is LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"	
 				FindingResult from PositiveNegativeVS
 				Specimen is type BreastSpecimen			
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	NuclearPositivity
 includes 0..1	AverageStainingIntensity
 0..0			PanelMembers
 
 		Element:		NuclearPositivity
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		TBD  // apparently no LOINC code
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor.
 		We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
@@ -171,7 +171,7 @@ includes 0..1	AverageStainingIntensity
 
 		Element:		AverageStainingIntensity
 		Concept:		SCT#444775005 "Average intensity of positive staining neoplastic cells (observable entity)"
-		Based on:		CodedNonIndependentFinding
+		Based on:		CodedObservationComponent
 		Description:	"The degree or magnitude of staining (nuclear positivity) across cells in the specimen."
 						FindingResult from StainingIntensityVS
 
@@ -190,9 +190,9 @@ Based on:		CancerHistologicGrade
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 				TopicCode is LNC#44648-4
 				FindingResult from NottinghamCombinedGradeVS
-				ExceptionValue from NottinghamNullVS
+				DataAbsentReason from NottinghamNullVS
 				Specimen is type BreastSpecimen
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1 	TubuleFormationScore
 includes 0..1 	NuclearPleomorphismScore
 includes 0..1 	MitoticCountScore
@@ -202,24 +202,24 @@ includes 0..1 	MitoticCountScore
 //RMB: the CAP form has two additional options for each of these subcomponents: "only microinvasion present" and "no residual invasive carcinoma", both of which are situations where a histologic grade wouldn't be assigned. Because the our exceptions value set doesn't handle these options (and possibly others related to other data elements, should we allow for a string option to contain reasons for missing data? Otherwise the expection value set might become unruly.
 			Element:		TubuleFormationScore
 			Concept:		LNC#85321-8 "Granular differentiation"  // SHOULD BE LOINC
-			Based on:		CodedNonIndependentFinding
+			Based on:		CodedObservationComponent
 			Description:	"Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham."
 							FindingResult from TubuleFormationScoreVS  //TODO: Determine if it is better to use codes as opposed to a number 1, 2 or 3. Observations don't support integer or posInteger
-							ExceptionValue from NottinghamComponentNullVS
+							DataAbsentReason from NottinghamComponentNullVS
 
 			Element:		NuclearPleomorphismScore
 			Concept:		LNC#44645-0
-			Based on:		CodedNonIndependentFinding
+			Based on:		CodedObservationComponent
 			Description:	"Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
 							FindingResult from NuclearPleomorphismScoreVS
-							ExceptionValue from NottinghamComponentNullVS
+							DataAbsentReason from NottinghamComponentNullVS
 
 			Element:		MitoticCountScore
 			Concept:		LNC#85300-2
-			Based on:		CodedNonIndependentFinding
+			Based on:		CodedObservationComponent
 			Description:	"Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
 							FindingResult from MitoticCountScoreVS   // 1 to 3 //RMB: this shouldn't be different from TubuleFormationScore and NuclearPleomorphismScore. They have the same scoring mechanism. Suggest using local codes.
-							ExceptionValue from MitoticCountScoreNullVS
+							DataAbsentReason from MitoticCountScoreNullVS
 
 EntryElement:	OncotypeDxInvasiveRecurrenceScore
 Based on:		SimpleLaboratoryObservation
@@ -269,21 +269,21 @@ The is currently no LOINC code for Mammaprint test."
 
 		Element:		BreastCancerPrimaryTumorClassification
 		Concept:		SCT#78873005 "T category"
-		Based on:		CodedNonIndependentFinding
+		Based on:		CodedObservationComponent
 		Description:	"The size and extent of the primary tumor, based on criteria defined by the staging system being used."
 		Value:			CodeableConcept
 		0..1			StageSuffix
 
 		Element:		BreastCancerRegionalNodesClassification
 		Concept:		SCT#277206009 "N category"	//RMB: was LNC#59525-6, which is specific to AJCC 7th edition
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"The presence of metastases in regional lymph nodes, based on criteria defined by the staging system being used."
 		Value:			CodeableConcept
 		0..1			StageSuffix
 
 		Element:		BreastCancerDistantMetastasesClassification
 		Concept:		SCT#277208005 "M category (observable entity)"	//RMB: was LNC#59522-3, which is specific to AJCC 7th edition
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"The presence of distant metastases, based on criteria defined by the staging system being used."
 		Value:			CodeableConcept	
 
@@ -302,62 +302,62 @@ includes 0..1	OtherReceptorScoringSystem
 
 
 		Element:		Aneusomy
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		CAP#30478
 		Description:	"Aneusomy (as defined by vendor kit used)"
 		Value:			CodeableConcept from YesNoVS
 	
 		Element:		HeterogeneousSignals
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		CAP#30482 
 		Description:	"Whether In Situ Hybridization signals were heterogeneous."
 		Value:			CodeableConcept from YesNoVS
 		
 		Element:		PercentageAmplified
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		CAP#31073
 		Description:	"Percentage of cells with amplified HER2 signals"
 		Value:			Quantity with units UCUM#%
 
 		Element:		NuclearPositivity
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		TBD
 		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
 	
 		Element:		PrimaryAntibody
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		CAP#31092
 		Description:	""
 		Value:			CodeableConcept
 		
 		Element:		StainingControl
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Concept:		CAP#25895
 		Description:	"Whether control cells were present."
 		Value:			CodeableConcept from StainingControlVS if covered
 		
 		Element:		AllredProportionScore
 		Concept:		CAP#31054
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
 		Value:			IntegerQuantity
 
 		Element:		AllredIntensityScore
 		Concept:		CAP#29749
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			IntegerQuantity
 							
 		Element:		AllredTotalScore
 		Concept:		CAP#31056
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
 		Value:			IntegerQuantity  // unsignedInt -  limit to max of 8				
 
 		Element:		OtherReceptorScoringSystem
 		Concept:		CAP#31062
-		Based on:		NonIndependentFinding
+		Based on:		ObservationComponent
 		Description:	"A scoring system other than Allred."
 
 	Element: 		Ki-67LabelingIndex
@@ -366,7 +366,7 @@ includes 0..1	OtherReceptorScoringSystem
 	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
 	Value:		 	Quantity with units UCUM#%
 					TopicCode is LNC#29593-1
-					NonIndependentFinding
+					ObservationComponent
 	includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
 
 	Element:		S-PhaseFraction
@@ -385,11 +385,11 @@ Value:			CodeableConcept from PositiveNegativeVS
 0..0			ReferenceRange
 //0..0			DeltaFlag
 0..0			AnatomicalLocationd
-				NonIndependentFinding
+				ObservationComponent
 includes 0..1	Refseq
 
 			Element:		Refseq
-			Based on:		NonIndependentFinding
+			Based on:		ObservationComponent
 			Concept:		TBD
 			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept from RefseqVS
@@ -399,7 +399,7 @@ Concept:		TBD
 Based on:		Observation
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 				Observation.TopicCode is TBD#TBD
-0..0			NonIndependentFinding
+0..0			ObservationComponent
 				PanelMembers.EvaluationresultRecorded
 includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
