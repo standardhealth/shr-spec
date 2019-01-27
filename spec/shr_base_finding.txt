@@ -10,12 +10,12 @@ Description:		"A finding that does not or cannot stand alone, or a component of 
 // how do we handle a normal? (physical exam normal)
 // exclusions? (diabetes excluded)
 1..1			TopicCode
-0..1			FindingResult
+0..1			DataValue
 0..1			DataAbsentReason
 0..1			ReferenceRange  // included here only because components can have reference range which usually needs to be explicitly zeroed out. If it is not part of DataElement, it will appear in FHIR Profiles.
 0..1			Interpretation
 
-		Element:		FindingResult
+		Element:		DataValue
 		Description:	"The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
 		Value:			CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod
 		// exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Media because it is not present in FHIR v4
@@ -46,27 +46,26 @@ Description:		"A finding that does not or cannot stand alone, or a component of 
 Abstract Element:	CodedObservationComponent
 Based on:			ObservationComponent
 Description:		"A non-independent finding whose result is a concept code."
-					FindingResult value is type CodeableConcept
+					DataValue value is type CodeableConcept
 0..0				ReferenceRange					
 
 Abstract Element:	QuantitativeObservationComponent
 Based on:			ObservationComponent
 Description:		"A non-independent finding whose result is a quantity."
-					FindingResult value is type Quantity
+					DataValue value is type Quantity
 
 Abstract Element:	ConditionOrObservation
 Based on:		DomainResource 
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 1..1			TopicCode
-0..1			FindingResult
+0..1			DataValue
 0..1			DataAbsentReason
 0..1			Patient
 0..1			Encounter
-1..1			FindingStatus
-0..1			SpecificFocusOfFinding
+0..1			Focus
 
-		Element:		SpecificFocusOfFinding
-		Description:	"The specific observed item finding relates to, for example, a related person or condition. The SpecificFocusOfFinding is only required if the thing observed is different than the patient. It should not be an anatomical location. The focus for cancer progression would be the cancer condition. If the property is wound length, the focus would be an instance of a wound. In the case of an assertion of existence, the focus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
+		Element:		Focus
+		Description:	"The specific person or condition this resource relates to. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. The focus for cancer progression would be the cancer condition. If the observed property is wound length, the focus would be an instance of a wound. In the case of an assertion of existence, the focus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
 		Value:			ref(DomainResource) // or CodeableConcept or string or CodeableConcept or Identifier 
 
 		Element:		RelevantTime
@@ -75,27 +74,17 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 
-		Element:		FindingMethod
-		Concept:		TBD
-		Description:	"The technique used to create the finding, for example, the specific imaging technical, lab test code, or assessment vehicle."
-		Value:			CodeableConcept
-
-		Element:		FindingStatus
-		Concept:		TBD
-		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
-		Value:			CodeableConcept
 
 EntryElement:	Observation
 Based on:		ConditionOrObservation
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. The SpecificFocusOfFinding can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the TopicCode describes the aspect or property of the subject being observed or measured. The TopicCode is the 'question code' that pairs to the 'answer' contained in the Value."
-0..1			FindingMethod
+0..1			Method
 0..1			RelevantTime
 0..*			ObservationComponent
-				FindingStatus from http://hl7.org/fhir/ValueSet/observation-status
-//0..1			DeltaFlag
+1..1			PerformanceStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			AnatomicalLocation
 0..1			CommentOrDescription	
@@ -103,7 +92,9 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 0..1			Device
 0..1			PanelMembers
 0..1			ReferenceRange
+//0..1			DeltaFlag
 
+// TODO --- this is redundant with InformationSource
 		Element:    	Observer
 		Concept:        MTH#C0449416
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
@@ -126,13 +117,13 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 		Concept:		TBD
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. Body position and body site are also qualifiers, but handled separately. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
 		Value:			CodeableConcept or ref(Observation)
-*/
+
 
 		Element:		DeltaFlag
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
 		Value:			CodeableConcept from DeltaFlagVS
-				
+*/				
 //		Element:		Issued
 //		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
 //		Value:			instant
@@ -154,7 +145,7 @@ EntryElement:	CodedNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
-				FindingResult value is type CodeableConcept
+				DataValue value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
@@ -166,7 +157,7 @@ Description:	"An observation whose result is a code, and also having no componen
 EntryElement:	ComponentOnlyNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation with components, but without a result value or panel members."
-0..0			FindingResult
+0..0			DataValue
 0..0			DataAbsentReason
 0..0			PanelMembers
 0..0			ReferenceRange
@@ -186,7 +177,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test."
-				FindingResult value is type CodeableConcept
+				DataValue value is type CodeableConcept
 0..0			ReferenceRange
 
 EntryElement:	SimpleLaboratoryObservation
@@ -205,8 +196,7 @@ Description:	"A coded finding from a laboratory test without further panel membe
 Abstract Element:   Panel
 Based on:       Observation
 Description:    "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
-0..0            FindingResult  // true panel composed of observations only
-0..0            ObservationComponent  // true panel composed of observations only
+0..0            ObservationComponent
 0..0		    AnatomicalLocation
 0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
 0..0			AnatomicalLocation.AnatomicalLocationStructured
@@ -217,77 +207,58 @@ Description:    "A set of independent but related observations that are often pr
 Abstract Element:	HeadlessPanel
 Based on:		Panel
 Description:	"A panel that does not have an overall value that summarizes the entire panel."
-0..0			FindingResult
+0..0			DataValue
 0..0			DataAbsentReason
 0..0            ReferenceRange
 
 
-//---------- Assertions -------------
-
-Abstract Element:	ExistenceAssertion
+Abstract Element:	ConditionPresentOrAbsent
 Based on:			ConditionOrObservation
-Description:		"An assertion of a relationship, situation, condition, or other phenomenon is present or absent, or an event has (or has not) taken place.
-For assertions, the TopicCode represents the thing asserted to be present or absent; i.e., the type of condition, event, relationship or phenomenon that is being asserted to exist or not exist."
-					TopicCode is type ConditionOrDiagnosisCode
-					FindingResult is type PresentOrAbsent
-// Leave DataAbsentReason in, to represent the case where the presence or absence of something was not evaluated
-0..0				ReferenceRange
-0..1				ObjectIdentifier  // TODO: 0..* business identifier?
-//0..1				Certainty
-					FindingStatus value is type CodeableConcept
+Description:		"An assertion of a condition being present or absent.
+'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. The TopicCode represents the condition asserted to exist or not exist. DataAbsentReason can represent the case where the presence or absence of something was not evaluated."
+				TopicCode is type ConditionOrDiagnosisCode
+				DataValue value is type CodeableConcept
+				DataValue from PresentAbsentVS
+0..*			Identifier
+0..1			VerificationStatus
+0..1			Evidence
 
 		Element:		ConditionOrDiagnosisCode
 		Based on:		TopicCode
 		Description:	"A specific code for the condition being determined to be present or absent."
 		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 
-		Element:		PresentOrAbsent
-		Based on:		FindingResult
-		Description:	"A specific code for the condition being determined to be present or absent."
-		Value:			CodeableConcept from PresentAbsentVS
-
-		Element: 		ObjectIdentifier
-		Description:	"For later reference, an identifier for the object implied by the assertion, which allows the object to be tracked over time. For example, a wound number is used to track a specific wound's condition over time."
-		Value:			Identifier
-
-		Element:		Certainty   // TODO: why not move to ConditionOrObservation?
-		Concept:		TBD
-		Description:	"The degree of confidence in a conclusion or assertion."
+		Element:		VerificationStatus
+		Description:	"The verification status to support the clinical status of the condition (ref: http://hl7.org/fhir/R4/condition-definitions.html#Condition.verificationStatus)"
 		Value:			CodeableConcept
 
-Abstract Element:	PresenceAssertion
-Based on:			ExistenceAssertion
-Description:		"ConditionOrObservation that a phenomena is present."
-// TODO: Not sure we should have to say .CodeableConcept for the constraint below to work (currently causes error)
-1..1				PresentOrAbsent is SCT#52101004 "Present (qualifier value)"
-0..0				DataAbsentReason	
-//0..1				Certainty from PresenceCertaintyVS
+		Element:		Evidence
+		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
+		0..*		Manifestation
+		0..*		DomainResource
+
+				Element:	Manifestation
+				Description: "Clinical symptoms/signs."
+				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
 
-Abstract Element:	AbsenceAssertion
-Based on:			ExistenceAssertion
-Description:		"ConditionOrObservation that an entity, person, role, condition, or phenomenon is absent."
-1..1				PresentOrAbsent is SCT#2667000 "Absent (qualifier value)"
-0..0				DataAbsentReason		
-//0..1				Certainty from AbsenceCertaintyVS
-
-
-EntryElement:	ConditionPresentAssertion
-Based on:		PresenceAssertion
-Concept:		TBD
-Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
+EntryElement:	ConditionPresent
+Based on:			ConditionPresentOrAbsent
+Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
+//TODO: 0..1			DataValue is SCT#52101004 "Present (qualifier value)"
+0..0			DataAbsentReason
 				Metadata.InformationSource value is type ref(PatientOrPractitionerOrRelatedPerson)
 1..1			Patient
-0..0			SpecificFocusOfFinding  // maybe a family member?
+0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			AnatomicalLocation
+1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			StageInformation
 0..1			Onset
-0..1			Abatement   // TODO: change abatement to an Observation
+0..1			Abatement
 // Stuff from CIMI eliminated
-//0..1			FindingMethod
 //0..1			WhenClinicallyRecognized
 //0..1			PresentOnAdmission
 //0..*			ConditionCause
@@ -359,52 +330,33 @@ Description:	"A condition that is or may be present in a subject. 'Condition' is
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
-
-EntryElement:	ConditionAbsentAssertion
-Based on:		AbsenceAssertion
+EntryElement:	ConditionAbsent
+Based on:		ConditionPresentOrAbsent
 Concept:		MTH#C0277541  "no disease present"
 Description:	"A finding that a condition is or was not present in the subject at a certain time or time period, not necessarily the time the information is gathered."
+//TODO: 1..1			DataValue is SCT#2667000 "Absent (qualifier value)"
+0..0			DataAbsentReason
 1..*			Category from ConditionCategoryVS
+				VerificationStatus is #refuted
 0..*			AnatomicalLocation
 				
 EntryElement:	ClinicalNote
 Based on:		SimpleNonLaboratoryObservation
 Concept:		MTH#C0747978 "Progress Note"
-Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the FindingResult field, since this is the first place to look for a result that is a narrative."
+Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the DataValue field, since this is the first place to look for a result that is a narrative."
 				TopicCode is MTH#C0747978 "Progress Note"
-				FindingResult value is type string
+				DataValue value is type string
 0..0			ReferenceRange
 1..1			Patient
-//1..1			CommentOrDescription // put into FindingResult
-
-EntryElement:	QuestionAnswer
-Based on:		SimpleNonLaboratoryObservation
-Concept:		TBD
-Description:	"A simple question-answer pair. TopicCode should contain the identifying code for the question, and the FindingResult the answer. FindingResult is not constrained because the answer could be a string, concept code, number, etc."
-0..0			ReferenceRange
-1..1			Patient
-0..1			QuestionText
-
-		Element:	QuestionText
-		Concept:	TBD
-		Description: "The text of the question as it should be asked or is phrased in questionnaire."
-		Value:		string
-
-
-Abstract Element:	RelationshipExistenceAssertion
-Based on:			ExistenceAssertion
-Description:		"An assertion of a realtionship between two things being either present or absent. The subject of the relationship is is the Patient (or SpecificFocusOfFinding, if given) and the object of the relationship is .
-For relationships, TopicCode describes the relationship, e.g., Father or Mother."
-Value:				CodeableConcept from PresentAbsentVS
-
+//1..1			CommentOrDescription // put into DataValue
 
 EntryElement:	BodyStructurePresent
-Based on:		PresenceAssertion
+Based on:		ConditionPresent
 Description:	"A body structure such as wound or tumor, observed to be present in a patient."
 1..1			Patient
 0..1			AnatomicalLocationStructured
 0..*			Media
 0..1			RelevantTime
-0..0			SpecificFocusOfFinding
+0..0			Focus
 0..0			ReferenceRange
 0..0			DataAbsentReason
