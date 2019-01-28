@@ -34,37 +34,49 @@ Description:	"Obsolete. Use DomainResource"
 	Description:	"The class of the item, as a URI."
 	Value:				uri
 
-Abstract Element: DomainResource
-Concept:		MTH#C1705654
+
+Abstract Element:	Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
+0..1			Metadata
+0..1			Language from http://hl7.org/fhir/ValueSet/languages if covered  // DSTU 2 change -- language has required binding in Argonaut
+0..1			ImplicitRules
+
+	Element:		Language
+	Concept:		MTH#C0023008
+	Description: 	"A human language, spoken or written."
+	Value:			CodeableConcept
+
+	Element:		ImplicitRules
+	Description: 	"A set of rules under which this content was created"
+	Value:			uri
+
+
+Abstract Element: DomainResource
+Based on:		Resource
+Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 1..1			TopicCode   // TopicCode makes sense at the DomainResource Level
 0..1			Narrative
-0..1			Language
-0..1			Metadata
 
 		Element:		TopicCode
 		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent)."
 		Value:			CodeableConcept
 
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	1..1			NarrativeText
-	1..1			NarrativeQualifier
+		Element:		Narrative
+		Concept:		TBD
+		Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+		1..1			NarrativeText
+		1..1			NarrativeQualifier
 
-			Element:		NarrativeText
-			Concept:		TBD
-			Description:	"Text of narrative, in xhtml."
-			Value:			xhtml
+				Element:		NarrativeText
+				Description:	"Text of narrative, in xhtml."
+				Value:			xhtml
 
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
+				Element:		NarrativeQualifier
+				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
 
 
 Element:		Metadata
-Concept:		TBD
 Description:	"Elements that belong to all information items."
 0..1			VersionId
 0..1			LastUpdated
@@ -76,7 +88,7 @@ Description:	"Elements that belong to all information items."
 0..1			AuthoredDateTime
 
 	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., entered in error."
+	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error."
 	Value:			CodeableConcept
 	
 	Element:		SecurityLabel
@@ -88,6 +100,16 @@ Description:	"Elements that belong to all information items."
 	Concept:		MTH#C4280044  "Metatags"
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
+
+	Element:		AuthoredDateTime
+	Concept:		TBD
+	Description:	"The time the information was recorded; usually, when the information item was created."
+	Value:			dateTime
+
+	Element: 		LastUpdated
+	Concept:		TBD
+	Description:	"The most recent date the information item was changed."
+	Value:			instant
 
 	Element: 		InformationSource
 	Concept:		TBD
@@ -129,15 +151,6 @@ Description:	"Elements that belong to all information items."
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
 
-	Element:		AuthoredDateTime
-	Concept:		TBD
-	Description:	"The time the information was recorded; usually, when the information item was created."
-	Value:			dateTime
-
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The most recent date the information item was changed."
-	Value:			instant
 
 
 EntryElement:	Composition
