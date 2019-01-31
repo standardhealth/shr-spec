@@ -75,7 +75,7 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 1..1			TopicCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.20.2.6/expansion if covered
 1..1			Identifier is type WoundIdentifier
 0..1			ConditionCause is type WoundTypeEtiology
-1..1			AnatomicalLocationStructured is type WoundAnatomicalLocation
+1..1			BodySite is type WoundBodySite
 0..0			Severity  // not sure if zeroing it out is wise, but severity is not part of LOINC panel
 0..0			Criticality
 0..0			Device
@@ -91,10 +91,10 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 		Description:	"A specialization of condition cause, specific to the causes of injuries (or not having injury in the wound absent context)."
 		Value: 		CodeableConcept from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.3/expansion  // should be from http://loinc.org/vs/LL4936-2 
 
-		Element:	WoundAnatomicalLocation
-		Based on:	AnatomicalLocationStructured
+		Element:	WoundBodySite
+		Based on:	BodySite
 		Concept:	LNC#39111-0 "Body Site"
-					AnatomicalLocationOrLandmarkCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion
+					BodySiteCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion
 		1..1 		Laterality
 		0..0		AnatomicalDirection
 		0..0		ClockDirection
@@ -103,10 +103,10 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 EntryElement:	WoundAbsenct
 Based on:		ConditionAbsent
 Description:	"Documents the absence of a wound at a given body site. 
-No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundAnatomicalLocation."
+No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundBodySite."
 1..1			TopicCode is SCT#416462003 "Wound (disorder)"  
 1..1			Category is OBSCAT#exam
-1..1			AnatomicalLocationStructured is type WoundAnatomicalLocation
+1..1			BodySite is type WoundBodySite
 
 //--------------- Wound Assessment -------------------------
 
@@ -118,7 +118,7 @@ Description:	"Group of observations regarding the properties and severity of a w
 0..0			DataAbsentReason
 1..1			WoundIdentifier
 				Interpretation is type WoundAssessmentInterpretation
-0..0			AnatomicalLocation // carried by wound assertion
+0..0			BodySite // carried by wound assertion
 0..0			Device	
 				TopicCode is LNC#39135-9
 0..0			ReferenceRange		
@@ -206,7 +206,7 @@ Concept:		LNC#89254-7
 Description:	"The appearance of the base (bed) of the wound, together with the percentage of the bed with each type of appearance."
 1..1			WoundIdentifier
 				TopicCode is LNC#89254-7
-0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			BodySite  // location is given by the wound assertion	
 0..0			Device	
 				ObservationComponent
 includes 1..1	WoundBedAppearance
@@ -231,7 +231,7 @@ Concept:		TBD
 Description:	"Color of part or all of the wound base (bed), and the percentage of the area with that color."
 1..1			WoundIdentifier
 				TopicCode is TBD#TBD
-0..0			AnatomicalLocation  // location is given by the wound assertion
+0..0			BodySite  // location is given by the wound assertion
 0..0			Device	
 				ObservationComponent
 includes 1..1	WoundBedColor
@@ -259,7 +259,7 @@ Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
 1..1			WoundIdentifier
 				TopicCode is LNC#89256-2
-0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			BodySite  // location is given by the wound assertion	
 0..0			Device				
 				ObservationComponent
 includes 1..1	WoundEdgeDescription
@@ -285,7 +285,7 @@ Concept:		LNC#89257-0
 Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
 1..1			WoundIdentifier
 				TopicCode is LNC#89257-0
-0..0			AnatomicalLocation  // location is given by the wound assertion
+0..0			BodySite  // location is given by the wound assertion
 0..0			Device	
 				ObservationComponent
 includes 0..1	WoundTunnelLength
@@ -315,7 +315,7 @@ Concept:		LNC#89258-8
 Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
 				TopicCode is LNC#89258-8
 1..1			WoundIdentifier
-0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			BodySite  // location is given by the wound assertion	
 0..0			Device	
 		 		ObservationComponent
 includes 0..1	WoundUnderminingLength
@@ -341,7 +341,7 @@ Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
 				TopicCode is LNC#72292-6
 1..1			WoundIdentifier
-0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			BodySite  // location is given by the wound assertion	
 0..0			Device	
 				ObservationComponent
 includes 0..1	WoundExudateAmount
@@ -391,7 +391,7 @@ Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
 				TopicCode is LNC#72287-6
 1..1			WoundIdentifier	
-0..0			AnatomicalLocation  // location is given by the wound assertion	
+0..0			BodySite  // location is given by the wound assertion	
 0..0			Device		
 				ObservationComponent
 includes 1..1	WoundLength

@@ -84,7 +84,7 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 0..*			ObservationComponent
 1..1			PerformanceStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
-0..1			AnatomicalLocation
+0..1			BodySite
 0..1			CommentOrDescription	
 0..1			Interpretation
 0..1			Device
@@ -169,7 +169,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 0..1			Specimen
-0..0			AnatomicalLocation  // Location is determined indirectly from Specimen.CollectionSite
+0..0			BodySite  // Location is determined indirectly from Specimen.CollectionSite
 				Category is OBSCAT#laboratory
 
 EntryElement:	CodedLaboratoryObservation
@@ -195,9 +195,7 @@ Abstract Element:   Panel
 Based on:       Observation
 Description:    "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
 0..0            ObservationComponent
-0..0		    AnatomicalLocation
-//0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
-//0..0			AnatomicalLocation.AnatomicalLocationStructured
+0..0		    BodySite
 0..0            Specimen
 0..0            Device
 
@@ -249,7 +247,7 @@ Description:		"A condition that is or may be present in a subject. 'Condition' i
 1..1			Patient
 0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
-0..*			AnatomicalLocation
+0..*			BodySite
 1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
@@ -336,7 +334,7 @@ Description:	"A finding that a condition is or was not present in the subject at
 0..0			DataAbsentReason
 1..*			Category from ConditionCategoryVS
 				VerificationStatus is #refuted
-0..*			AnatomicalLocation
+0..*			BodySite
 				
 EntryElement:	ClinicalNote
 Based on:		SimpleNonLaboratoryObservation
@@ -352,7 +350,7 @@ EntryElement:	BodyStructurePresent
 Based on:		ConditionPresent
 Description:	"A body structure such as wound or tumor, observed to be present in a patient."
 1..1			Patient
-0..1			AnatomicalLocationStructured
+0..1			BodySite
 0..*			Media
 0..1			RelevantTime
 0..0			Focus
