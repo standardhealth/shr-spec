@@ -80,17 +80,26 @@ Element:		Metadata
 Description:	"Elements that belong to all information items."
 0..1			VersionId
 0..1			LastUpdated
+//0..1			SourceSystem  // R4 only
 0..*			SecurityLabel
 0..*			Tag
-//0..1			RecordStatus
-0..1			InformationSource
-0..1			InformationRecorder
-0..1			AuthoredDateTime
 
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error."
-	Value:			CodeableConcept
-	
+	Element:		VersionId
+	Concept:		MTH#C0333052
+	Description:	"An identifier associated with the product that denotes a particular release iteration."
+	Value:			id
+
+	Element: 		LastUpdated
+	Concept:		TBD
+	Description:	"The most recent date the information item was changed."
+	Value:			instant
+
+/*
+	Element:		SourceSystem
+	Description:	"FHIR: This provides a minimal amount of Provenance information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc. 
+	FHIM: Identifies the computer system that created the medical record. This optional field may also be used to indicate that the medical record was originally created by a different organization from the one that is currently storing or utilizing the record in that the assigning authority of the Id could be set to that originating organization. This property is optional, as some systems will assume that all records that it contains originated in that system, however it is anticipated that it will become increasingly commonplace for records from multiple systems and organizations will be comingled in order to provide a complete picture of the patient's health record."
+	Value:			uri
+*/	
 	Element:		SecurityLabel
 	Concept:		MTH#C3858779 "security classification"
 	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
@@ -101,25 +110,35 @@ Description:	"Elements that belong to all information items."
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
 
-	Element:		AuthoredDateTime
-	Concept:		TBD
-	Description:	"The time the information was recorded; usually, when the information item was created."
-	Value:			dateTime
 
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The most recent date the information item was changed."
-	Value:			instant
+Abstract Element:	ClinicalStatement
+Based on:		DomainResource
+Description:	"This abstract class provides properties and behaviors common to entries in a medical record. This class allows for common representations data provenance, including the Author, the Data Enterer, the Verifier, etc."
+//0..1				RecordStatus
+0..1			Patient
+0..1			Encounter
+0..1			CreationDate
+0..1			Asserter
+0..1			Recorder
 
-	Element: 		InformationSource
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error. The record status is often spread aournd in different places, including validation status and active flags."
+	Value:			CodeableConcept
+
+	Element: 		Asserter
 	Concept:		TBD
-	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, another health record, an algorithm, device, etc."
+	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
 	Value:			Participant  // TODO: might have to change to Participation
 
-	Element:		InformationRecorder
+	Element:		Recorder
 	Concept:		TBD
 	Description:	"The recorder of the information, if other than the information originator. For example, the nurse taking a list of medications reported by the patient."
 	Value:			Participant  // TODO: might have to change to Participation
+
+	Element:		CreationDate
+	Concept:		TBD
+	Description:	"The date/time the information was asserted or created; usually, when the clinical statement was initially recorded."
+	Value:			dateTime
 
 		Element:		Participant
 		Concept:		MTH#C1550369

@@ -55,13 +55,11 @@ Description:		"A non-independent finding whose result is a quantity."
 					DataValue value is type Quantity
 
 Abstract Element:	ConditionOrObservation
-Based on:		DomainResource 
+Based on:		ClinicalStatement
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
-1..1			TopicCode
+1..1			TopicCode // cardinality constraint on existing property
 0..1			DataValue
 0..1			DataAbsentReason
-0..1			Patient
-0..1			Encounter
 0..1			Focus
 
 		Element:		Focus
@@ -94,7 +92,7 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 0..1			ReferenceRange
 //0..1			DeltaFlag
 
-// TODO --- this is redundant with InformationSource
+// TODO --- this is redundant with Asserter
 		Element:    	Observer
 		Concept:        MTH#C0449416
 		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
@@ -247,7 +245,7 @@ Based on:		ConditionPresentOrAbsent
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //TODO: 0..1			DataValue is SCT#52101004 "Present (qualifier value)"
 0..0			DataAbsentReason
-				Metadata.InformationSource value is type ref(PatientOrPractitionerOrRelatedPerson)
+				Asserter value is type ref(PatientOrPractitionerOrRelatedPerson)
 1..1			Patient
 0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
