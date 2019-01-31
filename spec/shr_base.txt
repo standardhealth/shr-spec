@@ -54,8 +54,9 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 Abstract Element: DomainResource
 Based on:		Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
-1..1			TopicCode   // TopicCode makes sense at the DomainResource Level
+1..1			TopicCode
 0..1			Narrative
+//0..1			RecordStatus
 
 		Element:		TopicCode
 		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent)."
@@ -74,6 +75,10 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 				Element:		NarrativeQualifier
 				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error. The record status is often spread aournd in different places, including validation status and active flags."
+	Value:			CodeableConcept
 
 
 Element:		Metadata
@@ -113,17 +118,13 @@ Description:	"Elements that belong to all information items."
 
 Abstract Element:	ClinicalStatement
 Based on:		DomainResource
-Description:	"This abstract class provides properties and behaviors common to entries in a medical record. This class allows for common representations data provenance, including the Author, the Data Enterer, the Verifier, etc."
+Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
 //0..1				RecordStatus
 0..1			Patient
 0..1			Encounter
 0..1			CreationDate
 0..1			Asserter
 0..1			Recorder
-
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error. The record status is often spread aournd in different places, including validation status and active flags."
-	Value:			CodeableConcept
 
 	Element: 		Asserter
 	Concept:		TBD
