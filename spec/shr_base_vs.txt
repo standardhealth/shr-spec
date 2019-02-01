@@ -5,23 +5,8 @@ CodeSystem:      SCT = http://snomed.info/sct
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     LNC = http://loinc.org
 
-/*
-ValueSet:			DiagnosticServiceVS
-Description:		"The type of laboratory service used in producing a laboratory result. Note -- we may want to include additional descendants of SCT#224891009 (Healthcare services)"
-SCT#310078000		"Microbiology service (qualifier) -- Laboratory concerned with cultures, to look for suspected pathogens."
-SCT#706900000		"Parasitology service (qualifier) -- Laboratory responsible for examining parasites, feces samples may be examined for evidence of intestinal parasites such as tapeworms or hookworms and others."
-SCT#708185002		"Virology service (qualifier) -- Laboratory concerned with identification of viruses in specimens such as blood, urine, and cerebrospinal fluid."
-SCT#708196005  		"Hematology service (qualifier) -- Laboratory that works with whole blood to do full blood counts, and blood films as well as many other specialised tests."
-SCT#310076001		"Biochemistry service (qualifier) -- Laboratory that usually receives serum or plasma and tests the serum for chemicals present in blood."
-SCT#708191000 		"Toxicology service (qualifier) -- Laboratory that mainly tests for pharmaceutical and recreational drugs. Urine and blood samples are submitted to this lab."
-SCT#708190004		"Immunology service (qualifier) -- Immunology/Serology laboratory uses the concept of antigen-antibody interaction as a diagnostic tool. Compatibility of transplanted organs is also determined."
-//#urinalysis 		"Laboratory tests urine for many analytes. Some health care providers have a urinalysis laboratory, while others don't."
-SCT#310074003		"Pathology service (qualifier)-- Surgical, cytopathology, or histopathology laboratory. Surgical pathology examines organs, limbs, tumors, fetuses, and other tissues biopsied in surgery such as breast mastectomies."
-SCT#310048009 		"Genetics service (procedure) - note: should be in the Snomed (qualifier) hierarchy - Laboratory that mainly performs DNA analysis."
-SCT#708178001 		"Cytogenetics service (qualifier) -- Laboratory that uses blood and other cells to get a karyotype. This can be helpful in prenatal diagnosis (e.g. Down's syndrome) as well as in cancer (some cancers have abnormal chromosomes)."
-*/
 
-ValueSet: 					ExceptionValueVS
+ValueSet: 					DataAbsentReasonVS
 Description:				"Reasons that a value associated with a test or other finding is missing. Includes all codes from 	http://hl7.org/fhir/ValueSet/data-absent-reason version 3.3.0 and additional codes covering other missing value circumstances."
 #unknown					"Unknown: The value is not known."
 #asked-unknown				"Asked But Unknown: The source human does not know the value."
@@ -46,12 +31,26 @@ Description:				"Reasons that a value associated with a test or other finding is
 #specimen-inadequate		"Missing due to a problem with the specimen, e.g. inadequate specimen, contamination, clotting, improper tube type, improper storage, too small, etc."
 #instrument-malfunction		"Missing due to instrument malfunction."
 
+ValueSet:            LaboratoryCodeVS
+Description:         "Laboratory codes drawn from LOINC."
+                    Includes codes from LNC
 
 ValueSet:       PresentAbsentVS
 Description:    "Indicator if the assertion is assertion of presence or absence"
 SCT#52101004    "Present (qualifier value)"
 SCT#2667000     "Absent (qualifier value)"
 
+ValueSet:				ConditionCategoryVS
+Description:            "A category assigned to the condition, for example, a disease, concern, symptom, adverse reaction, functional impairment, or structural abnormality."
+#disease				"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms or that affects a specific location and is not simply a direct result of physical injury."
+#functional_impairment	"A disability experienced by the subject."
+#structural_abnormality	"An abnormality of physiologic structure."
+#concern				"Something the subject is worried about, which may or may not have yet been manifested. The object of the concern does not have to be a medical disorder."
+#symptom				"A sign or manifestation of a deeper cause, of known or unknown etiology, e.g. pain or ringing in the ears."
+#adverse_reaction		"An adverse reaction to an intervention."
+
+
+/*
 ValueSet:			PresenceCertaintyVS
 Description:		"A code describing whether the finding in question is present, possible, suspected, etc."
 //SCT#36692007 		"Known" 
@@ -88,20 +87,8 @@ Description:		"A code describing the sense in which a finding is a goal or objec
 SCT#703039001		"Health objective"
 SCT#410518001		"Goal"
 
-
 ValueSet:			DeltaFlagVS
 Concept:			MTH#C1705241
-Description: 		"Indicators for degree of change (delta) from the last or previous measurement."
-                    Includes codes descending from SCT#263703002  "Changed status (qualifier value)"
-// has values decreased, decreased relative to previous, improved, increased, increased relative to previous, maintained stablized, worse
-// Also see LOINC #89253-9 	Trend ... has values improved, deteriorated, stablized, resolved
-
-ValueSet:            LaboratoryCodeVS
-Description:         "Laboratory codes drawn from LOINC."
-                    Includes codes from LNC
-
-/*
-ValueSet:			DeltaFlagVS
 Description:        "Change patterns and trends, including resolved."
 Includes codes descending from SCT#385634002 "Change patterns (qualifier value)"
 //SCT#58158008	    "Stable (qualifier value)"
@@ -110,13 +97,24 @@ Includes codes descending from SCT#385634002 "Change patterns (qualifier value)"
 //SCT#260369004		"Increasing (qualifier value)"
 //SCT#260371004		"Decreasing (qualifier value)"
 SCT#723506003       "Resolved (qualifier value)"
-*/
 
-ValueSet:				ConditionCategoryVS
-Description:            "A category assigned to the condition, for example, a disease, concern, symptom, adverse reaction, functional impairment, or structural abnormality."
-#disease				"A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms or that affects a specific location and is not simply a direct result of physical injury."
-#functional_impairment	"A disability experienced by the subject."
-#structural_abnormality	"An abnormality of physiologic structure."
-#concern				"Something the subject is worried about, which may or may not have yet been manifested. The object of the concern does not have to be a medical disorder."
-#symptom				"A sign or manifestation of a deeper cause, of known or unknown etiology, e.g. pain or ringing in the ears."
-#adverse_reaction		"An adverse reaction to an intervention."
+ValueSet:			DeltaFlagVS
+Description: 		"Indicators for degree of change (delta) from the last or previous measurement."
+                    Includes codes descending from SCT#263703002  "Changed status (qualifier value)"
+// has values decreased, decreased relative to previous, improved, increased, increased relative to previous, maintained stablized, worse
+// Also see LOINC #89253-9 	Trend ... has values improved, deteriorated, stablized, resolved
+
+ValueSet:			DiagnosticServiceVS
+Description:		"The type of laboratory service used in producing a laboratory result. Note -- we may want to include additional descendants of SCT#224891009 (Healthcare services)"
+SCT#310078000		"Microbiology service (qualifier) -- Laboratory concerned with cultures, to look for suspected pathogens."
+SCT#706900000		"Parasitology service (qualifier) -- Laboratory responsible for examining parasites, feces samples may be examined for evidence of intestinal parasites such as tapeworms or hookworms and others."
+SCT#708185002		"Virology service (qualifier) -- Laboratory concerned with identification of viruses in specimens such as blood, urine, and cerebrospinal fluid."
+SCT#708196005  		"Hematology service (qualifier) -- Laboratory that works with whole blood to do full blood counts, and blood films as well as many other specialised tests."
+SCT#310076001		"Biochemistry service (qualifier) -- Laboratory that usually receives serum or plasma and tests the serum for chemicals present in blood."
+SCT#708191000 		"Toxicology service (qualifier) -- Laboratory that mainly tests for pharmaceutical and recreational drugs. Urine and blood samples are submitted to this lab."
+SCT#708190004		"Immunology service (qualifier) -- Immunology/Serology laboratory uses the concept of antigen-antibody interaction as a diagnostic tool. Compatibility of transplanted organs is also determined."
+//#urinalysis 		"Laboratory tests urine for many analytes. Some health care providers have a urinalysis laboratory, while others don't."
+SCT#310074003		"Pathology service (qualifier)-- Surgical, cytopathology, or histopathology laboratory. Surgical pathology examines organs, limbs, tumors, fetuses, and other tissues biopsied in surgery such as breast mastectomies."
+SCT#310048009 		"Genetics service (procedure) - note: should be in the Snomed (qualifier) hierarchy - Laboratory that mainly performs DNA analysis."
+SCT#708178001 		"Cytogenetics service (qualifier) -- Laboratory that uses blood and other cells to get a karyotype. This can be helpful in prenatal diagnosis (e.g. Down's syndrome) as well as in cancer (some cancers have abnormal chromosomes)."
+*/

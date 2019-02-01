@@ -8,23 +8,21 @@ CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
 
 
 EntryElement:	AllergyIntolerance
-Based on:		Finding
+Based on:		ConditionOrObservation
 Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  
 // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
 Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. An AllergyIntolerancePresent finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in notable contrast to AdverseEvent)."
-				Metadata.InformationSource value is type PatientOrPractitionerOrRelatedPerson
-				Metadata.InformationRecorder value is type PatientOrPractitioner  // FHIR only allows Patient or Practitioner as recorder
-
+				Asserter value is type PatientOrPractitionerOrRelatedPerson
+				Recorder value is type PatientOrPractitioner  // FHIR only allows Patient or Practitioner as recorder
 1..1			Patient
-1..1			FindingStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
-0..0			SpecificFocusOfFinding   // always the patient
-1..1			FindingTopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
-1..1			FindingResult // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  // DSTU 2 change different required value sets)
+1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
+0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+0..0			Focus   // always the patient
+1..1			TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
+1..1			DataValue // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  // DSTU 2 change different required value sets)
 0..1			SubstanceCategory   // DSTU 2 change (restrict upper cardinality to 1)
 0..1			Onset
 0..1			AllergyIntoleranceType
-0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
-//1..1			AllergyVerificationStatus -- used FindingStatus
 0..1			Criticality
 0..1			MostRecentOccurrenceTime
 0..*			AllergyIntoleranceReaction
@@ -35,31 +33,17 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-category  // change to code?
 
 		Element:		AllergyIntoleranceType
-		Concept:		TBD
 		Description:	"Whether the sensitivity is an allergy or intolerance, in other words, high level information on the mechanism of the adverse reaction."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 
-/*
-		Element:		ClinicalStatus
-		Concept:		TBD
-		Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-clinical-status
-
-		Element:		AllergyVerificationStatus  
-		Concept:		TBD
-		Description:	"Whether an assessment has been confirmed by testing or observation."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-verification-status
-*/
 		Element:		MostRecentOccurrenceTime
-		Concept:		TBD
 		Description:	"The time of the last or latest of a series of events."
 		Value:			dateTime
 
 		Element:		AllergyIntoleranceReaction
-		Concept:		TBD
 		Description:	"Observed reaction event associated with the allergy or intolerance, expressed as a condition."
 		0..1			SubstanceCode
-		1..*			Manifestation
+		1..*			Manifestation could be from http://hl7.org/fhir/ValueSet/clinical-findings
 		0..1			BeginDateTime   // from core
 		0..1			Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
 		0..1			RouteIntoBody
@@ -67,16 +51,8 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 
 				Element:	SubstanceCode
 				Concept:	TBD
-				Description: "The substance triggering a particular allergy or intolerance reaction event. The substance may be the same as the substance cited in the AllergyIntolerance, but should be a specific substance rather than a class of substances, if known. For example, if the allergy intolerance FindingResult substance is 'shellfish' the substance code for the reaction might be 'oyster'."
+				Description: "The substance triggering a particular allergy or intolerance reaction event. The substance may be the same as the substance cited in the AllergyIntolerance, but should be a specific substance rather than a class of substances, if known. For example, if the allergy intolerance DataValue substance is 'shellfish' the substance code for the reaction might be 'oyster'."
 				Value:	    CodeableConcept from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered
-
-				Element:	Manifestation
-				Concept:	TBD
-				Description:	"The clinical symptoms/signs associated with the reaction event."
-				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
-
-
-
 
 
 
@@ -84,9 +60,9 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 /* Probably the most consistent way to define the absence (no known) allergy is to use an absence assertion, but this is not the way US Core has decided to go. Comments here are for reference only.
 	
 EntryElement:	AllergyIntoleranceAbsent
-Based on:		AbsenceAssertion
+Based on:		ConditionAbsent
 Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. The certainly of absence is always 'no known' because definitively ruling out an allergy intolerance is not possible."
-				FindingTopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"  // We don't use a code that represents the absence of the condition and whose FindingResult would therefore be true or false (rather than present/absent)
+				TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"  // We don't use a code that represents the absence of the condition and whose DataValue would therefore be true or false (rather than present/absent)
 1..1			AllergenIrritant
 0..*			SubstanceCategory
 1..1			Certainty is SCT#443508001 "No history of clinical finding in subject (situation)" // no known
@@ -121,8 +97,8 @@ Description:	"Statement expressings no known allergies or hypersensitivity to an
 
 
 //				TopicCode from NoKnownAllergyVS
-//				FindingTopicCode is SCT#716186003 "No known allergy (situation)"
-//				FindingTopicCode is SCT#428607008 "No known environmental allergy (situation)"
-//				FindingTopicCode is SCT#429625007  "No known food allergy (situation)"
-//				FindingTopicCode is SCT#409137002 "No known drug allergy (situation)"
+//				TopicCode is SCT#716186003 "No known allergy (situation)"
+//				TopicCode is SCT#428607008 "No known environmental allergy (situation)"
+//				TopicCode is SCT#429625007  "No known food allergy (situation)"
+//				TopicCode is SCT#409137002 "No known drug allergy (situation)"
 */

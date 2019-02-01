@@ -2,21 +2,23 @@ Grammar:	Map 5.1
 Namespace:	shr.base
 Target:		FHIR_DSTU_2
 
-//Entry maps to DomainResource:
 
-InformationItem maps to DomainResource:
+DomainResource maps to DomainResource:
 	_Entry.EntryId maps to id
 	Language maps to language
 	Narrative maps to text
 	Metadata.VersionId maps to meta.versionId
+//	Metadata.SourceSystem maps to meta.extension
 	// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
 	Metadata.LastUpdated maps to meta.lastUpdated
 	Metadata.SecurityLabel maps to meta.security
 	Metadata.Tag maps to meta.tag
 
 Composition maps to Composition:
+	TopicCode maps to type
     Section maps to section
-    Section.InformationItem maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+	Section.Section maps to section.section
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
@@ -24,15 +26,18 @@ Narrative maps to Narrative:
 
 Observation maps to Observation:
 	Patient maps to subject
-//	Metadata.InformationSource maps to performer
-	FindingTopicCode maps to code
-	FindingMethod maps to method
+//	Asserter maps to performer
+	TopicCode maps to code
+	Method maps to method
 	// dstu 2 change (name change)
 	CommentOrDescription maps to comments  
 	Category maps to category
-	AnatomicalLocation[AnatomicalLocationPrecoordinated] maps to bodySite
-	// dstu 2 change (name change)
-	AnatomicalLocation[AnatomicalLocationStructured] maps to http://hl7.org/fhir/StructureDefinition/body-site-instance
+	BodySite.BodySiteCode maps to bodySite
+	BodySite.Laterality maps to bodySite.extension
+	BodySite.AnatomicalDirection maps to bodySite.extension
+	BodySite.CommentOrDescription maps to bodySite.extension
+	BodySite.Media maps to bodySite.extension
+	BodySite.DistanceFromLandmark maps to bodySite.extension
 	Device maps to device
 	ReferenceRange maps to referenceRange
 	ReferenceRange.Range.LowerBound maps to referenceRange.low
@@ -43,21 +48,21 @@ Observation maps to Observation:
 //	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo 
 // dstu 2 change (no such attribute) 
 //	ReferenceRange.ApplicableAgeRange maps to referenceRange.age  
-	NonIndependentFinding maps to component (slice on = code.coding.code; slice strategy = includes)
-	NonIndependentFinding.FindingTopicCode maps to component.code  
-	NonIndependentFinding.FindingResult maps to component.value[x]
-	NonIndependentFinding.ExceptionValue maps to component.dataAbsentReason
+	ObservationComponent maps to component (slice on = code.coding.code; slice strategy = includes)
+	ObservationComponent.TopicCode maps to component.code  
+	ObservationComponent.DataValue maps to component.value[x]
+	ObservationComponent.DataAbsentReason maps to component.dataAbsentReason
 	 // dstu 2 change (no such attribute)
-	//NonIndependentFinding.Interpretation maps to component.interpretation 
-	NonIndependentFinding.ReferenceRange maps to component.referenceRange
+	//ObservationComponent.Interpretation maps to component.interpretation 
+	ObservationComponent.ReferenceRange maps to component.referenceRange
 	fix related.type to #has-member
 	PanelMembers maps to related
 	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-	FindingResult maps to value[x]
-	ExceptionValue maps to dataAbsentReason
+	DataValue maps to value[x]
+	DataAbsentReason maps to dataAbsentReason
 	Interpretation maps to interpretation
 //	Issued maps to issued
-	FindingStatus maps to status
+	PerformanceStatus maps to status
 	RelevantTime maps to effective[x]
 	// dstu 2 change (name change)
 	Encounter maps to encounter 
@@ -69,19 +74,23 @@ NonLaboratoryObservation maps to Observation:
 LaboratoryObservation maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-observationresults: 
 	Specimen maps to specimen
 
-ConditionPresentAssertion maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-condition:
+ConditionPresent maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-condition:
 // dstu 2 change (different mapping target)
-	Metadata.AuthoredDateTime maps to dateRecorded
-	Metadata.InformationSource maps to asserter
+	CreationDate maps to dateRecorded
+	Asserter maps to asserter
 	Patient maps to patient
 	Category maps to category
-	ObjectIdentifier maps to identifier
-	FindingTopicCode maps to code
-	AnatomicalLocation[AnatomicalLocationPrecoordinated] maps to bodySite
-	AnatomicalLocation[AnatomicalLocationStructured] maps to http://hl7.org/fhir/StructureDefinition/condition-targetBodySite 
+	Identifier maps to identifier
+	TopicCode maps to code
+	BodySite.BodySiteCode maps to bodySite
+	BodySite.Laterality maps to bodySite.extension
+	BodySite.AnatomicalDirection maps to bodySite.extension
+	BodySite.CommentOrDescription maps to bodySite.extension
+	BodySite.Media maps to bodySite.extension
+	BodySite.DistanceFromLandmark maps to bodySite.extension
 	Encounter maps to encounter
 	ClinicalStatus maps to clinicalStatus
-	FindingStatus maps to verificationStatus
+	VerificationStatus maps to verificationStatus
 	Onset maps to onset[x]
 	Abatement maps to abatement[x]
 	Severity maps to severity
@@ -89,15 +98,17 @@ ConditionPresentAssertion maps to http://fhir.org/guides/argonaut/StructureDefin
 	StageInformation.StageSummary maps to stage.summary
 	StageInformation.StageDetail maps to stage.assessment
 
-ConditionAbsentAssertion maps to Basic:
+ConditionAbsent maps to Basic:
 // There is no mechanism in FHIR (not Condition, not Observation) to say "Patient does not have Condition X"
 
 BodyStructurePresent maps to BodySite:
 	Patient maps to patient
-	ObjectIdentifier maps to identifier
-	AnatomicalLocationStructured.AnatomicalLocationOrLandmarkCode maps to code
-	// dstu 2 change (naming)
-	AnatomicalLocationStructured.Laterality maps to modifier (slice on = coding.code)  
-	AnatomicalLocationStructured.AnatomicalDirection maps to modifier
-	AnatomicalLocationStructured.CommentOrDescription maps to description
-	AnatomicalLocationStructured.Media maps to image
+	Identifier maps to identifier
+	TopicCode maps to extension
+	BodySite.BodySiteCode maps to code
+	// dstu 2 change (modifier <-> qualifier)
+	BodySite.Laterality maps to modifier (slice on = coding.code)  
+	BodySite.AnatomicalDirection maps to modifier
+	BodySite.CommentOrDescription maps to description
+	BodySite.Media maps to image
+	BodySite.DistanceFromLandmark maps to extension

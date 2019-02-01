@@ -56,7 +56,7 @@ Description:	"The dosage of the medication. The data structure is flexible and c
 		Element:		DosageBodySite
 		Concept:		MTH#C0229986
 		Description:	"The anatomic site at which medical intervention is applied."
-		Value:			AnatomicalLocationPrecoordinated
+		Value:			BodySiteCode
 
 		Element:		MaximumDosePerTimePeriod
 		Concept:		TBD
@@ -68,13 +68,12 @@ EntryElement:	MedicationStatement
 Based on:		ActionPerformed
 Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment."
-				Metadata.InformationSource value is type PersonOrOrganization
-1..1			Metadata  // if 0..1, then AuthoredDateTime could still be 0..1
-1..1			Metadata.AuthoredDateTime // us-core required
+				Asserter value is type PersonOrOrganization
+1..1			CreationDate // us-core required
 1..1			Medication
 0..1			Dosage
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				Status from http://hl7.org/fhir/ValueSet/medication-statement-status
+				PerformanceStatus from http://hl7.org/fhir/ValueSet/medication-statement-status
 0..0			Method // because of Dosage.Method				
 0..1			Reason // DSTU 2 change (upper card imposed by DSTU 2)
 
@@ -85,7 +84,7 @@ Description:	"A record of the use of a medication. If the medication is given as
 1..1			Medication
 0..1			Dosage
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
+				PerformanceStatus from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..0			Method // because of Dosage.Method
 0..1			Participation
 				Participation.Participant is type PatientOrPractitionerOrRelatedPerson  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
@@ -96,19 +95,19 @@ Description:	"A record of the use of a medication. If the medication is given as
 EntryElement:	MedicationAdherence  
 Based on:		CodedNonLaboratoryObservation
 Concept:		MTH#C2364172
-Description:	"Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The SpecificFocusOfFinding must reference the medication via a code, MedicationRequest, or MedicationStatement.
+Description:	"Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The Focus must reference the medication via a code, MedicationRequest, or MedicationStatement.
 Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time."
-				FindingResult from QualitativeFrequencyVS
-				FindingTopicCode is MTH#C2364172
-1..1			SpecificFocusOfFinding value is type ref(Medication)
-				NonIndependentFinding
+				DataValue from QualitativeFrequencyVS
+				TopicCode is MTH#C2364172
+1..1			Focus value is type ref(Medication)
+				ObservationComponent
 includes 		0..* MedicationNonAdherenceReason
 
 		Element:	 	MedicationNonAdherenceReason
-		Based on:		CodedNonIndependentFinding
+		Based on:		CodedObservationComponent
 		Description:	"Reason that patient did not adhere to a medication regimen."
-						FindingResult from MedicationNonAdherenceReasonVS
-						FindingTopicCode is TBD#TBD
+						DataValue from MedicationNonAdherenceReasonVS
+						TopicCode is TBD#TBD
 
 EntryElement:	MedicationNotAdministered
 Based on:		ActionNotPerformed
@@ -123,7 +122,7 @@ Based on:		ActionRequested
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
 1..1			Requester value is type ref(Practitioner)
-				Status //from http://hl7.org/fhir/ValueSet/medication-request-status  DSTU 2 change (incompatible required value sets)
+				RequestStatus //from http://hl7.org/fhir/ValueSet/medication-request-status  DSTU 2 change (incompatible required value sets)
 				PriorityRank from http://hl7.org/fhir/ValueSet/medication-request-priority
 1..1			Medication
 0..1			Dosage

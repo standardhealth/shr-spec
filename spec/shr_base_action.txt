@@ -6,24 +6,23 @@ Uses:			shr.core, shr.entity, shr.encounter
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
-Based on:			InformationItem
+Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action."
 0..1				Category // Might not need this
-1..1				Patient  // Change to 0..1? Not all actions involve a patient
-0..1				Encounter // actions often take place during an encounter
 0..*				Reason
+1..1				Patient
 
 		Element:		Reason
 		Concept:		MTH#C0566251
 		Description:	"The justification for an action or non-action, etc."
-		Value:			string or CodeableConcept or ref(Finding)
+		Value:			string or CodeableConcept or ref(ConditionOrObservation)
 
 Abstract Element:	ActionPerformed
 Based on:			ActionStatement
 Description:		"Abstract class representing performance of any type of action."
 1..1				OccurrenceTimeOrPeriod  // when the action took place
 0..*				Participation
-1..1				Status // should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
+1..1				PerformanceStatus // should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
 0..1				Method
 0..1				RelatedRequest
 //0..1				EnactsPlan
@@ -48,6 +47,11 @@ Description:		"Abstract class representing performance of any type of action."
 			Description:	"The point in time or span of time the participant is involved."
 			Value:			TimePeriod
 	
+		Element:		PerformanceStatus
+		Concept:		TBD
+		Description:	"Indicates whether the finding is preliminary, amended, final, etc."
+		Value:			CodeableConcept
+
 		Element:		Method
 		Concept:		TBD
 		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
@@ -73,10 +77,10 @@ Description:		"Abstract class representing performance of any type of action."
 
 Abstract Element:	ActionRequested
 Based on:			ActionStatement
-Description:		"Abstract class representing a request for any type of action."
-1..1			Status //should be from http://hl7.org/fhir/ValueSet/request-status  // DSTU2 change (conflicting value sets)
+Description:		"Abstract class representing a request for any type of action to be performed."
 0..1			Requester
 1..1			RequestIntent
+1..1			RequestStatus //should be from http://hl7.org/fhir/ValueSet/request-status  // DSTU2 change (conflicting value sets)
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
 0..1			ExpectedPerformer
@@ -88,14 +92,16 @@ Description:		"Abstract class representing a request for any type of action."
 
 		Element:		Requester
 		Based on:		Participant
-		Concept:		TBD
 		Description:	"The actor making this request."
 
-		Element:		RequestIntent	
-		Concept:		TBD
+		Element:		RequestIntent
 		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/request-intent
-		
+
+		Element:		RequestStatus
+		Description:	"A code identifying the lifecycle stage of a request."
+		Value:			CodeableConcept 
+
 		Element:		ExpectedPerformanceTime
 		Concept:		TBD
 		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
@@ -114,7 +120,7 @@ Description:		"Abstract class representing a request for any type of action."
 		Element:		ExpectedMethod
 		Concept:		TBD
 		Description:	"The method that should be used to carry out the action."
-		Value:			ref(Method)
+		Value:			CodeableConcept
 
 		Element:		PerformerInstructions
 		Concept:		TBD

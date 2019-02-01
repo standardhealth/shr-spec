@@ -5,17 +5,17 @@ Uses:  		shr.core, shr.base, shr.entity
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:	MTH = http://ncimeta.nci.nih.gov
+CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
 
 EntryElement:   CancerDisorderPresent
-Based on:	ConditionPresentAssertion
+Based on:	    ConditionPresent
 Concept:        SCT#363346000 "Malignant neoplastic disease (disorder)"
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
-                FindingTopicCode from CancerDisorderVS
+                TopicCode from CancerDisorderVS
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
-  	         StageInformation.StageDetail value is type CancerStagePanel  
+  	            StageInformation.StageDetail value is type CancerStagePanel  
 //    0..1 MorphologyBehavior from MorphologyBehaviorVS     //Not carried over from BrCa because it was intended to break out behavior codes from ICD-O-3, and we are no longer using it.
 
 
@@ -24,12 +24,10 @@ EntryElement:   CancerHistologicType
 Based on:       SimpleCodedNonLaboratoryObservation // MK: Would this use a specimen? If so, it has to be a laboratory observation
 Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
 Concept:        SCT#371441004 "Histologic type (observable entity)"  // TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes."
-                FindingResult from CancerHistologicTypeVS
-                FindingTopicCode is SCT#371441004 "Histologic type (observable entity)"
-                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-0..0	        AnatomicalLocation
-0..0		AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0		AnatomicalLocation.AnatomicalLocationStructured
+                DataValue from CancerHistologicTypeVS
+                TopicCode is SCT#371441004 "Histologic type (observable entity)"
+                Focus value is type ref(CancerDisorderPresent)
+0..0	        BodySite
 0..0            Device
 
 
@@ -38,30 +36,27 @@ EntryElement:   CancerHistologicGrade
 Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
 Concept:        LNC#21858-6 "Grade Cancer"
-                FindingResult from http://loinc.org/vs/LL213-0
-                FindingTopicCode is LNC#21858-6 "Grade Cancer"
-                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-0..0		    AnatomicalLocation
-0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0		    AnatomicalLocation.AnatomicalLocationStructured
+                DataValue from http://loinc.org/vs/LL213-0
+                TopicCode is LNC#21858-6 "Grade Cancer"
+                Focus value is type ref(CancerDisorderPresent)
+0..0		    BodySite
 0..0            Device
 0..0            PanelMembers
 
+// TODO: Progression needs Lesion evaluated {primary tumor, metastatic tumor}
 EntryElement:   CancerProgression  // aka DiseaseStatus
 Based on:       CodedNonLaboratoryObservation
 Description:    "The course of a disease, such as cancer, as it becomes worse or spreads in the body. (source: NCI Dictionary)"
 Concept:        SCT#246453008 "Course of illness (attribute)"
-                FindingResult from CancerProgressionVS
-                FindingTopicCode is SCT#246453008 "Course of illness (attribute)"
-                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-// CancerProgressionEvidence is not yet part of M-CODE, but I don't see a better way to include it for FluxNotes
+                DataValue from CancerProgressionVS
+                TopicCode is SCT#246453008 "Course of illness (attribute)"
+                Focus value is type ref(CancerDisorderPresent)
+// CancerProgressionEvidence is not yet part of M-CODE, but I don't see a better way to include it than a extension
 0..*            CancerProgressionEvidence
-0..0		    AnatomicalLocation
-0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0		    AnatomicalLocation.AnatomicalLocationStructured
+0..0		    BodySite
 0..0            Device	
 0..0            PanelMembers
-0..0            NonIndependentFinding
+0..0            ObservationComponent
 
 		Element:	CancerProgressionEvidence
 		Description:	"The type of evidence considered in determining disease progression."
@@ -70,14 +65,14 @@ Concept:        SCT#246453008 "Course of illness (attribute)"
 
 /**** replaced by Onset of CancerDisorderPresent 
 EntryElement:	EarliestDateOfCancerDiagnosis
-//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of ConditionPresentAssertion.
+//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of ConditionPresent.
 Based on:		SimpleNonLaboratoryObservation
 Concept:		LNC#77975-1 "Earliest date of diagnosis"
 Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerDiagnosis."
 Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
 0..0            ReferenceRange
-0..0			AnatomicalLocation
-                SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
+0..0			BodySite
+                Focus value is type ref(CancerDisorderPresent)
 */
 
 /********** Assessments **************/
@@ -86,12 +81,10 @@ EntryElement:   ECOGPerformanceStatus
 Based on:       SimpleNonLaboratoryObservation
 Description:	"The Eastern Cooperative Oncology Group (ECOG) performance status grade or score, which indicates a patient’s level of daily functioning and physical ability. Source: LOINC"
 Concept:        LNC#89247-1 "ECOG Performance Status score"
-                FindingResult value is type IntegerQuantity
+                DataValue value is type IntegerQuantity
 //0..0            ReferenceRange  // set to 0 to 5
-0..0            SpecificFocusOfFinding
-0..0		    AnatomicalLocation
-0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0		    AnatomicalLocation.AnatomicalLocationStructured
+0..0            Focus
+0..0		    BodySite
 0..0            Device
                 Interpretation from http://loinc.org/vs/LL529-9
 
@@ -99,11 +92,9 @@ EntryElement:   KarnofskyPerformanceStatus
 Based on:       SimpleNonLaboratoryObservation
 Description:	"The Karnofsky Performance Status (KPS) is a tool used to measure a patient's functional status. It can be used to compare the effectiveness of different therapies and to help assess the prognosis of certain patients, such as those with certain cancers. The KPS score ranges from 0 to 100. Higher scores are associated with better functional status, with 100 representing no symptoms or evidence of disease, and 0 representing death [PMID: 23870327] . This panel contains LOINC terms to report the KPS score [LOINC: 89243-0] and its interpretation [LOINC: 89245-5]."
 Concept:        LNC#89243-0 "Karnofsky Performance Status panel"
-                FindingResult value is type IntegerQuantity  // THIS ISN'T WORKING!
-0..0            SpecificFocusOfFinding
-0..0		    AnatomicalLocation
-0..0		    AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0		    AnatomicalLocation.AnatomicalLocationStructured
+                DataValue value is type IntegerQuantity  // THIS ISN'T WORKING!
+0..0            Focus
+0..0		    BodySite
 0..0            Device
 //	            ReferenceRange.Range.LowerBound.Quantity.Number is 0.0
 //              ReferenceRange.Range.LowerBound.Quantity.Units is UCUM#1  

@@ -6,15 +6,15 @@ Uses:  			shr.core, shr.base, shr.entity
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 
-Element:	GeneticMarkerAnalysisResult
+Element:		GeneticMarkerAnalysisResult
 Based on:		LaboratoryObservation
 Concept:		SCT#20889005 "Genetic marker function (observable entity)"
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
-				FindingTopicCode from https://www.ncbi.nlm.nih.gov/gtr if covered // the identifier from the Genetic Test Registry
-				FindingMethod from GeneticTestMethodVS if covered
-0..0			FindingResult // panel, no numerical or coded result
-0..0			SpecificFocusOfFinding
-//  MK: What gene are we looking at? mlt: identified in two places: 1) FindingTopicCode through the GTR ID, 2) in the GeneName element below.
+				TopicCode from https://www.ncbi.nlm.nih.gov/gtr if covered // the identifier from the Genetic Test Registry
+				Method from GeneticTestMethodVS if covered
+0..0			DataValue // panel, no numerical or coded result
+0..0			Focus
+//  MK: What gene are we looking at? mlt: identified in two places: 1) TopicCode through the GTR ID, 2) in the GeneName element below.
 0..0			ReferenceRange
 0..1			GenomicSourceClass
 0..1			GeneName
@@ -22,9 +22,7 @@ Description:	"The process of isolating and testing the DNA of an embryo or a per
 0..1			DNASequenceVariantName
 0..1			DNASequenceVariantId
 0..1			DNASequenceVariantType
-0..0			AnatomicalLocation
-0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0			AnatomicalLocation.AnatomicalLocationStructured
+0..0			BodySite
 0..0			PanelMembers
 
 Element:		GenomicSourceClass
@@ -44,41 +42,37 @@ Description:	"A human readable name for the region of interest. Typically Exon #
 Value:			string
 
 Element:		DNASequenceVariantName
-Based on:		NonIndependentFinding
+Based on:		ObservationComponent
 Concept:		LNC#48004-6 "DNA change (c.HGVS)"
 Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
 Value:			string
 
 Element:		DNASequenceVariantId
-Based on:		NonIndependentFinding
+Based on:		ObservationComponent
 Concept:		LNC#48003-8 "DNA sequence variation identifier [Identifier]"
 Description:	"A DNA Marker identifier conveys a universal or standard repository identifier for definitive characterstics of a DNA Marker. (recommend using NCBI dbSNP ids - rs#) (source: LOINC)"
 Value:			string
 
 Element:		DNASequenceVariantType
-Based on:		CodedNonIndependentFinding
+Based on:		CodedObservationComponent
 Concept:		LNC#48005-3 "DNA change type"
 Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
 Value:			CodeableConcept from DNAChangeTypeVS
 
 
-EntryElement:	TumorMarker
+EntryElement:	TumorMarkerObservation
 Based on:		LaboratoryObservation
 Concept:		LNC#21924-6 "Tumor marker Cancer"
 Description:	"A substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). (Source: NCI Dictionary of Cancer Terms).  Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis."
-				SpecificFocusOfFinding value is type ref(CancerDisorderPresent)
-				FindingTopicCode from TumorMarkerVS if covered 
-0..0			NonIndependentFinding
-0..0			AnatomicalLocation
-0..0			AnatomicalLocation.AnatomicalLocationPrecoordinated
-0..0			AnatomicalLocation.AnatomicalLocationStructured
-0..0			PanelMembers	// each cancer type can further narrow the value set of tumor markers as needed.
+				Focus value is type ref(CancerDisorderPresent)
+				TopicCode from TumorMarkerVS if covered 
+0..0			BodySite
 0..0			Device
 
 
 EntryElement:	CancerGeneticMarkerAnalysisResult
 Based on:		GeneticMarkerAnalysisResult
-Concept:		TBD#TBD "Cancer Genetic Test Result"
+Concept:		TBD#TBD "Cancer Genetic Test DataValue"
 Description:	"A panel that analyses different components of a genetic test specific to cancer-related genetic markers."
-				FindingTopicCode from CancerGeneticTestRegistryVS if covered // the identifier from the Genetic Test Registry value set (filtered for cancer-relevant genetic tests.)
+				TopicCode from CancerGeneticTestRegistryVS if covered // the identifier from the Genetic Test Registry value set (filtered for cancer-relevant genetic tests.)
 				GeneName.CodeableConcept from CancerGeneVS if covered

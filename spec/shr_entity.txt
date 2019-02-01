@@ -4,7 +4,7 @@ Description:	"The namespace containing definitions for basic classes."
 Uses:			shr.core, shr.base, shr.medication, shr.procedure
 
 Abstract Element:	EntityOrRole
-Based on:			InformationItem
+Based on:			DomainResource
 Description:		"Parent class for both Entity and Role."
 //Identifier
 
@@ -20,20 +20,20 @@ Description:	"Root class for entities such as people, organizations, and devices
 
 		Element:		PartOf
 		Description:	"The larger entity that the asserted item is a portion of. For example, an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
-		Value:			ref(InformationItem)
+		Value:			ref(DomainResource)
 
 EntryElement:	Patient
 Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient."
 1..1			ref(Person)
-//0..1			ActiveFlag
+0..1			ActiveFlag
 //0..*			ref(ExternalHealthRecord)
 
 	Element:		ActiveFlag
 	Concept:		TBD
 	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
-	Value:			boolean or CodeableConcept
+	Value:			boolean
 
 EntryElement:	ExternalHealthRecord
 Based on:		Entity  // TODO: change to information item
@@ -53,6 +53,7 @@ Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 1..1			ref(Person)
+0..1			ActiveFlag
 1..1			Person.HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..1    		NationalProviderIdentifier
@@ -81,6 +82,7 @@ EntryElement:	RelatedPerson
 Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
 0..1			ref(Person)
+0..1			ActiveFlag
 0..1			RelationshipToPersonOfRecord
 0..1			EffectiveTimePeriod
 1..1			Person.HumanName   // DSTU 2 change (max cardinality of 1 imposed by DSTU 2)
@@ -178,11 +180,9 @@ Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
 1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
 0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
-0..1			ActiveFlag 
+0..1			RecordStatus from http://hl7.org/fhir/ValueSet/substance-status
 0..1			CommentOrDescription
 0..*			Ingredient
-				ActiveFlag value is type CodeableConcept
-				ActiveFlag from http://hl7.org/fhir/ValueSet/substance-status
 
 		Element:		Ingredient
 		Concept:		MTH#C3176062
@@ -278,8 +278,7 @@ Description:	"A person relevant to the health or social situation of the subject
 0..*			Address
 0..*			PhotographicImage
 0..*			ContactPoint
-0..*			LanguageUsed
-0..1			ActiveFlag
+0..*			Communication
 0..1		 	MaritalStatus 
 //0..1			PlaceOfBirth
 //0..1			MultipleBirth
@@ -436,13 +435,18 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
 	Value:          CodeableConcept from http://hl7.org/fhir/ValueSet/administrative-gender
 	
-	Element:		LanguageUsed  // needs to be aligned with CCDA 2.1
+	Element:		Communication  // needs to be aligned with CCDA 2.1
 	Concept:		TBD
 	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
-	1..1			Language
+	1..1			Language // do not specify value set because argo R2 is different than US-Core in STU3
+	0..1			Preferred
 	0..1 			SpokenLanguageProficiency
 	0..1 			WrittenLanguageProficiency
 	0..*			LanguageQualifier
+
+			Element:		Preferred
+			Description:	"Indicates preference."
+			Value:			boolean
 
 			Element:		SpokenLanguageProficiency
 			Concept:		MTH#C0678997
@@ -458,7 +462,7 @@ Description:	"A person relevant to the health or social situation of the subject
 			Description:	"Additional information about a person's use of language."
 			Value:			CodeableConcept from LanguageQualifierVS
 
-	EntryElement:		DeathInformation
+	EntryElement:	DeathInformation
 	Concept:		MTH#C0011065
 	Description:	"An indication that the person is no longer living, given by a date, time of death, or a boolean value which, when true, indicates the person is deceased."
 	1..1			IsDeceased
@@ -583,7 +587,7 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		Element:		CollectionSite
 		Concept:		TBD
 		Description:	"The body site where specimen was collected"
-		Value:			AnatomicalLocation
+		Value:			BodySite
 		
 		Element:		AccessionIdentifier
 		Based on:		Identifier

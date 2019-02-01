@@ -10,11 +10,11 @@ CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 // NOTE: Entry will eventually be deprecated, as its fields are really a part
-// of the implementation, NOT a part of the model. Once the CIMPL tooling
-// makes these implicit, Entry and its field elements can go away.
+// of the implementation, not part of the model. Once the CIMPL tooling
+// makes these implicit, Entry and its field elements will go away.
 Element: 		Entry
 Concept:		MTH#C1705654
-Description:	"Obsolete. Use InformationItem"
+Description:	"Obsolete. Use DomainResource"
 0..1			ShrId
 0..1			EntryId
 0..1			EntryType
@@ -34,65 +34,112 @@ Description:	"Obsolete. Use InformationItem"
 	Description:	"The class of the item, as a URI."
 	Value:				uri
 
-Abstract Element: InformationItem
-Concept:		MTH#C1705654
-Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An InformationItem can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
-0..1			Narrative
-0..1			Language
+
+Abstract Element:	Resource
+Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 0..1			Metadata
+0..1			Language from http://hl7.org/fhir/ValueSet/languages if covered  // DSTU 2 change -- language has required binding in Argonaut
+0..1			ImplicitRules
 
-	Element:		Narrative
-	Concept:		TBD
-	Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
-	1..1			NarrativeText
-	1..1			NarrativeQualifier
+	Element:		Language
+	Concept:		MTH#C0023008
+	Description: 	"A human language, spoken or written."
+	Value:			CodeableConcept
 
-			Element:		NarrativeText
-			Concept:		TBD
-			Description:	"Text of narrative, in xhtml."
-			Value:			xhtml
+	Element:		ImplicitRules
+	Description: 	"A set of rules under which this content was created"
+	Value:			uri
 
-			Element:		NarrativeQualifier
-			Concept:		TBD
-			Description:	"Additional information on how the narrative was generated, and the scope of information contained."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
+
+Abstract Element: DomainResource
+Based on:		Resource
+Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
+1..1			TopicCode
+0..1			Narrative
+//0..1			RecordStatus
+
+		Element:		TopicCode
+		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent)."
+		Value:			CodeableConcept
+
+		Element:		Narrative
+		Concept:		TBD
+		Description:	"A human-readable narrative, potentially including images, that contains a summary of the resource, and may be used to represent the content of the resource to a human."
+		1..1			NarrativeText
+		1..1			NarrativeQualifier
+
+				Element:		NarrativeText
+				Description:	"Text of narrative, in xhtml."
+				Value:			xhtml
+
+				Element:		NarrativeQualifier
+				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
+				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
+
+	Element:		RecordStatus
+	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error. The record status is often spread aournd in different places, including validation status and active flags."
+	Value:			CodeableConcept
 
 
 Element:		Metadata
-Concept:		TBD
 Description:	"Elements that belong to all information items."
 0..1			VersionId
 0..1			LastUpdated
+//0..1			SourceSystem  // R4 only
 0..*			SecurityLabel
 0..*			Tag
-//0..1			RecordStatus
-0..1			InformationSource
-0..1			InformationRecorder
-0..1			AuthoredDateTime
 
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., entered in error."
-	Value:			CodeableConcept
-	
-	Element:		SecurityLabel
+	Element:		VersionId
+	Concept:		MTH#C0333052
+	Description:	"An identifier associated with the product that denotes a particular release iteration."
+	Value:			id
+
+	Element: 		LastUpdated
 	Concept:		TBD
+	Description:	"The most recent date the information item was changed."
+	Value:			instant
+
+/*
+	Element:		SourceSystem
+	Description:	"FHIR: This provides a minimal amount of Provenance information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc. 
+	FHIM: Identifies the computer system that created the medical record. This optional field may also be used to indicate that the medical record was originally created by a different organization from the one that is currently storing or utilizing the record in that the assigning authority of the Id could be set to that originating organization. This property is optional, as some systems will assume that all records that it contains originated in that system, however it is anticipated that it will become increasingly commonplace for records from multiple systems and organizations will be comingled in order to provide a complete picture of the patient's health record."
+	Value:			uri
+*/	
+	Element:		SecurityLabel
+	Concept:		MTH#C3858779 "security classification"
 	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
 	Value:			CodeableConcept
 	
 	Element:		Tag
-	Concept:		TBD
+	Concept:		MTH#C4280044  "Metatags"
 	Description:	"A code used to relate entries to categories or workflows. Applications are not required to consider the tags when interpreting the meaning of an entry."
 	Value:			CodeableConcept
 
-	Element: 		InformationSource
+
+Abstract Element:	ClinicalStatement
+Based on:		DomainResource
+Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
+//0..1				RecordStatus
+0..1			Patient
+0..1			Encounter
+0..1			CreationDate
+0..1			Asserter
+0..1			Recorder
+
+	Element: 		Asserter
 	Concept:		TBD
-	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, another health record, an algorithm, device, etc."
+	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
 	Value:			Participant  // TODO: might have to change to Participation
 
-	Element:		InformationRecorder
+	Element:		Recorder
 	Concept:		TBD
 	Description:	"The recorder of the information, if other than the information originator. For example, the nurse taking a list of medications reported by the patient."
 	Value:			Participant  // TODO: might have to change to Participation
+
+	Element:		CreationDate
+	Concept:		TBD
+	Description:	"The date/time the information was asserted or created; usually, when the clinical statement was initially recorded."
+	Value:			dateTime
 
 		Element:		Participant
 		Concept:		MTH#C1550369
@@ -124,30 +171,20 @@ Description:	"Elements that belong to all information items."
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
 
-	Element:		AuthoredDateTime
-	Concept:		TBD
-	Description:	"The time the information was recorded; usually, when the information item was created."
-	Value:			dateTime
-
-	Element: 		LastUpdated
-	Concept:		TBD
-	Description:	"The most recent date the information item was changed."
-	Value:			instant
 
 
 EntryElement:	Composition
-Based on:		InformationItem
-Description:	"A composition represents a set of Entries sharing common provenance, adocument such as an extract from a patient record, a knowledge artifact, or a catalog definition."
-//1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
-//1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
-//1..1            CreationTime  -- from Entry -- maps to date
+Based on:		DomainResource
+Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
+1..1            VerificationStatus from http://hl7.org/fhir/ValueSet/composition-status
+1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
 0..*            Section
 
     Element:        Section
-    Based on:       InformationItem
     Description:    "Represents a section containing entries in a composition."
     //0..1            Title
-    0..*            InformationItem
+    0..*            DomainResource
+	0..*			Section
 
 
 /*
@@ -159,7 +196,7 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 	Element:		DerivedFrom
 	Concept:		TBD
 	Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
-	Value:			ref(InformationItem)
+	Value:			ref(DomainResource)
 	
 	Element:		SignedBy
 	Description:	"Provenance information specific to the signing of the clinical statement."
