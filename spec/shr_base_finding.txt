@@ -82,7 +82,7 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 0..1			Method
 0..1			RelevantTime
 0..*			ObservationComponent
-1..1			PerformanceStatus from http://hl7.org/fhir/ValueSet/observation-status
+1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			BodySite
 0..1			CommentOrDescription	
@@ -216,17 +216,12 @@ Description:		"An assertion of a condition being present or absent.
 				DataValue value is type CodeableConcept
 				DataValue from PresentAbsentVS
 0..*			Identifier
-0..1			VerificationStatus
 0..1			Evidence
 
 		Element:		ConditionOrDiagnosisCode
 		Based on:		TopicCode
 		Description:	"A specific code for the condition being determined to be present or absent."
 		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
-
-		Element:		VerificationStatus
-		Description:	"The verification status to support the clinical status of the condition (ref: http://hl7.org/fhir/R4/condition-definitions.html#Condition.verificationStatus)"
-		Value:			CodeableConcept
 
 		Element:		Evidence
 		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
@@ -248,7 +243,7 @@ Description:		"A condition that is or may be present in a subject. 'Condition' i
 0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
-1..1			VerificationStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
+1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			StageInformation
@@ -333,7 +328,7 @@ Description:	"A finding that a condition is or was not present in the subject at
 //TODO: 1..1			DataValue is SCT#2667000 "Absent (qualifier value)"
 0..0			DataAbsentReason
 1..*			Category from ConditionCategoryVS
-				VerificationStatus is #refuted
+				ResourceStatus.CodeableConcept is #refuted   // Maybe not right since refuted implies the condition was considered 
 0..*			BodySite
 				
 EntryElement:	ClinicalNote
