@@ -56,7 +56,7 @@ Based on:		Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 1..1			TopicCode
 0..1			Narrative
-//0..1			RecordStatus
+0..1			ResourceStatus
 
 		Element:		TopicCode
 		Description:	"A code describing what the domain resource concerns, such as a condition, lab test, property, or an item. In an observation, the code represents the 'question': the aspect or property being observed or measured. In an existence assertion, the code represents the type of event, condition, or phenomenon that is being asserted to exist (present) or not exist (absent)."
@@ -76,10 +76,9 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
 
-	Element:		RecordStatus
-	Description:	"Concept indicating the state of this record, e.g., active, inactive, entered in error. The record status is often spread aournd in different places, including validation status and active flags."
-	Value:			CodeableConcept
-
+		Element:		ResourceStatus
+		Description:	"The status that relates to the interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, ResourceStatus of true indicates the record is active, false means inactive."
+		Value:			boolean or CodeableConcept should be from http://hl7.org/fhir/ValueSet/resource-status
 
 Element:		Metadata
 Description:	"Elements that belong to all information items."
@@ -119,7 +118,6 @@ Description:	"Elements that belong to all information items."
 Abstract Element:	ClinicalStatement
 Based on:		DomainResource
 Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
-//0..1				RecordStatus
 0..1			Patient
 0..1			Encounter
 0..1			CreationDate
@@ -145,6 +143,23 @@ Description:	"This abstract class provides properties and behaviors common to en
 		Concept:		MTH#C1550369
 		Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
 		Value:			ref(EntityOrRole)
+
+
+
+EntryElement:	Composition
+Based on:		DomainResource
+Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
+1..1            ResourceStatus from http://hl7.org/fhir/ValueSet/composition-status
+1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
+0..*            Section
+
+    Element:        Section
+    Description:    "Represents a section containing entries in a composition."
+    //0..1            Title
+    0..*            DomainResource
+	0..*			Section
+
+// Combined participant roles
 
 		Element:		PatientOrPractitioner
 		Based on:		Participant
@@ -173,18 +188,6 @@ Description:	"This abstract class provides properties and behaviors common to en
 
 
 
-EntryElement:	Composition
-Based on:		DomainResource
-Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
-1..1            VerificationStatus from http://hl7.org/fhir/ValueSet/composition-status
-1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
-0..*            Section
-
-    Element:        Section
-    Description:    "Represents a section containing entries in a composition."
-    //0..1            Title
-    0..*            DomainResource
-	0..*			Section
 
 
 /*

@@ -4,15 +4,14 @@ Description:	"The SHR research domain contains definitions related to the clinic
 Uses:  			shr.core, shr.base, shr.entity
 
 
-EntryElement:	Study
+EntryElement:	ResearchStudy
 Based on:		Entity
 Concept:		TBD
 Description:	"A clinical trial or similar research study. Reference: list of FDA data elements describing a research study: prsinfo.clinicaltrials.gov/definitions.html "
 1..1			Title
 1..1			Identifier
 0..1			CommentOrDescription
-0..1			PartOf value is type Study
-1..1			ResearchStudyStatus
+0..1			PartOf value is type ResearchStudy
 0..*			Enrollment
 0..1			EffectiveTimePeriod
 0..1			Sponsor
@@ -23,10 +22,7 @@ Description:	"A clinical trial or similar research study. Reference: list of FDA
 0..1			TerminationReason
 0..*			Annotation
 0..*			StudyArm
-
-	Element:		ResearchStudyStatus
-	Description:	"The status of the study, at the time of the last update of this record."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/research-study-status
+1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/research-study-status
 
 	Element:		Enrollment
 	Concept:		MTH#C4041024
@@ -59,11 +55,7 @@ EntryElement:	ResearchSubject
 Based on:		Entity
 Description:	"Record of a subject's enrollment and participation in a research study."
 1..1			ref(Patient)
-1..1			ref(Study)
-1..1 			ResearchSubjectStatus
+1..1			ref(ResearchStudy)
+1..1 			ResourceStatus from http://hl7.org/fhir/ValueSet/research-subject-status
 1..1			ParticipationPeriod
 0..1			TerminationReason from ResearchSubjectTerminationReasonVS
-
-	Element:		ResearchSubjectStatus
-	Description:	"The current state of the subject with respect to participation in the research study."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/research-subject-status

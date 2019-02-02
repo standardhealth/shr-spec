@@ -64,32 +64,32 @@ Description:	"The dosage of the medication. The data structure is flexible and c
 		Value:			Ratio
 
 
+0..0			Method // because of Dosage.Method
+
 EntryElement:	MedicationStatement
-Based on:		ActionPerformed
+Based on:		MedicationExposure
 Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment."
 				Asserter value is type PersonOrOrganization
 1..1			CreationDate // us-core required
-1..1			Medication
-0..1			Dosage
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				PerformanceStatus from http://hl7.org/fhir/ValueSet/medication-statement-status
-0..0			Method // because of Dosage.Method				
-0..1			Reason // DSTU 2 change (upper card imposed by DSTU 2)
+				ResourceStatus from http://hl7.org/fhir/ValueSet/medication-statement-status		
+0..1			Reason // Upper cardinality imposed by DSTU 2
 
 EntryElement:	MedicationAdministered
-Based on:		ActionPerformed
-Concept:		TBD
+Based on:		MedicationExposure
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment."
-1..1			Medication
-0..1			Dosage
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				PerformanceStatus from http://hl7.org/fhir/ValueSet/medication-admin-status
-0..0			Method // because of Dosage.Method
+				ResourceStatus from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..1			Participation
 				Participation.Participant is type PatientOrPractitionerOrRelatedPerson  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
 0..0			Participation.ParticipationType				
 				RelatedRequest value is type ref(MedicationRequested)		
+
+Element:		MedicationDispensed
+Based on:		MedicationExposure
+Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
+// Attributes from FHIR needed
 
 
 EntryElement:	MedicationAdherence  
@@ -121,16 +121,16 @@ EntryElement:	MedicationRequested
 Based on:		ActionRequested
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
-1..1			Requester value is type ref(Practitioner)
-				RequestStatus //from http://hl7.org/fhir/ValueSet/medication-request-status  DSTU 2 change (incompatible required value sets)
-				PriorityRank from http://hl7.org/fhir/ValueSet/medication-request-priority
 1..1			Medication
 0..1			Dosage
+1..1			Requester value is type ref(Practitioner)
+				ResourceStatus from http://hl7.org/fhir/ValueSet/medication-request-status
+				PriorityRank from http://hl7.org/fhir/ValueSet/medication-request-priority
 0..1			NumberOfRefillsAllowed
 0..1			QuantityPerDispense
 0..1			SupplyDuration
 0..1			SubstitutionAllowed
-0..1			Reason // DSTU 2 change (upper cardinality of 1 imposed by DSTU 2)
+0..1			Reason // Upper cardinality of 1 imposed by DSTU 2
 
 	Element:		NumberOfRefillsAllowed
 	Concept:		TBD
@@ -159,12 +159,6 @@ Concept:		TBD
 Description:	"A record of a medication NOT being prescribed. Recorded only when deviating from the normal expectation, care plan, or standard of care."
 1..1			Medication
 				Reason from MedicationNotUsedReasonVS
-
-Element:		MedicationDispensed
-Based on:		ActionPerformed
-Concept:		TBD
-Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
-// Attributes from FHIR needed
 
 					
 Element:		MedicationNotDispensed

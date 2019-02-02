@@ -6,7 +6,6 @@ Uses:			shr.core, shr.base, shr.medication, shr.procedure
 Abstract Element:	EntityOrRole
 Based on:			DomainResource
 Description:		"Parent class for both Entity and Role."
-//Identifier
 
 Abstract Element:	Role
 Based on:		EntityOrRole
@@ -27,13 +26,7 @@ Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient."
 1..1			ref(Person)
-0..1			ActiveFlag
 //0..*			ref(ExternalHealthRecord)
-
-	Element:		ActiveFlag
-	Concept:		TBD
-	Description:	"If the ActiveFlag is false, it indicates the record or item is no longer to be used and should generally be hidden for the user in the UI."
-	Value:			boolean
 
 EntryElement:	ExternalHealthRecord
 Based on:		Entity  // TODO: change to information item
@@ -53,7 +46,7 @@ Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
 1..1			ref(Person)
-0..1			ActiveFlag
+0..1			ResourceStatus
 1..1			Person.HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..1    		NationalProviderIdentifier
@@ -82,7 +75,7 @@ EntryElement:	RelatedPerson
 Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
 0..1			ref(Person)
-0..1			ActiveFlag
+0..1			ResourceStatus
 0..1			RelationshipToPersonOfRecord
 0..1			EffectiveTimePeriod
 1..1			Person.HumanName   // DSTU 2 change (max cardinality of 1 imposed by DSTU 2)
@@ -96,7 +89,7 @@ EntryElement:	Group
 Based on:		Entity
 Concept:		MTH#C0441833
 Description:	"A set of entities (personnel, material, or places) to be considered together. May be a pool of like-type resources, a team, or combination of personnel, material and places."
-0..1			ActiveFlag
+0..1			ResourceStatus
 1..1			Type from http://hl7.org/fhir/ValueSet/group-type
 0..1			Title  // name
 1..1			Actual
@@ -180,7 +173,7 @@ Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
 1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
 0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
-0..1			RecordStatus from http://hl7.org/fhir/ValueSet/substance-status
+0..1			ResourceStatus from http://hl7.org/fhir/ValueSet/substance-status
 0..1			CommentOrDescription
 0..*			Ingredient
 
@@ -495,7 +488,7 @@ Description:    "A social or legal structure formed by human beings."
 0..1			Type could be from http://hl7.org/fhir/ValueSet/organization-type
 1..*			Address
 1..*			ContactPoint
-1..1			ActiveFlag
+1..1			ResourceStatus
 0..1			PartOf value is type ref(Organization)
 
 	Element:		OrganizationName
@@ -556,7 +549,7 @@ EntryElement:	Specimen
 Based on:		Entity
 Description:	"A specimen is a substance, physical object, or collection of objects, that the laboratory considers a single discrete, uniquely identified unit that is the subject of one or more steps in the laboratory workflow. A specimen may include multiple physical pieces as long as they are considered a single unit within the laboratory workflow. A specimen results from one to many specimen collection procedures, and may be contained in multiple specimen containers. Specimen may have one or more processing activities."
 0..1			AccessionIdentifier
-0..1			SpecimenStatus from http://hl7.org/fhir/ValueSet/specimen-status
+0..1			ResourceStatus from http://hl7.org/fhir/ValueSet/specimen-status
 1..1			Type from http://hl7.org/fhir/ValueSet/v2-0487
 0..1			CollectionSource
 0..1			CollectionTime
@@ -593,11 +586,6 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		Based on:		Identifier
 		Concept:		TBD
 		Description:	"Identifier assigned by the lab"
-		
-		Element:		SpecimenStatus
-		Concept:		MTH#C0449438
-		Description:	"State of the specimen, such as obtained, processed, used."
-		Value:			CodeableConcept
 
 		Element:		SourceSpecimen
 		Concept:		TBD
