@@ -25,14 +25,14 @@ EntryElement:	Patient
 Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient."
-1..1			ref(Person)
+1..*			Identifier
+1..1			Person
 //0..*			ref(ExternalHealthRecord)
 
 EntryElement:	ExternalHealthRecord
 Based on:		Entity  // TODO: change to information item
 Concept: 		TBD
 Description:	"A health record other than the current health record; may have been used to help populate the current record."
-1..1			Identifier
 1..1			AccessTime
 
 	Element:		AccessTime
@@ -45,11 +45,13 @@ EntryElement:	Practitioner
 Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art."
-1..1			ref(Person)
+1..1			Person
 0..1			ResourceStatus
 1..1			Person.HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
-1..1    		NationalProviderIdentifier
+1..*			Identifier
+				Identifier
+includes 		1..1 NationalProviderIdentifier
 0..*    		Qualification
 
 	Element:    	Affiliation
@@ -58,9 +60,9 @@ Description:	"A person who practices a healing art."
 	Value:			Organization
 
 	Element: 		NationalProviderIdentifier
+	Based on:		Identifier
 	Concept:		MTH#C1549728
-	Description:	"A unique 10 digit number to allow US healthcare providers to identify themselves in a standard way throughout the healthcare industry."
-	Value:			Identifier
+	Description:	"NPI: a unique 10 digit number to allow US healthcare providers to identify themselves in a standard way throughout the healthcare industry."
 
 	Element:		Qualification
 	Concept:		MTH#C0037778
@@ -74,7 +76,7 @@ Description:	"A person who practices a healing art."
 EntryElement:	RelatedPerson
 Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
-0..1			ref(Person)
+0..1			Person
 0..1			ResourceStatus
 0..1			RelationshipToPersonOfRecord
 0..1			EffectiveTimePeriod
@@ -260,7 +262,6 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 		Value:			CodeableConcept
 
 EntryElement:	Person
-Based on:		Entity
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the person of record him or herself)."
 1..* 			HumanName
@@ -484,7 +485,7 @@ Concept:        MTH#C1561598
 Description:    "A social or legal structure formed by human beings."
 // Required attributes come from STU 3 mapping to us-core-organization
 1..1			OrganizationName
-1..*			OrganizationIdentifier
+1..*			Identifier  // cardinality constraint
 0..1			Type could be from http://hl7.org/fhir/ValueSet/organization-type
 1..*			Address
 1..*			ContactPoint
@@ -495,11 +496,6 @@ Description:    "A social or legal structure formed by human beings."
 	Concept:		TBD
 	Description:	"The name of the organization."
 	Value:			string
-	
-	Element:		OrganizationIdentifier
-	Based on:		Identifier
-	Concept:		TBD
-	Description:	"An identifier of the organization. An NPI preferred, tax id is allowed, and a local id is allowed in addition to ‘authoritative’ identifier"
 
 
 EntryElement:	Location
@@ -557,7 +553,7 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 0..1			CollectionSite
 0..1			SourceSpecimen
 0..1			ReceivedTime
-0..*			ref(SpecimenContainer)
+0..*			SpecimenContainer
 0..*			SpecimenTreatment
 0..*			HandlingRisk
 0..*			SpecialHandling
@@ -608,12 +604,10 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		0..*			Additive
 	
 
-EntryElement:	SpecimenContainer
-Based on:		Entity
-Concept:		TBD
-Description:	"Direct container of specimen (tube&#47;slide, etc.)"
+Element:		SpecimenContainer
+Description:	"Direct container of specimen (slide, etc.)"
+0..*			Identifier
 0..1			Type   //"Kind of container holding the specimen - e.g. a vial or well."
-0..1			Identifier
 0..1			CommentOrDescription
 0..1			Capacity
 0..1			SpecimenQuantity 

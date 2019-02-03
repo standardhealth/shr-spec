@@ -63,8 +63,8 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 0..1			Focus
 
 		Element:		Focus
-		Description:	"The specific person or condition this resource relates to. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. The focus for cancer progression would be the cancer condition. If the observed property is wound length, the focus would be an instance of a wound. In the case of an assertion of existence, the focus is the larger entity that the asserted item is a portion of. For example, a wound tunnel is part of a wound; an organization part of a larger organization, or an encounter with a hospitalist might be part of a larger hospitalization encounter."
-		Value:			ref(DomainResource) // or CodeableConcept or string or CodeableConcept or Identifier 
+		Description:	"The entity this condition or observation relates to, for example, a related person. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
+		Value:			ref(DomainResource) or CodeableConcept // or string or Identifier 
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -90,14 +90,8 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 0..1			Device
 0..1			PanelMembers
 0..1			ReferenceRange
+				Asserter value is type PersonOrOrganization
 //0..1			DeltaFlag
-
-// TODO --- this is redundant with Asserter
-		Element:    	Observer
-		Concept:        MTH#C0449416
-		Description:    "The person or entity that provided the information in the entry, e.g. the subject (patient), medical professional, family member, device or software program, as distinct from who recorded the entry."
-		1..1			ref(EntityOrRole) 
-		0..1			RelationshipToPersonOfRecord
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -215,7 +209,6 @@ Description:		"An assertion of a condition being present or absent.
 				TopicCode is type ConditionOrDiagnosisCode
 				DataValue value is type CodeableConcept
 				DataValue from PresentAbsentVS
-0..*			Identifier
 0..1			Evidence
 
 		Element:		ConditionOrDiagnosisCode

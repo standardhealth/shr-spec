@@ -35,7 +35,7 @@ Outside of ODH, the employment arrangement between an employer and a person (one
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 				TopicCode is LNC#74165-2 "HistoryOfEmploymentStatus"
 0..0			ObservationComponent
-0..0			FocalSubjectModifier
+0..0			Focus
 
 EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
@@ -47,7 +47,7 @@ Outside of ODH, a characterization of the employment arrangement between an empl
 				TopicCode is LNC#87510-4 "Date of Retirement"
 0..0			ObservationComponent
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
-0..0			FocalSubjectModifier
+0..0			Focus
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
@@ -58,7 +58,7 @@ Value:			TimePeriod
 				TopicCode is LNC#87511-2
 0..0			ObservationComponent
 0..0			RelevantTime // The result value contains the time period of combat zone activity, so the relevant time would be redundant.
-0..0			FocalSubjectModifier // only patient
+0..0			Focus
 
 EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
@@ -69,6 +69,8 @@ Example: a person has worked for a total of 30 years as a 'secretary' (Occupatio
 Usual Work does not include work that was unpaid or voluntary."
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 				TopicCode is LNC#21843-8	
+				Focus value is type CodeableConcept
+				Focus from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion // family member value set
 				ObservationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
@@ -101,6 +103,8 @@ A person's job can be a social determinant of their health and information about
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 0..0			DataValue
 0..0			DataAbsentReason
+				Focus value is type CodeableConcept
+				Focus from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion 
 				TopicCode is LNC#11341-5 "History of Occupation"
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				ObservationComponent
@@ -124,16 +128,12 @@ includes 0..1	IsCurrentJob
 
 	Element:		Employer
 	Based on:		Role
-	Concept:		SCT#394571004 "Employer (person)"
 	Description:	"A person or organization that hires the services of another."
-	Value:			ref(EmployerPerson) or ref(EmployerOrganization)
+	Value:			ref(EmployerPerson) or ref(Organization)
 
 		Element:		EmployerPerson
 		Description:	"A related person who is an employer"
 		1..1			RelationshipToPersonOfRecord is V2#E
-
-		Element:		EmployerOrganization
-		Description:	"An Organization as defined in FHIR"
 
 	Element:		PastOrPresentIndustry
 	Based on:		CodedObservationComponent
@@ -207,7 +207,6 @@ Element:		SocialHistoryObservation
 Based on:		Observation
 Description:	"A simplified observation for social histories."
 				Category is OBSCAT#social-history
-0..1			FocalSubjectModifier
 0..0			Method
 0..0			BodySite
 0..0			ReferenceRange
@@ -219,12 +218,6 @@ Description:	"A simplified observation for social histories."
 0..0			Encounter
 //0..0			DeltaFlag
 0..0			CommentOrDescription
-
-
-// TODO: Use Focus
-	Element:		FocalSubjectModifier
-	Description:	"The focus of the observation, if someone other than the person of record (subject), identified only by the relationship to the Patient."
-	Value:			RelationshipToPersonOfRecord
 
 Element:		CodedSocialHistoryObservation
 Based on:		SocialHistoryObservation
