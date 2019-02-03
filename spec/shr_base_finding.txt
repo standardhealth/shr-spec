@@ -9,7 +9,7 @@ Description:		"A sub-observation contributing to the parent observation, express
 // should an observation component have additional properties, such as protocol, circumstance, or interpretation?
 // how do we handle a normal? (physical exam normal)
 // exclusions? (diabetes excluded)
-1..1			TopicCode
+1..1			Code
 0..1			DataValue
 0..1			DataAbsentReason
 0..1			ReferenceRange
@@ -57,7 +57,7 @@ Description:		"A non-independent finding whose result is a quantity."
 Abstract Element:	ConditionOrObservation
 Based on:		ClinicalStatement
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
-1..1			TopicCode // cardinality constraint on existing property
+1..1			Code // cardinality constraint on existing property
 0..1			DataValue
 0..1			DataAbsentReason
 0..1			Focus
@@ -78,7 +78,7 @@ Based on:		ConditionOrObservation
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
-For an Observation, the TopicCode describes the aspect or property of the subject being observed or measured. The TopicCode is the 'question code' that pairs to the 'answer' contained in the Value."
+For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
 0..1			Method
 0..1			RelevantTime
 1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/observation-status
@@ -108,7 +108,7 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 		Concept:		TBD
 		Description:	"Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 		0..* 			ref(ObservationComponent)
-		
+
 
 /* commented out but it might need to come back, so please save
 		Element:		Precondition
@@ -165,7 +165,7 @@ Description:	"An observation with components, but without a result value or pane
 EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
-				TopicCode from LaboratoryCodeVS if covered
+				Code from LaboratoryCodeVS if covered
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 0..1			Specimen
@@ -211,16 +211,11 @@ Description:	"A panel that does not have an overall value that summarizes the en
 Abstract Element:	ConditionPresentOrAbsent
 Based on:			ConditionOrObservation
 Description:		"An assertion of a condition being present or absent.
-'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. The TopicCode represents the condition asserted to exist or not exist. DataAbsentReason can represent the case where the presence or absence of something was not evaluated."
-				TopicCode is type ConditionOrDiagnosisCode
+'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. The Code represents the condition asserted to exist or not exist. DataAbsentReason can represent the case where the presence or absence of something was not evaluated."
+				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 				DataValue value is type CodeableConcept
 				DataValue from PresentAbsentVS
 0..1			Evidence
-
-		Element:		ConditionOrDiagnosisCode
-		Based on:		TopicCode
-		Description:	"A specific code for the condition being determined to be present or absent."
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 
 		Element:		Evidence
 		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
@@ -230,7 +225,6 @@ Description:		"An assertion of a condition being present or absent.
 				Element:	Manifestation
 				Description: "Clinical symptoms/signs."
 				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
-
 
 EntryElement:	ConditionPresent
 Based on:		ConditionPresentOrAbsent
@@ -334,7 +328,7 @@ EntryElement:	ClinicalNote
 Based on:		SimpleNonLaboratoryObservation
 Concept:		MTH#C0747978 "Progress Note"
 Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the DataValue field, since this is the first place to look for a result that is a narrative."
-				TopicCode is MTH#C0747978 "Progress Note"
+				Code is MTH#C0747978 "Progress Note"
 				DataValue value is type string
 0..0			ReferenceRange
 1..1			Patient
@@ -342,10 +336,15 @@ Description:	"An entry concerning a patient where the result is a narrative text
 
 EntryElement:	BodyStructurePresent
 Based on:		ConditionPresent
-Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The TopicCode will represent the body structure, and the BodySiteCode the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to TopicCode) and location (corresponding to BodySite.BodySiteCode). For example, the TopicCode could be blunt force injury (SCT 3821009) and location left knee."
+Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code will represent the body structure, and the BodySiteCode the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and location (corresponding to BodySite.BodySiteCode). For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
 1..1			Patient
 0..1			BodySite
+0..1			Morphology
 0..1			RelevantTime
 0..0			Focus
 0..0			ReferenceRange
 0..0			DataAbsentReason
+
+		Element:	Morphology
+		Description:	"The kind of structure being represented by the body structure at BodyStructure.location. This can define both normal and abnormal morphologies."
+		Value:		CodeableConcept

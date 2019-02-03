@@ -18,11 +18,10 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
 0..0			Focus   // always the patient
-1..1			TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"
-1..1			DataValue // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  // DSTU 2 change different required value sets)
+1..1			DataValue from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  // DSTU 2 change different required value sets)
 0..1			SubstanceCategory   // DSTU 2 change (restrict upper cardinality to 1)
 0..1			Onset
-0..1			AllergyIntoleranceType
+0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 0..1			Criticality
 0..1			MostRecentOccurrenceTime
 0..*			AllergyIntoleranceReaction
@@ -31,10 +30,6 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 		Concept:		TBD
 		Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-category  // change to code?
-
-		Element:		AllergyIntoleranceType
-		Description:	"Whether the sensitivity is an allergy or intolerance, in other words, high level information on the mechanism of the adverse reaction."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
 
 		Element:		MostRecentOccurrenceTime
 		Description:	"The time of the last or latest of a series of events."
@@ -58,15 +53,6 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 
 
 /* Probably the most consistent way to define the absence (no known) allergy is to use an absence assertion, but this is not the way US Core has decided to go. Comments here are for reference only.
-	
-EntryElement:	AllergyIntoleranceAbsent
-Based on:		ConditionAbsent
-Description:	"Used to record that a particular substance or class of substances does not pose a known elevated risk to the subject. The certainly of absence is always 'no known' because definitively ruling out an allergy intolerance is not possible."
-				TopicCode is SCT#473010000 "Hypersensitivity condition (disorder)"  // We don't use a code that represents the absence of the condition and whose DataValue would therefore be true or false (rather than present/absent)
-1..1			AllergenIrritant
-0..*			SubstanceCategory
-1..1			Certainty is SCT#443508001 "No history of clinical finding in subject (situation)" // no known
-
 
 EntryElement:	NoKnownDrugAllergy
 Based on:		AllergyIntoleranceAbsent
@@ -96,9 +82,9 @@ Description:	"Statement expressings no known allergies or hypersensitivity to an
 0..0			SubstanceCategory
 
 
-//				TopicCode from NoKnownAllergyVS
-//				TopicCode is SCT#716186003 "No known allergy (situation)"
-//				TopicCode is SCT#428607008 "No known environmental allergy (situation)"
-//				TopicCode is SCT#429625007  "No known food allergy (situation)"
-//				TopicCode is SCT#409137002 "No known drug allergy (situation)"
+//				DataValue from NoKnownAllergyVS
+//				DataValue is SCT#716186003 "No known allergy (situation)"
+//				DataValue is SCT#428607008 "No known environmental allergy (situation)"
+//				DataValue is SCT#429625007  "No known food allergy (situation)"
+//				DataValue is SCT#409137002 "No known drug allergy (situation)"
 */
