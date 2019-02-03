@@ -5,7 +5,7 @@ Uses:			shr.core, shr.entity, shr.encounter
 
 
 Abstract Element:	ObservationComponent
-Description:		"A finding that does not or cannot stand alone, or a component of another finding."
+Description:		"A sub-observation contributing to the parent observation, expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations. Component observations share the same attributes in the Observation resource as the primary observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 // should an observation component have additional properties, such as protocol, circumstance, or interpretation?
 // how do we handle a normal? (physical exam normal)
 // exclusions? (diabetes excluded)
@@ -81,15 +81,15 @@ Observation has a value representing the result (answer), or an DataAbsentReason
 For an Observation, the TopicCode describes the aspect or property of the subject being observed or measured. The TopicCode is the 'question code' that pairs to the 'answer' contained in the Value."
 0..1			Method
 0..1			RelevantTime
-0..*			ObservationComponent
 1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			BodySite
 0..1			CommentOrDescription	
 0..1			Interpretation
 0..1			Device
-0..1			PanelMembers
 0..1			ReferenceRange
+0..1			Components
+0..1			PanelMembers
 				Asserter value is type PersonOrOrganization
 //0..1			DeltaFlag
 
@@ -103,6 +103,12 @@ For an Observation, the TopicCode describes the aspect or property of the subjec
 		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
 			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
+
+		Element:		Components
+		Concept:		TBD
+		Description:	"Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
+		0..* 			ref(ObservationComponent)
+		
 
 /* commented out but it might need to come back, so please save
 		Element:		Precondition
