@@ -61,6 +61,7 @@ Description:	"An assertion, determination, opinion, evaluation, result, observat
 0..1			DataValue
 0..1			DataAbsentReason
 0..1			Focus
+				StatusOrActive is type Status
 
 		Element:		Focus
 		Description:	"The entity this condition or observation relates to, for example, a related person. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
@@ -81,7 +82,7 @@ Observation has a value representing the result (answer), or an DataAbsentReason
 For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
 0..1			Method
 0..1			RelevantTime
-1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/observation-status
+1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			BodySite
 0..1			CommentOrDescription	
@@ -136,7 +137,7 @@ Description:	"An observation not based on a specimen."
 EntryElement:	SimpleNonLaboratoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"An observation having no components or panel members"
-0..0			ObservationComponent
+0..0			Components
 0..0			PanelMembers
 
 EntryElement:	CodedNonLaboratoryObservation
@@ -149,7 +150,7 @@ Description:	"The result of evaluations (measurements, tests, or questions) whos
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
-0..0			ObservationComponent
+0..0			Components
 0..0			PanelMembers
 
 EntryElement:	ComponentOnlyNonLaboratoryObservation
@@ -169,7 +170,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 0..1			Specimen
-0..0			BodySite  // Location is determined indirectly from Specimen.CollectionSite
+0..0			BodySite  // BodySite is determined indirectly from Specimen.CollectionSite
 				Category is OBSCAT#laboratory
 
 EntryElement:	CodedLaboratoryObservation
@@ -181,20 +182,20 @@ Description:	"A coded finding from a laboratory test."
 EntryElement:	SimpleLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			ObservationComponent
+0..0			Components
 0..0			PanelMembers
 
 EntryElement:	SimpleCodedLaboratoryObservation
 Based on:		CodedLaboratoryObservation
 Description:	"A coded finding from a laboratory test without further panel members or components."
-0..0			ObservationComponent
+0..0			Components
 0..0			PanelMembers
 
 
 Abstract Element:   Panel
 Based on:       Observation
 Description:    "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
-0..0            ObservationComponent
+0..0            Components
 0..0		    BodySite
 0..0            Specimen
 0..0            Device
@@ -231,12 +232,12 @@ Based on:		ConditionPresentOrAbsent
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
 //TODO: 0..1			DataValue is SCT#52101004 "Present (qualifier value)"
 0..0			DataAbsentReason
-				Asserter value is type ref(PatientOrPractitionerOrRelatedPerson)
+				Asserter value is type PatientOrPractitionerOrRelatedPerson
 1..1			Patient
 0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
-1..1			ResourceStatus from http://hl7.org/fhir/ValueSet/condition-ver-status
+1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
 0..1			StageInformation
@@ -321,7 +322,7 @@ Description:	"A finding that a condition is or was not present in the subject at
 //TODO: 1..1			DataValue is SCT#2667000 "Absent (qualifier value)"
 0..0			DataAbsentReason
 1..*			Category from ConditionCategoryVS
-				ResourceStatus.CodeableConcept is #refuted   // Maybe not right since refuted implies the condition was considered 
+				Status.CodeableConcept is #refuted   // Maybe not right since refuted implies the condition was considered 
 0..*			BodySite
 				
 EntryElement:	ClinicalNote
