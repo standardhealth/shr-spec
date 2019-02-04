@@ -55,7 +55,7 @@ Abstract Element: DomainResource
 Based on:		Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 0..1			Narrative
-0..1			ResourceStatus
+0..1			StatusOrActive
 0..*			Identifier
 
 		Element:		Narrative
@@ -72,9 +72,20 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
 
-		Element:		ResourceStatus
-		Description:	"The status that relates to the interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, ResourceStatus of true indicates the record is active, false means inactive."
-		Value:			boolean or CodeableConcept should be from http://hl7.org/fhir/ValueSet/resource-status
+		Abstract Element:	StatusOrActive
+		Description:		"Abstract class for a property that defines either the status of the recource, or whether the resource is active."
+		Value:				boolean or CodeableConcept
+
+		Element:		Status
+		Based on:		StatusOrActive
+		Description:	"A state that relates to the workflow or interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, Status of true indicates the record is active, false means inactive."
+		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/resource-status
+
+		Element:		Active
+		Based on:		StatusOrActive
+		Description:	"A flag that indicates whether the resource record is active, or inactive and ignored for all but historical purposes."
+		Value:			boolean
+
 
 Element:		Metadata
 Description:	"Elements that belong to all information items."
@@ -123,17 +134,17 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Element: 		Asserter
 	Concept:		TBD
 	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
-	Value:			Participant
+	Value:			ref(EntityOrRole)
 
 	Element:		Recorder
 	Concept:		TBD
 	Description:	"The recorder of the information, if other than the information originator. For example, the nurse taking a list of medications reported by the patient."
-	Value:			Participant
+	Value:			ref(EntityOrRole)
 
 	Element:		Participant
 	Concept:		MTH#C1550369
 	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. A code can be used to indicate a generic type of participant, e.g., mother, EMT, or social worker."
-	Value:			ref(EntityOrRole) or CodeableConcept
+	Value:			ref(EntityOrRole)
 
 	Element:		CreationDate
 	Concept:		TBD
@@ -145,7 +156,8 @@ EntryElement:	Composition
 Based on:		DomainResource
 Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 0..1			Identifier // FHIR inconsistency -- usually 0..*
-1..1            ResourceStatus from http://hl7.org/fhir/ValueSet/composition-status
+				StatusOrActive is type Status
+1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
 1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
 0..*            Section
 
@@ -158,39 +170,40 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 // Combined participant roles
 
 		Element:		PatientOrPractitioner
-		Based on:		Participant
+		Based on:		EntityOrRole
 		Description:	"A choice of Patient or Practitioner. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner)
 
 		Element:		PatientOrPractitionerOrRelatedPerson
-		Based on:		Participant
+		Based on:		EntityOrRole
 		Description:	"A choice of Patient, Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping AdverseEvent.SignedBy to FHIR AdverseEvent."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
 
 		Element:		PractitionerOrRelatedPerson
-		Based on:		Participant
+		Based on:		EntityOrRole
 		Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
 		Value:			ref(Practitioner) or ref(RelatedPerson)
 
 		Element:		PersonOrOrganization
-		Based on:		Participant
+		Based on:		EntityOrRole
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
 		Element:		PersonOrDevice
-		Based on:		Participant
+		Based on:		EntityOrRole
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
 
-		Element:		FHIRProcedureParticipant
-		Based on:		Participant
+		Element:		PersonOrOrganizationOrDevice
+		Based on:		EntityOrRole
 		Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
 		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
 
-		Element:		ParticipantType
-		Based on:		Participant
-		Description:	"A participant who is not a specific individual or device, identified only by a type code. This could be a type of practitioner, a type of relative (e.g., mother), a type of device, etc. The type is distinct from the role; the mother (type) could play different roles (caregiver, organ donor, healthcare proxy, etc.)"
-		Value:			CodeableConcept
+		Element:		PractitionerOrDevice
+		Based on:		EntityOrRole
+		Description:	"A choice of Practitioner or Device. Needed for mapping to FHIR."
+		Value:			ref(Practitioner) or ref(Device)
+
 
 /*
 	Element:    	HealthRecordId
