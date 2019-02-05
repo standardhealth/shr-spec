@@ -95,32 +95,22 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 		Based on:	BodySite
 		Concept:	LNC#39111-0 "Body Site"
 					BodySiteCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.14/expansion
-		1..1 		Laterality
+		0..1 		Laterality
 		0..0		AnatomicalDirection
 		0..0		ClockDirection
-
-
-EntryElement:	WoundAbsent
-Based on:		ConditionAbsent
-Description:	"Documents the absence of a wound at a given body site. 
-No wounds anywhere on the body can be indicated by omitting the anatomical location, or using the Snomed code #181469002 (Entire skin (body structure)) in WoundBodySite."
-1..1			Code is SCT#416462003 "Wound (disorder)"  
-1..1			Category is OBSCAT#exam
-1..1			BodySite is type WoundBodySite
 
 //--------------- Wound Assessment -------------------------
 
 EntryElement:	WoundAssessmentPanel
 Based on:		NonLaboratoryObservation
-Concept:		LNC#39135-9
 Description:	"Group of observations regarding the properties and severity of a wound."
+				Code is LNC#39135-9 "Wound assessment panel"
 0..0			DataValue
 0..0			DataAbsentReason
 1..1			WoundIdentifier
 				Interpretation is type WoundAssessmentInterpretation
 0..0			BodySite // carried by wound assertion
-0..0			Device	
-				Code is LNC#39135-9
+0..0			Device
 0..0			ReferenceRange		
 0..*			Media is type PhotographicImage  // 72170-4  	Photographic image	[Media] 
 				Components.ObservationComponent
@@ -133,57 +123,56 @@ includes 0..1	WoundTunnelingPresentOrAbsent  //  72298-3  	Tunneling of Wound	R	
 includes 0..1	WoundUnderminingPresentOrAbsent // 72295-9  	Undermining of Wound	R
 includes 0..1	WoundExudatePresentOrAbsent // 89259-6  	Presence of wound exudate
 				PanelMembers.Observation
-includes 0..*	WoundBedAppearanceObservation  //89254-7 	Wound bed appearance observation
-includes 0..*	WoundBedColorObservation  // xxxx  Wound color observation
-includes 0..1	WoundEdgeObservation   //  89256-2  Wound edge observation
-includes 0..*	WoundTunnelingObservation  //  89257-0  Wound tunneling observation
-includes 0..*	WoundUnderminingObservation  // 89258-8  Wound undermining observation
-includes 0..1	WoundExudateObservation  // 72292-6  Wound exudate observation
-includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
+includes 0..1	WoundBedPanel
+includes 0..1	WoundEdgePanel   //  89256-2  Wound edge panel
+includes 0..1	WoundTunnelingPanel  //  89257-0  Wound tunneling panel
+includes 0..1	WoundUnderminingPanel  // 89258-8  Wound undermining panel
+includes 0..1	WoundExudatePanel  // 72292-6  Wound exudate panel
+includes 0..1	WoundSizePanel  // 72287-6 Wound size panel
 
 		Element: 		WoundEpisode
 		Based on:		CodedObservationComponent
-		Concept:		LNC#89252-1 "Episode of Wound"
 		Description:	"Wound episode refers to a period of the wound, an incident in the course of a wound"
+						Code is LNC#89252-1 "Episode of Wound"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.4/expansion 
 
 		Element:		WoundPeriwoundDescription 
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72301-5
 		Description:	 "A description of the skin around the wound (periwound). Color, induration, warmth and edema should be assessed. Redness of the surrounding skin can be indicative of unrelieved pressure. Irritation of the surrounding skin can result from exposure to feces or urine, a reaction to the dressing or tape, or inappropriate removal of dressing or tape. Redness, tenderness, warmth and swelling are classical clinical signs of infection. [Reference: Brown, P., 2009]"
+						Code is LNC#72301-5 "Description of Periwound"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.2/expansion
  //could be from http://loinc.org/vs/LL2216-1
 
 		Element:		WoundVisibleInternalStructure
 		Based on:		CodedObservationComponent
-		Concept:		LNC#89250-5
 		Description: 	"Exposed body structures, devices, and/or foreign bodies visible by the naked eye in a wound."
+						Code is LNC#89250-5 "Device or anatomic structure visible in wound"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.1/expansion
 // should be from http://loinc.org/vs/LL4935-4 
 
 		Element:		WoundPressureUlcerAssociation
 		Based on:		CodedObservationComponent
-		Concept:		TBD
 		Description:	"Is the wound associated with a device or pressure point?"
+						Code is TBD#TBD "Pressure Ulcer Association"
 						DataValue from YesNoUnknownVS
 
 		Element:		WoundTunnelingPresentOrAbsent
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72298-3
 		Description:	"The presence or absence of wound tunneling."
+						Code is LNC#72298-3 "Tunneling of Wound"
 						DataValue from PresentAbsentVS
 	// LOINC: should re-use the same Snomed codes for Present-Absent
 
 		Element:		WoundUnderminingPresentOrAbsent
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72295-9
 		Description:	"The presence or absence of wound undermining."
+						Code is LNC#72295-9 "Undermining of Wound"
 						DataValue from PresentAbsentVS
 
 		Element:		WoundExudatePresentOrAbsent
 		Based on:		CodedObservationComponent
-		Concept:		LNC#89259-6
 		Description:	"The presence or absence of wound exudate."
+						Code is LNC#89259-6 "Presence of wound exudate"
 						DataValue from PresentAbsentVS
 
 		Element:		WoundAssessmentInterpretation
@@ -194,125 +183,109 @@ includes 0..1	WoundSizeObservation  // 72287-6 Wound size observation
 
 		Element:		WoundTrend
 		Based on:		CodedObservationComponent
-		Concept:		LNC#89253-9
 		Description:	"Whether a condition is improving, worsening, stable, or resolved."
+						Code is LNC#89253-9 "Trend"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.5/expansion // should be from http://loinc.org/vs/LL4938-8 with values improved, deteriorated, stablized or resolved. Resolved is missing from the VS in VSAC
 
 
-// LOINC: The wound bed panel is factored so the percentages pair unambiguously with the color/appearances. It should be a set of 2-tuples (pairs). The way it is done in LOINC doesn't allow pairing 
-EntryElement: 	WoundBedAppearanceObservation
+EntryElement: 	WoundBedPanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#89254-7
-Description:	"The appearance of the base (bed) of the wound, together with the percentage of the bed with each type of appearance."
+Description:	"The appearance and color of the base (bed) of the wound, together with the percentage of the bed with each type of appearance and color. The appearance and appearance percentage arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs. The same rule applies to the color and color percentage arrays. The number of color areas and appearance areas do not have to be the same.
+
+*See https://www.hl7.org/fhir/xml.html: When an element is allowed to repeat, the elements are ordered, and the technical infrastructure needs to be able to access the items in the right order. https://www.hl7.org/fhir/json.html The order of properties of an object is not significant in the JSON representation, though order within an array SHALL be maintained."
 1..1			WoundIdentifier
-				Code is LNC#89254-7
-0..0			BodySite  // location is given by the wound assertion	
-0..0			Device	
+				Code is LNC#89254-7 "Wound Bed Panel"
+0..0			BodySite  // body site is given in the wound assertion	
+0..0			Device
 				Components.ObservationComponent
-includes 1..1	WoundBedAppearance
-includes 1..1	WoundBedAppearancePercentage
+includes 0..*	WoundBedAppearance
+includes 0..*	WoundBedAppearancePercentage
+includes 0..*	WoundBedColor
+includes 0..*	WoundBedColorAreaPercentage
 
 		Element:		WoundBedAppearance
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72371-8
 		Description:	"Appearance of wound base (bed)."
+						Code is LNC#72371-8 "Appearance of Wound base"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.6/expansion  //could be from http://loinc.org/vs/LL2237-7
 
 		Element:		WoundBedAppearancePercentage
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#72370-0
 		Description:	"Area of wound bed appearance/Entire ​Area of wound bed."
+						Code is LNC#72370-0 "Area of identified wound bed appearance/Area of wound bed of Wound base"
 						DataValue.Quantity.Units is UCUM#%
 		0..0			ReferenceRange
 
-EntryElement: 	WoundBedColorObservation
-Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		TBD
-Description:	"Color of part or all of the wound base (bed), and the percentage of the area with that color."
-1..1			WoundIdentifier
-				Code is TBD#TBD
-0..0			BodySite  // location is given by the wound assertion
-0..0			Device	
-				Components.ObservationComponent
-includes 1..1	WoundBedColor
-includes 1..1	WoundBedColorAreaPercentage
-
-// LOINC: Why precoordinate a general concept such as 'color' with the concept of wound bed?
 		Element:		WoundBedColor
 		Based on:		CodedObservationComponent
-		Concept:		LNC#39132-6 
 		Description:	"Color of Wound base (bed)."
+						Code is LNC#39132-6 "Color of Wound base (bed)."
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.7/expansion  //could be from http://loinc.org/vs/LL2338-3	 
-
-// LOINC: Why precoordinate a general concept such as 'percentage of area' with the concept of wound bed? 	
+	
 		Element:		WoundBedColorAreaPercentage
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#89255-4
 		Description:	"Wound bed area identified by color/​Area of wound bed."
+						Code is LNC#89255-4 "Wound bed area identified by color/​Area of wound bed."
 						DataValue.Quantity.Units is UCUM#%
 		0..0			ReferenceRange
 
-EntryElement:	WoundEdgeObservation
+EntryElement:	WoundEdgePanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#89256-2
 Description:	"The state of the tissue at the edge of the wound."
 1..1			WoundIdentifier
-				Code is LNC#89256-2
+				Code is LNC#89256-2 "Wound edge panel"
 0..0			BodySite  // location is given by the wound assertion	
 0..0			Device				
 				Components.ObservationComponent
-includes 1..1	WoundEdgeDescription
+includes 0..1	WoundEdgeDescription
 includes 0..1	WoundEdgeColor
 // LOINC:Is the entire edge of the wound described by one color? Or should it be by percentage, similar to the wound bed?
 // LOINC: Why precoordinate a general concept such as 'color' with the concept of wound edge?
 
 		Element:		WoundEdgeDescription
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72304-9 
 		Description:	"Edge of wound description."
+						Code is LNC#72304-9 "Edge of wound description"
 						DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.8/expansion // could be from http://loinc.org/vs/LL2230-2
 
 		Element:		WoundEdgeColor
 		Based on:		CodedObservationComponent
-		Concept:		LNC#39133-4 
 		Description:	"Color of Wound edge."
+						Code is LNC#39133-4 "Color of Wound edge"
 						DataValue could be from http://loinc.org/vs/LL2338-3	
 
-EntryElement:	WoundTunnelingObservation
+EntryElement:	WoundTunnelingPanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#89257-0
-Description:	"A discharging blind-ended track that extends from the surface of an organ to an underlying area or abscess cavity. The track is invariably lined with granulation tissue. In chronic cases this may be augmented with epithelial tissue."
+Description:	"Observation of wound tunnels. The tunnel length and clock direction arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs."
 1..1			WoundIdentifier
-				Code is LNC#89257-0
+				Code is LNC#89257-0 "Wound tunneling panel"
 0..0			BodySite  // location is given by the wound assertion
 0..0			Device	
 				Components.ObservationComponent
-includes 0..1	WoundTunnelLength
-includes 0..1	WoundTunnelClockDirection
+includes 0..*	WoundTunnelLength
+includes 0..*	WoundTunnelClockDirection
 
 // LOINC: why precoordinate length + tunneling?
 // LOINC: why precoordinate clock position + tunneling?
 
 		Element:		WoundTunnelLength
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#72296-7
 		Description:	"Length of wound tunneling."
+						Code is LNC#72296-7 "Length of wound tunneling."
 						DataValue.Quantity.Units is UCUM#cm
 		0..0			ReferenceRange
 
 // LOINC: should require use the full clock position value set
 		Element:		WoundTunnelClockDirection
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72297-5
 		Description:	"Clock position of wound tunnel"
+						Code is LNC#72297-5 "Clock position of wound tunnel"
 						DataValue from ClockDirectionVS
 
 
-EntryElement:	WoundUnderminingObservation
+EntryElement:	WoundUnderminingPanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#89258-8
-Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. Undermining are narrow sinus tracts  away from the wound margins and go downward into the wound."
-				Code is LNC#89258-8
+Description:	"Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. The undermining length and clock direction arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs."
 1..1			WoundIdentifier
 0..0			BodySite  // location is given by the wound assertion	
 0..0			Device	
@@ -321,74 +294,64 @@ includes 0..1	WoundUnderminingLength
 includes 0..1	WoundUnderminingClockDirection
 
 		Element:		WoundUnderminingLength
-		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#72293-4
+		Based on:		QuantitativeObservationComponent	
 		Description:	"Length of wound undermining."
+						Code is LNC#72293-4 "Undermining [Length] of Wound"
 						DataValue.Quantity.Units is UCUM#cm
 		0..0			ReferenceRange
 
 // LOINC: should require use the full clock position value set
 		Element:		WoundUnderminingClockDirection
 		Based on:		CodedObservationComponent
-		Concept:		LNC#72294-2
 		Description:	"Clock position of wound undermining"
+						Code is LNC#72294-2 "Undermining clock position of Wound"
 						DataValue from ClockDirectionVS
 
-EntryElement:	WoundExudateObservation
+EntryElement:	WoundExudatePanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#72292-6
 Description:	"Description of the fluid produced by a wound."
-				Code is LNC#72292-6
+				Code is LNC#72292-6 "Wound exudate panel"
 1..1			WoundIdentifier
 0..0			BodySite  // location is given by the wound assertion	
-0..0			Device	
+0..0			Device
 				Components.ObservationComponent
 includes 0..1	WoundExudateAmount
-includes 0..1	WoundExudateVolume
-includes 1..1	WoundExudateAppearance
-includes 1..1	WoundExudateColor
+includes 0..1	WoundExudateAppearance
+includes 0..1	WoundExudateColor
 includes 0..1	WoundExudateOdor
 
 //  LOINC: Wound area should be in wound size panel, not wound exudate panel
 
 		Element:	WoundExudateAmount
 		Based on:	CodedObservationComponent
-		Concept:	LNC#39116-9
 		Description:"Drainage amount of wound"
+					Code is LNC#39116-9 "Drainage amount of Wound"
 					DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.10/expansion //could be from http://loinc.org/vs/LL2222-9
-
-		Element:	WoundExudateVolume
-		Based on:	QuantitativeObservationComponent
-		Concept:	LNC#39122-7
-		Description:"Appearance of exudate from wound"
-					DataValue.Quantity.Units is UCUM#mL
-		0..0		ReferenceRange
 
 		Element:	WoundExudateAppearance
 		Based on:	CodedObservationComponent
-		Concept:	LNC#72290-0 
 		Description:"Appearance of exudate from wound"
+					Code is LNC#72290-0 "Appearance of exudate from wound" 
 					DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.11/expansion //could be from http://loinc.org/vs/LL2220-3
 
 		Element:	WoundExudateColor
-		Based on:	CodedObservationComponent
-		Concept:	LNC#72289-2 
+		Based on:	CodedObservationComponent 
 		Description:"Color of exudate from wound"
+					Code is LNC#72289-2 "Color of exudate from wound"
 					DataValue from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.12/expansion
  // could be from http://loinc.org/vs/LL2219-5
 
 		Element:	WoundExudateOdor
 		Based on:	CodedObservationComponent
-		Concept:	LNC#72288-4
 		Description:"Odor of exudate from wound"
+					Code is LNC#72288-4 "Odor of Exudate from wound"
 					DataValue from  https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1181.13/expansion
 
 
-EntryElement:	WoundSizeObservation
+EntryElement:	WoundSizePanel
 Based on:		ComponentOnlyNonLaboratoryObservation
-Concept:		LNC#72287-6
 Description:	"The estimated or measured dimensions of a wound."
-				Code is LNC#72287-6
+				Code is LNC#72287-6 "Wound size panel"
 1..1			WoundIdentifier	
 0..0			BodySite  // location is given by the wound assertion	
 0..0			Device		
@@ -400,28 +363,29 @@ includes 0..1	WoundArea
 
 		Element:		WoundLength
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#39126-8
 		Description:	"Length of the wound (longest dimension)."
+						Code is LNC#39126-8 "Length of wound"
 						DataValue.Quantity.Units is UCUM#cm
 		0..0			ReferenceRange
 
 		Element:		WoundWidth
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#39125-0
-		Description:	"Width of the wound (perpendicular to longest dimension)."						DataValue.Quantity.Units is UCUM#cm
+		Description:	"Width of the wound (perpendicular to longest dimension)."
+						Code is LNC#39125-0 "Width of wound"
+						DataValue.Quantity.Units is UCUM#cm
 		0..0			ReferenceRange
 
 		Element:		WoundDepth
-		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#39127-6
+		Based on:		QuantitativeObservationComponent	
 		Description:	"Depth of the wound."
+						Code is LNC#39127-6 "Depth of the wound."
 						DataValue.Quantity.Units is UCUM#cm
 		0..0			ReferenceRange
 
 		Element:		WoundArea
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#89260-4
 		Description:	"Area of the wound."
+						Code is LNC#89260-4 "Area of the wound."
 						DataValue.Quantity.Units is UCUM#cm2
 		0..0			ReferenceRange
 

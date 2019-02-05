@@ -10,13 +10,12 @@ CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
 
 
 EntryElement:	OccupationalDataForHealth
-Concept:		LNC#74166-0
 Based on:		Composition
 Description:	"Current and past activities for profit, wages, salary, or as a service to others."
+				Type is LNC#74166-0 "Occupational summary note"
 1..1			Section is type OccupationalDataSection
 
 Element:		OccupationalDataSection
-Concept:		TBD
 Based on:		Section
 Description:	"Single section in the current OccupationalDataSummary, containing the person's history of employment and occupation, past and present."
 				DomainResource 
@@ -28,18 +27,16 @@ includes 0..*	PastOrPresentJob
 
 EntryElement:	PersonEmploymentStatus
 Based on:		CodedSocialHistoryObservation
-Concept:		LNC#74165-2 "HistoryOfEmploymentStatus"
 Description:	"The self-reported current and historical data about a person's economic relationship to work (e.g. having one or more jobs), including start and end dates.
 A person's Employment Status could change over time, for example, a person could be employed following a period of choosing to not be in the labor force.
 Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status.' However, in ODH Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
-				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 				Code is LNC#74165-2 "HistoryOfEmploymentStatus"
+				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 0..0			Components
 0..0			Focus
 
 EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
-Concept:		LNC#87510-4 "Date of Retirement"
 Description:	"A self-reported date that a person considers themselves to have ‘retired’.
 A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job. Multiple retirement dates should be recorded using multiple FHIR resources.
 Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
@@ -51,7 +48,6 @@ Outside of ODH, a characterization of the employment arrangement between an empl
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
-Concept:		LNC#87511-2 "Combat zone AndOr hazardous duty work dates"
 Description:	"Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work.
 Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
 				DataValue value is type TimePeriod
@@ -62,13 +58,12 @@ Both civilian workers, such as Department of Defense contractors, and military s
 
 EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
-Concept:		LNC#21843-8
 Description:	"Related data elements about the work a person reports having performed for the longest amount of time during his or her life, regardless of the person's current job and regardless of whether or not the person performed this work for a continuous time.
 Knowledge of person's Usual Work can potentially assist in diagnosis, treatment and/or prevention of chronic condition(s) or conditions with a long latency. The potential for exposure to Occupational Hazard(s) related to an Occupation and/or an Industry can change over time, and a person could have been in and out of their Usual Work over time, so additional data are helpful to fully evaluate the possible impact of the person's Usual Work on their health and guide appropriate use of screening tests to detect early disease.
 Example: a person has worked for a total of 30 years as a 'secretary' (Occupation), but in various industries, mostly hotel construction. Her Usual Occupation is 'secretary' and her Usual Industry is 'hotel construction.'
 Usual Work does not include work that was unpaid or voluntary."
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
-				Code is LNC#21843-8	
+				Code is LNC#21843-8	"History of Usual occupation"
 				Focus value is type CodeableConcept
 				Focus from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion // family member value set
 				Components.ObservationComponent
@@ -79,24 +74,22 @@ includes 0..1	UsualOccupationDuration
 
 	Element:		UsualIndustry
 	Based on:		CodedObservationComponent
-	Concept:		LNC#21844-6 "History of Usual industry"
 	Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
 	For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction."  // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
 	//Value:			CodeableConcept from IndustryVS 
+					Code is LNC#21844-6 "History of Usual industry"
 					DataValue from
 	https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7187
-					Code is LNC#21844-6 "History of Usual industry"
+	
 
 	Element:		UsualOccupationDuration
 	Based on:		QuantitativeObservationComponent
-	Concept:		LNC#74163-7 "Usual occupation duration"
 	Description:	"The total time spent on an activity, inclusive of all time intervals, whether continuous or interrupted."
 					DataValue.Quantity.Units is UCUM#a
 					Code is LNC#74163-7 "Usual occupation duration"
 	
 EntryElement:	PastOrPresentJob
 Based on:		CodedSocialHistoryObservation
-Concept:		LNC#11341-5 "History of Occupation"
 Description:	"Related data elements for a current or previous job, as reported by the person, i.e., a work situation or position held for a specified time period.
 A person can have more than one job at the same time and multiple jobs over time, so the data related to each job must remain in the record in perpetuity. Each job should be recorded in a separate instance of PastOrPresentJob.
 A person's job can be a social determinant of their health and information about a person's job can support patient care, population health, and public health. In patient care, knowledge of a person's past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. 
@@ -123,81 +116,75 @@ includes 0..1	IsCurrentJob
 
 	Element:		Occupation
 	Based on:		CodedObservationComponent
-	Concept:		LNC#85659-1 "Occupation CDC Census code"
+	Description:	"Occupation CDC Census code"
+					Code is LNC#85659-1 "Occupation CDC Census code"
 					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 
 	Element:		Employer
-	Based on:		Role
 	Description:	"A person or organization that hires the services of another."
 	Value:			ref(EmployerPerson) or ref(Organization)
 
 		Element:		EmployerPerson
 		Based on:		RelatedPerson
 		Description:	"A related person who is an employer"
-		1..1			RelationshipToPersonOfRecord is V2#E
+		1..1			RelationshipToPatient is V2#E
 
 	Element:		PastOrPresentIndustry
 	Based on:		CodedObservationComponent
-	Concept:		LNC#86188-0 	
 	Description:	"The type of business (industry) in which the subject currently holds or has held a job in the past." 
+					Code is LNC#86188-0 "History of Occupation industry"
 //	Value:			CodeableConcept from IndustryVS 
 					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7187
-					Code is LNC#86188-0
+
 
 	Element:		WorkClassification
 	Based on:		CodedObservationComponent
-	Concept:		LNC#85104-8 "Compensation and sector employment type"
 	Description:	"Type of compensation and sector for a person's job, such as 'paid work, self-employed' or 'voluntary work', as reported by the person."
 	//Value:			CodeableConcept from WorkClassificationVS  
-					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7597 
 					Code is LNC#85104-8 "Compensation and sector employment type"
+					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7597 
+
 
 	Element:		SupervisoryLevel
 	Based on:		CodedObservationComponent
-	Concept:		LNC#87707-6
 	Description:	"A coded indicator of responsibilities for directing work and personnel management responsibilities for a person's job, as reported by the person. For US military jobs, this is pay grade."
 	//Value:			CodeableConcept from SupervisoryLevelVS 
+					Code is LNC#87707-6 "Job supervisory level or pay grade"
 					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7613 
-					Code is LNC#87707-6
+
 
 	Element:		JobDuty
 	Based on:		ObservationComponent
-	Concept:		LNC#63761-1
 	Description:	"A regular action performed by a person at a job, as reported by the person. For example, a Job Duty could be 'carry construction supplies' for a job with the Occupation 'construction laborer.' "
+					Code is LNC#63761-1 "What were your main activities or duties for this job [NHANES]"
 					DataValue value is type string
-					Code is LNC#63761-1
 	0..0			ReferenceRange				
 	
 	Element:		OccupationalHazard
 	Based on:		ObservationComponent
-	Concept:		LNC#87729-0
 	Description:	"A hazard that is specific to a person's work or work environment at one job and with which the person might come in contact, as reported by the person. A hazard is a source of potential harm to a person’s physical or mental health. Hazards can be biological, physical, psychological, chemical, or radiological in nature."
+					Code is LNC#87729-0 "History of Occupational hazard"
 					DataValue value is type string
-					Code is LNC#87729-0
 	0..0			ReferenceRange	
 					
 	Element:		WorkSchedule
 	Based on:		CodedObservationComponent
-	Concept:		LNC#74159-5
 	Description:	"Typical arrangement of working hours for a person's job, as reported by the person."
-	//Value:			CodeableConcept from WorkScheduleVS 
+					Code is LNC#74159-5 "Work schedule NIOSH"
 					DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7130
-					Code is LNC#74159-5
 
 	Element:		WeeklyWorkDays
 	Based on:		QuantitativeObservationComponent
-	Concept:		LNC#74160-3
 	Description:	"The average number of days per week that a person spends performing their duties for work."
+					Code is LNC#74160-3 "Work days per week"
 					DataValue.Quantity.Units is UCUM#d
-					Code is LNC#74160-3
 	0..0			ReferenceRange
 							
 	Element:		DailyWorkHours
 	Based on:		QuantitativeObservationComponent
-	Concept:		LNC#87512-0
 	Description:	"The average number of hours in a day that a person spends performing their duties for work."
+					Code is LNC#87512-0 "Work hours per day"
 					DataValue.Quantity.Units is UCUM#h
-					Code is LNC#87512-0
 	0..0			ReferenceRange
 
 // Last minute addition 8/17 based on Genny's comment 
@@ -226,12 +213,7 @@ Based on:		SocialHistoryObservation
 Description:	"The result of social history questions, whose answer is expressed as a code."
 				DataValue value is type CodeableConcept
 
-/* UsualWork is in the value element
-	Element:		UsualWork
-	Based on:		ObservationComponent
-	Concept:		LNC#21843-8 "History of Usual Occupation" // Occupation is LNC#74287-4
-	Description:	"A person's work or business"
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/occupation-cdc-census-2010	// VS defined in FHIR 3.2 and not found in 3.0.1
+/* Hold for later use
 
 EntryElement:	MilitaryServiceHistory
 Based on:		CodedSocialHistoryObservation
