@@ -38,7 +38,8 @@ Description:	"Obsolete. Use DomainResource"
 Abstract Element:	Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 0..1			Metadata
-0..1			Language from http://hl7.org/fhir/ValueSet/languages if covered  // DSTU 2 change -- language has required binding in Argonaut
+0..1			Language // from http://hl7.org/fhir/ValueSet/languages  
+// language has required binding in Argonaut in DSTU 2 that is different than the extensible binding in us-core-patient. Not able to resolve this.
 0..1			ImplicitRules
 
 	Element:		Language
@@ -79,7 +80,8 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 		Element:		Status
 		Based on:		StatusOrActive
 		Description:	"A state that relates to the workflow or interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, Status of true indicates the record is active, false means inactive."
-		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/resource-status
+		Value:			CodeableConcept // should be from http://hl7.org/fhir/ValueSet/resource-status
+		// cannot specify the preferred value set here because there are conflicting required value sets in some status attributes, particularly Encounter. It will generate an error to map preferred to required. 
 
 		Element:		Active
 		Based on:		StatusOrActive
