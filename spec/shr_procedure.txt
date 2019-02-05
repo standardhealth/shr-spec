@@ -20,7 +20,8 @@ Description:	"A procedure that has been performed."
 //0..*			Indication
 0..*			ref(Device)
 				Participation.OnBehalfOf value is type ref(Organization)
-				Status from http://hl7.org/fhir/ValueSet/event-status
+				Status // from http://hl7.org/fhir/ValueSet/event-status
+				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant value is type PersonOrOrganizationOrDevice
 				RelatedRequest value is type ref(ProcedureRequested)
@@ -53,8 +54,10 @@ Based on:		ActionNotPerformed
 
 EntryElement:	ProcedureRequested
 Based on:		ActionRequested
-				PriorityRank // must be from http://hl7.org/fhir/ValueSet/request-priority // DSTU 2 change (different required value sets in v2 and v3)
-				Status from http://hl7.org/fhir/ValueSet/request-status  // DSTU 2 change(different required value sets in v2 and v3)
+				PriorityRank // must be from http://hl7.org/fhir/ValueSet/request-priority 
+				// DSTU 2 change (different required value sets in v2 and v3)
+				Status // from http://hl7.org/fhir/ValueSet/request-status  
+				// DSTU 2 change(different required value sets in v2 and v3)
 0..1			Requester value is type PractitionerOrDevice // this is the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson. Both allow Practitioner and Device.
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodySite
