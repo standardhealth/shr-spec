@@ -83,9 +83,9 @@ Description:	"A record of the use of a medication. If the medication is given as
 0..1			Reason // Upper cardinality imposed by DSTU 2
 0..0			Participation
 0..0			Location
-				RelatedRequest value is type ref(MedicationRequested) // or CarePlan or ProcedureRequest or ReferralRequest
+				RelatedRequest value is type ref(MedicationRequest) // or CarePlan or ProcedureRequest or ReferralRequest
 
-EntryElement:	MedicationAdministered
+EntryElement:	MedicationAdministration
 Based on:		MedicationExposure
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment."
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
@@ -93,12 +93,13 @@ Description:	"A record of the use of a medication. If the medication is given as
 0..1			Participation
 				Participation.Participant value is type PatientOrPractitionerOrRelatedPerson  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
 0..0			Participation.ParticipationType				
-				RelatedRequest value is type ref(MedicationRequested)		
+				RelatedRequest value is type ref(MedicationRequest)		
 
-Element:		MedicationDispensed
+Element:		MedicationDispense
 Based on:		MedicationExposure
 Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
-// Attributes from FHIR needed
+// TODO: Attributes from FHIR needed
+// TODO: Mapping needed
 
 
 EntryElement:	MedicationAdherence  
@@ -118,15 +119,8 @@ includes 		0..* MedicationNonAdherenceReason
 						DataValue from MedicationNonAdherenceReasonVS
 						Code is TBD#TBD
 
-EntryElement:	MedicationNotAdministered
-Based on:		ActionNotPerformed
-Concept:		TBD
-Description:	"A record of a medication NOT used. Although usually not required, a medication not used is sometimes reported when deviating from normal expectation or care plan."
-1..1			Medication
-0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category	
-				Reason from MedicationNotUsedReasonVS
 				
-EntryElement:	MedicationRequested
+EntryElement:	MedicationRequest
 Based on:		ActionRequested
 Concept:		TBD
 Description:	"An order for a medication to be dispensed and instructions for use."
@@ -172,11 +166,6 @@ Description:	"A record of a medication NOT being prescribed. Recorded only when 
 				Reason from MedicationNotUsedReasonVS
 
 					
-Element:		MedicationNotDispensed
-Based on:		ActionNotPerformed
-Concept:		TBD
-Description:	"Indicates that a medication product has NOT been dispensed for a named person/patient. This may be a result of the timing out of an order or detection of pharmacist of duplicate prescription or other reason."
-// Attributes needed
 
 
 EntryElement:	MedicationChange
@@ -190,10 +179,10 @@ Description:	"Description of a modification or change of a medication or dosage,
 		Element:		MedicationBeforeChange
 		Concept:		TBD
 		Description:	"The medication taken, prior to the change."
-		Value:			ref(MedicationRequested) or ref(MedicationStatement) or ref(MedicationAdministered)
+		Value:			ref(MedicationRequest) or ref(MedicationStatement) or ref(MedicationAdministration)
 		
 		Element:		MedicationAfterChange
 		Concept:		TBD
 		Description:	"The medication taken, prior to the change."
-		Value:			ref(MedicationRequested) or ref(MedicationStatement) or ref(MedicationAdministered)
+		Value:			ref(MedicationRequest) or ref(MedicationStatement) or ref(MedicationAdministration)
 
