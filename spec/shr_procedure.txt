@@ -6,12 +6,12 @@ Uses:  			shr.core, shr.base, shr.entity
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
-EntryElement:	ProcedurePerformed
+EntryElement:	Procedure
 Based on:		ActionPerformed
 Description:	"A procedure that has been performed."
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodySite
-0..1			PartOf value is type ref(ProcedurePerformed)
+0..1			PartOf value is type ref(Procedure)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
 0..1			Reason
@@ -24,7 +24,7 @@ Description:	"A procedure that has been performed."
 				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant value is type PersonOrOrganizationOrDevice
-				RelatedRequest value is type ref(ProcedureRequested)
+				RelatedRequest value is type ref(ProcedureRequest)
 //0..*			OutputFinding // in CIMI, this is part of ProcedureTopic, but the definition hinges on performance, so it belongs here, not there.
 
 
@@ -41,18 +41,7 @@ Description:	"A procedure that has been performed."
 		Value:			ref(ConditionOrObservation)
 
 
-EntryElement:	ProcedureNotPerformed
-Based on:		ActionNotPerformed				
-0..1			Reason  // limit to 0..1 to match FHIR Procedure.notDoneReason
-1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
-0..*			BodySite
-//0..1			PartOf value is type ref(ProcedurePerformed or Not Performed) ???
-0..1			Category  // this is a constraint on the cardinality of Action.Category
-0..*			Annotation
-1..1			Status // must be from http://hl7.org/fhir/ValueSet/event-status  // DSTU 2 change (different required value sets in v2 and v3)
-				RelatedRequest value is type ref(ProcedureRequested)
-
-EntryElement:	ProcedureRequested
+EntryElement:	ProcedureRequest
 Based on:		ActionRequested
 				PriorityRank // must be from http://hl7.org/fhir/ValueSet/request-priority 
 				// DSTU 2 change (different required value sets in v2 and v3)
@@ -61,7 +50,7 @@ Based on:		ActionRequested
 0..1			Requester value is type PractitionerOrDevice // this is the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson. Both allow Practitioner and Device.
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodySite
-0..1			PartOf value is type ref(ProcedurePerformed)
+0..1			PartOf value is type ref(Procedure)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
 0..1			Reason
@@ -80,8 +69,8 @@ Based on:		ActionRequestedAgainst
 
 //---------- Specialized Types of Procedure Topics ----------------
 
-EntryElement:	ImagingProcedurePerformed
-Based on:		ProcedurePerformed
+EntryElement:	ImagingProcedure
+Based on:		Procedure
 Concept:		TBD
 Description:	"Experimental class for an imaging procedure. This class is still incomplete at this time."
 0..*			ImagingSubstance
@@ -92,8 +81,8 @@ Description:	"Experimental class for an imaging procedure. This class is still i
 	Value:			CodeableConcept
 
 
-EntryElement:	LaboratoryProcedurePerformed
-Based on:		ProcedurePerformed
+EntryElement:	LaboratoryProcedure
+Based on:		Procedure
 Concept:		MTH#C0456984
 Description:	"A procedure performed on a collected specimen such as a blood panel or a biopsy."
 1..1			Code from http://hl7.org/fhir/ValueSet/observation-codes
@@ -102,8 +91,8 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 //0..1 			ref(Device)   // constraint from 0..*
 
 
-EntryElement:	SurgicalProcedurePerformed
-Based on:		ProcedurePerformed
+EntryElement:	SurgicalProcedure
+Based on:		Procedure
 Concept:		TBD
 Description:	"A surgical action, independent of action context."
 				Code from SurgicalProcedureVS
@@ -168,8 +157,8 @@ Description:	"A surgical action, independent of action context."
 		Description:	"An indirect device used for this procedure."
 		Value:			CodeableConcept
 
-Element:		SpecimenCollectionPerformed
-Based on:		ProcedurePerformed
+Element:		SpecimenCollection
+Based on:		Procedure
 Description:	"Base class for actions related to the collection of a specimen."
 0..*			AmountOrSize
 0..1			BodySite
@@ -179,8 +168,8 @@ Description:	"Base class for actions related to the collection of a specimen."
 	Value:			SimpleQuantity
 
 
-EntryElement:   DiagnosticImagingPerformed
-Based on:       ProcedurePerformed
+EntryElement:   DiagnosticImaging
+Based on:       ImagingProcedure
 Description:    "Diagnostic imaging procedure performed."
 Concept:        SCT#363679005 "Imaging (procedure)"  
 0..0            Focus
