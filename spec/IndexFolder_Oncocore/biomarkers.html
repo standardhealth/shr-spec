@@ -1,4 +1,8 @@
-<h2><a name="Biomarkers"></a>Tumor Markers and Genomics</h2>
+<p><font color="red">*** This is the <strong>DRAFT VERSION 0.3 ALPHA</strong> of the Minimum Common Oncology Data Elements (mCODE&#8482;) implementation guide. ***</font></p>
+
+<p>&nbsp;</p>
+
+<h1><a name="Biomarkers"></a>Tumor Markers and Genomics</h1>
 
 <p>Tumor and molecular markers are key prognostic factors in calculating cancer staging, identifying treatment options, and monitoring progression of disease. This IG distinguishes tumor marker from genomics as follows:</p>
 <ul>
@@ -7,21 +11,21 @@
 </ul>
 
 <h2><a name="TumorMarkers"></a>Tumor Markers</h2>
-<p>MCODE identifies a dedicated FHIR profile called <strong><i>TumorMarker</i></strong> for the identification of cancer tumor markers.</p>
+<p>mCODE identifies a dedicated FHIR profile called <strong><i>TumorMarker</i></strong> for the identification of cancer tumor markers.</p>
 <ul>
     <li>Tumor marker tests identified by their LOINC order code. The assigned TumorMarkerVS value set is also extensible to account for new LOINC version and code updates.</li>
     <li>The TumorMarkerVS lists the most common tumor markers but does not further align by cancer type.</li>
 </ul>
 
 <h2><a name="Genomics"></a>Genomics</h2>
-<p>MCODE focuses on cancer genomics - the study of the totality of DNA sequence and gene expression differences between tumour cells and normal host cells. It aims to understand the genetic basis of tumour cell proliferation and the evolution of the cancer genome under mutation and selection by the body environment, the immune system and therapeutic interventions (source: <a href="https://www.nature.com/subjects/cancer-genomics">Nature</a>).</p>
-<p>MCODE will only include the minimal set of genetic related elements relevant to capture in an EHR to drive treatment options. </p>
-<p>MCODE aligns with the <a href = "https://www.healthit.gov/sites/default/files/sync_for_genes_report_november_2017.pdf">Sync for Genes</a> approach to adopting a layered-based adoption model. With MCODE's initial emphasis on a minimal set of elements to drive treatment, there is no immediate need to model and store whole sequence reads that would be sent from an NGS labs.  Rather, only the relevant genetics labs test results and variant names and interpretation, noted by Sync for Genes as levels 1 and 2, would suffice. Subsequently, the MCODE implementation mapped to the <a href = "https://www.hl7.org/fhir/genomics.html#observation-genetics">observation-genetics profile</a> as much as possible.</p>
+<p>mCODE focuses on cancer genomics - the study of the totality of DNA sequence and gene expression differences between tumour cells and normal host cells. It aims to understand the genetic basis of tumour cell proliferation and the evolution of the cancer genome under mutation and selection by the body environment, the immune system and therapeutic interventions (source: <a href="https://www.nature.com/subjects/cancer-genomics">Nature</a>).</p>
+<p>mCODE will only include the minimal set of genetic related elements relevant to capture in an EHR to drive treatment options. </p>
+<p>mCODE aligns with the <a href = "https://www.healthit.gov/sites/default/files/sync_for_genes_report_november_2017.pdf">Sync for Genes</a> approach to adopting a layered-based adoption model. With mCODE's initial emphasis on a minimal set of elements to drive treatment, there is no immediate need to model and store whole sequence reads that would be sent from an NGS labs.  Rather, only the relevant genetics labs test results and variant names and interpretation, noted by Sync for Genes as levels 1 and 2, would suffice. Subsequently, the mCODE implementation mapped to the <a href = "https://www.hl7.org/fhir/genomics.html#observation-genetics">observation-genetics profile</a> as much as possible.</p>
 
 <h3>Identifying Genetic Tests</h3>
-<p>MCODE aligns with the <a href="https://www.ncbi.nlm.nih.gov/gtr/">Genetic Test Registry (GTR)</a> as the primary source for identifying genetic tests, assigning the relevant GTR ID to the <i>GeneticMarkerAnalysisResult.code</i> element.</p>
+<p>mCODE aligns with the <a href="https://www.ncbi.nlm.nih.gov/gtr/">Genetic Test Registry (GTR)</a> as the primary source for identifying genetic tests, assigning the relevant GTR ID to the <i>GeneticMarkerAnalysisResult.code</i> element.</p>
 
-<p>The <strong><i>GeneticMarkerAnalysisResult</i></strong> profile does not constrain the list of genetic tests.  However, we provide an extensible value set of genetic tests identifying cancer as the related condition.  Terms were curated based on the following filter criteria in the GTR <i>TestVersion</i> data set:</p>
+<p>The <strong><i>GeneticMarkerAnalysisResult</i></strong> profile provides an extensible value set of genetic tests related to cancer-linked molecular markers.  The initial terms in this value set were curated based on the following filter criteria in the GTR <i>TestVersion</i> data:</p>
 <ul>
     <li>A lexical query of the condition_identifiers field containing key cancer related terms like 'cancer' and 'tumor'.</li>
     <li>Tests based in the United States as country of origin.</li>
@@ -29,12 +33,12 @@
     <li>The resulting dataset was clinically inspected to remove inappropriate tests (false positive matches like "Sudden Death Syndrome NGS Panel").</li>
 </ul>
 
-<p>The <strong>GeneName</strong> element is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set. </p>
-
-<p>The <strong><i>CancerGeneVS</i></strong> value set includes the HUGO approved symbol rather than the full representation of the Gene ID (in the format approved_symbol:identifier). This choice was pragmatic since a certain number of systems store the symbol rather than the non-semantic identifier assigned by HUGO.  Nevertheless, the approved symbol for the gene is unique so it is possible to derive the identifier from the HUGO dataset if needed.</p>
+<h3>Additional Notes</h3>
+<p>The <strong><i>geneticsGene</i></strong> attribute is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set. </p>
+<p>The <i>CancerGeneVS</i> value set includes the HUGO approved symbol rather than the full representation of the Gene ID (in the format approved_symbol:identifier). This choice was pragmatic since a certain number of systems store the symbol rather than the non-semantic identifier assigned by HUGO.  Nevertheless, the approved symbol for the gene is unique so it is possible to derive the identifier from the HUGO dataset if needed.</p>
 
 <h2>Sources of Information</h2>
-<p>References used in the MCODE biomarker model include:</p>
+<p>References used in the mCODE biomarker model include:</p>
 <ul>
     <li><a href="https://www.hl7.org/fhir/genomics.html">HL7 FHIR Genomics Implementation Guidance</a></li>
     <li><a href="https://www.ncbi.nlm.nih.gov/gtr">The National Center for Biotechnology Genetic Test Registry (GTR)</a></li>
@@ -45,3 +49,7 @@
 </ul>
 
 <p>&nbsp;</p>
+<footer>
+    <hr>
+    <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
+</footer>

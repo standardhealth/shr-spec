@@ -104,7 +104,6 @@ includes 0..*	NonCashBenefit
 					DataValue from QualitativeFrequencyVS
 
 
-
 EntryElement:	HouseholdSituation
 Based on:		SocialHistoryObservation
 Description:	"Information about the makeup of the household of the subject."
@@ -127,7 +126,6 @@ includes 0..1	NumberOfDependents
 						Code is TBD#TBD
 						DataValue from CoinhabitantVS
 
-
 		EntryElement:	NumberOfDependents
 		Based on:		QuantitativeObservationComponent
 		Description:	"The number of dependents supported by the subject."
@@ -137,25 +135,33 @@ includes 0..1	NumberOfDependents
 
 //------------- Exposures ---------------------
 
-EntryElement:	ExposureToAgentTopic
-Based on:		EvaluationTopic  // might extend ConditionTopic, but we need EvaluationComponents
-Concept:		MTH#C0332157
-Description:	"Base class (independent of context) for documenting exposure to various agents (substance, disease vector, blood products, farm animals or pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc). Can be used to deny such exposures via context."
-Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/substance-code
-				Code is MTH#C0332157
-				
 				
 EntryElement:	ExposureToAgent
-Based on:		EvaluationTopic  // might extend ConditionTopic, but we need EvaluationComponents
-Concept:		MTH#C0332157
-Description:	"Exposure to various agents (substance, disease vector, blood products, farm animals or pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc). Can be used to deny such exposures via context."			
-1..1			PresenceContext
+Based on:		CodedNonLaboratoryObservation
+Description:	"Exposure to various agents (substance, disease vector, blood products, farm animals or pets, recreational drugs, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc)."
+				Code is MTH#C0332157 "Exposure to"
+				DataValue could be from http://hl7.org/fhir/ValueSet/substance-code
 				EvaluationComponent
 includes 0..*	ExposureSourceOrVector
 includes 0..*	ExposureAmount
 includes 0..*	ExposureReason
 includes 0..*	ExposureMethod
 includes 0..*	ExposureRoute
+
+
+
+1..1			Status // from http://hl7.org/fhir/ValueSet/allergy-verification-status
+				// Conflict between V2 and V3 -- Cannot override value set constraint from http://hl7.org/fhir/ValueSet/allergy-intolerance-status to http://hl7.org/fhir/ValueSet/allergy-verification-status
+0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+1..1			Code // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  		// DSTU 2 change different required value sets
+0..1			SubstanceCategory   // DSTU 2 change (restrict upper cardinality to 1)
+0..1			Onset
+0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
+0..1			Criticality
+0..1			MostRecentOccurrenceTime
+0..*			AllergyIntoleranceReaction
+
+
 
 		Element:		ExposureSourceOrVector
 		Based on:		EvaluationComponent
@@ -190,8 +196,6 @@ includes 0..*	ExposureRoute
 
 		
 		
-		
-		
 EntryElement:	AnimalExposure
 Concept:		MTH#C0238646
 Based on:		ExposureToAgent
@@ -200,7 +204,6 @@ Value:			CodeableConcept from CommonAnimalVS if covered
 				Code is MTH#C0238646
 
 
-	
 EntryElement:	SocialEnvironment
 Based on:		SocialHistoryObservation
 Concept:		TBD
