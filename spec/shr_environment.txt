@@ -144,13 +144,24 @@ Description:	"A risk experienced in the home environment."
 				Code is TBD#TBD
 				DataValue from HomeEnvironmentRiskVS
 
+EntryElement:	EducationalAttainment
+Based on:		CodedSocialHistoryObservation
+Description:	"Educational attainment or level of education of individuals."
+				Code is LNC#63504-5
+				DataValue from http://loinc.org/vs/LL1069-5
+
+EntryElement:	ForeignCountryOfTravelTwoYears
+Based on:		CodedSocialHistoryObservation
+Description:	"A travel history of the countries that the patient has visited within the last two-years, particularly when a health risk is involved."
+				Code is LNC#82764-2 "Country of travel outside the U.S. [Location] 2 years"
+				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.828
 
 //------------- Exposures ---------------------
 
 				
 EntryElement:	ExposureToAgent
 Based on:		CodedNonLaboratoryObservation
-Description:	"Exposure to an agent (substance, disease vector, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc.)"
+Description:	"Exposure to a risk agent (substance, disease vector, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc.). The exposure time period is given in the RelevantTime."
 				Code is SCT#418715001 "Exposure to potentially harmful entity (event)"
 				DataValue could be from http://hl7.org/fhir/ValueSet/substance-code
 				Components.ObservationComponent
@@ -170,6 +181,7 @@ includes 0..*	ExposureRoute
 		Description:	"The amount of substance used or exposed to in a given period of time (e.g., 10 cigarettes per day). Can also be used to record total lifetime exposure (e.g., 80 REMS/lifetime)."
 						Code is SCT#118555000 "Substance Amount"
 						// Data value can be a code or a quantity, even a text
+						DataValue value is type Ratio
 
 		Element:		ExposureReason
 		Based on:		ObservationComponent
@@ -184,15 +196,24 @@ includes 0..*	ExposureRoute
 						Code is MTH#C0013153 "Drug Administration Routes"
 						DataValue should be from http://hl7.org/fhir/ValueSet/route-codes
 
-
 EntryElement:	AnimalExposure
 Based on:		ExposureToAgent
 Description:	"The type of animals or pets the subject is exposed to."
 				Code is MTH#C0238646 "Animal Exposure"
-				DataValue from CommonAnimalVS if covered
+				DataValue from CommonAnimalVS if covered // TODO: and if not, use SNOMED...
+
+EntryElement:	PrenatalExposureToAgent
+Based on:		ExposureToAgent  // brings the temporal context into the picture
+Description:	"Fetal contact with a dangerous substance via the mother."
+				Code is MTH#C0871747 "fetal exposure"
+				DataValue from  TeratogenVS if covered
+0..1			GestationalTimePeriod
 
 
-/*
+
+
+
+/* TO DO 
 EntryElement:	Depression
 EntryElement:	Anxiety
 EntryElement:	JusticeInvolvement
