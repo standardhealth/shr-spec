@@ -82,7 +82,6 @@ Description:	"A record of the use of a medication. If the medication is given as
 				Status from http://hl7.org/fhir/ValueSet/medication-statement-status		
 0..1			Reason // Upper cardinality imposed by DSTU 2
 0..0			Participation
-0..0			Location
 				RelatedRequest value is type ref(MedicationRequest) // or CarePlan or ProcedureRequest or ReferralRequest
 
 EntryElement:	MedicationAdministration
@@ -101,20 +100,15 @@ Description:	"Indicates that a medication product has been dispensed for a named
 // TODO: Attributes from FHIR needed
 // TODO: Mapping needed
 
-Element:		MedicationDispensed
-Based on:		MedicationExposure
-Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
-// Attributes from FHIR needed
-
 
 EntryElement:	MedicationAdherence  
 Based on:		CodedNonLaboratoryObservation
 Concept:		MTH#C2364172
-Description:	"Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The Focus must reference the medication via a code, MedicationRequest, or MedicationStatement.
+Description:	"Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The Focus should reference the medication.
 Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time."
+				Code is MTH#C2364172 "Adherence To Medication Regime"
 				DataValue from QualitativeFrequencyVS
-				Code is MTH#C2364172
-1..1			Focus value is type ref(Medication)
+0..1			Focus value is type ref(MedicationExposure)  // shuld specify medication, but if not, it is interpreted as overall ability to adhere to a medication regime
 				Components.ObservationComponent
 includes 		0..* MedicationNonAdherenceReason
 

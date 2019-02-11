@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.behavior
 Description:	"The SHR Behavior domain contains data definitions related to how the person of record acts, feels, or responds to situations."
-Uses:			shr.core, shr.base, cimi.core, cimi.context, cimi.topic, cimi.statement, cimi.entity, cimi.element, cimi.encounter, shr.condition
+Uses:			shr.core, shr.base, 
 
 
 CodeSystem:     LNC = http://loinc.org
@@ -10,93 +10,7 @@ CodeSystem:     MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
 
-Element: 		BehavioralTopic
-Concept:		MTH#C0004927
-Based on:		AssertionTopic
-Description:	"Topic for observable responses, actions, or activities of the subject, independent of context. Can be used to assert or deny behaviors."
-				Code should be from BehaviorFindingVS
-				Category is LNC#54511-1 "Behavior"
-
-
-EntryElement:	BehaviorAbsent
-Based on:		ClinicalStatement
-Concept:		TBD
-Description:	"A statement about a response, action, or activity not demonstrated by the subject."
-				StatementTopic is type BehaviorTopic
-				StatementContext is type AbsenceContext
-
-EntryElement: 	BehaviorPresent
-Based on:		ClinicalStatement
-Concept:		MTH#C0004927
-Description:	"A statement about observable responses, actions, or activities of the subject."
-				StatementTopic is type BehaviorTopic
-				StatementContext is type PresenceContext
-
-
-EntryElement:	SubstanceUsePresent
-Based on:		ConditionPresent   // MedicationUse
-Concept:		MTH#C024251
-Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
-				Code should be from SubstanceAbuseVS
-Status
-	CodeableConcept from SubstanceOfAbuseVS  	312417001
-0..1	FrequencyOfUse
-0..1	ExposureRoute
-0..1	ExposureMethod
-0..*	ExposureAmount
-
-		Element:		FrequencyOfUse
-		Based on:		EvaluationComponent
-		Concept:		MTH#C0556346
-		Description:	"A description of the frequency of substance use."
-		Value:			CodeableConcept could be from SemiquantitativeFrequencyVS	
-
-
-
-
-EntryElement:   IntravenousDrugUse
-Based on:       SubstanceUsePresent
-Concept:        MTH#C0242566
-Description:    "Records whether the subject injects recreational drugs."
-1..1            ExposureRoute is MTH#C1522726 "Intravenous route"
-1..1            ExposureMethod is MTH#C0021494 "Intravenous Injection"
-
-
-EntryElement:	NicotineUse
-Based on:		SubstanceUse
-Concept:		LNC#11367-0
-Description:	"The subject's current or past use of nicotine."
-				Value is MTH#C2363943 "Nicotine"
-//1..1            EvaluationComponent.ExposureRoute from TBD "NicotineRouteVS"  
-//1..1            EvaluationComponent.ExposureMethod from TBD "NicotineExposureMethodVS"  e.g. first hand, second hand, smoked, vaped, chewed
-
-
-// It is not clear how to handle ONC smoking status except as a simple observation. It should really be aligned with SubstanceUsed with the details recorded in attributes."
-EntryElement:	ONCSmokingStatus
-Based on:		BehaviorPresent
-Concept:		LNC#72166-2
-Description:	"Records the extent of the subject's use of tobacco."
-Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus
-				Code is LNC#72166-2
-1..1			Subject // cardinality constraint
-
-// How can we indicate that a subject used to be an alcoholic, but is now sober?
-EntryElement:	AlcoholUse
-Based on:		SubstanceUse
-Concept:		MTH#C0001948
-Description:	"The subject's current or past use of alcohol."
-				Value is SCT#398624005 "alcohol"
-				EvaluationMethod from AlcoholUseScreeningToolVS
-				PanelMembers.EvaluationTopic
-includes 0..1	AlcoholBingeFrequency
-
-	Element:		AlcoholBingeFrequency
-	Based on:		SocialHistoryObservation
-	Concept:		MTH#C0556346
-	Description:	"How often have you had 6 or more Units if female, or 8 or more if male, on a single occasion in the last year?."
-	Value:			CodeableConcept from SemiquantitativeFrequencyVS
-
-				
+	
 EntryElement:	SubstanceAbuseTreatment
 Concept: 		TBD
 Based on:		ProcedurePerformed
@@ -105,8 +19,7 @@ Description:	"The treatment program used to address a substance abuse problem."
 	
 //--------------------------
 
-EntryElement:	ReligionInformation
-Concept:		
+EntryElement:	ReligionInformation	
 Based on:		ComponentOnlyNonLaboratoryObservation
 				ObservationTopic.EvaluationComponent
 includes 0..*	ReligiousAffiliation

@@ -137,7 +137,6 @@ Description:	"Whether the subject experiences domestic violence."
 				Code is MTH#C0206073
 				DataValue from QualitativeFrequencyVS
 
-
 EntryElement:	HomeEnvironmentRisk
 Based on:		CodedSocialHistoryObservation
 Description:	"A risk experienced in the home environment."
@@ -158,20 +157,25 @@ Description:	"A travel history of the countries that the patient has visited wit
 
 //------------- Exposures ---------------------
 
-				
-EntryElement:	ExposureToAgent
-Based on:		CodedNonLaboratoryObservation
-Description:	"Exposure to a risk agent (substance, disease vector, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexual transmitted diseases, foods, toxins, pathogens, noise, radiation, pollutants, or prenatal exposures to teratogens, etc.). The exposure time period is given in the RelevantTime."
+
+EntryElement:	UnprescribedExposure
+Based on:		NonLaboratoryObservation
+Description:	"Record of an exposure to a risk agent, whether intentional, environmental, or accidental. Non-prescribed substances include recreational marijuana, disease vector, mutagens, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexually-transmitted diseases, suspect foods, toxins, pathogens, noise, radiation, pollutants, and prenatal exposures to teratogens, etc. The exposure time period is given in the RelevantTime."
 				Code is SCT#418715001 "Exposure to potentially harmful entity (event)"
-				DataValue could be from http://hl7.org/fhir/ValueSet/substance-code
+0..1			SubstanceOrAgent
+				DataValue could be from YesNoUnknownVS
 				Components.ObservationComponent
 includes 0..*	ExposureMode
 includes 0..*	ExposureAmount
 includes 0..*	ExposureReason
 includes 0..*	ExposureRoute
 
+		Element:		SubstanceOrAgent
+		Description:	"The agent (substance, environment, disease vector) the patient may or may not have been exposed to."
+		Value:			CodeableConcept
+
 		Element:		ExposureMode
-		Based on:		ObservationComponent
+		Based on:		CodedObservationComponent
 		Description:	"Where the substance originated, e.g., animal to human, environmental, etc."
 						Code is SCT#409496000 "Mode of transmission"
 						DataValue from ExposureModeVS if covered
@@ -184,33 +188,72 @@ includes 0..*	ExposureRoute
 						DataValue value is type Ratio
 
 		Element:		ExposureReason
-		Based on:		ObservationComponent
+		Based on:		CodedObservationComponent
 		Description:	"Why the exposure occurred."
 						Code is TBD#TBD
 						DataValue from ExposureReasonVS
 
 		// Redundant with RouteIntoBody, but that isn't an ObservationComponent
 		Element:		ExposureRoute
-		Based on:		ObservationComponent
+		Based on:		CodedObservationComponent
 		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
 						Code is MTH#C0013153 "Drug Administration Routes"
 						DataValue should be from http://hl7.org/fhir/ValueSet/route-codes
 
 EntryElement:	AnimalExposure
-Based on:		ExposureToAgent
+Based on:		UnprescribedExposure
 Description:	"The type of animals or pets the subject is exposed to."
 				Code is MTH#C0238646 "Animal Exposure"
-				DataValue from CommonAnimalVS if covered // TODO: and if not, use SNOMED...
+				SubstanceOrAgent from CommonAnimalVS if covered // TODO: and if not, use SNOMED...
 
-EntryElement:	PrenatalExposureToAgent
-Based on:		ExposureToAgent  // brings the temporal context into the picture
+EntryElement:	PrenatalExposure
+Based on:		UnprescribedExposure  
 Description:	"Fetal contact with a dangerous substance via the mother."
 				Code is MTH#C0871747 "fetal exposure"
-				DataValue from  TeratogenVS if covered
-0..1			GestationalTimePeriod
+				SubstanceOrAgent from TeratogenVS if covered
+0..1			GestationalTimePeriod  // brings the temporal context into the picture
 
+EntryElement:	SubstanceUse
+Based on:		UnprescribedExposure
+Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
+				Code is MTH#C0237123 "Alcohol or Other Drug Use"
+				SubstanceOrAgent should be from SubstanceOfAbuseVS  	
 
+EntryElement:   IntravenousDrugUse
+Based on:       SubstanceUse
+Description:    "Records whether the subject injects recreational drugs. To record no intravenous drug use, the data value should be "
+				Code is MTH#C0699778  "intravenous drug use"
+           		Components.ObservationComponent.ExposureRoute.DataValue.CodeableConcept is MTH#C1522726 "Intravenous route"
+            	Components.ObservationComponent.ExposureMode.DataValue.CodeableConcept is MTH#C0021494 "Intravenous Injection"
 
+EntryElement:	NicotineExposure
+Based on:		SubstanceUse
+Description:	"The subject's current or past use of nicotine."
+				Code is MTH#C0240502  "Nicotine exposure"
+				SubstanceOrAgent is SCT#68540007 "Nicotine (substance)"
+          		Components.ObservationComponent.ExposureRoute.DataValue from TBD "NicotineRouteVS"  
+				Components.ObservationComponent.ExposureMode.DataValue from TBD "NicotineExposureModeVS" // e.g. smoked, second hand smoke, vaped, chewed
+
+EntryElement:	TobaccoSmokingStatusNHIS
+Based on:		NicotineExposure
+Description:	"Records the extent of the subject's use of tobacco."
+				Code is LNC#72166-2 "Tobacco smoking status NHIS"
+				DataValue from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus if covered
+
+EntryElement:	AlcoholUse
+Based on:		SubstanceUse
+Description:	"The subject's current or past use of alcohol."
+				Code is MTH#C0552479 "Alcohol use history"
+				SubstanceOrAgent is SCT#419442005 "Ethyl Alcohol (substance)"
+				Method from AlcoholUseScreeningToolVS if covered
+				DataValue value is type Ratio  // could be coded, also
+
+Element:		AlcoholBingeEpisodes
+Based on:		SubstanceUse
+Description:	"Alcohol binge episodes per month (define as 6 or more Units if female, or 8 or more if male)."
+				Code is LNC#11286-2 "Alcohol binge episodes per month - Reported"
+				SubstanceOrAgent is SCT#419442005 "Ethyl Alcohol (substance)"
+				DataValue value is type Ratio
 
 
 /* TO DO 
