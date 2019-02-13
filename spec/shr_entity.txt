@@ -25,7 +25,8 @@ EntryElement:	Patient
 Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient.
-The SHR patient follows Argonaut and makes the value set binding on marital status required. SHR also adds optional extensions on communication ability to more fully characterize language skills."
+The SHR patient follows Argonaut and makes the value set binding on marital status required. SHR also adds optional extensions on communication ability to more fully characterize language skills.
+MaritalStatus has a required binding in Argonaut, but an extensible binding in US-Core. To be feasible under both DSTU2 Argonaut and STU3 US-Core, the required binding strength is adopted."
 1..*			Identifier
 1..1			Person
 0..1			StatusOrActive is type Active
@@ -40,7 +41,7 @@ EntryElement:	Practitioner
 Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art.
-HumanName is limited to one required value by US-Core."
+HumanName is limited to one required value by US-Core. Gender is required by US-Core."
 1..1			Person
 0..1			StatusOrActive is type Active
 1..1			Person.HumanName   // only one (limitation imposed by us-core)
@@ -149,13 +150,14 @@ Description:	"Services and space and equipment provided for a particular purpose
 0..*			Alias
 0..1			CommentOrDescription
 0..1			Mode from http://hl7.org/fhir/ValueSet/location-mode
-1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType
+1..1			Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType if covered
 0..*			ContactPoint
 0..1			Address
 0..1			PhysicalType
 0..1			Geoposition
 0..1			MobileFacility
 1..1			ref(ManagingOrganization)
+				PartOf value is type Location
 
 	Element:		OperationalStatus
 	Description:	"The operational status covers operation values most relevant to beds (but can also apply to rooms/units/chairs/etc. such as an isolation unit/dialysis chair). This typically covers concepts such as contamination, housekeeping, and other activities like maintenance."
@@ -193,12 +195,13 @@ EntryElement:	Substance
 Based on:		Entity
 Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
-1..1			Type should be from http://hl7.org/fhir/ValueSet/substance-code
+1..1			Type could be from http://hl7.org/fhir/ValueSet/substance-code
 0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
 				StatusOrActive is type Status
 0..1			Status from http://hl7.org/fhir/ValueSet/substance-status
 0..1			CommentOrDescription
 0..*			Ingredient
+0..0			PartOf
 
 		Element:		Ingredient
 		Concept:		MTH#C3176062
@@ -225,8 +228,12 @@ Description:	"Any matter of defined composition that has discrete existence, who
 EntryElement:	Medication
 Based on:		Entity
 Concept:		MTH#C0013227
-Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines."
+Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines.
+In FHIR DSTU2 and STU3, Medication lacks the identifer attribute, which is included in SHR as an extension.
+DSTU2 lacks the status attribute, which is required by US-Core.
+Batch is 0..1 in FHIR R4, and accordingly is restricted here."
 				StatusOrActive is type Status
+				Status from http://hl7.org/fhir/ValueSet/medication-status
 1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
 0..1			DoseForm
 0..1			Brand
@@ -236,6 +243,7 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 0..1			LotNumber
 0..1			ExpirationDate
 0..1			Package could be from 	http://hl7.org/fhir/ValueSet/medication-package-form
+0..0			PartOf
 
 		Element:		DoseForm
 		Concept:		MTH#C0013058
@@ -481,7 +489,8 @@ Description:	"A person relevant to the health or social situation of the subject
 EntryElement:	Organization
 Based on:		Entity
 Concept:        MTH#C1561598
-Description:    "A social or legal structure formed by human beings."
+Description:    "A social or legal structure formed by human beings.
+Organization type is restricted to 0..1 in FHIR DSTU2, similarly restricted here."
 // Required attributes come from STU 3 mapping to us-core-organization
 1..1			OrganizationName
 1..*			Identifier  // cardinality constraint
@@ -498,11 +507,14 @@ Description:    "A social or legal structure formed by human beings."
 
 EntryElement:	Device
 Based on:		Entity
-Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients."
+Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients.
+Device status cannot be reconciled between Argonaut and US-Core, each having different required value sets.
+Device type has extensible mappings to different value sets in Argonaut and US-Core, however both value sets have identical SNOMED content (descendants of 49062001 (Device). We adopt the US-Core value set, which is allowable because the binding is extensible."
 				StatusOrActive is type Status
-				Status 
-				// from http://hl7.org/fhir/ValueSet/devicestatus in V2 argo; from http://hl7.org/fhir/ValueSet/device-status in V3 us-core
-1..1			Type from DeviceVS 
+				//Status 
+				// from http://hl7.org/fhir/ValueSet/devicestatus in V2 argo
+				// from http://hl7.org/fhir/ValueSet/device-status in V3 us-core
+1..1			Type from http://hl7.org/fhir/ValueSet/device-kind
 1..1			DeviceUdi  // DSTU 2 change -- Argonaut requires 1..1 Udi (see http://build.fhir.org/ig/Healthedata1/Argo-DSTU2/StructureDefinition-argo-device.html)
 0..1 			VendorModelNumber  // called 'model' in CIMI
 0..1 			ManufacturerName // string, not ref(Organization) - only because of mapping to FHIR
