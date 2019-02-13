@@ -75,12 +75,16 @@ Description:	"Abstract class representing medication exposure, independent of wh
 EntryElement:	MedicationStatement
 Based on:		MedicationExposure
 Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
-Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment."
+Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
+Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the recorder (who recorded the statement). SHR adds the recorder as an extension, as part of standardizing clinical statements.
+How a medication not taken has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
+Reason is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason. In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
 				Asserter value is type PersonOrOrganization
 1..1			CreationDate // us-core required
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				Status from http://hl7.org/fhir/ValueSet/medication-statement-status		
+				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
 0..1			Reason // Upper cardinality imposed by DSTU 2
+0..1			ReasonReference value is type ref(Condition)
 0..0			Participation
 				RelatedRequest value is type ref(MedicationRequest) // or CarePlan or ProcedureRequest or ReferralRequest
 
@@ -148,7 +152,8 @@ Intent was added in STU3 and is provided as an extension with required binding."
 0..1			SubstitutionAllowed
 0..1			SubstitutionReason from
 http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason
-0..1			Reason // Upper cardinality of 1 imposed by DSTU 2
+0..1			Reason could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
+0..1			ReasonReference value is type ref(Condition)
 0..0			PatientInstructions // instructions are in dose
 0..0			CommunicationMethod // not needed
 
