@@ -19,15 +19,20 @@ Description:	"A procedure that has been performed."
 0..0			Method	// Procedure doesn't have Method		
 //0..*			InputFinding
 //0..*			Indication
-0..*			ref(Device)
 				Participation.OnBehalfOf value is type ref(Organization)
-				Status // from http://hl7.org/fhir/ValueSet/event-status
+				// TODO: StatusReason
+				// Status from http://hl7.org/fhir/ValueSet/event-status
 				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant value is type PersonOrOrganizationOrDevice
 				RelatedRequest value is type ref(ProcedureRequest)
 0..1			ref(Location)
 0..1			Outcome
+0..*			MaterialUsed
+
+		Element:		MaterialUsed
+		Description:	"Items used during procedure"
+		Value:			ref(Device) or ref(Medication) or ref(Substance)
 
 		Element:		ProcedureReasonReference
 		Based on:		ReasonReference
@@ -64,15 +69,14 @@ Based on:		ActionRequested
 				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 //0..*			InputFinding  covered by Reason
 //0..*			Indication
-0..*			ref(Device)
 0..1			ref(Location)
 
+/*
 EntryElement:	ProcedureRequestedAgainst
 Based on:		ActionRequestedAgainst
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodySite
-
-
+*/
 
 //---------- Specialized Types of Procedure Topics ----------------
 
@@ -104,65 +108,22 @@ Concept:		TBD
 Description:	"A surgical action, independent of action context."
 				Code from SurgicalProcedureVS
 0..*			DirectSite
-0..*			DirectSiteCode
 0..*			IndirectSite
-0..*			IndirectSiteCode
 0..*			SurgicalApproach
-0..*			Access
-0..*			UsingDevice
-0..*			UsingDeviceCode
-0..*			UsingAccessDevice
-0..*			UsingAccessDeviceCode
-0..*			IndirectDevice
-0..*			IndirectDeviceCode
 
 		Element:		DirectSite
 		Description:	"The site where the procedure is performed."
 		Value:			BodySite
 
-		Element:		DirectSiteCode
-		Description:	"The site where the procedure is performed."
-		Value:			CodeableConcept
-
 		Element:		IndirectSite	
 		Description:	"The indirect site for this procedure."
 		Value:			BodySite
-
-		Element:		IndirectSiteCode
-		Description:	"The indirect site for this procedure."
-		Value:			CodeableConcept
 
 		Element:		SurgicalApproach
 		Description:	"The technique used to reach the site of the procedure. Approaches may be through the skin or mucous membrane, through an orifice or external."
 		Value:			CodeableConcept
 
-		Element:		Access
-		Description:	"The route used to access the site of a procedure. It is used to distinguish open, closed, and percutaneous procedures."
-		Value:			CodeableConcept
 
-		Element:		UsingDevice
-		Description:	"The device used to perform the procedure."
-		Value:			Device
-
-		Element:		UsingDeviceCode
-		Description:	"The device used to perform the procedure."
-		Value:			CodeableConcept
-
-		Element:		UsingAccessDevice
-		Description:	"The access device used to perform the procedure."
-		Value:			Device
-
-		Element:		UsingAccessDeviceCode
-		Description:	"The access device used to perform the procedure."
-		Value:			CodeableConcept
-
-		Element:		IndirectDevice
-		Description:	"An indirect device used for this procedure."
-		Value:			Device
-
-		Element:		IndirectDeviceCode
-		Description:	"An indirect device used for this procedure."
-		Value:			CodeableConcept
 
 Element:		SpecimenCollection
 Based on:		Procedure
