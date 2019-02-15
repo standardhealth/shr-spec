@@ -1,38 +1,40 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.base
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, shr.entity, shr.encounter
+Uses:			shr.core, entity, encounter
 
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
-Description:		"Abstract class representing any type of action."
+Description:		"Abstract class representing any type of action or event."
 0..1			Category // Might not need this
 0..*			Reason
+0..*			ReasonReference
 1..1			Patient
 				StatusOrActive is type Status
 
 		Element:		Reason
 		Concept:		MTH#C0566251
-		Description:	"The justification for an action or non-action, etc."
-		Value:			string or CodeableConcept or ref(ConditionOrObservation)
+		Description:	"The justification for an action or non-action, etc., as string or code."
+		Value:			string or CodeableConcept 
+		
+		Element:		ReasonReference
+		Description:	"The justification for an action or non-action, etc., as reference to a condition or observation."
+		Value:			ref(ConditionOrObservation)
 
 Abstract Element:	ActionPerformed
 Based on:			ActionStatement
-Description:		"Abstract class representing performance of any type of action."
-1..1				OccurrenceTimeOrPeriod  // when the action took place
+Description:		"Abstract class representing an event occurrence or performance of any type of action."
+1..1				OccurrenceTimeOrPeriod
 0..*				Participation
 1..1				Status  // change to required... should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
 0..1				Method
 0..1				RelatedRequest
-//0..1				EnactsPlan
-0..1				ref(Location)
-0..1				Outcome  // e.g., AdverseEvent
 
 		Element:		Participation
 		Concept:		TBD
-		Description:	"Record of someone or something involvement in an activity."
+		Description:	"Record of someone or something involvement in an activity or event."
 		0..1			Participant
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
@@ -41,7 +43,7 @@ Description:		"Abstract class representing performance of any type of action."
 			Element:		ParticipationType
 			Concept:		MTH#C1553854
 			Description:	"The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
-			Value:			CodeableConcept from FHIR/v3-ParticipationType
+			Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/performer-role
 			
 			Element:		ParticipationPeriod
 			Concept:		TBD
@@ -75,7 +77,7 @@ Description:		"Abstract class representing performance of any type of action."
 Abstract Element:	ActionRequested
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
-0..1			Requester
+0..1			Asserter is type Requester
 1..1			RequestIntent
 1..1			Status // should be from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU2 change (conflicting required value sets in MedicationRequest between argo and us-core) 
@@ -90,13 +92,13 @@ Description:		"Abstract class representing a request for any type of action to b
 
 
 		Element:		Requester
-		Concept:		TBD
-		Description:	"The actor making this request."
+		Based on:		Asserter
+		Description:	"The actor making this request. This is a name change from Asserter to Requester, which makes more sense in the context of a request."
 		Value:			ref(EntityOrRole)
 
 		Element:		RequestIntent
 		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/request-intent
+		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/request-intent
 
 		Element:		ExpectedPerformanceTime
 		Concept:		TBD
