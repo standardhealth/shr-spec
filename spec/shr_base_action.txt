@@ -8,16 +8,16 @@ Uses:			shr.core, entity, encounter
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
 Description:		"Abstract class representing any type of action or event."
-0..1			Category // Might not need this
-0..*			Reason
+0..*			ReasonCode
 0..*			ReasonReference
 1..1			Patient
 				StatusOrActive is type Status
 
-		Element:		Reason
+		Element:		ReasonCode
 		Concept:		MTH#C0566251
-		Description:	"The justification for an action or non-action, etc., as string or code."
-		Value:			string or CodeableConcept 
+		Description:	"The justification for an action or non-action, etc., as string or code. 
+		Reason is a string or CodeableConcept in DSTU2 but in later versions only a CodeableConcept, so we are not going to support a string."
+		Value:			CodeableConcept
 		
 		Element:		ReasonReference
 		Description:	"The justification for an action or non-action, etc., as reference to a condition or observation."
@@ -77,19 +77,17 @@ Description:		"Abstract class representing an event occurrence or performance of
 Abstract Element:	ActionRequested
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
+0..1			Type  // type of request
 0..1			Asserter is type Requester
 1..1			RequestIntent
 1..1			Status // should be from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU2 change (conflicting required value sets in MedicationRequest between argo and us-core) 
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
-0..1			ExpectedPerformer
-0..1			ExpectedMethod 
+0..1			Recipient
 0..1 			PriorityRank //should be from http://hl7.org/fhir/ValueSet/request-priority  // DSTU2 change (conflicting value sets)
-0..1			PerformerInstructions
-0..1			PatientInstructions	
+0..*			Annotation
 0..1			CommunicationMethod
-
 
 		Element:		Requester
 		Based on:		Asserter
@@ -103,40 +101,19 @@ Description:		"Abstract class representing a request for any type of action to b
 		Element:		ExpectedPerformanceTime
 		Concept:		TBD
 		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			dateTime or date or TimePeriod or Timing
+		Value:			dateTime or TimePeriod or Timing
 
 		Element:		ExpectedPerformerType
 		Concept:		TBD
 		Description:	"What type of party should carry out the testing."
 		Value:			CodeableConcept // what ValueSet??
 
-		Element:		ExpectedPerformer
+		Element:		Recipient
 		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver."
+		Description:	"Who this request is being addressed to."
 		Value:			ref(Entity) or ref(Organization)
-		
-		Element:		ExpectedMethod
-		Concept:		TBD
-		Description:	"The method that should be used to carry out the action."
-		Value:			CodeableConcept
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
 		
 		Element:		CommunicationMethod
 		Concept:		TBD
 		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
 		Value:			CodeableConcept
-
-
-Abstract Element:	ActionRequestedAgainst
-Based on:			ActionStatement
-Description:		"Abstract class representing a request to not perform any type of action."
-
