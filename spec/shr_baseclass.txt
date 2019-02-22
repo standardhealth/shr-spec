@@ -102,9 +102,14 @@ Based on:		DomainResource
 Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
 0..1			Patient
 0..1			CareContext
-0..1			CreationDate
+0..1			CreationDateTime
 0..1			Asserter
 0..1			Recorder
+
+	Element:   	 	CreationDateTime  
+	Concept:        MTH#C3669169
+	Description:    "The point in time when the information was recorded in the system of record."
+	Value:          dateTime  // we can map to instant from dateTime
 
 	Element: 		Asserter
 	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
@@ -119,11 +124,6 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Concept:		MTH#C1550369
 	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. A code can be used to indicate a generic type of participant, e.g., mother, EMT, or social worker."
 	Value:			ref(EntityOrRole)
-
-	Element:		CreationDate
-	Concept:		TBD
-	Description:	"The date/time the information was asserted or created; usually, when the clinical statement was initially recorded."
-	Value:			dateTime
 
 
 EntryElement:	Composition
@@ -167,6 +167,11 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 		Based on:		EntityOrRole
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
+
+		Element:		PersonOrDeviceOrLocation
+		Based on:		EntityOrRole
+		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device) or ref(Location)
 
 		Element:		PersonOrOrganizationOrDevice
 		Based on:		EntityOrRole

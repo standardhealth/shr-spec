@@ -127,12 +127,14 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 0..*	ReasonCode
 0..*	ReasonReference
 0..*	Indication
-0..1	PriorityRank
+0..1	PriorityRankUnsignedInt
 0..1	CommentOrDescription
 0..*	SupportingInformation 
 0..*	ref(ReferralRequest)
 1..*	AppointmentParticipation
-0..*	TimePeriod
+0..1	TimePeriod
+0..*	ExpectedPerformanceTime
+0..1	CreationDateTime
 
 	Element:	ServiceCategory
 	Description:	"A broad categorization of the service (ordered, planned, or performed)."
@@ -140,7 +142,7 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 
 	Element:	Specialty
 	Description:	"The specialty of a practitioner who (should, will, or did) perform a service."
-	Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/c80-practice-codes
+	Value:		CodeableConcept should be from http://hl7.org/fhir/ValueSet/c80-practice-codes
 
 	Element:		Indication
 	Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
@@ -148,12 +150,12 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 
 	Element:	AppointmentParticipation
 	Description:	"Participants involved in appointment"
-	1..*		ParticipationType
-	0..1		Participant //Reference(Patient | Practitioner | RelatedPerson | Device | HealthcareService | Location)
-	0..1		IsRequiredParticipant
+	1..*		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type if covered
+	0..1		Participant value is type PersonOrDeviceOrLocation  // HealthcareService not implemented yet
+	0..1		IsRequired
 	1..1		Status from http://hl7.org/fhir/ValueSet/participationstatus
 
-			Element:	IsRequiredParticipant
+			Element:	IsRequired
 			Description: "Whether the resource required to be participate."
 			Value:		CodeableConcept from http://hl7.org/fhir/ValueSet/participantrequired
 
