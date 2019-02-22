@@ -59,14 +59,11 @@ Description:	"A description of an interaction between a patient and healthcare p
 			
 		Element:		EncounterDiagnosis
 		Description:	"A diagnosis, which is a disease or injury determined to be present through evaluation of patient history, examination, and/or review of laboratory data. This element is not a stand-alone representation of the condition that was diagnosed, but is meant to be used as an sub-structure in a resource, such as Encounter."
-		1..1			DiagnosisCode
+		0..1			Code
+		1..1			ref(Condition)
 		0..1			PriorityRank
 		0..1			Type should be from http://hl7.org/fhir/ValueSet/diagnosis-role
 
-			Element:		DiagnosisCode
-			Concept:		TBD
-			Description:	"A code for the diagnosis."
-			Value:			CodeableConcept
 
 		Element:	EncounterLocation
 		Description:	"Locations where the patient has been."
@@ -81,8 +78,12 @@ Description:	"An association between a patient and an organization / healthcare 
 				Status from http://hl7.org/fhir/ValueSet/episode-of-care-status
 				StatusHistory.Status from http://hl7.org/fhir/ValueSet/episode-of-care-status
 				Type could be from http://hl7.org/fhir/ValueSet/episodeofcare-type
-//0..1			CareManager
+0..1			CareManager
 //0..*			ref(CareTeam)
+
+	Element:	CareManager
+	Description:	"Care manager/care co-ordinator for the patient"
+	Value:		ref(Practitioner)
 
 
 
@@ -99,6 +100,7 @@ Description:	"Used to record and send details about a request for referral servi
 0..*			ServiceType
 0..1			CommentOrDescription
 0..*			SupportingInformation
+
 
 		Element:	ServiceType
 		Description:	"A service requested or to be performed during this appointment"
