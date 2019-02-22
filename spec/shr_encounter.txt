@@ -33,12 +33,14 @@ Description:	"A description of an interaction between a patient and healthcare p
 				Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..1			PriorityCode could be from http://hl7.org/fhir/ValueSet/v3-ActPriority
 0..*			ref(EpisodeOfCare)
-0..*			Participant
+0..*			Participation
+				Participation.Participant value is type PractitionerOrRelatedPerson 
+				Participation.ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type if covered
 0..1			ref(Appointment)
 0..1			Duration
 0..*			ReasonCode should be from http://hl7.org/fhir/ValueSet/encounter-reason
 //0..1			Hospitalization
-0..*			Location
+0..*			EncounterLocation
 0..1			PartOf value is type ref(Encounter)
 
 		Element:		StatusHistory
@@ -58,13 +60,19 @@ Description:	"A description of an interaction between a patient and healthcare p
 		Element:		EncounterDiagnosis
 		Description:	"A diagnosis, which is a disease or injury determined to be present through evaluation of patient history, examination, and/or review of laboratory data. This element is not a stand-alone representation of the condition that was diagnosed, but is meant to be used as an sub-structure in a resource, such as Encounter."
 		1..1			DiagnosisCode
-		0..1			PriorityCode
+		0..1			PriorityRank
 		0..1			Type should be from http://hl7.org/fhir/ValueSet/diagnosis-role
 
 			Element:		DiagnosisCode
 			Concept:		TBD
 			Description:	"A code for the diagnosis."
 			Value:			CodeableConcept
+
+		Element:	EncounterLocation
+		Description:	"Locations where the patient has been."
+		1..1		ref(Location)
+		0..1		Status from http://hl7.org/fhir/ValueSet/encounter-location-status
+		0..1		TimePeriod
 
 
 EntryElement:	EpisodeOfCare
@@ -151,7 +159,7 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 
 
 
-/*  CIMI attributes
+/*  CIMI attributes for possible future use
 
 0..1			AccountId
 0..1			AccountStatus
