@@ -1,7 +1,6 @@
 Grammar:		DataElement 5.0
-Namespace:		procedure
+Namespace:		shr.core
 Description:	"The procedure domain contains contexts, topics, and statements related to procedures."
-Uses:  			shr.core, shr.base, entity
 
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
@@ -18,7 +17,6 @@ Description:	"A procedure that has been performed."
 0..1			ReasonReference is type ProcedureReasonReference
 0..0			Method	// Procedure doesn't have Method		
 //0..*			InputFinding
-//0..*			Indication
 				Participation.OnBehalfOf value is type ref(Organization)
 				// TODO: StatusReason
 				// Status from http://hl7.org/fhir/ValueSet/event-status
@@ -43,10 +41,6 @@ Description:	"A procedure that has been performed."
 		Description:	"Patient findings expected for the performance of the specified procedure. For instance, an x-ray of a fracture prior to a surgical procedure for a bone fracture."
 		Value:			ref(Observation)
 
-		Element:		Indication
-		Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
-		Value:			CodeableConcept	
-
 		Element:		OutputFinding
 		Description:	"Patient findings documented during the performance of the procedure."
 		Value:			ref(ConditionOrObservation)
@@ -54,7 +48,7 @@ Description:	"A procedure that has been performed."
 
 EntryElement:	ProcedureRequest
 Based on:		ActionRequested
-				PriorityRank // must be from http://hl7.org/fhir/ValueSet/request-priority 
+				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
 				// DSTU 2 change (different required value sets in v2 and v3)
 				Status // from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU 2 change(different required value sets in v2 and v3)
