@@ -1,45 +1,118 @@
 Grammar:	Map 5.1
-Namespace:	encounter
+Namespace:	shr.core
 Target:		FHIR_STU_3
 
+// VERY INCOMPLETE!
 
 Encounter maps to Encounter:
 	Identifier maps to identifier
-	Patient maps to subject
-	EncounterType maps to type
+	Status maps to status
+	StatusHistory maps to statusHistory
+	StatusHistory.Status maps to statusHistory.status
+	StatusHistory.TimePeriod maps to statusHistory.period
 	EncounterClass maps to class
-//	ServiceProvider maps to serviceProvider
-	Status maps to status
+	ClassHistory maps to classHistory
+	ClassHistory.EncounterClass maps to classHistory.class
+	ClassHistory.TimePeriod maps to classHistory.period
+	Type maps to type
+	PriorityCode maps to priority
+	Patient maps to subject
+	EpisodeOfCare maps to episodeOfCare
+	ReferralRequest maps to incomingReferral
+	Participation maps to participant
+	Participation.ParticipationType maps to participant.type
+	Participation.ParticipationPeriod maps to participant.period
+	Participation.Participant maps to participant.individual
+	Appointment maps to appointment
 	TimePeriod maps to period
+	Duration maps to length
+	ReasonCode maps to reason
+	EncounterDiagnosis maps to diagnosis
+	EncounterDiagnosis.Code maps to diagnosis.extension
+	EncounterDiagnosis.Condition maps to diagnosis.condition
+	EncounterDiagnosis.Type maps to diagnosis.role
+	EncounterDiagnosis.PriorityRank maps to diagnosis.rank
+//	Account maps to account
+// haven't touched hospitalization yet	
+	EncounterLocation maps to location
+	EncounterLocation.Location maps to location.location
+	EncounterLocation.Status maps to location.status
+	EncounterLocation.TimePeriod maps to location.period
+	Organization maps to serviceProvider
 	PartOf maps to partOf
-//	Participation.Participant maps to participant
-//	Participation.Participant[Entity] maps to participant.individual  ???
-//	constrain participant.type to 0..1
-//	Participation.Participant.ParticipationType maps to participant.type
-//	Participation.Participant.ParticipationPeriod maps to participant.period
-//	RelatedRequest.Value maps to incomingReferral
-//	constrain location to 0..1
-//	Location maps to location.location
-//	Reason maps to reason
-// what maps to apppointment? RelatedPromise?
-//	TBD "HealthConcern" maps to indication
 
-/*
-EncounterRequested maps to ReferralRequest:
-	Patient maps to subject 
-	ReferralDate maps to authoredOn
-//ReferralSourceType
-	EncounterTopic.??? maps to type
-//TreatmentCooperation
-//PaymentSource
+EpisodeOfCare maps to EpisodeOfCare:
+	Identifier maps to identifier
 	Status maps to status
-//RequestIntent
-	EncounterExpectedPerformanceTime maps to occurrence[x]
-	EncounterExpectedPerformerType maps to specialty
-//ExpectedPerformer
-//ExpectedMethod 
-	EncounterPriorityRank maps to priority
-//PerformerInstructions
-//PatientInstructions	
-//CommunicationMethod
-*/
+	StatusHistory maps to statusHistory
+	StatusHistory.Status maps to statusHistory.status
+	StatusHistory.TimePeriod maps to statusHistory.period
+	Type maps to type
+	EncounterDiagnosis maps to diagnosis
+	EncounterDiagnosis.Code maps to diagnosis.extension
+	EncounterDiagnosis.Condition maps to diagnosis.condition
+	EncounterDiagnosis.Type maps to diagnosis.role
+	EncounterDiagnosis.PriorityRank maps to diagnosis.rank
+	Patient maps to patient
+	Organization maps to managingOrganization
+	TimePeriod maps to period
+	ReferralRequest maps to referralRequest
+	CareManager maps to careManager
+//	Account maps to account
+
+ReferralRequest maps to ReferralRequest:
+	Identifier maps to identifier
+	// maps to defintion
+	// maps to basedOn
+	Replaces maps to replaces
+	// maps to groupIdentifier
+	Status maps to status
+	RequestIntent maps to intent
+	Type maps to type
+	PriorityCode maps to priority
+	ServiceType maps to serviceRequested
+	Patient maps to subject
+	CareContext maps to context
+	ExpectedPerformanceTime maps to occurrence[x]
+	CreationDateTime maps to authoredOn
+	Requester maps to requester.agent
+	// maps to requester.onHalfOf
+	ExpectedPerformerType maps to specialty
+	Recipient maps to recipient
+	ReasonCode maps to reasonCode
+	ReasonReference maps to reasonReference
+	CommentOrDescription maps to description
+	SupportingInformation maps to supportingInfo
+	Annotation maps to note
+	// maps to relevantHistory
+
+Appointment maps to Appointment:
+	Identifier maps to identifier
+	Status maps to status
+	ServiceCategory maps to serviceCategory
+	ServiceType maps to serviceType
+	Specialty maps to specialty
+	Type maps to appointmentType
+	ReasonCode maps to reason
+	ReasonReference maps to extension
+	Indication maps to indication
+	PriorityRankUnsignedInt maps to priority
+	CommentOrDescription maps to description
+	SupportingInformation maps to supportingInformation
+	TimePeriod.BeginDateTime maps to start
+	TimePeriod.EndDateTime maps to end
+	//maps to minutesDuration
+	//maps to slot
+	CreationDateTime maps to created
+	//maps to comment
+	ReferralRequest maps to incomingReferral
+	AppointmentParticipation maps to participant
+	AppointmentParticipation.ParticipationType maps to participant.type
+	AppointmentParticipation.Participant maps to participant.actor
+	AppointmentParticipation.IsRequired maps to participant.required
+	AppointmentParticipation.Status maps to participant.status
+	ExpectedPerformanceTime maps to requestedPeriod
+
+
+
+

@@ -1,7 +1,5 @@
 Grammar:		DataElement 5.0
-Namespace:		entity
-Description:	"The namespace containing definitions for basic classes."
-Uses:			shr.core, shr.base, medication, procedure
+Namespace:		shr.core
 
 Abstract Element:	EntityOrRole
 Based on:			DomainResource
@@ -64,7 +62,8 @@ includes 		1..1 NationalProviderIdentifier
 	Element:		Qualification
 	Concept:		MTH#C0037778
 	Description:	"A right to practice medicine obtained by training and certification."
-	1..1			Type from http://hl7.org/fhir/ValueSet/c80-practice-codes
+	0..*			Identifier
+	1..1			Type could be from	http://hl7.org/fhir/ValueSet/v2-2.7-0360
 	0..1			EffectiveTimePeriod
 	0..1			ref(Issuer)
 // or http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
@@ -103,14 +102,10 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 	Element:		GroupCharacteristic
 	Concept:		MTH#C0599755
 	Description:	"An inclusion or exclusion criterion as part of defining a cohort."
-	1..1			GroupCharacteristicCode
+	1..1			Code
 	0..1			GroupCharacteristicValue
 	1..1			ExcludeFlag
 	0..1			TimePeriod
-	
-		Element:		GroupCharacteristicCode
-		Description:	"A code describing the characteristic present, absent, or having a value in this group."
-		Value:			CodeableConcept
 
 		Element:		GroupCharacteristicValue
 		Description:	"The value or range of the characteristic."
@@ -559,7 +554,8 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 0..1			CollectionTime
 0..1			CollectionMethod
 0..1			CollectionSite
-0..1			SourceSpecimen
+0..1			AmountOrSize
+				PartOf value is type ref(Specimen)
 0..1			ReceivedTime
 0..*			SpecimenContainer
 0..*			SpecimenTreatment
@@ -590,11 +586,6 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		Based on:		Identifier
 		Concept:		TBD
 		Description:	"Identifier assigned by the lab"
-
-		Element:		SourceSpecimen
-		Concept:		TBD
-		Description:	"Identifier for the source specimen from which this specimen was derived."
-		Value:			ref(Specimen)
 		
 		Element:		HandlingRisk
 		Concept:		TBD
@@ -606,11 +597,14 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		Description:	"Information about the proper handling of the specimen."
 		Value:			CodeableConcept
 
-		EntryElement:	SpecimenTreatment
+		Element:		SpecimenTreatment
 		Concept:		TBD
-		Description:	"Treatment performed on the specimen."
+		Description:	"Additives added to the specimen."
 		0..*			Additive
-	
+
+		Element:		AmountOrSize
+		Description:	"The quantity of specimen collected"
+		Value:			SimpleQuantity	
 
 Element:		SpecimenContainer
 Description:	"Direct container of specimen (slide, etc.)"

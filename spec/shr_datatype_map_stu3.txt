@@ -1,9 +1,9 @@
 Grammar:	Map 5.1
 Namespace:	shr.core
-Target:		FHIR_DSTU_2
+Target:		FHIR_STU_3
 
 
-// Code types map direction to FHIR
+// CodeValue types map direction to FHIR
 Coding maps to Coding:
 	CodeValue maps to code
 	CodeSystem maps to system
@@ -21,8 +21,9 @@ Quantity maps to Quantity:
 	Units.Coding.DisplayText maps to unit
 	Comparator maps to comparator
 	
-// The following are profiles on Quantity; no additional attributes are defined in SHR
 SimpleQuantity maps to SimpleQuantity:
+
+// The following are profiles on Quantity; no additional attributes are defined in SHR
 Age maps to Age:
 IntegerQuantity maps to Count:
 Distance maps to Distance:
@@ -53,19 +54,17 @@ HumanName maps to HumanName:
 TimePeriod maps to Period:
 	BeginDateTime maps to start
 	EndDateTime maps to end
-
+	
 ContactPoint maps to ContactPoint:
 	TelecomNumberOrAddress maps to value
 	Type maps to system
 	Purpose maps to use
 	PriorityRank maps to rank
 	EffectiveTimePeriod maps to period	
-
-/*  dstu 2 change (no suitable target)
+	
 ContactDetail maps to ContactDetail:
 	HumanName.NameAsText maps to name
 	ContactPoint maps to telecom
-*/
 
 Range maps to Range:
  	LowerBound maps to low
@@ -80,15 +79,14 @@ Timing maps to Timing:
 	TimingCode maps to code
 	EventDuration.DurationRange.LowerBound.SimpleQuantity.Number maps to repeat.duration
 	EventDuration.DurationRange.UpperBound.SimpleQuantity.Number maps to repeat.durationMax
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.CodeValue maps to repeat.durationUnits // dstu 2 change (attribute name)
+	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.CodeValue maps to repeat.durationUnit
 	RecurrencePattern.RecurrenceInterval.Duration.Number maps to repeat.period
-	// dstu 2 change (attribute name)
-	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.CodeValue maps to repeat.periodUnits 
-	constrain repeat.periodMax to 0..0   // TODO: why?
-//	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek // dstu 2 change (no such attribute)
-//	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay // dstu 2 change (no such attribute)
+	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.CodeValue maps to repeat.periodUnit
+	constrain repeat.periodMax to 0..0
+	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek
+	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay
 	RecurrencePattern.DailyLifeEvent maps to repeat.when
-//	RecurrencePattern.LifeEventOffset maps to repeat.offset  // dstu 2 change (no such attribute)
+	RecurrencePattern.LifeEventOffset maps to repeat.offset
 	RecurrencePattern.CountPerInterval.MinCount maps to repeat.frequency
 	RecurrencePattern.CountPerInterval.MaxCount maps to repeat.frequencyMax
 	
@@ -109,13 +107,14 @@ Media maps to Attachment:
 	ResourceSize maps to size
 	Hash maps to hash
 	Title maps to title
-	CreationTime maps to creation
+	CreationDateTime maps to creation
 
-/* Note that BodySite does not have a patient, whereas FHIR BodySite does (and it is required!). From FHIR 3.5 documentation: "The BodyStructure resource is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient."  Note that BodySite is renamed BodyStructure in r4.
+	// Note that BodySite does not have a patient, whereas FHIR BodySite (BodyStructure in r4) does. From FHIR 3.5 documentation: "The BodyStructure resource is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient."
+/*
 BodySite maps to BodySite:
 	BodySiteCode maps to code
-	Laterality maps to modifier (slice on = coding.code)  
-	AnatomicalDirection maps to modifier      
+	Laterality maps to qualifier (slice on = coding.code)
+	AnatomicalDirection maps to qualifier
 	CommentOrDescription maps to description
 	Media maps to image
 	DistanceFromLandmark maps to extension
@@ -136,9 +135,8 @@ Identifier maps to Identifier:
 	
 Signature maps to Signature:
 	SignatureType maps to type
-	CreationTime maps to when
+	CreationDateTime maps to when
 	Signatory maps to who[x]
-// dstu 2 change (no such attribute)
-//	OnBehalfOf maps to onBehalfOf[x]    
+	OnBehalfOf maps to onBehalfOf[x]
 	ContentType maps to contentType
 	BinaryData maps to blob		

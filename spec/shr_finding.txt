@@ -1,7 +1,6 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.base
+Namespace:		shr.core
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, entity, encounter
 
 
 Abstract Element:	ObservationComponent
@@ -75,14 +74,14 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..1			Focus
 0..1			BodySite
-0..1			CommentOrDescription	
+0..1			CommentOrDescription
 0..1			Interpretation
 0..1			Device
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
 				Asserter value is type PersonOrOrganization
-//0..1			DeltaFlag
+				CareContext value is type ref(Encounter)
 
 		Element:		RelevantTime
 		Concept:		TBD
@@ -102,7 +101,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
-			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
 		Element:		Components
@@ -172,7 +171,7 @@ Description:	"An observation with components, but without a result value or pane
 EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
-				Code from http://loinc.org/vs if covered
+				Code from http://hl7.org/fhir/ValueSet/observation-codes if covered
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 0..1			Specimen

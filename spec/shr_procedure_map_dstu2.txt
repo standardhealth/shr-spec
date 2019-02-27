@@ -1,5 +1,5 @@
 Grammar:	Map 5.1
-Namespace:	procedure
+Namespace:	shr.core
 Target:		FHIR_DSTU_2
 
 Procedure maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-procedure:  // DSTU 2 change (different mapping target)
@@ -20,8 +20,8 @@ Procedure maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-proce
 	// DSTU 2 change (no such attribute)
 //	PartOf maps to partOf  
 	Annotation maps to notes
-	Encounter maps to encounter
-	Reason maps to reason[x]
+	CareContext maps to encounter
+	ReasonCode maps to reason[x]
 	OccurrenceTimeOrPeriod maps to performed[x]
 	Participation maps to performer
 	Participation.Participant maps to performer.actor
@@ -35,17 +35,17 @@ Procedure maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-proce
 //	RelatedPlan maps to definition
 	Outcome maps to outcome
 	Location maps to location
+	MaterialUsed maps to used
 
 
 SurgicalProcedure maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-procedure:   // DSTU 2 change (different mapping target)
 	DirectSite maps to http://hl7.org/fhir/StructureDefinition/procedure-targetBodySite
 	IndirectSite maps to http://hl7.org/fhir/StructureDefinition/procedure-approachBodySite
-	SurgicalApproach maps to http://hl7.org/fhir/StructureDefinition/procedure-approachBodySite
 
 
 ProcedureRequest maps to ProcedureRequest:
 	Identifier maps to identifier
-	CreationDate maps to orderedOn
+	CreationDateTime maps to orderedOn
 	Requester maps to orderer
 	Code maps to code
 	// DSTU 2 change (no such attribute)
@@ -59,26 +59,15 @@ ProcedureRequest maps to ProcedureRequest:
 	BodySite.CommentOrDescription maps to bodySite.extension
 	BodySite.Media maps to bodySite.extension
 	BodySite.DistanceFromLandmark maps to bodySite.extension
-	Encounter maps to encounter
-	Reason maps to reason[x]
+	CareContext maps to encounter
+	ReasonCode maps to reason[x]
 	Status maps to status
 // DSTU 2 change (no such attribute)
-//	RequestIntent maps to intent 
+	RequestIntent maps to extension 
 // DSTU 2 change (name change)
 	ExpectedPerformanceTime maps to scheduled[x]    
 // DSTU 2 change (no such attribute)
-//	ExpectedPerformerType maps to performerType   
-	ExpectedPerformer maps to performer
-	PriorityRank  maps to priority
-
-ProcedureRequestedAgainst maps to Basic:
-/* In DSTU 2, there is not way to specify a procedure NOT to perform using Procedure resource
-	fix doNotPerform to true
-	fix intent to http://hl7.org/fhir/request-intent#proposal
-	// who is the requester?
-	Code maps to code
-	Category maps to category
-	Patient maps to subject
-	BodySite.BodySiteCode maps to bodySite
-	Reason maps to reason.reasonCodeableConcept
-*/
+	ExpectedPerformerType maps to extension   
+	Recipient maps to performer
+	PriorityCode  maps to priority
+	Annotation maps to notes
