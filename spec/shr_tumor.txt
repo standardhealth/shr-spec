@@ -8,44 +8,46 @@ EntryElement:   TumorPresent
 Based on:		BodyStructurePresent
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
-                Code from TumorMorphologyVS
-// note - the topic code represents the morphology, as distinct from the location in BodySite
+                Code from CancerHistologicTypeVS
+// note - the code represents the morphology, as distinct from the location in BodySite
+0..0			Severity
+0..0			StageInformation
 0..1            IsPrimaryTumor
 
         Element:        IsPrimaryTumor
         Concept:        TBD
         Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
-        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but this VS allows for unknown
+        Value:          CodeableConcept from YesNoUnknownVS
+
 
 EntryElement: 	TumorDimensions
 Based on:		CodedLaboratoryObservation
-Concept:		SCT#263605001 "Tumor size (observable entity)"
 0..0			DataValue
 	            Focus value is type ref(TumorPresent)
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
 				Components.ObservationComponent
-includes 0..1	TumorDimension1
-includes 0..1	TumorDimension2
-includes 0..1   TumorDimension3
-includes 0..1	SizeOfGrossTumorBed
+					includes 0..1	TumorLongestDimension
+					includes 0..1	TumorDimension2
+					includes 0..1   TumorDimension3
+					includes 0..1	SizeOfGrossTumorBed
 
-		Element:		TumorDimension1
+		Element:		TumorLongestDimension
 		Description:	"The longest dimension of the tumor."
 		Based on:		QuantitativeObservationComponent
-		Concept:		SCT#372299002 "Tumor size, dimension 1 (observable entity)"
-                        Code is SCT#372299002 "Tumor size, dimension 1 (observable entity)"
+		Concept:		LNC#33728-7 "Size.maximum dimension in Tumor"
+                        Code is LNC#33728-7 "Size.maximum dimension in Tumor"
 		                DataValue.Quantity.Units is UCUM#mm		
 		
 		Element:		TumorDimension2
-		Description:	"The second longest dimension of the tumor, perpendicular to the longest dimension."
+		Description:	"The second longest dimension of the tumor, generally measured perpendicularly to the tumor's longest dimension."
 		Based on:		QuantitativeObservationComponent
 		Concept:		SCT#372300005 "Tumor size, dimension 2 (observable entity)"
                         Code is SCT#372300005 "Tumor size, dimension 2 (observable entity)"
 		                DataValue.Quantity.Units is UCUM#mm	
 
 		Element:		TumorDimension3
-		Description:	"The third longest dimension of the tumor, perpendicular to the two longest dimensions."
+		Description:	"The third longest dimension of the tumor, generally measured perpendicularly to the tumor's two longest perpendicular dimensions."
 		Based on:		QuantitativeObservationComponent
 		Concept:		SCT#372301009 "Tumor size, dimension 3 (observable entity)"
                         Code is SCT#372301009 "Tumor size, dimension 3 (observable entity)"
@@ -53,10 +55,22 @@ includes 0..1	SizeOfGrossTumorBed
 
 		Element:		SizeOfGrossTumorBed
 		Based on:		QuantitativeObservationComponent
-		Concept:		TBD
 		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
                         Code is TBD#TBD
 		                DataValue.Quantity.Units is UCUM#mm	
+
+EntryElement:	PrimaryTumorPresent
+Based on:		TumorPresent
+Description:	"The presence of a tumor considered the original, or first tumor associated with a particular cancer. (adapted from NCI Dictionary of Cancer Terms)."
+1..1			IsPrimaryTumor is #Yes
+
+
+EntryElement:	TumorDimensionsPrimaryTumor
+Based on:		TumorDimensions
+Concept:		SCT#399734001 "Primary tumor size (observable entity)"
+Description:	"The dimensions associated with the primary tumor."
+	            Focus value is type ref(PrimaryTumorPresent)
+1..1			Components.ObservationComponent.TumorLongestDimension
 
 
 EntryElement: 	TumorMargins
@@ -67,9 +81,7 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 				Code is MTH#C4086369
 0..0            PanelMembers
 				Components.ObservationComponent
-includes 0..1	TumorMarginDescription
-includes 0..1	Cellularity   // not sure this belongs here
-includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
+					includes 0..1	TumorMarginDescription
 // Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
 
 		Element:		TumorMarginDescription
@@ -78,15 +90,17 @@ includes 0..1	PercentageInSituCarcinoma   // not sure this belongs here
 						Code is TBD#TBD
 		                DataValue from TumorMarginDescriptionVS
 
-		Element:		Cellularity
-		Concept:		MTH#C4055283
-		Based on:		QuantitativeObservationComponent
-		Description:	"Percentage of cells in a sample that are cancerous"
-						Code is TBD#TBD
-			            DataValue.Quantity.Units is UCUM#%
+/*
+Element:		TumorCellularity
+Concept:		MTH#C4055283
+Based on:		QuantitativeObservationComponent
+Description:	"Percentage of cells in a sample that are cancerous"
+				DataValue.Quantity.Units is UCUM#%
 
-		Element:		PercentageInSituCarcinoma
-		Based on:		QuantitativeObservationComponent
-		Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
-						Code is TBD#TBD
-			            DataValue.Quantity.Units is UCUM#%
+
+Element:		PercentageOfInSituDisease
+Based on:		QuantitativeObservationComponent
+Concept:		TBD
+Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+			    DataValue.Quantity.Units is UCUM#%
+*/
