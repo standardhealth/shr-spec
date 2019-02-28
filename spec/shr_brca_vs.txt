@@ -5,16 +5,16 @@ CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 
 ValueSet:		BreastSiteVS
-Description:	"Topography of the breast. Codes are drawn from Snomed and correspond to ICD-O-3."
-SCT#24142002    "Nipple structure (body structure) - corresponds to ICDO3#C50.0"
-SCT#49058007    "Structure of central portion of breast (body structure) - corresponds to ICDO3#C50.1"
-SCT#77831004	"Structure of upper inner quadrant of breast (body structure) - corresponds to ICDO3#C50.2"
-SCT#19100000    "Structure of lower inner quadrant of breast (body structure) - corresponds to ICDO3#C50.3"
-SCT#76365002    "Structure of upper outer quadrant of breast (body structure) - corresponds to ICDO3#C50.4"
-SCT#33564002    "Structure of lower outer quadrant of breast (body structure) - corresponds to ICDO3#C50.5"
-SCT#38412008    "Structure of axillary tail of breast (body structure) - corresponds to ICDO3#C50.6"
-SCT#276825009   "Overlapping sites (qualifier value) - corresponds to ICDO3#C50.8"
-SCT#76752008    "Breast structure (body structure) - corresponds to ICDO3#C50.9" // NOS
+Description:	"Topography of the breast. Codes are drawn from SNOMED CT and can be regarded as equivalent to ICD-O-3 topography codes."
+SCT#24142002    "Nipple structure (body structure)"
+SCT#49058007    "Structure of central portion of breast (body structure)"
+SCT#77831004	"Structure of upper inner quadrant of breast (body structure)"
+SCT#19100000    "Structure of lower inner quadrant of breast (body structure)"
+SCT#76365002    "Structure of upper outer quadrant of breast (body structure)"
+SCT#33564002    "Structure of lower outer quadrant of breast (body structure)"
+SCT#38412008    "Structure of axillary tail of breast (body structure)"
+SCT#276825009   "Overlapping sites (qualifier value)"
+SCT#76752008    "Breast structure (body structure)" // NOS
 
 ValueSet:       BreastSpecimenTypeVS
 Description:    "The type of specimen obtained from the breast. Codes are drawn from Snomed CT where available. Local codes are used where Snomed codes are currently unavailable."
@@ -33,9 +33,12 @@ SCT#48635004    "Fine needle biopsy (procedure)"
 SCT#172043006	"Simple mastectomy (procedure)"
 SCT#237372000	"Excisional biopsy of breast (procedure)"
 
-ValueSet: 		BreastCancerTypeVS
-// TODO: request missing SNOMEDCT terms to fully cover ICD-O-3.
+ValueSet: 		BreastCancerDisorderVS
+Description:    "Classification of cancer by site, in this case, the breast."
+Includes codes descending from SCT#254837009 "Malignant neoplasm of breast (disorder)"
+
 ValueSet: 		BreastCarcinomaHistologicTypeVS
+// TODO: request missing SNOMEDCT terms to fully cover ICD-O-3.
 Description:	"Histologic types of breast carcinomas, including invasive carcinoma and ductal carcinoma in situ. Codes are drawn from SNOMED CT; local codes are used where SNOMED CT codes are unavailable.
 The codes are intended to match the scope of breast carcinoma histologic types specified in ICD-O-3. Additional SNOMED CT codes may be appropriate to include in this value set. We are requesting feedback on the perceived need to request SNOMED CT codes to represent the histologic types currently represented by local codes."
 SCT#82711006              "Infiltrating duct carcinoma (morphologic abnormality)"
@@ -116,6 +119,7 @@ Description:	"The methodology or standard used to assign the cancer's overall st
 #seer_ss18		"SEER Summary Stage 2018"
 */
 
+/* No longer used
 ValueSet:		NottinghamCombinedGradeVS
 Description:	"Combined score from the Nottingham grading system."
 SCT#369790002	"Nottingham Combined Grade I: 3-5 points (finding)"
@@ -128,6 +132,37 @@ LNC#LA27219-7	"Only microinvasion present (not graded)"
 LNC#LA27220-5 	"No residual invasive carcinoma after presurgical (neoadjuvant) therapy"	 
 LNC#LA11884-6	"Indeterminate"
 LNC#LA27221-3   "Score cannot be determined"
+*/
+
+ValueSet:       LymphNodeInvolvementVS
+Description:    "The pathological finding for lymph node involvement."
+SCT#399374009   "Regional lymph node metastasis present (finding)"
+SCT#399522007   "Regional lymph nodes cannot be assessed (finding)"
+SCT#399647000   "No regional lymph node metastasis (finding)"
+
+ValueSet:       LymphNodeSamplingMethodVS
+Description:    "The procedure method used to obtain the specimen analyzed for the pathological lymph node involvement."
+SCT#396487001   "Sentinel lymph node biopsy (procedure)"
+SCT#234262008   "Axillary lymph node dissection (procedure)"
+SCT#9911007     "Core needle biopsy (procedure)"
+SCT#48635004    "Fine needle biopsy (procedure)"
+
+ValueSet:       BreastLymphNodeGroupVS
+Description:    "The breast regional lymph node locations"
+SCT#245269009   "Axillary lymph node group (body structure)"
+SCT#245282001   "Internal mammary lymph node group (body structure)"
+SCT#245265003   "Supraclavicular lymph node group (body structure)"
+SCT#279807001   "Infraclavicular lymph node group (body structure)"
+
+ValueSet:       LymphNodeClinicalMethodVS
+Description:    "The method of lymph node sample collection for clinical LNI assessment."
+SCT#363679005   "Physical examination procedure (procedure)"
+SCT#363679005   "Imaging (procedure)"
+
+ValueSet:       LymphNodeMobilityVS
+Description:    "Values expressing the degree of moveability of lymph node upon palpation."
+SCT#261010008   "Fixed (qualifier)"
+SCT#300824007   "Moveable (qualifier)"
 
 ValueSet: 		NuclearGradeVS
 Description:	"The nuclear grade describes how closely the nuclei of cancer cells look like the nuclei of normal breast cells. In general, the higher the nuclear grade, the more abnormal the nuclei are and the more aggressive the tumor cells tend to be. The nuclear grade is a part of overall tumor grade. Local codes are used due to unavailability of suitable LOINC and Snomed codes."
@@ -136,7 +171,9 @@ SCT#54102005 	"G1 grade (finding) - well differentiated"
 SCT#1663004     "G2 grade (finding)	- moderately differentiated"
 SCT#61026006    "G3 grade (finding)	- pooly differentiated"
 SCT#258245003   "G4 grade (finding) - undifferentiated"
+SCT#12619005    "GX grade (finding)"
 
+/* No longer used
 ValueSet:		TubuleFormationScoreVS
 // MK 7/14/2018 -- Since we identify the test by LOINC, and that test has a normative value set, the results should always be reported using the normative value set.
 Description:	"The degree of glandular differentiation or tubule formation in breast carcinoma. Aligns with normative LOINC answer list LL4380-3. Less aggressive cancers have more tubule formation, with scores assigned as follows:
@@ -179,7 +216,7 @@ ValueSet:		MitoticCountScoreNullVS
 Description:	"Data absent reasons (null values) for mitotic count. Aligns with LOINC normative answer list LL4383-7." 
 LNC#LA27220-5 	"No residual invasive carcinoma after presurgical (neoadjuvant) therapy"	 
 LNC#LA27221-3   "Score cannot be determined"
-
+*/
 
 ValueSet:		HER2FISHMethodVS  
 // TODO: request LOINC codes (probably pre-coordinated with FISH)
@@ -188,6 +225,16 @@ Description:	"Value set containing In Situ Hybridization methods of determining 
 SCT#257430009	"Double probe"
 SCT#257453005	"Single probe"
 
+ValueSet:     HER2byFISHInterpretationTestsVS
+Description:  "Laboratory observations holding the interpretation of FISH HER2 receptor tests (e.g. positive, negative, equivocal)"
+LNC#31150-6   "HER2 [Presence] in Tissue by FISH"
+LNC#85318-4   "HER2 [Presence] in Breast cancer specimen by FISH"
+
+ValueSet:     HER2byIHCInterpretationTestsVS
+Description:  "Laboratory observations holding the interpretation of immunohistochemistry HER2 receptor tests (e.g. positive, negative, equivocal)."
+LNC#18474-7   "HER2 Ag [Presence] in Tissue by Immune stain"
+LNC#85319-2   "HER2 [Presence] in Breast cancer specimen by Immune stain"
+
 ValueSet:		HER2byIHCScoreVS
 Description:	"Value set containing possible scores resulting from determining HER2 status by immunohistochemistry. Based on LNC#LL4396-9 answer list."
 LNC#LA6111-4	"0"
@@ -195,9 +242,17 @@ LNC#LA11841-6	"1+"
 LNC#LA11842-4	"2+"
 LNC#LA11843-2	"3+"
 
-ValueSet:		HER2byIHCScoreNullVS
-Description:	"Null values permissible for HER2 status by immunohistochemistry. Based on LNC#LL4396-9 answer list."
-LNC#LA11884-6	"Indeterminate"
+ValueSet:     EstrogenReceptorInterpretationTestsVS
+Description:  "Laboratory observations holding the interpretation of estrogen receptor status (e.g. positive, negative)."
+LNC#16112-5   "Estrogen receptor [Interpretation] in Tissue"
+LNC#40556-3   "Estrogen receptor Ag [Presence] in Tissue by Immune stain"
+LNC#85337-4   "Estrogen receptor Ag [Presence] in Breast cancer specimen by Immune stain"
+
+ValueSet:     ProgesteroneReceptorInterpretationTestsVS
+Description:  "Laboratory observations holding the interpretation of progesterone receptor status (e.g. positive, negative)."
+LNC#16113-3   "Progesterone receptor [Interpretation] in TissueProgesterone receptor [Interpretation] in Tissue"
+LNC#40557-1   "Progesterone receptor Ag [Presence] in Tissue by Immune stainProgesterone receptor Ag [Presence] in Tissue by Immune stain"
+LNC#85339-0   "Progesterone receptor Ag [Presence] in Breast cancer specimen by Immune stain"
 
 ValueSet:		RecurrenceRiskScoreInterpretationVS
 Description:	"Interpretations of risk as high, intermediate, or low. Answer set taken from LOINC LL3198-0." 
