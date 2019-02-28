@@ -17,7 +17,8 @@ Description:    "The presence of an abnormal mass of tissue (neoplasm) that resu
         Element:        IsPrimaryTumor
         Concept:        TBD
         Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
-        Value:          CodeableConcept from YesNoUnknownVS    // could be boolean but this VS allows for unknown
+        Value:          CodeableConcept from YesNoUnknownVS
+
 
 EntryElement: 	TumorDimensions
 Based on:		CodedLaboratoryObservation
@@ -26,17 +27,17 @@ Concept:		SCT#263605001 "Tumor size (observable entity)"
 	            Focus value is type ref(TumorPresent)
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
-				ObservationComponent
-includes 0..1	TumorLongestDimension
-includes 0..1	TumorDimension2
-includes 0..1   TumorDimension3
-includes 0..1	SizeOfGrossTumorBed
+				Components.ObservationComponent
+					includes 0..1	TumorLongestDimension
+					includes 0..1	TumorDimension2
+					includes 0..1   TumorDimension3
+					includes 0..1	SizeOfGrossTumorBed
 
 		Element:		TumorLongestDimension
 		Description:	"The longest dimension of the tumor."
 		Based on:		QuantitativeObservationComponent
-		Concept:		SCT#371479009 "Tumor size, largest dimension (observable entity)"
-                        TopicCode is SCT#371479009 "Tumor size, largest dimension (observable entity)"
+		Concept:		LNC#33728-7 "Size.maximum dimension in Tumor"
+                        Code is LNC#33728-7 "Size.maximum dimension in Tumor"
 		                DataValue.Quantity.Units is UCUM#mm		
 		
 		Element:		TumorDimension2
@@ -60,6 +61,19 @@ includes 0..1	SizeOfGrossTumorBed
                         Code is TBD#TBD
 		                DataValue.Quantity.Units is UCUM#mm	
 
+EntryElement:	PrimaryTumorPresent
+Based on:		TumorPresent
+Description:	"The presence of a tumor considered the original, or first tumor associated with a particular cancer. (adapted from NCI Dictionary of Cancer Terms)."
+1..1			IsPrimaryTumor is #Yes
+
+
+EntryElement:	TumorDimensionsPrimaryTumor
+Based on:		TumorDimensions
+Concept:		SCT#399734001 "Primary tumor size (observable entity)"
+Description:	"The dimensions associated with the primary tumor."
+	            Focus value is type ref(PrimaryTumorPresent)
+1..1			Components.ObservationComponent.TumorLongestDimension
+
 
 EntryElement: 	TumorMargins
 Based on:		CodedLaboratoryObservation
@@ -69,7 +83,7 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 				Code is MTH#C4086369
 0..0            PanelMembers
 				Components.ObservationComponent
-includes 0..1	TumorMarginDescription
+					includes 0..1	TumorMarginDescription
 // Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
 
 		Element:		TumorMarginDescription
