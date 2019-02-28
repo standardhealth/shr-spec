@@ -1,7 +1,11 @@
 Grammar:		DataElement 5.0
 Namespace:		brca
 Description:	"SHR implementation of ASCO requirements."
+<<<<<<< HEAD
 Uses:  			shr.core, oncocore
+=======
+Uses:  			shr.core, shr.base, shr.entity, oncocore, tumor
+>>>>>>> shr-cli fixes
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
@@ -43,6 +47,7 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 				Code is SCT#126926005 "Neoplasm of breast (disorder)"
 				DataValue from BreastCancerDisorderVS		
 				StageInformation.StageDetail value is type BreastTNMClinicalPrognosticStagePanel //or BreastTNMPathologicPrognosticStagePanel
+0..1			Evidence.Manifestation should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 				BodySite is type BreastSite
 
 
@@ -150,14 +155,16 @@ Based on:		TNMPathologicPrimaryTumorClassification
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
 Description:	"Classification of the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
 				Focus is type ref(BreastCancerDisorderPresent)
-				includes 0..1 TumorDimensionsPrimaryTumor //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
+				PanelMembers.Observation
+					includes 0..1 TumorDimensionsPrimaryTumor //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
 
 EntryElement:	BreastTNMPathologicRegionalNodesClassification
 Based on:		TNMPathologicRegionalNodesClassification
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
 Description:	"Classification of the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
 				Focus is type ref(BreastCancerDisorderPresent)
-				includes 0..*	BreastPathologicalLymphNodeInvolvement
+				PanelMembers.Observation
+					includes 0..*	BreastPathologicalLymphNodeInvolvement
 
 
 EntryElement:	BreastPathologicalLymphNodeInvolvement
@@ -448,7 +455,6 @@ Description:	"Breast cancer genomic signature assay for 10-year risk of distant 
 The Prosigna Score is reported on a 0-100 scale (referred to as ROR Score or Risk of Recurrence Score in the literature), which is correlated with the probability of distant recurrence at ten years for post-menopausal women with hormone receptor positive, early stage breast cancer."
 				DataValue value is type IntegerQuantity 
 				Code is LNC#76544-6 "Breast cancer 10-year risk of distant recurrence score Calculated by Prosigna"
-				DataValue.Quantity with units UCUM#
 				Interpretation from RecurrenceRiskScoreInterpretationVS
 				Specimen is type BreastSpecimen
 0..0			Device
