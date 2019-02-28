@@ -1,7 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 Description:	"The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:			shr.base, shr.entity
 
 Path:			FHIR = http://hl7.org/fhir/ValueSet
 // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
@@ -163,8 +162,16 @@ Description:	"An electronic means of contacting an organization or individual."
 		Value:			CodeableConcept
 		
 		Element:		Purpose
-		Description:	"Why the item is used."
+		Description:	"What it should be used for."
 		Value:			CodeableConcept
+
+		Element:	PriorityRank
+		Description:	"The priority of the procedure, as a number (1 being the highest priority)"
+		Value:		positiveInt 
+
+		Element:	PriorityRankUnsignedInt
+		Description:	"The priority of the procedure, as a number (1 being the highest priority)"
+		Value:		unsignedInt 
 
 
 Element:		ContactDetail
@@ -289,7 +296,7 @@ Description:	"Data that comes from a series of measurements taken by a device, w
 	Value:		string
 
 	Element:	Origin
-	Description:	"The base quantity that a measured value of zero represents. In addition, this provides the units of the entire measurement series."
+	Description:	"The shr.base quantity that a measured value of zero represents. In addition, this provides the units of the entire measurement series."
 	Value:		SimpleQuantity
 	
 	Element:	MillisecondsBetweenSamples
@@ -395,9 +402,9 @@ Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mea
 		Description:	"The type of statistic that is represented by the value."
 		Value:			CodeableConcept from StatisticTypeVS
 
-Element: 		PriorityRank
+Element: 		PriorityCode
 Concept:		MTH#C0549179
-Description:	"An indication of the importance of an action."
+Description:	"An indication of the importance of an action relative to other actions."
 Value:			positiveInt or CodeableConcept
 
 Element:		Percentage
@@ -454,20 +461,17 @@ Concept:		MTH#C0027362
 Description:	"Subgroups of populations based on age."
 Value:			CodeableConcept from AgeGroupVS
 
+// TODO: this may be an observation - there are different methods (at least 10 LOINC codes) for estimating gestational age.
 Element:		GestationalAge
 Concept:		MTH#C0017504
 Based on:		Age
 Description:	"The age of the embryo or fetus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
 
+
 Element:		GestationalTimePeriod
 Concept:		TBD
 Description:	"A time relative to a pregnancy or childbirth event."
-Value:			CodeableConcept from TBD "GestationalTimePeriodVS"  // e.g., entire pregnancy, trimester, prior to conception, neonatal period, etc.
-
-Element:		GestationalTemporalContext
-Concept:		TBD
-Description:	"A named gestational time period, or a gestational age."
-Value:			GestationalAge or GestationalTimePeriod
+Value:			CodeableConcept from GestationalTimePeriodVS  // e.g., entire pregnancy, trimester, pre-conception, neonatal period, etc.
 
 
 //-------------- Duration and Frequency  -----------------
@@ -628,13 +632,13 @@ Based on:		EmbeddedContent
 Concept:		TBD
 Description:	"A file that contains audio, video, image, or similar content."
 0..1			BinaryData
-0..1			ContentType
+0..1			ContentType  //http://hl7.org/fhir/ValueSet/mimetypes in R4, http://www.rfc-editor.org/bcp/bcp13.txt in DSTU2 and STU3
 0..1			Language
 0..1			ResourceLocation
 0..1			ResourceSize
 0..1			Hash
 0..1			Title
-0..1			CreationTime
+0..1			CreationDateTime
 
 	Element:		BinaryData
 	Concept:		TBD
@@ -660,11 +664,7 @@ Description:	"A file that contains audio, video, image, or similar content."
 	Concept:		TBD
 	Description:	"A hash code of the data (sha-1, base64ed)"
 	Value:			base64Binary
-	
-	Element:   	 	CreationTime  
-	Concept:        MTH#C3669169
-	Description:    "The point in time when the information was recorded in the system of record."
-	Value:          dateTime  // we can map to instant from dateTime
+
 
 Element:		PhotographicImage
 Based on:		Media
@@ -686,7 +686,7 @@ Description:	"An added or follow-up note, often after the fact, that contains me
 Element:	Signature
 Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
 1..*		SignatureType from http://hl7.org/fhir/ValueSet/signature-type if covered
-1..1		CreationTime
+1..1		CreationDateTime
 1..1		Signatory
 0..1		OnBehalfOf
 1..1		ContentType
@@ -707,7 +707,6 @@ Description: "A digital Signature - XML DigSig, JWT, Graphical image of signatur
 	Description:	"The party represented by the actual participant."
 	Value:			uri or ref(Organization)
 
-	
 Element:		RouteIntoBody
 Concept:		MTH#C0013153
 Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
@@ -715,7 +714,8 @@ Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
 Element:		BodySite
 Concept:		SCT#758637006 "Anatomical location (property) (qualifier value)"
-Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart."
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart.
+SHR creates a BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 1..1			BodySiteCode
 0..1 			Laterality
 0..1			DistanceFromLandmark

@@ -1,11 +1,9 @@
 Grammar:		DataElement 5.0
 Namespace:		brca
-Description:	"SHR implementation of ASCO requirements."
-Uses:  			shr.core, shr.base, shr.entity, oncocore, tumor
+Description:	"Breast Cancer data elements."
+Uses:			shr.core, oncocore
 
-CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 CodeSystem:		HGNC = http://www.genenames.org
 CodeSystem:		CAP = https://sdt.cap.org
@@ -27,7 +25,7 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 				Type from BreastSpecimenTypeVS
 				CollectionSite.BodySite is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
-				SourceSpecimen value is type ref(BreastSpecimen)
+				PartOf value is type ref(BreastSpecimen)
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
@@ -40,8 +38,7 @@ EntryElement:	BreastCancerDisorderPresent
 Based on:		CancerDisorderPresent
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				Code is SCT#126926005 "Neoplasm of breast (disorder)"
-				DataValue from BreastCancerDisorderVS		
+				Code from BreastCancerDisorderVS 		
 				StageInformation.StageDetail value is type BreastTNMClinicalPrognosticStagePanel //or BreastTNMPathologicPrognosticStagePanel
 0..1			Evidence.Manifestation should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
 				BodySite is type BreastSite
@@ -49,7 +46,6 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 
 EntryElement:	BreastCancerHistologicType
 Based on:		CancerHistologicType
-Concept:		LNC#44638-5 "Histologic type in Breast tumor"
 Description:	"Classification of breast cancer according to histopathologic subtypes, as determined by microscopic observation of breast tissue samples."
 				Code is LNC#44638-5 "Histologic type in Breast tumor"
 				DataValue from BreastCarcinomaHistologicTypeVS
@@ -120,7 +116,7 @@ Based on:		QuantitativeObservationComponent
 Concept:		SCT#364109001 "Size of lymph node (observable entity)"
 Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
 				Code is SCT#364109001 "Size of lymph node (observable entity)"
-				DataValue.Quantity with units UCUM#mm
+				DataValue.Quantity.Units is UCUM#mm
 
 // TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
 EntryElement:	BreastTNMClinicalDistantMetastasesClassification
@@ -254,7 +250,6 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 				Code from HER2byIHCScoreVS
 				Specimen is type BreastSpecimen
 0..0			Method // pre-coordinated in the Code
-
 0..0 			Components
 				PanelMembers.Observation
 					includes 0..*	HER2byIHC
@@ -276,8 +271,8 @@ Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (I
 
 		Element:		CompleteMembraneStainingPercent
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#85328-3 "Cells.HER2 uniform intense membrane staining/100 cells"
 		Description:	"Percentage of cells with uniform intense complete membrane staining."
+						Code is LNC#85328-3 "Cells.HER2 uniform intense membrane staining/100 cells"
 						DataValue.Quantity.Units is UCUM#%
 		0..0			ReferenceRange
 //		0..0			Interpretation //This is zeroed out in the Sep 2018 BrCa IG spec.
@@ -299,21 +294,18 @@ Description:	"HER2 receptor status as determined by single-probe or dual-probe F
 
 		Element:		AverageHER2SignalsPerCell
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#74860-8 "HER2 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number of HER2 signals per cell"
 						Code is LNC#74860-8 "HER2 signals/nucleus [Entitic number] in Tissue by FISH"
 		0..0			ReferenceRange
 		
 		Element:		AverageCEP17SignalsPerCell
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#74861-6 "CEP17 signals/nucleus [Entitic number] in Tissue by FISH"
 		Description:	"Average number CEP17 signals per cell (dual probe only)"
 						Code is LNC#74861-6 "CEP17 signals/nucleus [Entitic number] in Tissue by FISH"
 		0..0			ReferenceRange
 		
 		Element:		HER2toCEP17Ratio
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#49683-6 "HER2/CEP17 [Ratio] in Tissue by FISH"
 		Description:	"HER2 to CEP17 Ratio (dual probe only)"
 						Code is LNC#49683-6 "HER2/CEP17 [Ratio] in Tissue by FISH"
 		0..0			ReferenceRange
@@ -363,16 +355,15 @@ Description:	"Progesterone receptor status is a factor in determining prognosis 
 
 	Element:		ProgesteroneReceptorNuclearPositivity
 	Based on:		ObservationComponent
-	Concept:		LNC#14230-7 "Cells.progesterone receptor/​100 cells in Tissue by Immune stain" // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85325-9 "Cells.progesterone receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
 	Description:	"The percentage of cells that test (stain) positive for the presence of progesterone receptors. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
+					Code is LNC#14230-7 "Cells.progesterone receptor/​100 cells in Tissue by Immune stain" // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85325-9 "Cells.progesterone receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
 					DataValue value is type Range
 	0..0			ReferenceRange
 
 	Element:		ProgesteroneReceptorAverageStainingIntensity
-	Concept:		LNC#85331-7 "Progesterone receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain" //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
 	Based on:		CodedObservationComponent
 	Description:	"The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
-					Code is LNC#85331-7 "Progesterone receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"
+					Code is LNC#85331-7 "Progesterone receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"  //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
 					DataValue from StainingIntensityVS
 
 
@@ -387,7 +378,6 @@ Description:	"An evaluation of the size and shape of the nucleus in tumor cells 
 
 
 EntryElement:	BreastCancerHistologicGrade
-Concept:		LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
 Based on:		CancerHistologicGrade
 Description:	"The Elston Grade/Nottingham Score, representative of the aggressive potential of the tumor. Well differentiated cells (Grade 1) look similar to normal cells and are usually slow growing, while poorly differentiated cells (Grade 3) look very different than normal and are fast-growing."
 				Code is LNC#44648-4 "Histologic grade [Score] in Breast cancer specimen Qualitative by Nottingham"
@@ -400,21 +390,18 @@ Description:	"The Elston Grade/Nottingham Score, representative of the aggressiv
 
 
 			Element:		TubuleFormationScore
-			Concept:		LNC#85321-8 "Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham"
 			Based on:		CodedObservationComponent
 			Description:	"The degree of glandular differentiation or tubule formation in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Less aggressive cancers have more tubule formation."
 							Code is LNC#85321-8 "Glandular differentiation [Score] in Breast cancer specimen Qualitative by Nottingham"
 							DataValue from http://loinc.org/vs/LL4380-3 
 
 			Element:		NuclearPleomorphismScore
-			Concept:		LNC#44645-0 "Nuclear pleomorphism in Breast tumor Qualitative by Nottingham."
 			Based on:		CodedObservationComponent
 			Description:	"The degree of nuclear pleomorphism (variability of nuclei) in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Increasing degrees of pleomorphism are associated with increasingly aggressive cancers."
 							Code is LNC#44645-0 "Nuclear pleomorphism in Breast tumor Qualitative by Nottingham"
 							DataValue from http://loinc.org/vs/LL4382-9
 
 			Element:		MitoticCountScore
-			Concept:		LNC#85300-2 "Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham."
 			Based on:		CodedObservationComponent
 			Description:	"The degree of mitotic activity in breast carcinoma is one component of the Nottingham histologic grade, which is a prognostic indicator for patients with breast carcinoma. Mitotic activity is assessed as the number of mitoses per 10 high power fields (HPF), with increasing mitotic activity being an indicator of more aggressive cancer. The specific scores assigned to the number of mitoses depends on the size of the HPF. For example, for a HPF size of 0.274 mm^2, less than 10 mitoses per 10 HPF gets a score of 1, 10-19 gets a score of 2, and greater than or equal to 20 gets a score of 3. When larger or smaller HPFs are used, the cutoffs for the number of mitoses corresponding to a specific score are adjusted according to published guidelines."
 							Code is LNC#85300-2 "Mitotic rate [Score] in Breast cancer specimen Qualitative by Nottingham"
@@ -581,7 +568,7 @@ Value:			CodeableConcept from PositiveNegativeVS
 //				Focus.CodeableConcept from GeneIdentifierVS
 0..0			ReferenceRange
 //0..0			DeltaFlag
-0..0			BodySited
+0..0			BodySite
 				Components.ObservationComponent
 includes 0..1	Refseq
 

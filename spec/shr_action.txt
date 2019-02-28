@@ -1,38 +1,38 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.base
-Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, shr.entity, shr.encounter
+Namespace:		shr.core
 
 //---------- Actions --------------
 
 Abstract Element:	ActionStatement
 Based on:			ClinicalStatement
-Description:		"Abstract class representing any type of action."
-0..1			Category // Might not need this
-0..*			Reason
+Description:		"Abstract class representing any type of action or event."
+0..*			ReasonCode
+0..*			ReasonReference
 1..1			Patient
 				StatusOrActive is type Status
 
-		Element:		Reason
+		Element:		ReasonCode
 		Concept:		MTH#C0566251
-		Description:	"The justification for an action or non-action, etc."
-		Value:			string or CodeableConcept or ref(ConditionOrObservation)
+		Description:	"The justification for an action or non-action, etc., as string or code. 
+		Reason is a string or CodeableConcept in DSTU2 but in later versions only a CodeableConcept, so we are not going to support a string."
+		Value:			CodeableConcept
+		
+		Element:		ReasonReference
+		Description:	"The justification for an action or non-action, etc., as reference to a condition or observation."
+		Value:			ref(Condition) or ref(Observation)
 
 Abstract Element:	ActionPerformed
 Based on:			ActionStatement
-Description:		"Abstract class representing performance of any type of action."
-1..1				OccurrenceTimeOrPeriod  // when the action took place
+Description:		"Abstract class representing an event occurrence or performance of any type of action."
+1..1				OccurrenceTimeOrPeriod
 0..*				Participation
 1..1				Status  // change to required... should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
 0..1				Method
 0..1				RelatedRequest
-//0..1				EnactsPlan
-0..1				ref(Location)
-0..1				Outcome  // e.g., AdverseEvent
 
 		Element:		Participation
 		Concept:		TBD
-		Description:	"Record of someone or something involvement in an activity."
+		Description:	"Record of someone or something involvement in an activity or event."
 		0..1			Participant
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
@@ -41,7 +41,7 @@ Description:		"Abstract class representing performance of any type of action."
 			Element:		ParticipationType
 			Concept:		MTH#C1553854
 			Description:	"The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
-			Value:			CodeableConcept from FHIR/v3-ParticipationType
+			Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/performer-role
 			
 			Element:		ParticipationPeriod
 			Concept:		TBD
@@ -75,66 +75,44 @@ Description:		"Abstract class representing performance of any type of action."
 Abstract Element:	ActionRequested
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
-0..1			Requester
+0..1			Type  // type of request
+0..1			Asserter is type Requester
 1..1			RequestIntent
 1..1			Status // should be from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU2 change (conflicting required value sets in MedicationRequest between argo and us-core) 
 0..1			ExpectedPerformanceTime
 0..1			ExpectedPerformerType
-0..1			ExpectedPerformer
-0..1			ExpectedMethod 
-0..1 			PriorityRank //should be from http://hl7.org/fhir/ValueSet/request-priority  // DSTU2 change (conflicting value sets)
-0..1			PerformerInstructions
-0..1			PatientInstructions	
+0..1			Recipient
+0..1 			PriorityCode //should be from http://hl7.org/fhir/ValueSet/request-priority  // DSTU2 change (conflicting value sets)
+0..*			Annotation
 0..1			CommunicationMethod
 
-
 		Element:		Requester
-		Concept:		TBD
-		Description:	"The actor making this request."
+		Based on:		Asserter
+		Description:	"The actor making this request. This is a name change from Asserter to Requester, which makes more sense in the context of a request."
 		Value:			ref(EntityOrRole)
 
 		Element:		RequestIntent
 		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
-		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/request-intent
+		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/request-intent
 
 		Element:		ExpectedPerformanceTime
 		Concept:		TBD
 		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
-		Value:			dateTime or date or TimePeriod or Timing
+		Value:			dateTime or TimePeriod or Timing
 
 		Element:		ExpectedPerformerType
 		Concept:		TBD
 		Description:	"What type of party should carry out the testing."
 		Value:			CodeableConcept // what ValueSet??
 
-		Element:		ExpectedPerformer
+		Element:		Recipient
 		Concept:		TBD
-		Description:	"Who should carry out the tests. For example, the patient or caregiver."
-		Value:			ref(Entity) or ref(Organization)
-		
-		Element:		ExpectedMethod
-		Concept:		TBD
-		Description:	"The method that should be used to carry out the action."
-		Value:			CodeableConcept
-
-		Element:		PerformerInstructions
-		Concept:		TBD
-		Description:	"Information for the performer of the test, if needed."
-		Value:			string
-
-		Element:		PatientInstructions
-		Concept:		TBD
-		Description:	"Information for the patient, such as, where to get the test, how to prepare for the test, etc."
-		Value:			string
+		Description:	"Who this request is being addressed to."
+		Value:			ref(EntityOrRole)
 		
 		Element:		CommunicationMethod
 		Concept:		TBD
 		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
+
 		Value:			CodeableConcept
-
-
-Abstract Element:	ActionRequestedAgainst
-Based on:			ActionStatement
-Description:		"Abstract class representing a request to not perform any type of action."
-

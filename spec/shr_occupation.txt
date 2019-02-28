@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		odh
 Description:	"Patient’s or family member's work information."
-Uses:  			shr.core, shr.base, shr.composition, shr.entity, shr.encounter
+Uses:  			shr.core
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     UCUM = http://unitsofmeasure.org 
@@ -11,13 +11,14 @@ CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
 
 EntryElement:	OccupationalDataForHealth
 Based on:		Composition
-Description:	"Current and past activities for profit, wages, salary, or as a service to others."
+Description:	"Current and past activities for profit, wages, salary, or as a service to others.
+The profile is based on FHIR Composition that contains a single section, OccupationalDataSection."
 				Type is LNC#74166-0 "Occupational summary note"
 1..1			Section is type OccupationalDataSection
 
 Element:		OccupationalDataSection
 Based on:		Section
-Description:	"Single section in the current OccupationalDataSummary, containing the person's history of employment and occupation, past and present."
+Description:	"Section in the OccupationalDataForHealth composition, containing the person's occupational data, past and present."
 				DomainResource 
 includes 0..*   PersonEmploymentStatus
 includes 0..*	RetirementDate
@@ -27,7 +28,7 @@ includes 0..*	PastOrPresentJob
 
 EntryElement:	PersonEmploymentStatus
 Based on:		CodedSocialHistoryObservation
-Description:	"The self-reported current and historical data about a person's economic relationship to work (e.g. having one or more jobs), including start and end dates.
+Description:	"The self-reported current and/or historical status about a person’s economic relationship to work (e.g. having one or more jobs), including start and end dates.
 A person's Employment Status could change over time, for example, a person could be employed following a period of choosing to not be in the labor force.
 Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status.' However, in ODH Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
 				Code is LNC#74165-2 "HistoryOfEmploymentStatus"
@@ -39,7 +40,7 @@ EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
 Description:	"A self-reported date that a person considers themselves to have ‘retired’.
 A person can be both retired and employed (an Employment Status); most often, a person would be retired from one job and employed in another job. A person also can have more than one retirement date; for example, a person could retire from military service, then later retire from a civilian job. Multiple retirement dates should be recorded using multiple FHIR resources.
-Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
+Outside of ODH, a characterization of the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person's 'employment status' and might include values such as 'retired.' However, in ODH, Employment Status is used to characterize a person's relationship to working (e.g., employed, unemployed) and Retirement Date is used to characterize whether or not a person self-identifies as retired. For example, a person could be 'employed' (Employment Status) and have retired from a previous job (recorded at the Person level as a Retirement Date)."
 				DataValue value is type dateTime
 				Code is LNC#87510-4 "Date of Retirement"
 0..0			Components
@@ -56,7 +57,7 @@ EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
 Description:	"Related data elements about the work a person reports having performed for the longest amount of time during his or her life, regardless of the person's current job and regardless of whether or not the person performed this work for a continuous time.
 Knowledge of person's Usual Work can potentially assist in diagnosis, treatment and/or prevention of chronic condition(s) or conditions with a long latency. The potential for exposure to Occupational Hazard(s) related to an Occupation and/or an Industry can change over time, and a person could have been in and out of their Usual Work over time, so additional data are helpful to fully evaluate the possible impact of the person's Usual Work on their health and guide appropriate use of screening tests to detect early disease.
-Example: a person has worked for a total of 30 years as a 'secretary' (Occupation), but in various industries, mostly hotel construction. Her Usual Occupation is 'secretary' and her Usual Industry is 'hotel construction.'
+Example: a person has worked for a total of 30 years as a building carpenter (Occupation), but in various industries, mostly hotel construction. Her Usual Occupation is 'building carpenter' and her Usual Industry is 'hotel construction.'
 Usual Work does not include work that was unpaid or voluntary."
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 				Code is LNC#21843-8	"History of Usual occupation"
@@ -70,7 +71,7 @@ includes 0..1	UsualOccupationDuration
 
 	Element:		UsualIndustry
 	Based on:		CodedObservationComponent
-	Description:	"The industry (type of business) which the subject has worked in for the longest duration while in the usual occupation.
+	Description:	"The industry (type of business) in which the subject has worked for the longest duration while in the usual occupation.
 	For example, a person who has spent 30 years as a secretary in various industries, but mostly in construction, would record a usual occupation of secretary and a usual industry of construction."  // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
 	//Value:			CodeableConcept from IndustryVS 
 					Code is LNC#21844-6 "History of Usual industry"
@@ -184,26 +185,6 @@ includes 0..1	IsCurrentJob
 	Based on:		CodedObservationComponent
 	Description:	"A flag indicating if this is the person's current job (at the time the resource was last updated)."
 					DataValue from YesNoVS
-
-Element:		SocialHistoryObservation
-Based on:		NonLaboratoryObservation
-Description:	"A simplified observation for social histories."
-				Category is OBSCAT#social-history "Social History"
-0..0			Method
-0..0			BodySite
-0..0			ReferenceRange
-0..0			PanelMembers
-0..0			Device
-0..0			DataAbsentReason
-//0..0			Interpretation
-//0..0			Encounter
-//0..0			DeltaFlag
-0..0			CommentOrDescription
-
-Element:		CodedSocialHistoryObservation
-Based on:		SocialHistoryObservation
-Description:	"The result of social history questions, whose answer is expressed as a code."
-				DataValue value is type CodeableConcept
 
 /* Hold for later use
 

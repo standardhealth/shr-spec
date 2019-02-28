@@ -1,0 +1,266 @@
+Grammar:			DataElement 5.0
+Namespace:			environment
+Description:		"The SHR Environment domain contains definitions related to surroundings experienced by the person of record, including both the physical and sociological environments."
+Uses:				shr.core
+
+CodeSystem:		CURRENCY = urn:iso:std:iso:4217
+
+EntryElement:	HouseholdIncome
+Based on:		SocialHistoryObservation
+Description:	"The amount of earnings made by a family unit in one year, estimated or self-reported."
+				Code is SCT#224168007 "Household income (observable entity)"
+				DataValue value is type Range
+// TODO: Ask Chris why this isn't working
+//				DataValue.Range.LowerBound.Quantity.Units is CURRENCY#USD
+//				DataValue.Range.UpperBound.Quantity.Units is CURRENCY#USD
+
+EntryElement:	IncomeSource
+Based on:		SocialHistoryObservation
+Description:	"Where the household income comes from."
+					Code is MTH#C0557162
+					DataValue from IncomeSourceVS
+
+EntryElement:	NonCashBenefit
+Based on:		SocialHistoryObservation
+Description:	"Where the household income comes from."
+					Code is MTH#C0557162
+					DataValue from IncomeSourceVS
+
+EntryElement:	FinancialStability
+Based on:		SocialHistoryObservation
+Description:	"Whether the subject regards his or her source of income as dependable."
+				Code is MTH#C1820459
+				DataValue from ResourceStabilityVS
+
+EntryElement:	IncomeAdequacy
+Based on:		NonLaboratoryObservation
+Description:	"Whether the subject regards their income as sufficient to meet the needs of the subject and his/her dependents."
+				Code is MTH#C1820459
+				DataValue from IncomeAdequacyVS
+				Components.ObservationComponent
+includes 0..1	TroubleAffordingFood
+includes 0..1	TroubleAffordingHousing
+includes 0..1	TroubleAffordingUtilities
+includes 0..1	TroubleAffordingTransportation
+includes 0..1	TroubleAffordingMedication
+includes 0..1	TroubleAffordingDentalCare
+includes 0..1	TroubleAffordingChildCare
+
+	Element:		TroubleAffordingFood
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording food?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+	
+	Element:		TroubleAffordingHousing
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording housing?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+	Element:		TroubleAffordingUtilities
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording utilities?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+	Element:		TroubleAffordingTransportation
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording transportation?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+	Element:		TroubleAffordingMedication
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording medications?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+	Element:		TroubleAffordingDentalCare
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording dental care?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+	Element:		TroubleAffordingChildCare
+	Based on:		CodedObservationComponent
+	Description:	"How often does the subject have trouble affording child care?"
+					Code is TBD#TBD
+					DataValue from QualitativeFrequencyVS
+
+EntryElement:	HouseholdSize
+Based on:		CodedSocialHistoryObservation
+Description:	"The number of people living together with mutual financial dependency. Besides the subject, the household size may include spouse or partner, dependent children including adopted and foster children, dependent parents, dependent siblings and other relatives, but not roommates, ex-spouses, non-dependent children, and unborn children. If the subject lives alone, the household size is 1."
+				Code is MTH#C0000768
+				DataValue.Quantity.Units is UCUM#1
+
+EntryElement:	Coinhabitant 
+Based on:		CodedSocialHistoryObservation   // Related person?
+Description: 	"A person living with the subject."
+				Code is SCT#224085006 "Family details / household composition (observable entity)"
+				DataValue from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype
+
+EntryElement:	NumberOfDependents
+Based on:		QuantitativeNonLaboratoryObservation
+Description:	"The number of dependents supported by the subject."
+				Code is MTH#C0557509
+				DataValue.Quantity.Units is UCUM#1
+
+EntryElement:	TransportationAvailability
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject has reliable transportation to bring him or her to medical appointments and to get medications."
+				Code is TBD#TBD
+				DataValue from QualitativeFrequencyVS
+
+EntryElement:	HousingSecurity
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject is at-risk of losing their housing or in a stable housing situation."
+				Code is TBD#TBD
+				DataValue from ResourceStabilityVS
+
+EntryElement:	PhysicalSafety
+Based on:		SocialHistoryObservation
+Description:	"How often the subject feels physically safe in the subject's home environment."
+				Code is TBD#TBD
+				DataValue from QualitativeFrequencyVS
+
+EntryElement:	EmotionalSafety
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject feels physically safe in the subject's home environment."
+				Code is TBD#TBD
+				DataValue from QualitativeFrequencyVS
+
+EntryElement:	DomesticViolence
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject experiences domestic violence."
+				Code is MTH#C0206073
+				DataValue from QualitativeFrequencyVS
+
+EntryElement:	HomeEnvironmentRisk
+Based on:		CodedSocialHistoryObservation
+Description:	"A risk experienced in the home environment."
+				Code is TBD#TBD
+				DataValue from HomeEnvironmentRiskVS
+
+EntryElement:	EducationalAttainment
+Based on:		CodedSocialHistoryObservation
+Description:	"Educational attainment or level of education of individuals."
+				Code is LNC#63504-5
+				DataValue from http://loinc.org/vs/LL1069-5
+
+EntryElement:	ForeignCountryOfTravelTwoYears
+Based on:		CodedSocialHistoryObservation
+Description:	"A travel history of the countries that the patient has visited within the last two-years, particularly when a health risk is involved."
+				Code is LNC#82764-2 "Country of travel outside the U.S. [Location] 2 years"
+				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.828
+
+//------------- Exposures ---------------------
+
+
+EntryElement:	UnprescribedExposure
+Based on:		NonLaboratoryObservation
+Description:	"Record of an exposure to a risk agent, whether intentional, environmental, or accidental. Non-prescribed substances include recreational marijuana, disease vector, mutagens, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexually-transmitted diseases, suspect foods, toxins, pathogens, noise, radiation, pollutants, and prenatal exposures to teratogens, etc. The exposure time period is given in the RelevantTime."
+				Code is SCT#418715001 "Exposure to potentially harmful entity (event)"
+0..1			SubstanceOrAgent
+				DataValue could be from YesNoUnknownVS
+				Components.ObservationComponent
+includes 0..*	ExposureMode
+includes 0..*	ExposureAmount
+includes 0..*	ExposureReason
+includes 0..*	ExposureRoute
+
+		Element:		SubstanceOrAgent
+		Description:	"The agent (substance, environment, disease vector) the patient may or may not have been exposed to."
+		Value:			CodeableConcept
+
+		Element:		ExposureMode
+		Based on:		CodedObservationComponent
+		Description:	"Where the substance originated, e.g., animal to human, environmental, etc."
+						Code is SCT#409496000 "Mode of transmission"
+						DataValue from ExposureModeVS if covered
+
+		Element:		ExposureAmount
+		Based on:		ObservationComponent
+		Description:	"The amount of substance used or exposed to in a given period of time (e.g., 10 cigarettes per day). Can also be used to record total lifetime exposure (e.g., 80 REMS/lifetime)."
+						Code is SCT#118555000 "Substance Amount"
+						// Data value can be a code or a quantity, even a text
+						DataValue value is type Ratio
+
+		Element:		ExposureReason
+		Based on:		CodedObservationComponent
+		Description:	"Why the exposure occurred."
+						Code is TBD#TBD
+						DataValue from ExposureReasonVS
+
+		// Redundant with RouteIntoBody, but that isn't an ObservationComponent
+		Element:		ExposureRoute
+		Based on:		CodedObservationComponent
+		Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
+						Code is MTH#C0013153 "Drug Administration Routes"
+						DataValue should be from http://hl7.org/fhir/ValueSet/route-codes
+
+EntryElement:	AnimalExposure
+Based on:		UnprescribedExposure
+Description:	"The type of animals or pets the subject is exposed to."
+				Code is MTH#C0238646 "Animal Exposure"
+				SubstanceOrAgent from CommonAnimalVS if covered // TODO: and if not, use SNOMED...
+
+EntryElement:	PrenatalExposure
+Based on:		UnprescribedExposure  
+Description:	"Fetal contact with a dangerous substance via the mother."
+				Code is MTH#C0871747 "fetal exposure"
+				SubstanceOrAgent from TeratogenVS if covered
+0..1			GestationalTimePeriod  // brings the temporal context into the picture
+
+EntryElement:	SubstanceUse
+Based on:		UnprescribedExposure
+Description:	"Assertion concerning the past or current use of a substance (alcohol, recreational drugs, illegal drugs, or abuse of prescription medication) that could negatively impact the subject's health."
+				Code is MTH#C0237123 "Alcohol or Other Drug Use"
+				SubstanceOrAgent should be from SubstanceOfAbuseVS  	
+
+EntryElement:   IntravenousDrugUse
+Based on:       SubstanceUse
+Description:    "Records whether the subject injects recreational drugs. To record no intravenous drug use, the data value should be "
+				Code is MTH#C0699778  "intravenous drug use"
+           		Components.ObservationComponent.ExposureRoute.DataValue.CodeableConcept is MTH#C1522726 "Intravenous route"
+            	Components.ObservationComponent.ExposureMode.DataValue.CodeableConcept is MTH#C0021494 "Intravenous Injection"
+
+EntryElement:	NicotineExposure
+Based on:		SubstanceUse
+Description:	"The subject's current or past use of nicotine."
+				Code is MTH#C0240502  "Nicotine exposure"
+				SubstanceOrAgent is SCT#68540007 "Nicotine (substance)"
+          		Components.ObservationComponent.ExposureRoute.DataValue from TBD "NicotineRouteVS"  
+				Components.ObservationComponent.ExposureMode.DataValue from TBD "NicotineExposureModeVS" // e.g. smoked, second hand smoke, vaped, chewed
+
+EntryElement:	TobaccoSmokingStatusNHIS
+Based on:		NicotineExposure
+Description:	"Records the extent of the subject's use of tobacco."
+				Code is LNC#72166-2 "Tobacco smoking status NHIS"
+1..1			DataValue value is type CodeableConcept
+				DataValue from http://hl7.org/fhir/us/core/ValueSet/us-core-observation-ccdasmokingstatus if covered
+1..1			Patient
+1..1			CreationDateTime
+
+
+EntryElement:	AlcoholUse
+Based on:		SubstanceUse
+Description:	"The subject's current or past use of alcohol."
+				Code is MTH#C0552479 "Alcohol use history"
+				SubstanceOrAgent is SCT#419442005 "Ethyl Alcohol (substance)"
+				Method from AlcoholUseScreeningToolVS if covered
+				DataValue value is type Ratio  // could be coded, also
+
+Element:		AlcoholBingeEpisodes
+Based on:		SubstanceUse
+Description:	"Alcohol binge episodes per month (define as 6 or more Units if female, or 8 or more if male)."
+				Code is LNC#11286-2 "Alcohol binge episodes per month - Reported"
+				SubstanceOrAgent is SCT#419442005 "Ethyl Alcohol (substance)"
+				DataValue value is type Ratio
+
+
+/* TO DO 
+EntryElement:	Depression
+EntryElement:	Anxiety
+EntryElement:	JusticeInvolvement
+*/

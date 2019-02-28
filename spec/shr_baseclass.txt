@@ -1,39 +1,11 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.base
-Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, shr.entity, shr.encounter
+Namespace:		shr.core
 
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
-
-// NOTE: Entry will eventually be deprecated, as its fields are really a part
-// of the implementation, not part of the model. Once the CIMPL tooling
-// makes these implicit, Entry and its field elements will go away.
-Element: 		Entry
-Concept:		MTH#C1705654
-Description:	"Obsolete. Use DomainResource"
-0..1			ShrId
-0..1			EntryId
-0..1			EntryType
-
-	Element:			ShrId
-	Concept:			TBD
-	Description:	"A unique, persistent, permanent identifier for the overall health record belonging to the Patient."
-	Value:				id
-	
-	Element:    	EntryId
-	Concept:      MTH#C0600091
-	Description:  "A persistent, permanent identifier for an entry in a health record, unique within the scope of the health record."
-	Value:        id
-
-	Element:			EntryType  // Would EntryClass be clearer?
-	Concept:			TBD
-	Description:	"The class of the item, as a URI."
-	Value:				uri
-
 
 Abstract Element:	Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
@@ -128,14 +100,18 @@ Abstract Element:	ClinicalStatement
 Based on:		DomainResource
 Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
 0..1			Patient
-0..1			Encounter
-0..1			CreationDate
+0..1			CareContext
+0..1			CreationDateTime
 0..1			Asserter
 0..1			Recorder
 
+	Element:   	 	CreationDateTime  
+	Concept:        MTH#C3669169
+	Description:    "The point in time when the information was recorded in the system of record."
+	Value:          dateTime  // we can map to instant from dateTime
+
 	Element: 		Asserter
-	Concept:		TBD
-	Description:	"The origin or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
+	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
 	Value:			ref(EntityOrRole)
 
 	Element:		Recorder
@@ -147,11 +123,6 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Concept:		MTH#C1550369
 	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. A code can be used to indicate a generic type of participant, e.g., mother, EMT, or social worker."
 	Value:			ref(EntityOrRole)
-
-	Element:		CreationDate
-	Concept:		TBD
-	Description:	"The date/time the information was asserted or created; usually, when the clinical statement was initially recorded."
-	Value:			dateTime
 
 
 EntryElement:	Composition
@@ -196,6 +167,11 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
 
+		Element:		PersonOrDeviceOrLocation
+		Based on:		EntityOrRole
+		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device) or ref(Location)
+
 		Element:		PersonOrOrganizationOrDevice
 		Based on:		EntityOrRole
 		Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
@@ -205,6 +181,11 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 		Based on:		EntityOrRole
 		Description:	"A choice of Practitioner or Device. Needed for mapping to FHIR."
 		Value:			ref(Practitioner) or ref(Device)
+
+		Element:		PractitionerOrOrganization
+		Based on:		EntityOrRole
+		Description:	"A choice of Practitioner or Organization. Needed for mapping to FHIR."
+		Value:			ref(Practitioner) or ref(Organization)
 
 
 /*

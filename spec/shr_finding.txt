@@ -1,7 +1,6 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.base
+Namespace:		shr.core
 Description:	"Contains the SHR Entry definition -- the metadata added to any independent item in the SHR."
-Uses:			shr.core, shr.entity, shr.encounter
 
 
 Abstract Element:	ObservationComponent
@@ -58,20 +57,7 @@ Abstract Element:	ConditionOrObservation
 Based on:		ClinicalStatement
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 1..1			Code
-0..1			DataValue
-0..1			DataAbsentReason
-0..1			Focus
 				StatusOrActive is type Status
-
-		Element:		Focus
-		Description:	"The entity this condition or observation relates to, for example, a related person. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
-		Value:			ref(DomainResource) or CodeableConcept // or string or Identifier 
-
-		Element:		RelevantTime
-		Concept:		TBD
-		Description:	"The time or time period that the statement addresses.
-		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
 
 
 EntryElement:	Observation
@@ -80,19 +66,32 @@ Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
+0..1			DataValue
+0..1			DataAbsentReason
 0..1			Method
 0..1			RelevantTime
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
+0..1			Focus
 0..1			BodySite
-0..1			CommentOrDescription	
+0..1			CommentOrDescription
 0..1			Interpretation
 0..1			Device
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
 				Asserter value is type PersonOrOrganization
-//0..1			DeltaFlag
+				CareContext value is type ref(Encounter)
+
+		Element:		RelevantTime
+		Concept:		TBD
+		Description:	"The time or time period that the statement addresses.
+		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+		Value:			dateTime or TimePeriod 
+
+		Element:		Focus
+		Description:	"The entity this condition or observation relates to, for example, a related person. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
+		Value:			ref(DomainResource) or CodeableConcept // or string or Identifier 
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -102,7 +101,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Element:		PanelMembers
 		Concept:		TBD
 		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
-			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and Reason are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
 		Element:		Components
@@ -147,6 +146,12 @@ Description:	"The result of evaluations (measurements, tests, or questions) whos
 				DataValue value is type CodeableConcept
 0..0			ReferenceRange
 
+EntryElement:	QuantitativeNonLaboratoryObservation
+Based on:		NonLaboratoryObservation
+Concept:		TBD
+Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
+				DataValue value is type Quantity
+
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
 Description:	"An observation whose result is a code, and also having no components or panel members"
@@ -166,7 +171,7 @@ Description:	"An observation with components, but without a result value or pane
 EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
-				Code from http://loinc.org/vs if covered
+				Code from http://hl7.org/fhir/ValueSet/observation-codes if covered
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			Patient
 0..1			Specimen
@@ -212,33 +217,29 @@ Description:	"A panel that does not have an overall value that summarizes the en
 0..0			DataAbsentReason
 0..0            ReferenceRange
 
+Element:		SocialHistoryObservation
+Based on:		NonLaboratoryObservation
+Description:	"A simplified observation for social histories."
+				Category is OBSCAT#social-history "Social History"
+0..0			Method
+0..0			BodySite
+0..0			ReferenceRange
+0..0			PanelMembers
+0..0			Device
+0..0			DataAbsentReason
 
-Abstract Element:	ConditionPresentOrAbsent
-Based on:			ConditionOrObservation
-Description:		"An assertion of a condition being present or absent.
-'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble. The Code represents the condition asserted to exist or not exist. DataAbsentReason can represent the case where the presence or absence of something was not evaluated."
-				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
+Element:		CodedSocialHistoryObservation
+Based on:		SocialHistoryObservation
+Description:	"The result of social history questions, whose answer is expressed as a code."
 				DataValue value is type CodeableConcept
-				DataValue from PresentAbsentVS
-0..1			Evidence
-
-		Element:		Evidence
-		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
-		0..*		Manifestation
-		0..*		DomainResource
-
-				Element:	Manifestation
-				Description: "Clinical symptoms/signs."
-				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
 EntryElement:	Condition
-Based on:		ConditionPresentOrAbsent
-Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble."
-//TODO: 0..1			DataValue is SCT#52101004 "Present (qualifier value)"
-0..0			DataAbsentReason
+Based on:		ConditionOrObservation
+Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
+				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 				Asserter value is type PatientOrPractitionerOrRelatedPerson
 1..1			Patient
-0..0			Focus  // maybe a family member?
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
 1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
@@ -247,11 +248,21 @@ Description:		"A condition that is or may be present in a subject. 'Condition' i
 0..1			StageInformation
 0..1			Onset
 0..1			Abatement
+0..1			Evidence
 // Stuff from CIMI eliminated
 //0..1			WhenClinicallyRecognized
 //0..1			PresentOnAdmission
 //0..*			ConditionCause
 //0..1			Criticality
+
+			Element:		Evidence
+			Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
+			0..*		Manifestation
+			0..*		DomainResource
+
+				Element:	Manifestation
+				Description: "Clinical symptoms/signs."
+				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
 			Element:		ConditionCause
 			Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
@@ -336,3 +347,9 @@ Description:	"A body structure such as wound or tumor, observed to be present in
 				Code from BodyStructureVS if covered
 0..0			Focus
 0..0			ReferenceRange
+
+EntryElement:	CongenitalAbnormality
+Concept:		MTH#C0000768 "Congenital Abnormality"
+Based on:		Condition
+Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
+				Code from CongenitalAbnormalitiesVS if covered

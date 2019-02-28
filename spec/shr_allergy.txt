@@ -1,7 +1,5 @@
 Grammar:		DataElement 5.0
-Namespace:		shr.allergy
-Description:	"The SHR Allergy domain contains definitions for statements dealing with substance-related risks, particularly, allergies and intolerances."
-Uses:			shr.core, shr.base, shr.entity, shr.medication, shr.adverse
+Namespace:		shr.core
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
@@ -11,16 +9,14 @@ EntryElement:	AllergyIntolerance
 Based on:		ConditionOrObservation
 Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  
 // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
-Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. An AllergyIntolerancePresent finding can be taken as tantamount to a representation of an allergic condition, allowing it to be tracked over time. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in notable contrast to AdverseEvent)."
+Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in contrast to AdverseEvent)."
 				Asserter value is type PatientOrPractitionerOrRelatedPerson
 				Recorder value is type PatientOrPractitioner  // FHIR only allows Patient or Practitioner as recorder
 1..1			Patient
 1..1			Status // from http://hl7.org/fhir/ValueSet/allergy-verification-status
 				// Conflict between V2 and V3 -- Cannot override value set constraint from http://hl7.org/fhir/ValueSet/allergy-intolerance-status to http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
-0..0			Focus   // always the patient
-				DataValue value is type CodeableConcept
-1..1			DataValue // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  		// DSTU 2 change different required value sets
+1..1			Code // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  		// DSTU 2 change different required value sets
 0..1			SubstanceCategory   // DSTU 2 change (restrict upper cardinality to 1)
 0..1			Onset
 0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type

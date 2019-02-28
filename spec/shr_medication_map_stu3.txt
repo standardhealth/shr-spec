@@ -1,5 +1,5 @@
 Grammar:	Map 5.1
-Namespace:	shr.medication
+Namespace:  shr.core
 Target:		FHIR_STU_3
 
 Dosage maps to Dosage:
@@ -16,7 +16,7 @@ Dosage maps to Dosage:
 MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
 	Identifier maps to identifier
 	Asserter maps to informationSource
-	CreationDate maps to dateAsserted
+	CreationDateTime maps to dateAsserted
 	Patient maps to subject
 	constrain reasonNotTaken to 0..0
 	constrain dosage to 0..1
@@ -24,23 +24,23 @@ MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-c
 	Medication maps to medication[x]
 	Category maps to category
 	fix taken to #y
-	Reason maps to reasonCode
+	ReasonCode maps to reasonCode
 	OccurrenceTimeOrPeriod maps to effective[x]
 	Status maps to status
-	Encounter maps to context
+	CareContext maps to context
 	RelatedRequest maps to basedOn
 
 MedicationAdministration maps to MedicationAdministration:
 	Identifier maps to identifier
 	Patient maps to subject
-	Encounter maps to context
+	CareContext maps to context
 	RelatedRequest maps to prescription
 	constrain notGiven to 0..0
 	constrain reasonNotGiven to 0..0
 	Dosage maps to dosage
 	Medication maps to medication[x]
 	Category maps to category
-	Reason maps to reasonCode
+	ReasonCode maps to reasonCode
 	OccurrenceTimeOrPeriod maps to effective[x]
 	Status maps to status
 	Participation maps to performer
@@ -50,21 +50,26 @@ MedicationAdministration maps to MedicationAdministration:
 
 
 MedicationRequest maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	Patient maps to subject
+	CareContext maps to context
+	CreationDateTime maps to authoredOn
 	Identifier maps to identifier
 	Requester maps to requester
+	RequestIntent maps to intent
 	Medication maps to medication[x]
 	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
 	QuantityPerDispense maps to dispenseRequest.quantity
 	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
 	constrain dosageInstruction to 0..1
 	Dosage maps to dosageInstruction
-	Reason maps to reasonCode
+	ReasonCode maps to reasonCode
 	Status maps to status
 	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-	PriorityRank maps to priority
-	PerformerInstructions maps to note.text
-	ExpectedPerformer[Organization] maps to dispenseRequest.performer
+	PriorityCode maps to priority
+	Annotation maps to note
+	Recipient maps to dispenseRequest.performer
 	constrain note to 0..1
-
-
+	SubstitutionAllowed maps to substitution.allowed
+	SubstitutionReason maps to substitution.reason
+	Type maps to category
 	
