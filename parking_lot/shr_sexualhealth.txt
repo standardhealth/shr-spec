@@ -8,166 +8,116 @@ CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 //
 
-EntryElement:	PregnancyIntention
-Concept:		TBD
-Based on:		SocialHistoryObservation
-Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
-Value:			CodeableConcept from YesNoUnknownVS
-				Code is LNC#64631-5
+EntryElement:	GenderIdentity
+Based on:		CodedSocialHistoryObservation
+Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
+				Code is MTH#C0017249
+				DataValue from GenderIdentityVS 
 
-EntryElement:	SexualIdentity
-Concept:		TBD
-Based on:		SocialHistoryObservation
-Description:	"Information on gender identity and sexual orientation."
+EntryElement:	SexualOrientation
+Based on:		CodedSocialHistoryObservation
+Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
+				Code is MTH#C0205949
+				DataValue from SexualOrientationVS
+
+EntryElement:	SexualActivity
+Based on:		CodedSocialHistoryObservation
+Description:	"Characterization of the sexual activity of the subject."
+				Code is MTH#C0241028
+				DataValue from SexualActivityVS
+
+EntryElement:	IntercourseDifficulty
+Based on:		CodedSocialHistoryObservation
+Description:	"Condition affecting sexual intercourse."
 				Code is TBD#TBD
-				PanelMembers.EvaluationTopic
-includes 0..1 	GenderIdentity
-includes 0..1	SexualOrientation
+				DataValue from IntercourseDifficultyVS
 
-	EntryElement:	GenderIdentity
-	Concept:		MTH#C0017249
-	Based on:		SocialHistoryObservation
-	Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
-	Value:			CodeableConcept from GenderIdentityVS 
-					Code is MTH#C0017249
+EntryElement:	ContraceptiveUseFrequency
+Based on:		CodedSocialHistoryObservation
+Description:	"How frequently the subject and partner uses contraceptives."
+				Code is TBD#TBD
+				DataValue from QualitativeFrequencyVS
 
-	EntryElement:	SexualOrientation
-	Concept:		MTH#C0205949
-	Based on:		SocialHistoryObservation
-	Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
-	Value:			CodeableConcept from SexualOrientationVS
-					Code is MTH#C0205949
-
-
-EntryElement:	SexualBehavior
-Concept:		MTH#C1314687
-Based on:		SocialHistoryObservation
-Description:	"Experience with sexual intercourse."
-0..0			Value
-				Code is MTH#C1314687
-				PanelMembers.EvaluationTopic 
-includes 1..*	SexualActivity
-includes 0..1	NumberOfSexualPartnersPastYear
-includes 0..*	IntercourseDifficulty
-
-	EntryElement:	SexualActivity
-	Concept:		MTH#C0241028
-	Based on:		SocialHistoryObservation
-	Description:	"Characterization of the sexual activity of the subject."
-	Value:			CodeableConcept from SexualActivityVS
-	1..1			Code is TBD#TBD
-
-	EntryElement:	NumberOfSexualPartnersPastYear
-	Concept:		MTH#C0556468
-	Based on:		SocialHistoryObservation
-	Description:	"Number of sexual partners in past year."
-	Value:			Quantity with units UCUM#1 // can use > or < modifiers
-
-	EntryElement:	IntercourseDifficulty
-	Concept:		TBD
-	Based on:		SocialHistoryObservation
-	Description:	"Condition affecting sexual intercourse."
-	Value:			CodeableConcept from IntercourseDifficultyVS
-
-	
-EntryElement:	ContraceptivesUsed
-Concept:		TBD
-Description:	"How frequently the subject and partner uses contraceptives, and if so, what contraceptive methods used."
-Based on:		SocialHistoryObservation
-Value:			CodeableConcept from QualitativeFrequencyVS
-				PanelMembers.EvaluationTopic
-includes 0..*	ContraceptiveMethodUsed
-
-EntryElement:	ContraceptiveMethodUsed
-Based on:		SocialHistoryObservation
-Concept:		MTH#C0700589
-Description:	"A method contraception used (or not) by the subject."
-Value:			CodeableConcept from ContraceptiveMethodVS
+EntryElement:	ContraceptiveMethod
+Based on:		CodedSocialHistoryObservation
+Description:	"A method contraception used by the subject. This profile can be used to record that a person does or does not use a certain type of contraception, and why."
 				Code is MTH#C0700589
-				EvaluationComponent
+				CodeableConcept from ContraceptiveMethodVS
+				Components.ObservationComponent
 includes 0..1 	ContraceptiveMethodFrequency
-includes 0..*	ContraceptiveMethodReason
-includes 0..*	ContraceptiveNotUsedReason
+includes 0..*	ContraceptiveMethodUsedReason
+includes 0..*	ContraceptiveMethodNotUsedReason
 
 		Element:		ContraceptiveMethodFrequency
-		Based on:		EvaluationComponent
-		Concept:		TBD
+		Based on:		ObservationComponent
 		Description:	"How often the contraceptive method is used by the subject."
-		Value:			CodeableConcept from QualitativeFrequencyVS
+						Code is TBD#TBD
+						DataValue from QualitativeFrequencyVS
 
 		Element:		ContraceptiveMethodReason
-		Based on:		EvaluationComponent
-		Concept:		TBD
+		Based on:		ObservationComponent
 		Description: 	"Reason for using a particular contraceptive."
-		Value:			CodeableConcept from ContraceptiveMethodReasonVS
+						Code is TBD#TBD
+						DataValue from ContraceptiveMethodUsedReasonVS
 						
 		Element:		ContraceptiveNotUsedReason
-		Concept:		TBD
-		Based on:		EvaluationComponent
+		Based on:		ObservationComponent
 		Description:	"If not using a method of contraception, why."
-		Value:			CodeableConcept from ContraceptiveNotUsedReasonVS
+						Code is TBD#TBD
+						DataValue from ContraceptiveMethodNotUsedReasonVS
 
-						
-Abstract Element:	ContraceptiveTopic
-Based on:		MedicationTopic
+EntryElement:	PregnancyStatus
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether or not the subject is currently pregnant."
+				Code is LNC#82810-3
+				DataValue from YesNoUnknownVS
+
+EntryElement:	PregnancyIntention
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
+				Code is LNC#64631-5
+	 			DataValue from YesNoUnknownVS
+
+EntryElement:	NumberOfPreviousPregnancies
+Based on:		QuantitativeSocialHistoryObservation
+Description:	"Number of previous pregnancies."
+				Code is LNC#75201-4
+				DataValue value is type IntegerQuantity
+
+EntryElement:	NumberOfLivingChildren
+Based on:		QuantitativeSocialHistoryObservation
+Description:	"Number of living children."
+				Code is LNC#11638-4
+				DataValue value is type IntegerQuantity
+
+/*
+EntryElement:	PreviousPregnancyDetails
 Concept:		TBD
-Description:	"A contraceptive for a patient, independent of context of being recommended, used, or not used."
-Value:			CodeableConcept from ContraceptiveMethodVS
-
-						
-EntryElement:	ContraceptiveMethodRequested
-Based on:		ContraceptiveTopic
-Concept:		TBD
-Description:	"The contraceptive method(s) proposed, recommended or prescribed by a provider, after counseling and assessment."
-1..1			RequestedContext 
-				RequestedContext.Reason from ContraceptiveMethodReasonVS 
-/*1..1			Dispensed // Not sure about this
-
-		Element:		Dispensed
-		Concept:		TBD
-		Description:	"Whether an item, such as a medication or device, was given to a subject."
-		Value:			CodeableConcept from YesNoUnknownVS
+Description:	"The details of a previous pregnancy."
+PregnancyOrdinal
+PregnancyOutcome
+DeliveryDate
+GestationalAge
+DurationOfLabor
+BirthWeight
+GenderOfBaby
+TypeOfDelivery
+AnesthesiaType
+PlaceOfDelivery
+DurationOfBreastFeeding
+Complications from CommonPregnancyComplicationVS
 */
-EntryElement:	ContraceptiveMethodRequestedAgainst
-Concept:		TBD
-Based on:		ContraceptiveTopic
-Description:	"The contraceptive method(s) recommended or prescribed by a provider, after counseling and assessment."
-Value:			CodeableConcept from ContraceptiveMethodVS
-1..1			RequestedAgainstContext 
-				RequestedAgainstContext.Reason from ContraceptiveNotUsedReasonVS
 
+EntryElement:	PostmenopausalStatus
+Based on:		CodedSocialHistoryObservation
+Description:	"Postmenopausal status."
+				Code is TBD#TBD
+				DataValue from PostmenopausalStatusVS
+//Prior bilateral oophorectomy
+//Age ≥ 60 years
+//Age < 60 years and no menses for ≥ 1 year with FSH and estradiol levels within postmenopause range
 
-EntryElement:	PregnancyHistory
-Concept:		MTH#C0032967
-Based on:		SocialHistoryObservation
-Description:	"Information about current and past pregnancies."
-0..0			Value
-				Code is LNC#10163-4
-				PanelMembers.EvaluationTopic
-includes 0..1	CurrentPregnancyStatus
-includes 0..1	NumberOfPreviousPregnancies
-includes 0..1	NumberOfLivingChildren
-
-	EntryElement:	CurrentPregnancyStatus
-	Concept:		MTH#C0552579
-	Based on:		SocialHistoryObservation
-	Description:	"Whether or not the subject is currently pregnant."
-	Value:			CodeableConcept from YesNoUnknownVS
-					Code is LNC#82810-3
-
-	EntryElement:	NumberOfPreviousPregnancies
-	Concept:		MTH#C0422807
-	Based on:		SocialHistoryObservation
-	Description:	"Number of previous pregnancies."
-					Code is LNC#75201-4
-
-	EntryElement:	NumberOfLivingChildren
-	Concept:		MTH#C2229975
-	Based on:		SocialHistoryObservation
-	Description:	"Number of living children."
-					Code is LNC#11638-4
-
-					
+/*
 EntryElement:	HIVScreeningTestPerformed
 Based on:		LaboratoryProcedurePerformed
 Concept:		TBD
@@ -191,32 +141,4 @@ Based on:		LaboratoryProcedureRequested
 Concept:		TBD
 Description:	"A request for a confirmatory or additional test for HIV infection."
 1..1			Code from HIVSupplementalTestCodeVS
-
-					
-/*
-
-Postmenopausal Status:
-□ Prior bilateral oophorectomy
-□ Age ≥ 60 years
-□ Age < 60 years and no menses for ≥ 1 year with FSH and estradiol levels within postmenopause range
-
-
-
-
-EntryElement:	PreviousPregnancyDetails
-Concept:		TBD
-Description:	"The details of a previous pregnancy."
-1..1			PregnancyOrdinal
-1..1			PregnancyOutcome
-DeliveryDate
-GestationalAge
-DurationOfLabor
-BirthWeight
-GenderOfBaby
-TypeOfDelivery
-AnesthesiaType
-PlaceOfDelivery
-DurationOfBreastFeeding
-Complications   CodeableConcept from CommonPregnancyComplicationVS
-Comorbidities
 */
