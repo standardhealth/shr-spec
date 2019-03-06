@@ -145,13 +145,13 @@ Description:    "A structured set of questions intended to guide the collection 
       Description:  "A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true."
       1..1      Question
       0..1      HasAnswer
-      0..1      Answer
+      0..1      AnswerValue
 
         Element:    HasAnswer
         Description:  "An indication that this item should be enabled only if the specified question is answered (hasAnswer=true) or not answered (hasAnswer=false)."
         Value:      boolean
 
-        Element:  Answer
+        Element:  AnswerValue
         Description:  "The answer to a question."
         Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Media or Coding or Quantity or ref(DomainResource)
 
@@ -299,33 +299,30 @@ Description:    "A structured set of questions and their answers. The questions 
 0..*            PartOf value is type ObservationOrProcedure
 0..1            ref(Questionnaire)
 1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
-0..1            Focus value is type ref(DomainResource)
+0..1            SubjectOfInformation value is type ref(DomainResource)
 0..1            CareContext
 0..1            CreationDateTime
-0..1
+0..1            Author value is type PersonOrDevice
+0..1            InformationSource value is type PatientOrPractitionerOrRelatedPerson
+0..*            QuestionnaireResponseItem
 
-0..1            VersionString
-0..1            NameAsText
-0..1            Title
-1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
-0..1            IsExperimental
-0..*            SubjectType
-0..1            LastUpdated
-0..1            PublisherName
-0..*            ContactDetail
-0..1            DescriptionMarkdown
-0..*            UseContext
-0..*            Jurisdiction
-0..1            PurposeMarkdown
-0..1            Copyright
-0..1            LastReviewedDate
-0..1            ApprovalDate
-0..1            EffectiveTimePeriod
-0..*            Code could be from http://hl7.org/fhir/ValueSet/questionnaire-questions
-0..*            QuestionnaireItem
+
+    Element:    QuestionnaireResponseItem
+    Description:  "Questions and sections within the Questionnaire."
+    1..1        IdentifierString
+    0..1        DetailsLink
+    0..1        Question
+    0..1        SubjectOfInformation value is type ref(DomainResource)
+    0..*        Answer
+    0..*        QuestionnaireResponseItem
+
+        Element:    Answer
+        Description:    "The respondent's answer(s) to the question."
+        0..1   AnswerValue
+        0..*   QuestionnaireResponseItem
 
         Element:  ReferralOrProcedureRequest
-        Based on:   RelatedRequest
+        Based on:   ActionRequested
         Value:  ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
 
         Element:    ObservationOrProcedure

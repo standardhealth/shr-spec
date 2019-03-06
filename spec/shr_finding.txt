@@ -64,7 +64,7 @@ EntryElement:	Observation
 Based on:		ConditionOrObservation
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
-Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. The Focus can be the entire patient, or an entity such as a location body structure, intervention, or condition. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
 0..1			DataValue
 0..1			DataAbsentReason
@@ -72,7 +72,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			RelevantTime
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
-0..1			Focus
+0..1			SubjectOfInformation
 0..1			BodySite
 0..1			CommentOrDescription
 0..1			Interpretation
@@ -80,7 +80,8 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
-				Asserter value is type PersonOrOrganization
+				Author value is type PersonOrOrganization 
+				InformationSource value is type PersonOrOrganization
 				CareContext value is type ref(Encounter)
 
 		Element:		RelevantTime
@@ -89,8 +90,8 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 
-		Element:		Focus
-		Description:	"The entity this condition or observation relates to, for example, a related person. The Focus is only required if the person or thing observed is different than the patient. Focus should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
+		Element:		SubjectOfInformation
+		Description:	"The entity this condition or observation relates to, for example, a related person. The SubjectOfInformation is only required if the person or thing observed is different than the patient. SubjectOfInformation should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
 		Value:			ref(DomainResource) or CodeableConcept // or string or Identifier 
 
 		Element:		Interpretation
@@ -238,7 +239,7 @@ Based on:		ConditionOrObservation
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
-				Asserter value is type PatientOrPractitionerOrRelatedPerson
+				InformationSource value is type PatientOrPractitionerOrRelatedPerson
 1..1			Patient
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
@@ -345,7 +346,7 @@ EntryElement:	BodyStructurePresent
 Based on:		Condition
 Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodySiteCode is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and location (corresponding to BodySite.BodySiteCode. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
 				Code from BodyStructureVS if covered
-0..0			Focus
+0..0			SubjectOfInformation
 0..0			ReferenceRange
 
 EntryElement:	CongenitalAbnormality
