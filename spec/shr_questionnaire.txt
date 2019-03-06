@@ -290,3 +290,44 @@ Description:    "A set of codes drawn from one or more code systems"
 		    Description:	"A flag that indicates whether the use cannot select this item."
 		    Value:	boolean
 
+
+EntryElement:   QuestionnaireResponse
+Based on:       DomainResource
+Description:    "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to."
+0..1            Identifier
+0..*            RelatedRequest value is type ReferralOrProcedureRequest
+0..*            PartOf value is type ObservationOrProcedure
+0..1            ref(Questionnaire)
+1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
+0..1            Focus value is type ref(DomainResource)
+0..1            CareContext
+0..1            CreationDateTime
+0..1
+
+0..1            VersionString
+0..1            NameAsText
+0..1            Title
+1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
+0..1            IsExperimental
+0..*            SubjectType
+0..1            LastUpdated
+0..1            PublisherName
+0..*            ContactDetail
+0..1            DescriptionMarkdown
+0..*            UseContext
+0..*            Jurisdiction
+0..1            PurposeMarkdown
+0..1            Copyright
+0..1            LastReviewedDate
+0..1            ApprovalDate
+0..1            EffectiveTimePeriod
+0..*            Code could be from http://hl7.org/fhir/ValueSet/questionnaire-questions
+0..*            QuestionnaireItem
+
+        Element:  ReferralOrProcedureRequest
+        Based on:   RelatedRequest
+        Value:  ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
+
+        Element:    ObservationOrProcedure
+        Based on:   DomainResource
+        Value:  ref(Observation) or ref(Procedure)
