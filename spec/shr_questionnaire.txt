@@ -29,6 +29,7 @@ Description:    "A structured set of questions intended to guide the collection 
 0..1            VersionString
 0..1            NameAsText
 0..1            Title
+                StatusOrActive is type Status
 1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
 0..1            IsExperimental
 0..*            SubjectType
@@ -139,154 +140,58 @@ Description:    "A structured set of questions intended to guide the collection 
 
       Element:  PrepopulateValue
       Description:  "One or more values that should be pre-populated in the answer when initially rendering the questionnaire for user input."
-      Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Media or Coding or Quantity or ref(DomainResource)  
+      Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Attachment or Coding or Quantity or ref(DomainResource)  
 
       Element:  EnableWhen
       Description:  "A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true."
       1..1      Question
       0..1      HasAnswer
-      0..1      Answer
+      0..1      AnswerValue
 
         Element:    HasAnswer
         Description:  "An indication that this item should be enabled only if the specified question is answered (hasAnswer=true) or not answered (hasAnswer=false)."
         Value:      boolean
 
-        Element:  Answer
+        Element:  AnswerValue
         Description:  "The answer to a question."
-        Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Media or Coding or Quantity or ref(DomainResource)
+        Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Attachment or Coding or Quantity or ref(DomainResource)
 
 
-EntryElement:   ValueSet
+EntryElement:   QuestionnaireResponse
 Based on:       DomainResource
-Description:    "A set of codes drawn from one or more code systems"
-0..1 		    Url
-0..1            VersionString
-0..1            NameAsText
-0..1            Title
-1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
-0..1            IsExperimental
-0..*            SubjectType
-0..1            LastUpdated
-0..1            PublisherName
-0..*            ContactDetail
-0..1            DescriptionMarkdown
-0..*            UseContext
-0..*            Jurisdiction
-0..1            IsImmutable
-0..1            PurposeMarkdown
-0..1            Copyright
-0..1            IsExtensible
-0..1            ContentLogicalDefinition
-0..1            ValueSetExpansion
+Description:    "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to."
+0..1            Identifier
+0..*            RelatedRequest value is type ReferralOrProcedureRequest
+0..*            PartOf value is type ObservationOrProcedure
+0..1            ref(Questionnaire)
+                StatusOrActive is type Status
+1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
+0..1            SubjectOfInformation value is type ref(DomainResource)
+0..1            CareContext
+0..1            CreationDateTime
+0..1            Author value is type PersonOrDevice
+0..1            InformationSource value is type PatientOrPractitionerOrRelatedPerson
+0..*            QuestionnaireResponseItem
 
-    Element:    IsImmutable
-    Description: "Indicates whether or not any change to the content logical definition may occur"  Value:      boolean
 
-    Element:    IsExtensible
-    Description: "Whether this is intended to be used with an extensible binding"
-    Value:      boolean
+    Element:    QuestionnaireResponseItem
+    Description:  "Questions and sections within the Questionnaire."
+    1..1        IdentifierString
+    0..1        DetailsLink
+    0..1        Question
+    0..1        SubjectOfInformation value is type ref(DomainResource)
+    0..*        Answer
+    0..*        QuestionnaireResponseItem
 
-    Element:    ContentLogicalDefinition
-    Description:    "Definition of the content of the value set."
-    0..1        LockedDate
-    0..1        IncludeInactiveCodes
-    1..*        IncludeCodes
-    0..*        ExcludeCodes
+        Element:    Answer
+        Description:    "The respondent's answer(s) to the question."
+        0..1   AnswerValue
+        0..*   QuestionnaireResponseItem
 
-        Element:    LockedDate
-        Description:    "If a locked date is defined, then the Content Logical Definition must be evaluated using the current version as of the locked date for referenced code system(s) and value set instances where ValueSet.compose.include.version is not defined."
-        Value:      date
+        Element:  ReferralOrProcedureRequest
+        Based on:   ActionRequested
+        Value:  ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
 
-        Element:    IncludeInactiveCodes
-        Description:    "Whether inactive codes - codes that are not approved for current use - are in the value set. If inactive = true, inactive codes are to be included in the expansion, if inactive = false, the inactive codes will not be included in the expansion. If absent, the behavior is determined by the implementation, or by the applicable ExpansionProfile (but generally, inactive codes would be expected to be included)."
-        Value:      boolean
-
-        Element:    IncludeCodes
-        Description:    "Include one or more codes from a code system or other value set(s)."
-        Value:      CodeSet
-
-        Element:    ExcludeCodes
-        Description: "Exclude one or more codes from the value set based on code system filters and/or other value sets."
-        Value:      CodeSet
-
-        Element:    CodeSet
-        Description:    "A description of a set of codes, to be included or excluded from a value set."
-        0..1	CodeSystem
-        0..1 	CodeSystemVersion
-        0..*    CodeSetConcept
-        0..*    CodeSetFilter
-        0..*    ValueSetUri
-
-            Element:    CodeSetConcept
-            Description:    "Specifies a concept to be included or excluded."
-            0..1	CodeValue
-            0..1	DisplayText
-            0..*    Designation
-
-                Element:    Designation
-                Description:    "Additional representations for this concept when used in this value set - other languages, aliases, specialized purposes, used for particular purposes, etc."
-                0..1    Language
-                0..1    Type from http://hl7.org/fhir/ValueSet/designation-use if covered
-                1..1    DisplayText
-
-            Element:    CodeSetFilter
-            Description:    "Select concepts by specify a matching criteria based on the properties (including relationships) defined by the system. If multiple filters are specified, they SHALL all be true."
-            1..1    Property
-            1..1    Operation
-            1..1    CodeValue
-
-                Element:    Property
-                Description:    "A code that identifies a property or a filter defined in the code system."
-                Value:      CodeableConcept
-
-                Element:    Operation
-                Description:    "The kind of operation to perform as a part of the filter criteria."
-                Value:      CodeableConcept from http://hl7.org/fhir/ValueSet/filter-operator
-
-            Element:    ValueSetUri
-            Description:    "Selects the concepts found in this value set (based on its value set definition). This is an absolute URI that is a reference to ValueSet.url. If multiple value sets are specified this includes the union of the contents of all of the referenced value sets."
-            Value:     uri
-
-    Element:    ValueSetExpansion
-    Description:    "The value set turned into a simple collection of enumerated codes. This element holds the expansion, if it has been performed."
-    0..1    Url
-    1..1    CreationDateTime
-    0..1    TotalCount
-    0..1    Offset
-    0..*    ExpansionParameter
-    0..*    ExpansionCoding
-
-        Element:    TotalCount
-        Description:    "Total number of items."
-        Value:  integer
-
-        Element:    Offset
-        Description:    "If paging is being used, the offset at which this resource starts. I.e. this resource is a partial view into the expansion. If paging is not being used, this element SHALL NOT be present."
-        Value:  integer
-
-        Element:    ExpansionParameter
-        Description:    "A parameter that controlled the expansion process. These parameters may be used by users of expanded value sets to check whether the expansion is suitable for a particular purpose, or to pick the correct expansion."
-        1..1    NameAsText
-        0..1    ParameterValue
-
-            Element:    ParameterValue
-            Description:    "The value of the parameter."
-            Value:  string or boolean or integer or decimal or uri or code or dateTime
-
-        Element:  ExpansionCoding
-        Based on:   Coding
-        Description:    "The codes that are contained in the value set expansion."
-        // Inherits CodeValue, CodeSystem, CodeSystemVersion, DisplayText
-        0..1    Inactive
-        0..1    NonSelectable
-        0..*    Designation
-        0..*    ExpansionCoding
-
-        	Element:	Inactive
-		    Description:	"A flag that indicates whether the item is inactive."
-		    Value:	boolean
-
-            Element:   NonSelectable 
-		    Description:	"A flag that indicates whether the use cannot select this item."
-		    Value:	boolean
-
+        Element:    ObservationOrProcedure
+        Based on:   DomainResource
+        Value:  ref(Observation) or ref(Procedure)

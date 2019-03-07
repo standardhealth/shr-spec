@@ -2,38 +2,12 @@ Grammar:	Map 5.1
 Namespace:	shr.core
 Target:		FHIR_STU_3
 
-//Entry maps to DomainResource:
 
-DomainResource maps to DomainResource:
-//	_Entry.EntryId maps to id
-	Language maps to language
-	Narrative maps to text
-	ImplicitRules maps to implicitRules
-	Metadata.VersionId maps to meta.versionId
-//	Metadata.SourceSystem maps to meta.extension 
-	// in R4, this will be meta.source
-	// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
-	Metadata.LastUpdated maps to meta.lastUpdated
-	Metadata.SecurityLabel maps to meta.security
-	Metadata.Tag maps to meta.tag
-
-Composition maps to Composition:
-	Identifier maps to identifier
-	Status maps to status
-	Type maps to type
-    Section maps to section
-    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
-	Section.Section maps to section.section
-
-Narrative maps to Narrative:
-	NarrativeText maps to div
-	NarrativeQualifier maps to status
-
-// do not map Observation to US Core Results -- Brett says that's only for labs
-Observation maps to Observation:  // TODO: observationresults is only for labs 
+// do not map Observation to US Core Results -- Brett says that's meant for for lab observations
+Observation maps to Observation:
 	Identifier maps to identifier
 	Patient maps to subject
-	Asserter maps to performer
+	Author maps to performer
 	Code maps to code
 	Method maps to method
 	CommentOrDescription maps to comment
@@ -43,7 +17,7 @@ Observation maps to Observation:  // TODO: observationresults is only for labs
 	//(slice on = url; slice strategy = value)
 	BodySite.AnatomicalDirection maps to bodySite.extension
 	BodySite.CommentOrDescription maps to bodySite.extension
-	BodySite.Media maps to bodySite.extension
+	BodySite.Attachment maps to bodySite.extension
 	BodySite.DistanceFromLandmark maps to bodySite.extension
 	Device maps to device
 	CreationDateTime maps to issued
@@ -69,7 +43,7 @@ Observation maps to Observation:  // TODO: observationresults is only for labs
 	Status maps to status
 	RelevantTime maps to effective[x]
 	CareContext maps to context
-	Focus maps to extension
+	SubjectOfInformation maps to extension
 //	DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
 
 NonLaboratoryObservation maps to Observation:
@@ -81,7 +55,7 @@ LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us
 Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
 	Identifier maps to identifier
 	CreationDateTime maps to assertedDate  
-	Asserter maps to asserter  
+	InformationSource maps to asserter  
 	Patient maps to subject
 	Category maps to category
 	Identifier maps to identifier
@@ -90,7 +64,7 @@ Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condit
 	BodySite.Laterality maps to bodySite.extension
 	BodySite.AnatomicalDirection maps to bodySite.extension
 	BodySite.CommentOrDescription maps to bodySite.extension
-	BodySite.Media maps to bodySite.extension
+	BodySite.Attachment maps to bodySite.extension
 	BodySite.DistanceFromLandmark maps to bodySite.extension
 	CareContext maps to context
 	ClinicalStatus maps to clinicalStatus
@@ -103,3 +77,13 @@ Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condit
 	StageInformation.StageDetail maps to stage.assessment
 	Evidence.Manifestation maps to evidence.code
 	Evidence.DomainResource maps to evidence.detail	
+
+/*
+DiagnosticReport maps to DiagnosticReport:
+	Identifier maps to identifier
+	RelatedReferral maps to basedOn
+	Status maps to status
+	Patient maps to subject 
+	Code maps to code
+	CareContext maps to context
+	*/
