@@ -3,3 +3,33 @@ Namespace:	dme
 Description:	"Classes pertaining to ordering durable medical devices."
 Uses:  		shr.core
 
+CodeSystem:		PUB = http://hl7.org/fhir/publication-status
+
+EntryElement:   DTR-Questionnaire
+Based on:       Questionnaire
+Description:    "Document templates and rules."
+Status is PUB#active
+0..0  IsExperimental
+1..*  ContactDetail
+1..1  LastUpdated
+1..*  QuestionnaireItem
+1..1  QuestionnaireItem.Question
+1..*  PayerLibrary
+      QuestionnaireItem is type DTR-QuestionnaireItem
+
+
+    Element:    PayerLibrary
+    Description:    "Computable rules and queries to determine if a patient meets requirements for desired service."
+    Value:      ref(Library)
+
+        EntryElement:   Library
+
+    Element:    DTR-QuestionnaireItem
+    Based on:   QuestionnaireItem
+    Description:  "Includes extensions"
+    1..1    CalculatedValue
+
+        Element:  CalculatedValue
+        Description:  "output value"
+        Value:   string
+

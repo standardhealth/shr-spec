@@ -330,16 +330,7 @@ SHR Condition uses the SHR BodySite structure that includes not only a code, but
 			Concept:		LNC#88878-4
 			Description:	"The end, remission or resolution."
 			Value:			dateTime or Age or boolean or TimePeriod or Range or string
-				
-EntryElement:	ClinicalNote
-Based on:		SimpleNonLaboratoryObservation
-Concept:		MTH#C0747978 "Progress Note"
-Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the DataValue field, since this is the first place to look for a result that is a narrative."
-				Code is MTH#C0747978 "Progress Note"
-				DataValue value is type string
-0..0			ReferenceRange
-1..1			Patient
-//1..1			CommentOrDescription // put into DataValue
+
 
 
 EntryElement:	BodyStructurePresent
@@ -354,3 +345,24 @@ Based on:		Condition
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
 				Code from CongenitalAbnormalitiesVS if covered
 
+/*
+EntryElement:	DiagnosticReport
+Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObservation
+0..*			RelatedRequest
+				Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
+0..1			ServiceCategory	
+1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
+*/
+
+
+
+// TODO: ClinicalNote is not modeled as an Observation. See Argo profiles.
+EntryElement:	ClinicalNote
+Based on:		SimpleNonLaboratoryObservation
+Concept:		MTH#C0747978 "Progress Note"
+Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the DataValue field, since this is the first place to look for a result that is a narrative."
+				Code is MTH#C0747978 "Progress Note"
+				DataValue value is type string
+0..0			ReferenceRange
+1..1			Patient
+//1..1			CommentOrDescription // put into DataValue
