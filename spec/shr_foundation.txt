@@ -98,12 +98,19 @@ Description:	"Elements that belong to all information items."
 Abstract Element:	ClinicalStatement
 Based on:		DomainResource
 Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
-0..1			Patient
+0..1			SubjectOfRecord
 0..1			CareContext
 0..1			CreationDateTime
 0..1			Author
 0..1			InformationSource
 0..1			Recorder
+
+
+	Element: 		SubjectOfRecord
+	Description:	"The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. The SubjectOfRecord can also be a location, group, or other entity that statements can pertain to. For example, observations concerning a hospital floor would have a Location as the SubjectOfRecord. 
+	
+	Note that the word 'Subject' is used in the sense of a person or entity subjected to observations or actions, not subject as in a conceptual topic, like heart disease."
+	Value:			ref(EntityOrRole)
 
 	Element:   	 	CreationDateTime  
 	Concept:        MTH#C3669169
@@ -191,9 +198,35 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 		Description:	"A choice of Practitioner or Organization. Needed for mapping to FHIR."
 		Value:			ref(Practitioner) or ref(Organization)
 
+		Element:		PatientOrPractitionerOrGroupOrDevice
+		Based on:		EntityOrRole
+		Description:	"A choice of Patient, Practitioner, Group or Device. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device)
 
+		Element:		PatientOrGroupOrDeviceOrLocation
+		Based on:		EntityOrRole
+		Description:	"A choice of Patient, Group, Device, or Location. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Location)
 
+		Element:		PatientOrResearchSubjectOrMedicationOrDevice
+		Based on:		EntityOrRole
+		Description:	"A choice of Patient, ResearchSubject, Medication, or Device. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(ResearchSubject) or ref(Medication) or ref(Device)
 
+		Element:		PatientOrGroup
+		Based on:		EntityOrRole
+		Description:	"A choice of Patient or Group. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Group)
+
+		Element:		PatientOrPractitionerOrGroupOrDeviceOrSpecimen
+		Based on:		EntityOrRole
+		Description:	"A choice of Patient, Practitioner, Group, Device or Specimen. Needed for mapping to FHIR."
+		Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device) or ref(Specimen)
+
+		Element:		PatientOnly
+		Based on:		PatientOrGroupOrDeviceOrLocation
+		Description:	"A choice of Patient or nothing. Used to further restrict the SubjectOfRecord of Observations. This is a hack!"
+		Value:			ref(Patient)
 /*
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
@@ -354,3 +387,22 @@ Description:    "A set of codes drawn from one or more code systems"
 		    Description:	"A flag that indicates whether the use cannot select this item."
 		    Value:	boolean
 
+EntryElement:	DocumentReference
+Based on:	DomainResource
+Description:	"A reference to a document, used to describe a document that is made available to a healthcare system. A document is some sequence of bytes that is identifiable, establishes its own context (e.g., what subject, author, etc. can be displayed to the user), and has defined update management. The DocumentReference resource can be used with any document format that has a recognized mime type and that conforms to this definition."
+0..1		MasterIdentifier
+			StatusOrActive is type Status
+1..1		Status from http://hl7.org/fhir/ValueSet/document-reference-status
+0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
+1..1		Type should be from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
+0..1		Category could be from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
+0..1		SubjectOfInformation value is type PatientOrPractitionerOrGroupOrDevice
+
+
+	Element:	MasterIdentifier
+	Description:	"Document identifier as assigned by the source of the document. This identifier is specific to this version of the document. This unique identifier may be used elsewhere to identify this version of the document."
+	Value:  Identifier
+
+	Element:	DocumentStatus
+	Description: "The status of the underlying document."
+	Value: CodeableConcept

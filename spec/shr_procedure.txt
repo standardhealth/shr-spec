@@ -7,6 +7,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 EntryElement:	Procedure
 Based on:		ActionPerformed
 Description:	"A procedure that has been performed."
+				SubjectOfRecord value is type PatientOrGroup
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodySite
 0..1			PartOf value is type ref(Procedure)
@@ -42,6 +43,8 @@ Description:	"A procedure that has been performed."
 
 EntryElement:	ProcedureRequest
 Based on:		ActionRequested
+Description:	"A request for a procedure to be performed. May be a proposal or an order."
+				SubjectOfRecord value is type PatientOrGroup
 				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
 				// DSTU 2 change (different required value sets in v2 and v3)
 				Status // from http://hl7.org/fhir/ValueSet/request-status  
@@ -55,7 +58,7 @@ Based on:		ActionRequested
 0..1			ReasonCode
 0..1			Method
 				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
-//0..*			InputFinding  cd covered by Reason
+//0..*			InputFinding  -- covered by Reason
 //0..*			Indication
 0..1			ref(Location)
 0..1			Recipient value is type PersonOrOrganizationOrDevice  // TODO: why is Recipient equated with Performer?
