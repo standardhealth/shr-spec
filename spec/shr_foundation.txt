@@ -394,9 +394,9 @@ Description:	"A reference to a document, used to describe a document that is mad
 			StatusOrActive is type Status
 1..1		Status from http://hl7.org/fhir/ValueSet/document-reference-status
 0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
-1..1		Type should be from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
-0..1		Category could be from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
-0..1		SubjectOfRecord value is type PatientOrPractitionerOrGroupOrDevice
+1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
+0..1		Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
+0..1		SubjectOfRecord value is type ref(Patient)  // us core restriction 
 0..1		CreationDateTime
 1..1		StatementDateTime
 0..*		Author value is type PersonOrOrganizationOrDevice
@@ -423,7 +423,9 @@ Description:	"A reference to a document, used to describe a document that is mad
 	Element:	DocumentReferenced
 	Description:	"The document referenced."
 	1..1	Attachment
-	0..1	Type should be from http://hl7.org/fhir/ValueSet/formatcodes
+	1..1	Attachment.ContentType  //  constraint from us-core
+	1..1	Attachment.ResourceLocation   //  constraint from us-core
+	0..1	Type from http://hl7.org/fhir/ValueSet/formatcodes if covered // us-core extensible binding
 
 	Element:  RelatedDocument
 	Description:	"Documents related to this one."
