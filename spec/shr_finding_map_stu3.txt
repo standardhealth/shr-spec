@@ -6,7 +6,7 @@ Target:		FHIR_STU_3
 // do not map Observation to US Core Results -- Brett says that's meant for for lab observations
 Observation maps to Observation:
 	Identifier maps to identifier
-	Patient maps to subject
+	SubjectOfRecord maps to subject
 	Author maps to performer
 	Code maps to code
 	Method maps to method
@@ -17,10 +17,11 @@ Observation maps to Observation:
 	//(slice on = url; slice strategy = value)
 	BodySite.AnatomicalDirection maps to bodySite.extension
 	BodySite.CommentOrDescription maps to bodySite.extension
+	BodySite.ClockDirection maps to bodySite.extension
 	BodySite.Attachment maps to bodySite.extension
 	BodySite.DistanceFromLandmark maps to bodySite.extension
 	Device maps to device
-	CreationDateTime maps to issued
+	StatementDateTime maps to issued
 	ReferenceRange maps to referenceRange
 	ReferenceRange.Range.LowerBound maps to referenceRange.low
 	ReferenceRange.Range.UpperBound maps to referenceRange.high
@@ -54,9 +55,9 @@ LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us
 
 Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition:
 	Identifier maps to identifier
-	CreationDateTime maps to assertedDate  
+	StatementDateTime maps to assertedDate  
 	InformationSource maps to asserter  
-	Patient maps to subject
+	SubjectOfRecord maps to subject
 	Category maps to category
 	Identifier maps to identifier
 	Code maps to code
@@ -64,6 +65,7 @@ Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condit
 	BodySite.Laterality maps to bodySite.extension
 	BodySite.AnatomicalDirection maps to bodySite.extension
 	BodySite.CommentOrDescription maps to bodySite.extension
+	BodySite.ClockDirection maps to bodySite.extension
 	BodySite.Attachment maps to bodySite.extension
 	BodySite.DistanceFromLandmark maps to bodySite.extension
 	CareContext maps to context
@@ -78,12 +80,22 @@ Condition maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-condit
 	Evidence.Manifestation maps to evidence.code
 	Evidence.DomainResource maps to evidence.detail	
 
-/*
 DiagnosticReport maps to DiagnosticReport:
 	Identifier maps to identifier
-	RelatedReferral maps to basedOn
+	RelatedRequest maps to basedOn
 	Status maps to status
-	Patient maps to subject 
+	SubjectOfRecord maps to subject 
 	Code maps to code
 	CareContext maps to context
-	*/
+	RelevantTime maps to effective[x]
+	StatementDateTime maps to issued
+	Participation maps to performer
+	Participation.ParticipationType maps to performer.role
+	Participation.Participant maps to performer.actor
+	Specimen maps to specimen
+	Observation maps to result
+// ref(ImagingStudy) or imaging manifest
+	Media maps to image.link
+    Conclusion maps to conclusion
+	DiagnosisCode maps to codedDiagnosis
+	OriginalReport maps to presentedForm

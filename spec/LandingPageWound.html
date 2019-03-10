@@ -1,22 +1,11 @@
-<p>This is a "Full CIMI" version of a Skin and Wound Assessment FHIR Implementation Guide, based on CIMI based classes, and employing topic-context flattening.</p>
-<h1>The Skin and Wound Assessment Demonstration Project</h1>
-<p>&nbsp;The Clinical Information Modeling Initiative (CIMI) is focused on creating logical models of healthcare information, independent of implementation technologies and patterns, decoupling clinical content from periodic changes in implementation technology. This Implementation Guide (IG) is part of a demonstration project showing how different groups, with different tools, approach CIMI modeling. To expedite comparison, each group has implemented the same Skin and Wound Assessment domain.</p>
-<h1>Approach</h1>
-<p>There are many decisions involved with modeling a clinical domain with CIMI. The Skin and Wound Assessment is no exception.</p>
+<p>This a MITRE version of a Wound Assessment FHIR Implementation Guide, based on Standard Health Record (SHR) core classes.</p>
+<h1>Wound Assessment</h1>
+<p>The use case under consideration is that repeated assessments of the same wound can occur at different times during the clinical course of the wound. These multiple assessments trace a relationship to the same wound by means of a common wound identifier.</p>
 <h2>Dealing with Nested Observations</h2>
 <p>One of the key features of wound assessment is "nestedness", a hierarchical structure of containment with 1-to-many relationships at each level. One patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient can have a measured length. This presents a modeling challenge.</p>
-<p>Approaches to deal with the hierarchical nature of wound assessment include:</p>
-<ul>
-<li>A component approach, where sub-observations are inseparable parts of a parent observation, or</li>
-<li>A panel approach, where sub-observations are independent observations, united by a parent panel observation.</li>
-</ul>
-<p>Either approach is feasible, and each has pros and cons. A pure component approach keeps everything related to a single wound assessment together, but requires complicated mapping to FHIR, since FHIR observation components cannot have sub-components. A pure panel approach is also feasible, and nicely modular, but that approach leads to problems pairing up related observations, such as wound tunnel length and clock direction.</p>
 <p>In this implementation, we take a hybrid approach, using components wherever possible, and sub-observations where necessary. Panel-type sub-observations are required where the panel observations themselves have sub-observations or components.</p>
-<p>The other key to our approach representing each wound by a condition assertion (FindingSiteConditionPresent). A wound is an identifiable entity located at a particular body site that maintains its identity over a period of time. As such, a wound has properties indicative of a condition, including onset time and abatement time. Explicitly representing the wound allows multiple observations about the wound to refer back to the same wound.</p>
-<p>The use case under consideration is that repeated assessments of the same wound can occur at different times during the clinical course of the wound. These multiple assessments trace a relationship to the same wound by means of a common wound identifier.</p>
-<h2>Flattening the Topic-Context Pattern</h2>
-<p>Using the topic-context pattern introduces additional decisions and complexity in terms of orchestrating three class hierarchies that must come together to represent clinical statements. In consultation from Galen Mulrooney, a decision was made to flatten out the topic-context pattern similar to the approach being taken the the Federal Health Information Model (FHIM). The context hierarchy was combined with the clinical statement hierarchy, removing the separate StatementContext hierarchy. The statement topic class attributes were then directly added to the clinical statement/context classes, where previously they were integrated by reference. Work progressed much more smoothly after this change.</p>
-<p>The resulting class hierarchy (reference model) can be explored <a href="modeldoc/index.html">here</a>.</p>
+<p>The other key to our approach representing each wound by a condition. A wound is an identifiable entity located at a particular body site that maintains its identity over a period of time. As such, a wound has properties indicative of a condition, including onset time and abatement time. Explicitly representing the wound allows multiple observations about the wound to refer back to the same wound.</p>
+
 <h3>Credits:</h3>
 <p>Domain content was provided by Susan Matney (Intermountain Healthcare). Help, guidance, and wisdom was generously provided by all members of the CIMI Work Group especially the co-chairs, Dr. Stan Huff, Claude Nanjo, Galen Mulrooney, and Richard Esmond.</p>
 <p>This IG was authored by Dr. Mark Kramer using the <a href="https://github.com/standardhealth/shr-cli/wiki">Clinical Information Modeling and Profiling Language (CIMPL),</a> a free, open source toolchain from <a href="https://www.mitre.org/">MITRE Corporation</a>.</p>

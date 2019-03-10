@@ -80,6 +80,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
+1..1			SubjectOfRecord value is type PatientOrGroupOrDeviceOrLocation
 				Author value is type PersonOrOrganization 
 				InformationSource value is type PersonOrOrganization
 				CareContext value is type ref(Encounter)
@@ -91,8 +92,8 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Value:			dateTime or TimePeriod 
 
 		Element:		SubjectOfInformation
-		Description:	"The entity this condition or observation relates to, for example, a related person. The SubjectOfInformation is only required if the person or thing observed is different than the patient. SubjectOfInformation should not be an anatomical location. Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition)."
-		Value:			ref(DomainResource) or CodeableConcept // or string or Identifier 
+		Description:	"The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)"
+		Value:			ref(DomainResource) or CodeableConcept
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -101,8 +102,9 @@ For an Observation, the Code describes the aspect or property of the subject bei
 
 		Element:		PanelMembers
 		Concept:		TBD
-		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations. 
-			Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations.
+		
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
 		Element:		Components
@@ -174,7 +176,7 @@ Based on:		Observation
 Description:	"A coded finding based on a specimen collected from a patient."
 				Code from http://hl7.org/fhir/ValueSet/observation-codes if covered
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
-1..1			Patient
+1..1			SubjectOfRecord
 0..1			Specimen
 0..0			BodySite  // BodySite is determined indirectly from Specimen.CollectionSite
 				Category is OBSCAT#laboratory
@@ -221,6 +223,7 @@ Description:	"A panel that does not have an overall value that summarizes the en
 Element:		SocialHistoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"A simplified observation for social histories."
+1..1			SubjectOfRecord value is type PatientOnly
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
 0..0			BodySite
@@ -240,7 +243,7 @@ Description:		"A condition that is or may be present in a subject. 'Condition' i
 SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 				InformationSource value is type PatientOrPractitionerOrRelatedPerson
-1..1			Patient
+1..1			SubjectOfRecord value is type ref(Patient)   // restricted in DSTU 2 (from Patient or Group)
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
 1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
@@ -333,7 +336,7 @@ SHR Condition uses the SHR BodySite structure that includes not only a code, but
 
 
 
-EntryElement:	BodyStructurePresent
+EntryElement:	BodyStructure
 Based on:		Condition
 Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodySiteCode is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and location (corresponding to BodySite.BodySiteCode. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
 				Code from BodyStructureVS if covered
@@ -345,24 +348,45 @@ Based on:		Condition
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
 				Code from CongenitalAbnormalitiesVS if covered
 
-/*
+
 EntryElement:	DiagnosticReport
 Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObservation
-0..*			RelatedRequest
-				Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
+0..*			RelatedRequest value is type ReferralOrProcedureOrMedicationRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
+1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
 0..1			ServiceCategory	
+0..1			SubjectOfRecord value is type PatientOrGroupOrDeviceOrLocation
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
-*/
+0..1			CareContext
+0..1			RelevantTime
+0..1			StatementDateTime
+0..*			Participation
+				Participation.Participant value is type PractitionerOrOrganization
+0..0			Participation.ParticipationPeriod
+0..0			Participation.OnBehalfOf
+0..*			ref(Specimen)
+0..*			ref(Observation)  // Panel members?
+//0..*			ref(ImagingStudy)
+0..*			ref(Media)
+0..1			Conclusion
+0..*			DiagnosisCode
+0..*			OriginalReport
+
+    Element:  ReferralOrProcedureOrMedicationRequest
+    Based on:   ActionRequested
+    Value:  ref(ReferralRequest) or ref(ProcedureRequest) or ref(MedicationRequest) // CarePlan not yet implemented
+
+	Element:		Conclusion
+	Description:	"Concise and clinically contextualized impression / summary of the diagnostic report."
+	Value:			string
+
+	Element:		OriginalReport
+	Description:	"Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
+	Value:			ref(Attachment)
 
 
 
-// TODO: ClinicalNote is not modeled as an Observation. See Argo profiles.
 EntryElement:	ClinicalNote
-Based on:		SimpleNonLaboratoryObservation
-Concept:		MTH#C0747978 "Progress Note"
-Description:	"An entry concerning a patient where the result is a narrative text. While all findings have a CommentOrDescription field, the clinical note should put the narrative in the DataValue field, since this is the first place to look for a result that is a narrative."
-				Code is MTH#C0747978 "Progress Note"
-				DataValue value is type string
-0..0			ReferenceRange
-1..1			Patient
-//1..1			CommentOrDescription // put into DataValue
+Based on:		DocumentReference
+Description:	"An entry concerning a patient where the result is a narrative text."
+1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
+1..1		Category from http://fhir.org/guides/argonaut-clinicalnotes/ValueSet/documentreference-category

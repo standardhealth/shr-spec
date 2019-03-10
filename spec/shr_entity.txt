@@ -22,7 +22,7 @@ Description:	"Root class for entities such as people, organizations, and devices
 EntryElement:	Patient
 Based on:		Role
 Concept: 		MTH#C1299487
-Description:	"A person in the role of a patient, the subject of record and owner of the health record the information belongs to. Although the term 'patient' is used throughout, 'person of record' or 'subject' could be more descriptive in some situations. Sometimes, the patient is not the subject of information might not be the patient, but a related person or even a condition of the patient, such as a wound. This information is recorded under the patient (the person of record), but the SubjectOfInformation (aka SubjectOfInformation) is the related person or condition.
+Description:	"A person in the role of a patient. Sometimes, the patient is not the subject of information in a clinical statement where the Patient is the SubjectOfRecord.
 
 SHR follows Argonaut and makes the value set binding on marital status required. SHR also adds optional extensions on communication ability to more fully characterize language skills.
 MaritalStatus has a required binding in Argonaut, but an extensible binding in US-Core. To be feasible under both DSTU2 Argonaut and STU3 US-Core, the required binding strength is adopted."
@@ -183,7 +183,7 @@ Description:	"Services and space and equipment provided for a particular purpose
 
 	Element:		ManagingOrganization
 	Concept:		MTH#C0677351
-	Description:	"The organization that manages the operation of an activity, facility, or service provision."
+	Description:	"The organization that manages an activity, facility, document, or service provision."
 	Value:			ref(Organization)
 
 
@@ -622,25 +622,65 @@ Description:	"Direct container of specimen (slide, etc.)"
 // BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollectionAction breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
 
 		Element:		Capacity
-		Concept:		TBD
 		Description:	"Container volume or size."
 		Value:			SimpleQuantity
 
 		Element:		SpecimenQuantity
-		Concept:		TBD
 		Description:	"Quantity of specimen within container."
 		Value:			SimpleQuantity
 
 		Element:		Additive
-		Concept:		TBD
 		Description:	"Additive associated with container."
 		Value:			CodeableConcept or ref(Substance)
 
 		Element:		SequenceNumber
-		Concept:		TBD
 		Description:	"The sequence number for this specimen in a collection of specimens."
 		Value:			CodeableConcept
 		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
 
 
+EntryElement:   Media
+Based on:		Entity
+Description: "A photo, video, or audio recording acquired or used in healthcare. The actual content may be inline or provided by direct reference."
+0..*	RelatedRequest value is type ref(ProcedureRequest)
+1..1	Type from http://hl7.org/fhir/ValueSet/digital-media-type
+0..1	Subtype 
+0..1	View
+0..1	SubjectOfRecord value is type PatientOrPractitionerOrGroupOrDeviceOrSpecimen
+0..1	CareContext
+0..1	RelevantTime  // like observation
+0..1	ref(Practitioner)
+0..*	ReasonCode could be from http://hl7.org/fhir/ValueSet/procedure-reason
+0..1	BodySite
+0..1	ref(Device)
+0..1	PixelHeight
+0..1	PixelWidth
+0..1	Frames
+0..1	NumberOfSecondsDuration  // this is not how duration should be captured. See Duration
+1..1	Attachment
+0..*	Annotation
 
+
+	Element:	Subtype
+	Description:	"A further refinement of type."
+	Value:		CodeableConcept
+
+	Element:	View
+	Description:	"The name of the imaging view e.g. Lateral or Antero-posterior (AP)."
+	Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/media-view
+
+	Element:	PixelHeight
+	Description:	"Height of the image in pixels (photo/video)"
+	Value:		positiveInt
+
+	Element:	PixelWidth
+	Description:	"Width of the image in pixels (photo/video)"
+	Value:		positiveInt
+
+	Element:	Frames
+	Description:	"Number of frames if > 1 (photo)"
+	Value:	positiveInt
+
+	Element:	NumberOfSecondsDuration
+	Description: "Length in seconds (rounded to nearest whole second)"
+	Value:		unsignedInt
