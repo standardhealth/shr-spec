@@ -16,7 +16,7 @@ Description:	"A procedure that has been performed."
 0..1			ReasonCode
 0..1			ReasonReference
 0..0			Method	// Procedure doesn't have Method		
-//0..*			InputFinding
+0..*			TreatmentIntent
 				Participation.OnBehalfOf value is type ref(Organization)
 				// TODO: StatusReason
 				// Status from http://hl7.org/fhir/ValueSet/event-status
@@ -28,17 +28,14 @@ Description:	"A procedure that has been performed."
 0..1			Outcome
 0..*			MaterialUsed
 
-		Element:		MaterialUsed
-		Description:	"Items used during procedure"
-		Value:			ref(Device) or ref(Medication) or ref(Substance)
+	Element:		MaterialUsed
+	Description:	"Items used during procedure"
+	Value:			ref(Device) or ref(Medication) or ref(Substance)
 
-		Element:		InputFinding
-		Description:	"Patient findings expected for the performance of the specified procedure. For instance, an x-ray of a fracture prior to a surgical procedure for a bone fracture."
-		Value:			ref(Observation)
-
-		Element:		OutputFinding
-		Description:	"Patient findings documented during the performance of the procedure."
-		Value:			ref(ConditionOrObservation)
+    Element:        TreatmentIntent
+    Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
+    Description:	"The intended result from a given treatment.  Examples include curative, palliative, and supportive."
+    Value:          CodeableConcept from TreatmentIntentVS
 
 
 EntryElement:	ProcedureRequest
@@ -110,11 +107,38 @@ Description:	"A surgical action, independent of action context."
 		Value:			CodeableConcept
 
 
+EntryElement:   RadiationProcedure
+Based on:       Procedure
+Description:    "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
+    	    	Code from RadiationProcedureVS 
+0..1    		RadiationDosePerFraction
+0..1    		RadiationFractionsDelivered
+0..1    		TotalRadiationDoseDelivered
+
+Element:        RadiationDosePerFraction
+Concept:        TBD#TBD  // TODO: Needs new LOINC and/or SNOMED codes
+Description:    "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
+Value:          Ratio
+
+Element:        RadiationFractionsDelivered
+Concept:        LNC#21959-2 "Number of radiation treatment"
+Description:    "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
+Value:          Quantity with units UCUM#1
+
+Element:        TotalRadiationDoseDelivered
+Concept:        SCT#445461008 "Total radiation dose delivered (observable entity)"
+Description:    "The total amount of radiation dose delivered for the course of therapy. (source: SNOMED, ASTRO)"
+Value:          Quantity with units UCUM#Gy
+
 
 EntryElement:   DiagnosticImaging
 Based on:       ImagingProcedure
 Description:    "Diagnostic imaging procedure performed."
-Concept:        SCT#363679005 "Imaging (procedure)"  
-0..0            SubjectOfInformation
                 Code from DiagnosticImagingVS
- 
+
+/*
+EntryElement:	SubstanceAbuseTreatment
+Based on:		ProcedurePerformed
+Description:	"The treatment program used to address a substance abuse problem."
+				Code from SubstanceAbuseTreatmentTypeVS
+*/
