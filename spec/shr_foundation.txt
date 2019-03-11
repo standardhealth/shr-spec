@@ -96,7 +96,6 @@ Description:	"This abstract class provides properties and behaviors common to en
 0..1			InformationSource
 0..1			Recorder
 
-
 	Element: 		SubjectOfRecord
 	Description:	"The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. The SubjectOfRecord can also be a location, group, or other entity that statements can pertain to. For example, observations concerning a hospital floor would have a Location as the SubjectOfRecord. 
 	
@@ -110,21 +109,20 @@ Description:	"This abstract class provides properties and behaviors common to en
 
 	Element:		Author
 	Description:	"The actor who created the item and it responsible for the content (regardless of the information source or who recorded it). If only the author is given, it is assumed the author is the information source and the recorder."
-	Value:			ref(EntityOrRole)
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or string
 	
 	Element: 		InformationSource
 	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
-	Value:			ref(EntityOrRole)
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 
 	Element:		Recorder
-	Concept:		TBD
 	Description:	"The recorder of the information, if other than the author. For example, the nurse taking a list of medications reported by the patient."
-	Value:			ref(EntityOrRole)
+	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson)
 
 	Element:		Participant
 	Concept:		MTH#C1550369
 	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. A code can be used to indicate a generic type of participant, e.g., mother, EMT, or social worker."
-	Value:			ref(EntityOrRole)
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or ref(Group) or ref(Location)
 
 
 EntryElement:	Composition
@@ -141,82 +139,7 @@ Description:	"A composition represents a set of Entries sharing common provenanc
     0..*            DomainResource
 	0..*			Section
 
-// Combined participant roles
 
-		Element:		PatientOrPractitioner
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient or Practitioner. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner)
-
-		Element:		PatientOrPractitionerOrRelatedPerson
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient, Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping AdverseEvent.SignedBy to FHIR AdverseEvent."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
-
-		Element:		PractitionerOrRelatedPerson
-		Based on:		EntityOrRole
-		Description:	"A choice of Practitioner and RelatedPerson. Needed for mapping to FHIR, for example, mapping EncounterPerformed.Participant to FHIR Encounter.participant.individual"
-		Value:			ref(Practitioner) or ref(RelatedPerson)
-
-		Element:		PersonOrOrganization
-		Based on:		EntityOrRole
-		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
-
-		Element:		PersonOrDevice
-		Based on:		EntityOrRole
-		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device)
-
-		Element:		PersonOrDeviceOrLocation
-		Based on:		EntityOrRole
-		Description:	"A choice of Person (in any role) or Organization. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device) or ref(Location)
-
-		Element:		PersonOrOrganizationOrDevice
-		Based on:		EntityOrRole
-		Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
-		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
-
-		Element:		PractitionerOrDevice
-		Based on:		EntityOrRole
-		Description:	"A choice of Practitioner or Device. Needed for mapping to FHIR."
-		Value:			ref(Practitioner) or ref(Device)
-
-		Element:		PractitionerOrOrganization
-		Based on:		EntityOrRole
-		Description:	"A choice of Practitioner or Organization. Needed for mapping to FHIR."
-		Value:			ref(Practitioner) or ref(Organization)
-
-		Element:		PatientOrPractitionerOrGroupOrDevice
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient, Practitioner, Group or Device. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device)
-
-		Element:		PatientOrGroupOrDeviceOrLocation
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient, Group, Device, or Location. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Location)
-
-		Element:		PatientOrResearchSubjectOrMedicationOrDevice
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient, ResearchSubject, Medication, or Device. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(ResearchSubject) or ref(Medication) or ref(Device)
-
-		Element:		PatientOrGroup
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient or Group. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Group)
-
-		Element:		PatientOrPractitionerOrGroupOrDeviceOrSpecimen
-		Based on:		EntityOrRole
-		Description:	"A choice of Patient, Practitioner, Group, Device or Specimen. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device) or ref(Specimen)
-
-		Element:		PatientOnly
-		Based on:		PatientOrGroupOrDeviceOrLocation
-		Description:	"A choice of Patient or nothing. Used to further restrict the SubjectOfRecord of Observations. This is a hack!"
-		Value:			ref(Patient)
 /*
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
@@ -385,10 +308,10 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
 1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
 0..1		Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
-0..1		SubjectOfRecord value is type ref(Patient)  // us core restriction 
+0..1		SubjectOfRecord is type PatientSOR // us core restriction 
 0..1		CreationDateTime
 1..1		StatementDateTime
-0..*		Author value is type ref(PersonOrOrganizationOrDevice)
+0..*		Author is type PersonOrOrganizationOrDeviceAuthor
 0..1		Authenticator
 0..1		ManagingOrganization
 1..*		DocumentReferenced

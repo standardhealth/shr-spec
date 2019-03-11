@@ -82,7 +82,7 @@ Description:    "The status of the cancer, in terms of whether it is stable, wor
 0..0            DataAbsentReason  // in the code set
                 //Code is SCT#246453008 "Course of illness (attribute)"
                 Code is LNC#88040-1 "Response to cancer treatment"
-				SubjectOfRecord value is type ref(PatientOnly)
+				SubjectOfRecord is type PatientSOR
                 SubjectOfInformation value is type ref(CancerCondition)
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
 0..0		    BodySite
@@ -145,7 +145,7 @@ Description:    "The presence of an abnormal mass of tissue (neoplasm) that resu
 EntryElement: 	TumorDimensions
 Based on:		CodedLaboratoryObservation
 0..0			DataValue
-	            SubjectOfInformation value is type ref(Tumor)
+	            SubjectOfInformation is type TumorSOI
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
 				Components.ObservationComponent
@@ -199,6 +199,11 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 						Code is TBD#TBD
 		                DataValue from TumorMarginDescriptionVS
 
+Element:        TumorSOI
+Based on:		SubjectOfInformation
+Description:	"A tumor as SubjectOfInformation."
+Value:			ref(Tumor)
+
 /*
 Element:		TumorCellularity
 Concept:		MTH#C4055283
@@ -214,5 +219,3 @@ Description:	"The percentage of the cancer that is in situ, as opposed to invadi
 			    DataValue.Quantity.Units is UCUM#%
 
 */
-
-
