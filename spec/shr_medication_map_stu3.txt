@@ -1,0 +1,75 @@
+Grammar:	Map 5.1
+Namespace:  shr.core
+Target:		FHIR_STU_3
+
+Dosage maps to Dosage:
+	DoseAmount maps to dose[x]
+	TimingOfDoses maps to timing
+	AsNeededIndicator maps to asNeeded[x]
+	DosageInstructionsText maps to text
+	AdditionalDosageInstruction maps to additionalInstruction
+	RouteIntoBody maps to route
+	DosageMethod maps to method
+	DosageBodySite.BodySiteCode maps to site
+	MaximumDosePerTimePeriod maps to maxDosePerPeriod
+
+MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+	Identifier maps to identifier
+	InformationSource maps to informationSource
+	StatementDateTime maps to dateAsserted
+	SubjectOfRecord maps to subject
+	constrain reasonNotTaken to 0..0
+	constrain dosage to 0..1
+	Dosage maps to dosage
+	Medication maps to medication[x]
+	Category maps to category
+	fix taken to #y
+	ReasonCode maps to reasonCode
+	OccurrenceTimeOrPeriod maps to effective[x]
+	Status maps to status
+	CareContext maps to context
+	RelatedRequest maps to basedOn
+
+MedicationAdministration maps to MedicationAdministration:
+	Identifier maps to identifier
+	SubjectOfRecord maps to subject
+	CareContext maps to context
+	RelatedRequest maps to prescription
+	constrain notGiven to 0..0
+	constrain reasonNotGiven to 0..0
+	Dosage maps to dosage
+	Medication maps to medication[x]
+	Category maps to category
+	ReasonCode maps to reasonCode
+	OccurrenceTimeOrPeriod maps to effective[x]
+	Status maps to status
+	Participation maps to performer
+	Participation.Participant maps to performer.actor
+//	Participation.ParticipationType maps to performer.role  (no role in med administration!)
+	Participation.OnBehalfOf maps to performer.onBehalfOf
+
+
+MedicationRequest maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	SubjectOfRecord maps to subject
+	CareContext maps to context
+	StatementDateTime maps to authoredOn
+	Identifier maps to identifier
+	Author maps to requester
+	RequestIntent maps to intent
+	Medication maps to medication[x]
+	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	QuantityPerDispense maps to dispenseRequest.quantity
+	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	constrain dosageInstruction to 0..1
+	Dosage maps to dosageInstruction
+	ReasonCode maps to reasonCode
+	Status maps to status
+	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
+	PriorityCode maps to priority
+	Annotation maps to note
+	Recipient maps to dispenseRequest.performer
+	constrain note to 0..1
+	SubstitutionAllowed maps to substitution.allowed
+	SubstitutionReason maps to substitution.reason
+	Type maps to category
+	

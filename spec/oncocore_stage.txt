@@ -1,0 +1,199 @@
+Grammar:		DataElement 5.0
+Namespace:		oncocore
+Description:	"SHR implementation of ASCO requirements."
+Uses:  			shr.core
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+
+
+Element:        CancerStageTiming 
+Concept:        SCT#260869008 "Timing of stage"
+Description:	"Indicates when staging was done, in terms of treatment landmarks."
+Value:          CodeableConcept from CancerStageTimingVS if covered
+
+Element:        CancerStageSuffix
+Concept:	    TBD#TBD	    // TODO: Needs a new LOINC or SNOMED code + value set terms.  assign a local value set until we get something assigned.
+Description: "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
+Value:          CodeableConcept //from CancerStageSuffixVS  VS only includes terms applicable to BrCa.
+
+Element:        CancerStagingSystem
+Based on:       Method
+Concept:        SCT#260713006 "Method of Staging (attribute)"
+Value:          CodeableConcept from CancerStagingSystemVS if covered
+
+Abstract Element:  CancerStagePanel
+Based on:       HeadlessPanel
+Description:    "A panel that contains cancer staging information. This abstract class is the parent of panels containing information related to clinical and pathologic staging."
+0..1            CancerStageTiming
+0..1            Method is type CancerStagingSystem
+                SubjectOfInformation value is type ref(CancerCondition)
+
+Abstract Element:  CancerStagePanelMember
+Based on:       CodedNonLaboratoryObservation
+Description:    "Abstract parent class for members of cancer staging panels. Cancer panel members must include a timing element and staging system, and focus on a cancer disorder. Specific realizations will have value sets specific to certain staging systems."
+                SubjectOfInformation value is type ref(CancerCondition)
+1..1            CancerStageTiming 
+0..1            Method is type CancerStagingSystem
+0..0		BodySite
+0..0            ReferenceRange
+0..0            Components
+0..0            PanelMembers
+0..0            Device
+
+Abstract Element:   TNMStagePanelMember
+Based on:       CancerStagePanelMember
+Description:    "Abstract partent class for TNM staging panel members. Includes a stage suffix and TNM staging system."
+0..1            CancerStageSuffix
+                CancerStagingSystem from TNMTumorStagingSystemVS if covered
+
+
+EntryElement:   TNMClinicalPrognosticStagePanel
+Based on:       CancerStagePanel
+Concept:        LNC#75620-5 "TNM clinical staging before treatment panel Cancer"
+Description:    "A panel of TNM staging classifications, based on information obtained prior to neoadjuvant treatment and surgery, e.g. based on evidence such as physical examination, imaging, and/or biopsy."
+                Code is LNC#75620-5 "TNM clinical staging before treatment panel Cancer"
+                CancerStageTiming is SCT#385349001  "Clinical stage (observable entity)"   // timing is implicit in LOINC code, so this attribute could potentially could be eliminated
+                Method from TNMTumorStagingSystemVS if covered
+                PanelMembers.Observation
+                    includes  0..1 TNMClinicalStageGroup
+                    includes  0..1 TNMClinicalPrimaryTumorClassification
+                    includes  0..1 TNMClinicalRegionalNodesClassification
+                    includes  0..1 TNMClinicalDistantMetastasesClassification
+
+        EntryElement:   TNMClinicalStageGroup
+        Based on:       TNMStagePanelMember
+        Concept:        LNC#21908-9 "Stage group.clinical Cancer"
+        Description:    "The overall stage of the cancer, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies. (adapted from NCI Dictionary of Cancer Terms)."
+                        Code is LNC#21908-9 "Stage group.clinical Cancer"
+                        DataValue from http://loinc.org/vs/LL240-3 
+                        CancerStageTiming is SCT#385349001   "Clinical stage (observable entity)"
+                        0..0 CancerStageSuffix
+
+        EntryElement:   TNMClinicalPrimaryTumorClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21905-5 "Primary tumor.clinical [Class] Cancer"
+        Description:    "Classification of the primary tumor, based on its size and extent, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
+                        Code is LNC#21905-5 "Primary tumor.clinical [Class] Cancer"
+                        DataValue from http://loinc.org/vs/LL237-9 // normative answer list for LNC#21905-5
+                        CancerStageTiming is SCT#385349001 "Clinical stage (observable entity)"
+
+        EntryElement: 	TNMClinicalRegionalNodesClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
+        Description:    "Classification of the presence or absence of metastases in regional lymph nodes, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies. (adapted from NCI Dictionary of Cancer Terms)"
+                        Code is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
+                        DataValue from http://loinc.org/vs/LL238-7 // normative answer list for LNC#21906-3
+                        CancerStageTiming is SCT#385349001 "Clinical stage (observable entity)"
+
+        EntryElement:   TNMClinicalDistantMetastasesClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
+        Description:    "Classification of the presence or absense of metastases in remote anatomical locations, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies. (adapted from NCI Dictionary of Cancer Terms)" 
+                        Code is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
+                        DataValue from http://loinc.org/vs/LL239-5 // normative answer list for LNC#21907-1
+                        CancerStageTiming is SCT#385349001 "Clinical stage (observable entity)"
+
+
+EntryElement:   TNMPathologicPrognosticStagePanel
+Based on:       CancerStagePanel
+Concept:        LNC#75621-3 "TNM pathologic staging after surgery panel Cancer"
+Description:    "A panel of staging information that is based on examination of tissue samples removed during surgery, in addition to physical examination and imaging and potentially, other prognostic factors."
+                Code is LNC#75621-3 "TNM pathologic staging after surgery panel Cancer"
+0..1            Method from TNMTumorStagingSystemVS if covered
+                CancerStageTiming is SCT#405978005   "Pathologic stage (observable entity)"      
+                PanelMembers.Observation
+                    includes  0..1 TNMPathologicStageGroup
+// TNM are not part of MCODE, but may be useful. TODO: How to we indicate that stage group is in MCODE, and T, N, M are not?
+                    includes  0..1 TNMPathologicPrimaryTumorClassification
+                    includes  0..1 TNMPathologicRegionalNodesClassification
+                    includes  0..1 TNMPathologicDistantMetastasesClassification
+
+        EntryElement:   TNMPathologicStageGroup
+        Based on:       TNMStagePanelMember
+        Concept:        LNC#21902-2  "Stage group.pathology Cancer"	 
+        Description:    "The overall stage of the cancer, determined through pathologic analysis of a tumor specimen."
+                        Code is LNC#21902-2  "Stage group.pathology Cancer"	
+                        DataValue from http://loinc.org/vs/LL234-6 
+                        CancerStageTiming is SCT#405978005   "Pathologic stage (observable entity)" 
+                        0..0 CancerStageSuffix
+
+        EntryElement:   TNMPathologicPrimaryTumorClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21899-0 "Primary tumor.pathology Cancer"
+        Description:    "Classification of the primary tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
+                        Code is LNC#21899-0 "Primary tumor.pathology Cancer"
+                        DataValue from http://loinc.org/vs/LL232-0 
+                        CancerStageTiming is SCT#405978005 "Pathologic stage (observable entity)" 
+
+        EntryElement: 	TNMPathologicRegionalNodesClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
+        Description:    "Classification of the presence or absence of metastases in regional lymph nodes, assessed through pathologic analysis of a specimen."
+                        Code is LNC#21900-6 "Regional lymph nodes.pathology [Class] Cancer"
+                        DataValue from http://loinc.org/vs/LL3136-0 
+                        CancerStageTiming is SCT#405978005 "Pathologic stage (observable entity)" 
+
+        EntryElement:   TNMPathologicDistantMetastasesClassification
+        Based on:		TNMStagePanelMember
+        Concept:		LNC#21901-4 "Distant metastases.pathology [Class] Cancer"
+        Description:    "Classification of the presence or absense of metastases in remote anatomical locations, assessed through pathologic analysis of a specimen."
+                        Code is LNC#21901-4 "Distant metastases.pathology [Class] Cancer"
+                        DataValue from http://loinc.org/vs/LL3137-8 
+                        CancerStageTiming is SCT#405978005 "Pathologic stage (observable entity)"
+
+
+/* Possible generalization of BrCa classes, gets pretty cumbersome because the additional elements are under each TNM category, not directly on the panel itself.
+EntryElement:   TNMClinicalPrognosticStagePanelWithEvidence
+Based on:       TNMClinicalPrimaryTumorClassification
+// Concept inherited
+Description:    "A panel of TNM staging classifications, based on information obtained prior to neoadjuvant treatment and surgery, e.g. based on evidence such as physical examination, imaging, and/or biopsy. The panel also includes supporting findings critical to the assignment of the T, N and M clinical classifications, such as the size of the primary tumor for the T category."
+                PanelMembers.Observation.TNMClinicalPrimaryTumorClassification is type TNMClinicalPrimaryTumorClassificationWithEvidence
+                PanelMembers.Observation.TNMClinicalRegionalNodesClassification is type TNMClinicalRegionalNodesClassificationWithEvidence
+
+
+EntryElement:   TNMClinicalPrimaryTumorClassificationWithEvidence
+Based on:       TNMClinicalPrimaryTumorClassification
+// Concept inherited
+Description:    "Classification of the primary tumor, based on its size and extent, assessed prior to surgery. Also includes supporting evidence used to derive the pathologic T classification."
+                PanelMembers.Observation
+                    includes 0..1 TumorDimensions //TODO: may need to distinguish dimensions based on pre-surgical vs. surgical findings outside of staging
+
+
+EntryElement:   TNMClinicalRegionalNodesClassificationWithEvidence
+Based on:       TNMClinicalRegionalNodesClassification
+// Concept inherited
+Description:   "Classification of the presence or absence of metastases in regional lymph nodes, assessed using tests that are done before surgery. Also includes supporting evidence used to derive the N classification."
+                PanelMembers.Observation
+                    // includes 0..* ClinicalLymphNodeInvolvement TODO: Generalize BreastClinicalNodeInvolvement to ClinicalNodeInvolvement
+
+
+EntryElement:   TNMPathologicPrognosticStagePanelWithEvidence
+Based on:       TNMPathologicPrognosticStagePanel
+// Concept inherited
+Description:    "A panel of staging information that is based on examination of tissue samples removed during surgery, in addition to physical examination and imaging and potentially, other prognostic factors. The panel also includes supporting findings critical to the assignment of the T, N and M pathologic classifications, such as the size of the primary tumor for the T category."
+                PanelMembers.Observation.TNMPathologicPrimaryTumorClassification is type TNMPathologicPrimaryTumorClassificationWithEvidence
+                PanelMembers.Observation.TNMPathologicRegionalNodesClassification is type TNMPathologicRegionalNodesClassificationWithEvidence
+
+
+EntryElement:   TNMPathologicPrimaryTumorClassificationWithEvidence
+Based on:       TNMPathologicPrimaryTumorClassification
+// Concept inherited
+Description:    "Classification of the primary tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen. Also includes supporting evidence used to derive the pathologic T classification."
+                PanelMembers.Observation
+                    includes 0..1 TumorDimensions //TODO: may need to distinguish dimensions based on pre-surgical vs. surgical findings outside of staging
+
+
+EntryElement:   TNMPathologicRegionalNodesClassificationWithEvidence
+Based on:       TNMPathologicRegionalNodesClassificationWithEvidence
+// Concept inherited
+Description:    "Classification of the presence or absence of metastases in regional lymph nodes, assessed through pathologic analysis of a specimen. Also includes supporting evidence used to derive the pathologic N classification."
+                PanelMembers.Observation
+                    // includes 0..* PathologicLymphNodeInvolvement TODO: Generalize BreastPathologicNodeInvolvement to PathologicNodeInvolvement
+*/
+
+//TODO: EntryElement:   TNMPostNeoadjuvantTherapyStagePanel
+//TODO: EntryElement:   TNMRecurrenceStagePanel
+//TODO: EntryElement:   TNMAutopsyStagePanel

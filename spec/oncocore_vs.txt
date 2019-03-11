@@ -1,0 +1,102 @@
+Grammar:	ValueSet 5.0
+Namespace:	oncocore
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
+
+ValueSet:       CancerDisorderVS
+Description:    "Types of malignant neoplastic disease."
+Includes codes descending from SCT#363346000 "Malignant neoplastic disease (disorder)"
+
+ValueSet:   CancerHistologicTypeVS
+Description: "Neoplasm (morphologic abnormality)"
+Includes codes descending from SCT#108369006 "Neoplasm (morphologic abnormality)"
+
+ValueSet:		MorphologyBehaviorVS
+Description:	"The morphologic behavior of the cancer. These are the suffix to the ICD-O-3 histologic type codes. Codes are presented as local codes because they are portions of the full code to be post-coordinated, and not full ICD-O-3 codes."
+#0				"Benign"
+#1				"Uncertain whether benign or malignant"
+#2				"In situ"
+#3				"Malignant, primary site"
+#6				"Malignant, metastatic site"
+#9				"Malignant, uncertain whether primary or metastatic site"
+
+
+ValueSet:   CancerDiseaseStatusVS   
+Description: "Terms for describing the status of disease in cancer. Analogous values to LOINC list LL4721-8."
+SCT#103338009 "In full remission (qualifier value)"
+SCT#385633008 "Improving (qualifier value)"
+SCT#58158008  "Stable (qualifier value)"
+SCT#230993007  "Worsening (qualifier value)"
+SCT#82334004  "Indeterminate (qualifier value)"
+
+/*
+ValueSet:  LesionsEvaluatedVS
+Description:  "Which lesion or lesions were evaluated to determine the disease status."
+MTH#C0677930 "Primary tumor"
+#target      "Target lesions"
+SCT#14799000 "Neoplasm, metastatic (morphologic abnormality)"
+SCT#10003008  "Non-specific"
+*/
+
+ValueSet:   MetastasisBodySiteVS
+Description:  "Site of distant metastasis, following LNC#21920-4" 
+//SCT#260413007 "None (qualifier value)"
+SCT#15425007  "Peritoneum (serous membrane) structure (body structure)"
+SCT#39607008  "Lung structure (body structure)"
+SCT#3120008  "Pleural membrane structure (body structure)"
+SCT#10200004  "Liver structure (body structure)"
+SCT#272673000  "Bone structure (body structure)"
+SCT#21483005  "Structure of central nervous system (body structure)"
+SCT#39937001 "Skin structure (body structure)"
+SCT#59441001   "Structure of lymph node (body structure)"
+SCT#10003008  "Non-specific (qualifier value)"
+
+
+ValueSet:		TumorMarginDescriptionVS
+SCT#129738007	"Lesion with circumscribed margin"
+SCT#129741003	"Lesion with indistinct margin"					
+SCT#129739004	"Lesion with microlobulated margin"
+SCT#129740002	"Lesion with obscured margin"
+SCT#129742005	"Lesion with spiculated margin"
+// TODO: Add codes for additional tumor margin descriptions (from Penrad)
+// Angular margin, Smooth margin, Intraductal extension, Irregular margin, Lobulated margin, Macrolobulated margin, Non circumscribed margin
+
+
+ValueSet:		  CancerDiseaseStatusEvidenceTypeVS
+Description:  "The type of evidence backing up the clinical determination of cancer progression."
+//SCT codes are children of SCT#386053000 "Evaluation procedure (procedure)"
+SCT#363679005 "Imaging (procedure)"
+SCT#252416005 "Histopathology test (procedure)"
+SCT#711015009 "Assessment of symptom control (procedure)"
+SCT#5880005   "Physical examination procedure (procedure)"
+MTH#C0005516	"Biological markers"
+
+ValueSet:		CancerStageTimingVS
+//TODO: the value set is missing codes for recurrence and anatomical staging.
+//TODO: need new terms for post-therapeutic clinical and pathological staging.
+Description:	"When staging was done, relative to treatment events (qualifier)."
+SCT#385349001   "Clinical stage (observable entity)"
+//#cli		    "Clinical stage: Staging performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
+SCT#405978005   "Pathologic stage (observable entity)"    //TODO_discussion: using SCT instead of local codes, we lose the definition. Also strange to use an observable in a value set.
+//#path         "Pathologic stage: Staging performed based on examination of tissue samples removed during surgery, in addition to physical examination and imaging."
+#postther_cli   "Post-therapeutic (post-neoadjuvant) clinical staging based on clinical examination after the first treatment with systemic drugs or radiation, when no surgery has been performed."
+#postther_path  "Post-therapeutic (post-neoadjuvant) pathologic staging, based  on tissue samples removed during surgery after the first treatment with systemic drugs or radiation."
+
+ValueSet:   CancerStagingSystemVS   // replaces local value set in BrCa spec
+Description: "The system used to identify cancer/tumor stage"
+Includes codes descending from SCT#254292007 "Tumor staging (tumor staging)" //TODO: consider staging systems in NCI MTH and determine if there are gaps.
+
+ValueSet:   TNMTumorStagingSystemVS    // TODO: Need to include version of staging system (this is not sufficient)
+Description:    "System used for TNM classification."
+// RM 12/19/2018: < SCT#254293002 includes content from SCT that is at best misguided, at worst incorrect. The terms focus on the cancer type (prostate, breast) rather the edition of the TNM staging system.  
+//Includes codes descending from SCT#254293002 "Tumor-node-metastasis (TNM) tumor staging system (tumor staging)"
+  SCT#444256004 "American Joint Commission on Cancer, Cancer Staging Manual, 6th edition neoplasm staging system (tumor staging)"
+  SCT#443830009 "American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging)"
+  #AJCC8 "American Joint Commission on Cancer, Cancer Staging Manual, 8th edition neoplasm staging system (tumor staging)"
+  SCT#258235000 "International Union Against Cancer (tumor staging)"
+
+ValueSet:   CancerStageSuffixVS
+Description: "Modifiers related to the staging category. Examples of modifiers include the type of procedure performed in determining the pathological node classification. The staging suffix notation is the abbreviation enclosed by parentheses.  For example, CN1a(sn) where (sn) designates that the N category was identified based on a sentinel node biopsy."
+#sn     "sentinel node biopsy"
+#f      "Fine needle aspiration or core biopsy"

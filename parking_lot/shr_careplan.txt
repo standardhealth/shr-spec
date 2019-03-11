@@ -1,0 +1,121 @@
+Grammar:	DataElement 5.0
+Namespace:	careplan
+
+Uses:			shr.core
+
+EntryElement:	CareTeam
+Based on:	Entity  // very similar to organization (could be info item)
+Concept:	TBD
+Description: "Planned participants in the coordination and delivery of care for a patient or group."
+0..*		Participant
+//0..*		Participant.ParticipationType from HealthcareRoleVS /* or CodeableConcept from http://hl7.org/fhir/ValueSet/c80-practice-codes
+		
+
+EntryElement:	Goal  // Target (Future) Health State
+Based on:		Entity
+Concept:		MTH#C0018017
+Description:	"A broad statement about what should be accomplished for or by a patient or other subject. It represents the intended long-term outcome toward which an individual or a group aspires, and toward which, effort is directed, in the form of activities."
+1..1			Patient
+0..1			Title
+1..1			Details
+0..*			Reason
+0..*			Category from http://hl7.org/fhir/ValueSet/goal-category if covered
+0..1			ExpectedPerformanceTime
+0..1			OccurrenceTimeOrPeriod
+1..1			Status from http://hl7.org/fhir/ValueSet/goal-status
+0..*			Annotation
+0..*			PlannedActivities
+0..*			ActualActivities
+0..*			Goal   // subgoals, which may be objectives
+
+Element:		PlannedActivities	
+Concept:		TBD
+Description:	"Activites planned for this goal"
+Value:			ref(ActionTopic)  // restict to Actions with planned context
+
+Element:		ActualActivities	
+Concept:		TBD
+Description:	"Activites carried out for this goal"
+Value:			ref(ActionTopic)  // restict to Actions with performed context
+
+
+Element:		Objective
+Based on:		Goal
+Concept:		TBD
+Description:	"Describes the  of an expected or desired achievement that is well-defined, specific, measurable, and derived from one or more goals. 
+The context is inherited from the context of the parent goal, i.e., if the goal is #proposed, then the objective is also #proposed"
+0..*			Category from http://hl7.org/fhir/ValueSet/observation-category if covered 
+1..1			ResultTargeted
+0..*			ResultAchieved
+0..*			RelatedFinding
+
+		Element:		ResultTargeted
+		Concept:		TBD
+		Description:	"The desired value or status to be achieved."
+		Value:			CodeableConcept or Range or Quantity
+		
+		Element:		ResultAchieved
+		Concept:		TBD
+		Description:	"The actual value or status achieved."
+		Value:			CodeableConcept or Range or Quantity
+		
+		
+EntryElement:	CarePlan
+Concept:		MTH#C0178916
+Description:	"Describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions."
+0..1			Title
+0..1			Details
+1..1			Status from http://hl7.org/fhir/ValueSet/care-plan-status 
+0..*			Category from http://hl7.org/fhir/ValueSet/care-plan-category if covered
+0..*			Goal
+
+/*
+EntryElement:   CourseOfTreatment
+Based on:       CarePlan  // mlt: questionable to call CourseOfTreatment a procedure. It is modeled as a series of activities including medications administered and procedures.  MK -- changed to CarePlan
+Description:    "A series of coordinated treatment actions taken with a certain treatment intention."
+
+        0..1    TreatmentIntent
+        0..1    LineOfTherapy
+        0..*    MedicationStatement     // mlt: to cover patient-asserted medications taken at home.
+        0..*    MedicationAdministration  // mlt: to cover clinician-administered meds in a clinical setting.
+        0..*    SurgicalProcedure
+        0..*    RadiationProcedure
+        0..*	BodySite  // anatomical location is given in the individual actions
+        0..0    Device
+        0..0    Method
+
+
+Element:        LineOfTherapy
+Description:	"Indicator of the sequence of the therapies administered to a patient."
+Value:          CodeableConcept from LineOfTherapyVS
+
+*/
+
+/*
+
+EntryElement:	GoalPursuitTopic
+Based on:		ActionTopic
+Concept:		MTH#C0018017
+Description:	"Attaches an action context with respect to a goal: proposed, performed, not performed, etc."
+1..1			HealthGoal
+
+ In FHIR, these are represented in a status attribute. 
+
+EntryElement:	GoalPursuitPerformed
+Based on:		GoalPursuitTopic
+1..1			PerformedContext
+		
+EntryElement:	GoalPursuitNotPerformed
+Based on:		GoalPursuitTopic
+1..1			NotPerformedContext
+		
+EntryElement:	GoalPursuitRequested
+Based on:		GoalPursuitTopic
+1..1			RequestedContext
+					
+
+EntryElement:	GoalProposedAgainst
+Based on:		GoalPursuitTopic
+1..1			RequestedAgainstContext		
+
+*/	

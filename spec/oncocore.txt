@@ -1,0 +1,225 @@
+Grammar:	DataElement 5.0
+Namespace:	oncocore
+Description:	"Oncology data elements that broadly apply to most cancer cases."
+Uses:  		shr.core
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+
+// TODO: Document reasons to used SNOMED as opposed to ICD-O-3
+EntryElement:   CancerCondition
+Based on:	    Condition
+Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
+                Code from CancerDisorderVS
+//                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
+  	            StageInformation.StageDetail value is type CancerStagePanel
+0..0            Severity
+0..1            MorphologyBehavior from MorphologyBehaviorVS
+
+	Element:		MorphologyBehavior
+	Concept:		SCT#246463000 "Behavior of tumor (attribute)"
+	Description:	"A description of the morphology and behavioral characteristics of the cancer."
+	Value:			CodeableConcept
+
+
+EntryElement:   CancerHistologicType
+// MK ? PLEASE EXPLAIN:  did not use precoordinated codes because only available for clinical and pathologic. 
+Based on:       SimpleCodedLaboratoryObservation
+Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
+// MK ? PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
+                Code is SCT#371441004 "Histologic type (observable entity)"
+                DataValue from CancerHistologicTypeVS
+                SubjectOfInformation value is type ref(CancerCondition)
+0..0	        BodySite
+0..0            Device
+
+
+EntryElement:   CancerHistologicGrade
+// did not use precoordinated codes because only available for clinical and pathologic.
+Based on:       CodedLaboratoryObservation
+Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
+Concept:        LNC#21858-6 "Grade Cancer"
+                DataValue from http://loinc.org/vs/LL213-0
+                Code is LNC#21858-6 "Grade Cancer"
+                SubjectOfInformation value is type ref(CancerCondition)
+0..0		    BodySite
+0..0            Device
+0..0            PanelMembers
+
+/* DISCUSSION: Options and pros/cons for modeling progression/disease status:
+
+1) We are recording the status of a disease, i.e., the disease status, so the first and most obvious option is to use Condition.clinicalStatus. However, in FHIR, the required value set don't have the necessary terms (no 'responding' 'stable' or 'progressing'), and that can't be changed. In addition, there would be no place to record the evidence for the status change. Lastly, it would be inconvenient to go through past versions of the Condition resource to determine the history and timing of status changes. So not promising.
+
+2) Assessment of disease progression seems to fit ClinicalImpression (see http://hl7.org/fhir/STU3/clinicalimpression.html). There are fields for the type of impression (ClinicalImpression.code), the finding itself as a code (finding.itemCodeableConcept), and for maintaining history, a link to the previous clinical impression. One could probably record the evidence for the conclusion in investigation.code, and the problem evaluated in ClinicalImpression.problem (type ref(Condition)). There is also a potentially useful field for action taken, such as adjustment of medication (however, only references to other resources are allowed; to use codes would require an extension). It is unclear where to put information on the lesions evaluated (no specific lesion, target lesions, primary lesion, metastatic lesions). However, even if ClinicalImpression is the best choice, this is not a "mainstream" FHIR resource, it has low maturity (level 0), and is not supported by Argonaut (and probably no one else). 
+
+3) Back to the old standby, Observation. Observation can refer to the cancer condition via the focus attribution. There are several questions:
+
+a) What is the right observation code? It could be LNC#88040-1 "Response to cancer treatment" but an evaluation of disease status could come after a period of non-treatment, for example, to check for recurrence after a period of remission. It could be SCT#246453008 "Course of illness (attribute)", which is more general. I think it can be argued that even if there is no treatment directly before the evaluation, we are still evaluating the response to treatment, specifically, whether the treatment effect persisted. The normative LOINC code answer list LL4721-8 is exactly what we need:
+   	1        	Complete response    	LA28366-5	 
+ 	2    	 	Partial response    	LA28369-9	 
+ 	3    	 	Stable disease    	 	LA28371-5	 
+ 	4    	 	Progressive disease    	LA28370-7	 
+ 	5    	 	Not assessed    	 	LA9348-9
+So, it is best to go with LOINC, using SNOMED equivalents for the answers (?).
+
+b) Where to put the type of evidence used in the evaluation? (e.g., imaging, histopathology, symptoms, physical evalution, biomarkers) 
+It appears that Observation.derivedFrom is the closest match, it is designed to refer to other observations, not a general TYPE of evidence. It doesn't allow coded values. So, it looks like an extension is required.
+
+c) How to represent the lesion evaluated? (not necessary in mCODE, but required for Brain Mets study.)
+i. Instead of the cancer condition, the focus (Observation.focus) could be a reference to the lesion(s) evaluated. Downside is that this would require a separate Condition or BodyStructure resource for parts of the cancer, e.g., primary tumor, metastatic tumors, and or target lesions. 
+ii. The lesion(s) examined could be pre-coordinated in the observation code, for example, status of metastates, status of overall disease, status of target lesions. The upside is that these ARE different observations, and that difference would be reflected in the Observation.code. The downside is these codes don't exist, and creating more precoordinated codes is generally undesirable, unscalable solution.
+iii. BodySite could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
+iv. Create an extension for recording which lesion(s) were evaluated. That's always a last resort; an addition downside is that suitable codes do not exist. Still, this is probably the least bad of the proposed solutions.
+
+Conclusion:
+
+*/
+
+
+
+EntryElement:   CancerDiseaseStatus 
+Based on:       CodedNonLaboratoryObservation
+Description:    "The status of the cancer, in terms of whether it is stable, worsening (progressing), improving (responding), or in remission."
+                DataValue from CancerDiseaseStatusVS // or LL4721-8
+0..0            DataAbsentReason  // in the code set
+                //Code is SCT#246453008 "Course of illness (attribute)"
+                Code is LNC#88040-1 "Response to cancer treatment"
+                SubjectOfInformation value is type CancerCondition
+0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
+0..0		    BodySite
+0..0            Device	
+0..0            PanelMembers
+0..0            Components
+
+        Element:    CancerConditionOrMetastases
+        Description:    "A choice of CancerCondition or DistantMetastases. Needed to restrict the SubjectOfInformation of CancerDiseaseStatus."
+        Value:  ref(CancerCondition) or ref(DistantMetastases)
+
+		Element:	EvidenceType
+		Description:	"The type of evidence considered in making the determination."
+		Value:		CodeableConcept	
+
+
+
+/**** replaced by Onset of CancerCondition 
+EntryElement:	EarliestDateOfCancerCondition
+//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of Condition.
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#77975-1 "Earliest date of diagnosis"
+Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerCondition."
+Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
+0..0            ReferenceRange
+0..0			BodySite
+                SubjectOfInformation value is type ref(CancerCondition)
+*/
+
+/* Discussion: How to capture date and site of first metastases.
+Could be modeled with condition, observation, or clinical impression.
+
+1) Condition - has advantage of having an onset date (thus indicating the date of first metastasis) and (0..*) body site. Using Condition suggests the distant metastases are a separate condition from the "main cancer". This could be useful in describing disease progression for just the mets (see above). The Condition could be updated if/when the cancer invades other body sites. Has the disadvantage of not having a place for the number of mets, and condition does not have a way to indicate a condition is part of another condition. Both of these can be addressed through extensions.
+
+2) Observation - has the advantage of having components that can cover a variety of additional details, such as number of mets. However, each body site must be treated separately, since body site is 0..1 in Observation. It has the advantage of being able to record separate observations at multiple times, which is more clear than tracking history of a Condition through versioning (perhaps). 
+
+Conclusion: Having a place for the onset date of mets, which is an mCODE requirement, is a +1 for Condition...so is the ability to give multiple body sites. Use of Condition to describe a part of another condition is consistent with the philosophy used for wounds, where each wound is a separate condition, each wound tunnel on the wound is a (sub)condition, the length of the tunnel is an observation on the wound tunnel. Another advantage is that using condition provides a natural way to track the progression of the mets, separate from the progression of the entire disease (see discussion on DiseaseStatus).
+*/
+
+EntryElement:   DistantMetastases
+Based on:       CancerCondition
+Description:    "Records the history of secondard neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
+                Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
+0..1            PartOf value is type ref(CancerCondition)
+                BodySite.BodySiteCode from MetastasisBodySiteVS if covered
+
+
+EntryElement:   Tumor
+Based on:		BodyStructure
+Concept:        SCT#395557000 "Tumor finding (finding)"
+Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
+                Code from CancerHistologicTypeVS
+0..1            PartOf value is type ref(CancerCondition)
+0..0			Severity
+0..0			StageInformation
+0..1            IsPrimaryTumor
+
+        Element:        IsPrimaryTumor
+        Concept:        TBD
+        Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
+        Value:          CodeableConcept from YesNoUnknownVS
+
+
+EntryElement: 	TumorDimensions
+Based on:		CodedLaboratoryObservation
+0..0			DataValue
+	            SubjectOfInformation value is type ref(Tumor)
+				Code is SCT#263605001 "Tumor size (observable entity)"
+0..0            PanelMembers
+				Components.ObservationComponent
+					includes 0..1	TumorLongestDimension
+					includes 0..1	TumorDimension2
+					includes 0..1   TumorDimension3
+					includes 0..1	SizeOfGrossTumorBed
+
+		Element:		TumorLongestDimension
+		Description:	"The longest dimension of the tumor."
+		Based on:		QuantitativeObservationComponent
+		Concept:		LNC#33728-7 "Size.maximum dimension in Tumor"
+                        Code is LNC#33728-7 "Size.maximum dimension in Tumor"
+		                DataValue.Quantity.Units is UCUM#mm		
+		
+		Element:		TumorDimension2
+		Description:	"The second longest dimension of the tumor, generally measured perpendicularly to the tumor's longest dimension."
+		Based on:		QuantitativeObservationComponent
+		Concept:		SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+                        Code is SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+		                DataValue.Quantity.Units is UCUM#mm	
+
+		Element:		TumorDimension3
+		Description:	"The third longest dimension of the tumor, generally measured perpendicularly to the tumor's two longest perpendicular dimensions."
+		Based on:		QuantitativeObservationComponent
+		Concept:		SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+                        Code is SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+		                DataValue.Quantity.Units is UCUM#mm	
+
+		Element:		SizeOfGrossTumorBed
+		Based on:		QuantitativeObservationComponent
+		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
+                        Code is TBD#TBD
+		                DataValue.Quantity.Units is UCUM#mm	
+
+
+EntryElement: 	TumorMargins
+Based on:		CodedLaboratoryObservation
+Concept:		MTH#C4086369
+Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+                DataValue from PositiveNegativeVS
+				Code is MTH#C4086369
+0..0            PanelMembers
+				Components.ObservationComponent
+					includes 0..1	TumorMarginDescription
+// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
+
+		Element:		TumorMarginDescription
+		Based on:		CodedObservationComponent
+		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+						Code is TBD#TBD
+		                DataValue from TumorMarginDescriptionVS
+
+/*
+Element:		TumorCellularity
+Concept:		MTH#C4055283
+Based on:		QuantitativeObservationComponent
+Description:	"Percentage of cells in a sample that are cancerous"
+				DataValue.Quantity.Units is UCUM#%
+
+
+Element:		PercentageOfInSituDisease
+Based on:		QuantitativeObservationComponent
+Concept:		TBD
+Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
+			    DataValue.Quantity.Units is UCUM#%
+
+*/
+
+

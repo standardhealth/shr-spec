@@ -1,0 +1,144 @@
+Grammar:		DataElement 5.0
+Namespace:		sexualhealth
+Description:	"The SHR Sex domain contains definitions related to the sexual health and behavior of the person of record."
+Uses:			shr.core
+
+CodeSystem: 	LNC = http://loinc.org
+CodeSystem:		MTH = http://ncimeta.nci.nih.gov
+CodeSystem:     UCUM = http://unitsofmeasure.org
+//
+
+EntryElement:	GenderIdentity
+Based on:		CodedSocialHistoryObservation
+Description:	"Subjective personal perception of one's own gender, which can be male, female, a blend of both, or neither."
+				Code is MTH#C0017249
+				DataValue from GenderIdentityVS 
+
+EntryElement:	SexualOrientation
+Based on:		CodedSocialHistoryObservation
+Description:	"An inherent and enduring emotional, romantic or sexual attraction to other people."
+				Code is MTH#C0205949
+				DataValue from SexualOrientationVS
+
+EntryElement:	SexualActivity
+Based on:		CodedSocialHistoryObservation
+Description:	"Characterization of the sexual activity of the subject."
+				Code is MTH#C0241028
+				DataValue from SexualActivityVS
+
+EntryElement:	IntercourseDifficulty
+Based on:		CodedSocialHistoryObservation
+Description:	"Condition affecting sexual intercourse."
+				Code is TBD#TBD
+				DataValue from IntercourseDifficultyVS
+
+EntryElement:	ContraceptiveUseFrequency
+Based on:		CodedSocialHistoryObservation
+Description:	"How frequently the subject and partner uses contraceptives."
+				Code is TBD#TBD
+				DataValue from QualitativeFrequencyVS
+
+EntryElement:	ContraceptiveMethod
+Based on:		CodedSocialHistoryObservation
+Description:	"A method contraception used by the subject. This profile can be used to record that a person does or does not use a certain type of contraception, and why."
+				Code is MTH#C0700589
+				CodeableConcept from ContraceptiveMethodVS
+				Components.ObservationComponent
+includes 0..1 	ContraceptiveMethodFrequency
+includes 0..*	ContraceptiveMethodUsedReason
+includes 0..*	ContraceptiveMethodNotUsedReason
+
+		Element:		ContraceptiveMethodFrequency
+		Based on:		ObservationComponent
+		Description:	"How often the contraceptive method is used by the subject."
+						Code is TBD#TBD
+						DataValue from QualitativeFrequencyVS
+
+		Element:		ContraceptiveMethodReason
+		Based on:		ObservationComponent
+		Description: 	"Reason for using a particular contraceptive."
+						Code is TBD#TBD
+						DataValue from ContraceptiveMethodUsedReasonVS
+						
+		Element:		ContraceptiveNotUsedReason
+		Based on:		ObservationComponent
+		Description:	"If not using a method of contraception, why."
+						Code is TBD#TBD
+						DataValue from ContraceptiveMethodNotUsedReasonVS
+
+EntryElement:	PregnancyStatus
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether or not the subject is currently pregnant."
+				Code is LNC#82810-3
+				DataValue from YesNoUnknownVS
+
+EntryElement:	PregnancyIntention
+Based on:		CodedSocialHistoryObservation
+Description:	"Whether the subject or his/her partner has a plan or desire to either become pregnant or have a child in the next year/near future."
+				Code is LNC#64631-5
+	 			DataValue from YesNoUnknownVS
+
+EntryElement:	NumberOfPreviousPregnancies
+Based on:		QuantitativeSocialHistoryObservation
+Description:	"Number of previous pregnancies."
+				Code is LNC#75201-4
+				DataValue value is type IntegerQuantity
+
+EntryElement:	NumberOfLivingChildren
+Based on:		QuantitativeSocialHistoryObservation
+Description:	"Number of living children."
+				Code is LNC#11638-4
+				DataValue value is type IntegerQuantity
+
+/*
+EntryElement:	PreviousPregnancyDetails
+Concept:		TBD
+Description:	"The details of a previous pregnancy."
+PregnancyOrdinal
+PregnancyOutcome
+DeliveryDate
+GestationalAge
+DurationOfLabor
+BirthWeight
+GenderOfBaby
+TypeOfDelivery
+AnesthesiaType
+PlaceOfDelivery
+DurationOfBreastFeeding
+Complications from CommonPregnancyComplicationVS
+*/
+
+EntryElement:	PostmenopausalStatus
+Based on:		CodedSocialHistoryObservation
+Description:	"Postmenopausal status."
+				Code is TBD#TBD
+				DataValue from PostmenopausalStatusVS
+//Prior bilateral oophorectomy
+//Age ≥ 60 years
+//Age < 60 years and no menses for ≥ 1 year with FSH and estradiol levels within postmenopause range
+
+/*
+EntryElement:	HIVScreeningTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of a HIV Screening Test. Results will be in an accompanying observation."
+1..1			Code from HIVScreeningTestCodeVS   // potentially useful value set is LNC#75622-1  "HIV 1 and 2 tests - Meaningful Use set"
+
+EntryElement:	HIVSupplementalTestPerformed
+Based on:		LaboratoryProcedurePerformed
+Concept:		TBD
+Description:	"The performance of supplement HIV test, following up an initial screening. Results are in the form of an observation."
+1..1			Code from HIVSupplementalTestCodeVS
+
+EntryElement:	HIVScreeningTestRequested
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a rapid HIV screening test."
+1..1			Code from HIVScreeningTestCodeVS
+
+EntryElement:	HIVSupplementalTestRequested
+Based on:		LaboratoryProcedureRequested
+Concept:		TBD
+Description:	"A request for a confirmatory or additional test for HIV infection."
+1..1			Code from HIVSupplementalTestCodeVS
+*/

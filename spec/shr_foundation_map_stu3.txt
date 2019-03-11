@@ -1,0 +1,136 @@
+Grammar:	Map 5.1
+Namespace:	shr.core
+Target:		FHIR_STU_3
+
+
+DomainResource maps to DomainResource:
+//	_Entry.EntryId maps to id
+	Language maps to language
+	Narrative maps to text
+	ImplicitRules maps to implicitRules
+	Metadata.VersionId maps to meta.versionId
+//	Metadata.SourceSystem maps to meta.extension 
+	// in R4, this will be meta.source
+	// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
+	Metadata.LastUpdated maps to meta.lastUpdated
+	Metadata.SecurityLabel maps to meta.security
+	Metadata.Tag maps to meta.tag
+
+Composition maps to Composition:
+	Identifier maps to identifier
+	Status maps to status
+	Type maps to type
+    Section maps to section
+    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+	Section.Section maps to section.section
+
+Narrative maps to Narrative:
+	NarrativeText maps to div
+	NarrativeQualifier maps to status
+
+
+ValueSet maps to ValueSet:
+    Url maps to url
+    Identifier maps to identifier
+    VersionString maps to version
+    NameAsText maps to name
+    Title maps to title
+    Status maps to status
+    IsExperimental maps to experimental
+    LastUpdated maps to date
+    PublisherName maps to publisher
+    ContactDetail maps to contact
+    DescriptionMarkdown maps to description 
+    UseContext.Code maps to useContext.code
+    UseContext.ContextValue maps to useContext.value[x]
+    Jurisdiction maps to jurisdiction
+    IsImmutable maps to immutable
+    PurposeMarkdown maps to purpose
+    Copyright maps to copyright
+    constrain extensible to 0..0
+    ContentLogicalDefinition maps to compose
+    ContentLogicalDefinition.LockedDate maps to compose.lockedDate
+    ContentLogicalDefinition.IncludeInactiveCodes maps to compose.inactive
+    ContentLogicalDefinition.IncludeCodes maps to compose.include
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSystem maps to compose.include.system
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSystemVersion maps to compose.include.version
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept maps to compose.include.concept
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.CodeValue maps to compose.include.concept.code
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.DisplayText maps to compose.include.concept.display
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation maps to compose.include.concept.designation
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.Language maps to compose.include.concept.designation.language
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.Type  maps to compose.include.concept.designation.use
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.DisplayText maps to  compose.include.concept.designation.value
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter maps to compose.include.filter
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.Property maps to compose.include.filter.property
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.Operation maps to compose.include.filter.op
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.CodeValue maps to compose.include.filter.value
+    ContentLogicalDefinition.IncludeCodes.CodeSet.ValueSetUri maps to compose.include.valueSet
+    // ExcludeCodes
+    ContentLogicalDefinition.ExcludeCodes maps to compose.exclude
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSystem maps to compose.exclude.system
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSystemVersion maps to compose.exclude.version
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept maps to compose.exclude.concept
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.CodeValue maps to compose.exclude.concept.code
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.DisplayText maps to compose.exclude.concept.display
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation maps to compose.exclude.concept.designation
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.Language maps to compose.exclude.concept.designation.language
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.Type  maps to compose.exclude.concept.designation.use
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.DisplayText maps to  compose.exclude.concept.designation.value
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter maps to compose.exclude.filter
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.Property maps to compose.exclude.filter.property
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.Operation maps to compose.exclude.filter.op
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.CodeValue maps to compose.exclude.filter.value
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.ValueSetUri maps to compose.exclude.valueSet
+    // expansion
+    ValueSetExpansion maps to expansion
+    ValueSetExpansion.Url maps to expansion.identifier
+    ValueSetExpansion.CreationDateTime maps to expansion.timestamp
+    ValueSetExpansion.TotalCount maps to expansion.total
+    ValueSetExpansion.Offset maps to expansion.offset
+    ValueSetExpansion.ExpansionParameter maps to expansion.parameter
+    ValueSetExpansion.ExpansionParameter.NameAsText maps to expansion.parameter.name
+    ValueSetExpansion.ExpansionParameter.ParameterValue maps to expansion.parameter.value[x]
+    ValueSetExpansion.ExpansionCoding maps to expansion.contains
+    ValueSetExpansion.ExpansionCoding.CodeValue maps to expansion.contains.code
+    ValueSetExpansion.ExpansionCoding.CodeSystem maps to expansion.contains.system
+    ValueSetExpansion.ExpansionCoding.CodeSystemVersion maps to expansion.contains.version
+    ValueSetExpansion.ExpansionCoding.DisplayText maps to expansion.contains.display
+    ValueSetExpansion.ExpansionCoding.Inactive maps to expansion.contains.inactive
+    ValueSetExpansion.ExpansionCoding.NonSelectable maps to expansion.contains.abstract
+    ValueSetExpansion.ExpansionCoding.Designation maps to expansion.contains.designation
+    ValueSetExpansion.ExpansionCoding.ExpansionCoding maps to expansion.contains.contains
+
+DocumentReference maps to DocumentReference:
+//  http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference:  Not sure why this is not found
+//ERROR shr: Invalid FHIR target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference. ERROR_CODE:13001 (module=shr-fhir-export, shrId=shr.core.DocumentReference) 
+// target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference
+    MasterIdentifier maps to masterIdentifier
+    Identifier maps to identifier
+    Status maps to status
+    DocumentStatus maps to docStatus
+    Type maps to type
+    Category maps to class
+    SubjectOfRecord maps to subject
+    CreationDateTime maps to created
+    StatementDateTime maps to indexed
+    Author maps to author 
+    Authenticator maps to authenticator
+    ManagingOrganization maps to custodian
+    RelatedDocument maps to relatesTo
+    RelatedDocument.Relationship maps to relatesTo.code
+	RelatedDocument.DocumentReference maps to relatesTo.target
+    CommentOrDescription maps to description
+    SecurityLabel maps to securityLabel
+	DocumentReferenced maps to content
+	DocumentReferenced.Attachment maps to content.attachment
+	DocumentReferenced.Type maps to content.format
+    ClinicalContext maps to context
+    ClinicalContext.Encounter maps to context.encounter
+	ClinicalContext.Event maps to context.event
+	ClinicalContext.TimePeriod maps to context.period
+	ClinicalContext.FacilityType maps to context.facilityType
+	ClinicalContext.Setting maps to context.practiceSetting
+	ClinicalContext.ContemporaneousPatientInformation maps to context.sourcePatientInfo 
+    ClinicalContext.Identifier maps to context.related.identifier
+	ClinicalContext.RelatedInformation maps to context.related.ref

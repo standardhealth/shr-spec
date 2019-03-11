@@ -1,0 +1,35 @@
+Grammar:		DataElement 5.0
+Namespace:		fhx
+Description:	"Contains elements related to the health history of a patient's family members."
+Uses:  			shr.core, shr.base, entity
+ CodeSystem:     LNC = http://loinc.org
+
+EntryElement:	FamilyMember
+Based on:		RelatedPerson
+Description:	"A related person that is a family member of the patient. This includes biological and non-biological family, as well as extended family."
+1..1			RelationshipToPatient //  from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion
+// Family member value VS used in CCDA. 2015 Ed ONC Cert Criteria indicate relationship to patient should be coded in SCT, and allows for pre- or post-coordination with condition. TODO: consider SCT value set (maybe allow both?)
+// Not feasible.  Cannot override value set constraint from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype to https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion. ERROR_CODE:13029  
+
+
+EntryElement:	FamilyMemberHistory
+Based on:		ClinicalStatement
+Concept:		LNC#54114-4 "Family member health history [USSG-FHT] Family member" //This is part of a US General Surgeon general family health LOINC panel 
+Description:	"The health history of a patient's family member."
+1..1			SubjectOfRecord value is type ref(Patient)
+1..1	   		FamilyMember
+				StatusOrActive is type Status
+1..1			Status from http://hl7.org/fhir/ValueSet/history-status
+0..*			FamilyMemberCondition
+
+
+Element:		FamilyMemberCondition
+Concept:		LNC#8670-2 "History of family member diseases"
+0..1			Onset
+0..1			ConditionOutcome
+1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered 
+
+ 	Element:		ConditionOutcome
+	Concept:		TBD#TBD
+	Description:	"The lasting effects of a disease, e.g. death, functional impairment."
+	Value: 			CodeableConcept could be from http://hl7.org/fhir/ValueSet/condition-outcome
