@@ -28,7 +28,7 @@ Abstract Element: DomainResource
 Based on:		Resource
 Description:	"Parent class for any item in clinical or administrative health-related system. A DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 0..1			Narrative
-0..1			StatusOrActive
+0..1			Status
 0..*			Identifier
 
 		Element:		Narrative
@@ -45,20 +45,11 @@ Description:	"Parent class for any item in clinical or administrative health-rel
 				Description:	"Additional information on how the narrative was generated, and the scope of information contained."
 				Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/narrative-status
 
-		Abstract Element:	StatusOrActive
-		Description:		"Abstract class for a property that defines either the status of the recource, or whether the resource is active."
-		Value:				boolean or CodeableConcept
 
 		Element:		Status
-		Based on:		StatusOrActive
 		Description:	"A state that relates to the workflow or interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, Status of true indicates the record is active, false means inactive."
 		Value:			CodeableConcept // should be from http://hl7.org/fhir/ValueSet/resource-status
 		// cannot specify the preferred value set here because there are conflicting required value sets in some status attributes, particularly Encounter. It will generate an error to map preferred to required. 
-
-		Element:		Active
-		Based on:		StatusOrActive
-		Description:	"A flag that indicates whether the resource record is active, or inactive and ignored for all but historical purposes."
-		Value:			boolean
 
 
 Element:		Metadata
@@ -140,7 +131,6 @@ EntryElement:	Composition
 Based on:		DomainResource
 Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 0..1			Identifier // FHIR inconsistency -- usually 0..*
-				StatusOrActive is type Status
 1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
 1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
 0..*            Section
@@ -391,7 +381,6 @@ EntryElement:	DocumentReference
 Based on:	DomainResource
 Description:	"A reference to a document, used to describe a document that is made available to a healthcare system. A document is some sequence of bytes that is identifiable, establishes its own context (e.g., what subject, author, etc. can be displayed to the user), and has defined update management. The DocumentReference resource can be used with any document format that has a recognized mime type and that conforms to this definition."
 0..1		MasterIdentifier
-			StatusOrActive is type Status
 1..1		Status from http://hl7.org/fhir/ValueSet/document-reference-status
 0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
 1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
@@ -399,7 +388,7 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		SubjectOfRecord value is type ref(Patient)  // us core restriction 
 0..1		CreationDateTime
 1..1		StatementDateTime
-0..*		Author value is type PersonOrOrganizationOrDevice
+0..*		Author value is type ref(PersonOrOrganizationOrDevice)
 0..1		Authenticator
 0..1		ManagingOrganization
 1..*		DocumentReferenced

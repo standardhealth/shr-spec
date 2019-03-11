@@ -8,13 +8,13 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-// TODO: Document reasons to used SNOMED as opposed to ICD-O-3
+
 EntryElement:   CancerCondition
 Based on:	    Condition
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
-                Code from CancerDisorderVS
+                Code from CancerDisorderVS  // TODO: Document reasons to used SNOMED as opposed to ICD-O-3
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
-  	            StageInformation.StageDetail value is type CancerStagePanel
+  	            StageInformation.StageDetail value is type ref(CancerStagePanel)
 0..0            Severity
 0..1            MorphologyBehavior from MorphologyBehaviorVS
 
@@ -25,10 +25,10 @@ Description:    "The presence of malignant neoplastic disease, in which abnormal
 
 
 EntryElement:   CancerHistologicType
-// MK ? PLEASE EXPLAIN:  did not use precoordinated codes because only available for clinical and pathologic. 
+// MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
 Based on:       SimpleCodedLaboratoryObservation
 Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
-// MK ? PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
+// MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
                 DataValue from CancerHistologicTypeVS
                 SubjectOfInformation value is type ref(CancerCondition)
@@ -40,7 +40,6 @@ EntryElement:   CancerHistologicGrade
 // did not use precoordinated codes because only available for clinical and pathologic.
 Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
-Concept:        LNC#21858-6 "Grade Cancer"
                 DataValue from http://loinc.org/vs/LL213-0
                 Code is LNC#21858-6 "Grade Cancer"
                 SubjectOfInformation value is type ref(CancerCondition)
@@ -73,10 +72,7 @@ ii. The lesion(s) examined could be pre-coordinated in the observation code, for
 iii. BodySite could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
 iv. Create an extension for recording which lesion(s) were evaluated. That's always a last resort; an addition downside is that suitable codes do not exist. Still, this is probably the least bad of the proposed solutions.
 
-Conclusion:
-
 */
-
 
 
 EntryElement:   CancerDiseaseStatus 
@@ -86,16 +82,13 @@ Description:    "The status of the cancer, in terms of whether it is stable, wor
 0..0            DataAbsentReason  // in the code set
                 //Code is SCT#246453008 "Course of illness (attribute)"
                 Code is LNC#88040-1 "Response to cancer treatment"
-                SubjectOfInformation value is type CancerCondition
+				SubjectOfRecord value is type ref(PatientOnly)
+                SubjectOfInformation value is type ref(CancerCondition)
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
 0..0		    BodySite
 0..0            Device	
 0..0            PanelMembers
 0..0            Components
-
-        Element:    CancerConditionOrMetastases
-        Description:    "A choice of CancerCondition or DistantMetastases. Needed to restrict the SubjectOfInformation of CancerDiseaseStatus."
-        Value:  ref(CancerCondition) or ref(DistantMetastases)
 
 		Element:	EvidenceType
 		Description:	"The type of evidence considered in making the determination."

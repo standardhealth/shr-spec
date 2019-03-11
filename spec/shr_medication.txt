@@ -77,7 +77,7 @@ Description:	"A record of the use of a medication. If the medication is given as
 Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the recorder (who recorded the statement). SHR adds the recorder as an extension, as part of standardizing clinical statements.
 Medication not taken has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
 ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason. In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
-				InformationSource value is type PersonOrOrganization
+				InformationSource value is type ref(PersonOrOrganization)
 				SubjectOfRecord value is type ref(Patient)  // no Group in DSTU2
 1..1			StatementDateTime // us-core required
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
@@ -85,7 +85,7 @@ ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limite
 0..1			ReasonCode // Upper cardinality imposed by DSTU 2
 0..1			ReasonReference value is type ref(Condition)
 0..0			Participation
-				RelatedRequest value is type ReferralOrProcedureOrMedicationRequest // or CarePlan
+				RelatedRequest value is type ref(ReferralOrProcedureOrMedicationRequest) // or CarePlan
 0..*			TreatmentIntent			
 0..*			TerminationReason from MedicationTerminationReasonVS
 
@@ -100,7 +100,7 @@ SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they ar
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
 				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..1			Participation
-				Participation.Participant value is type PatientOrPractitionerOrRelatedPerson  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
+				Participation.Participant value is type ref(PatientOrPractitionerOrRelatedPerson)  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
 0..0			Participation.ParticipationType				
 				RelatedRequest value is type ref(MedicationRequest)		
 
