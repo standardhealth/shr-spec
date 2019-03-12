@@ -30,6 +30,7 @@ Description:    "Classification of the cancer by the type of tissue in which the
 // MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
                 DataValue from CancerHistologicTypeVS
+				Performer is type PractitionerPerformer
 0..1			RelatedCancerCondition
 0..0	        BodySite
 0..0            Device
@@ -45,10 +46,12 @@ Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
                 DataValue from http://loinc.org/vs/LL213-0
                 Code is LNC#21858-6 "Grade Cancer"
+				Performer is type PractitionerPerformer
 0..1			RelatedCancerCondition
 0..0		    BodySite
 0..0            Device
 0..0            PanelMembers
+0..0			Components
 
 /* DISCUSSION: Options and pros/cons for modeling progression/disease status:
 
@@ -77,14 +80,14 @@ iv. Create an extension for recording which lesion(s) were evaluated. That's alw
 
 */
 
-
 EntryElement:   CancerDiseaseStatus 
 Based on:       CodedNonLaboratoryObservation
 Description:    "The status of the cancer, in terms of whether it is stable, worsening (progressing), improving (responding), or in remission."
+                Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from CancerDiseaseStatusVS // or LL4721-8
 0..0            DataAbsentReason  // in the code set
                 //Code is SCT#246453008 "Course of illness (attribute)"
-                Code is LNC#88040-1 "Response to cancer treatment"
+				Performer is type PractitionerPerformer
 				SubjectOfRecord is type PatientSubjectOfRecord
 0..1			RelatedCancerCondition
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
@@ -92,6 +95,11 @@ Description:    "The status of the cancer, in terms of whether it is stable, wor
 0..0            Device	
 0..0            PanelMembers
 0..0            Components
+
+		Element:	PractitionerPerformer
+		Based on:	Performer
+		Description: "The actor that carried out the observation or action."
+		Value:		ref(Practitioner)
 
 		Element:	EvidenceType
 		Description:	"The type of evidence considered in making the determination."
@@ -114,7 +122,12 @@ Description:    "Records the history of secondard neoplasms, including location(
                 Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
 0..1			RelatedCancerCondition
                 BodySite.BodySiteCode from MetastasisBodySiteVS if covered
+				PersonInformationSource is type PractitionerInformationSource
 
+		Element:	PractitionerInformationSource
+		Based on:	PersonInformationSource
+		Description:	"The information comes from a practitioner who asserts the condition."
+		Value:		ref(Practitioner)
 
 EntryElement:   Tumor
 Based on:		BodyStructure
@@ -139,11 +152,11 @@ Description:	"The size of a given tumor along different dimensions."
 1..1			RelatedTumor
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
-				Components.ObservationComponent
-					includes 0..1	TumorLongestDimension
-					includes 0..1	TumorDimension2
-					includes 0..1   TumorDimension3
-					includes 0..1	SizeOfGrossTumorBed
+1..1			Components.ObservationComponent
+				includes 0..1	TumorLongestDimension
+				includes 0..1	TumorDimension2
+				includes 0..1   TumorDimension3
+				includes 0..1	SizeOfGrossTumorBed
 
 	Element:	RelatedTumor
 	Description:  "The tumor that is being characterized."
