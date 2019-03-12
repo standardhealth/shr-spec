@@ -92,36 +92,33 @@ Description:	"This abstract class provides properties and behaviors common to en
 0..1			SubjectOfRecord
 0..1			CareContext
 0..1			StatementDateTime
-0..1			Author
-0..1			InformationSource
-0..1			Recorder
+// The following fields should be part of each clinical statement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension value cannot be overridden. Fundamentally, "is type" (aka substitute) only works when we can map to an existing attribute in a field.
+//0..1			Author
+//0..1			InformationSource
+//0..1			Recorder
 
 	Element: 		SubjectOfRecord
-	Description:	"The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. The SubjectOfRecord can also be a location, group, or other entity that statements can pertain to. For example, observations concerning a hospital floor would have a Location as the SubjectOfRecord. 
+	Description:	"The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. When there is no patient, the SubjectOfRecord can also be a location, group, or other entity that statement pertains to. For example, observations concerning a hospital ward would have a Location as the SubjectOfRecord. 
 	
-	Note that the word 'Subject' is used in the sense of a person or entity subjected to observations or actions, not subject as in a conceptual topic, like heart disease."
-	Value:			ref(EntityOrRole)
+	Note that the word 'Subject' is used here in the sense of a person or entity subjected to observations or actions, not subject as in a conceptual topic, like heart disease."
+	Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device) or ref(Specimen) or ref(ResearchSubject) or ref(Location) or ref(Medication)
 
 	Element:   	 	StatementDateTime  
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the statement was created."
 	Value:          dateTime  // we can map to instant from dateTime
-
+/*
 	Element:		Author
 	Description:	"The actor who created the item and it responsible for the content (regardless of the information source or who recorded it). If only the author is given, it is assumed the author is the information source and the recorder."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or string
-	
+
 	Element: 		InformationSource
 	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
-
-	Element:		Recorder
-	Description:	"The recorder of the information, if other than the author. For example, the nurse taking a list of medications reported by the patient."
-	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson)
-
+*/
 	Element:		Participant
 	Concept:		MTH#C1550369
-	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. A code can be used to indicate a generic type of participant, e.g., mother, EMT, or social worker."
+	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or ref(Group) or ref(Location)
 
 
@@ -308,10 +305,10 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
 1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
 0..1		Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
-0..1		SubjectOfRecord is type SubjectOfRecord-5 // us core restriction 
+0..1		SubjectOfRecord is type PatientSubjectOfRecord // us core restriction 
 0..1		CreationDateTime
 1..1		StatementDateTime
-0..*		Author is type Author-3
+0..*		DocumentAuthor
 0..1		Authenticator
 0..1		ManagingOrganization
 1..*		DocumentReferenced
@@ -320,9 +317,18 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..*		SecurityLabel from http://hl7.org/fhir/ValueSet/security-labels if covered
 0..1		ClinicalContext
 
+	Element:		PatientSubjectOfRecord
+	Based on:		ObservationSubjectOfRecord
+	Description:	"The SubjectOfRecord when restricted to being a Patient resource."
+	Value:			ref(Patient)
+
 	Element:	MasterIdentifier
 	Description:	"Document identifier as assigned by the source of the document. This identifier is specific to this version of the document. This unique identifier may be used elsewhere to identify this version of the document."
 	Value:  Identifier
+
+	Element:	DocumentAuthor
+	Description:	"The author of the document."
+	Value: ref(Practitioner) or ref(Organization) or ref(Device) or ref(Patient) or ref(RelatedPerson)
 
 	Element:	DocumentStatus
 	Description: "The status of the underlying document."

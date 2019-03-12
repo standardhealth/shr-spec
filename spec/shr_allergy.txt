@@ -10,9 +10,9 @@ Based on:		ConditionOrObservation
 Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  
 // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
 Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in contrast to AdverseEvent)."
-				InformationSource is type InformationSource-2
-				Recorder is type Recorder-1  // FHIR only allows Patient or Practitioner as recorder
-1..1			SubjectOfRecord is type SubjectOfRecord-5
+0..1			PersonInformationSource
+0..1			AllergyRecorder // FHIR only allows Patient or Practitioner as recorder
+1..1			SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Status // from http://hl7.org/fhir/ValueSet/allergy-verification-status
 				// Conflict between V2 and V3 -- Cannot override value set constraint from http://hl7.org/fhir/ValueSet/allergy-intolerance-status to http://hl7.org/fhir/ValueSet/allergy-verification-status
 0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
@@ -23,6 +23,10 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 0..1			Criticality
 0..1			MostRecentOccurrenceTime
 0..*			AllergyIntoleranceReaction
+
+		Element:		AllergyRecorder
+		Description:	"A choice of Patient or Practitioner as recorder."
+		Value:			ref(Patient) or ref(Practitioner)
 
 		Element:		SubstanceCategory
 		Concept:		TBD

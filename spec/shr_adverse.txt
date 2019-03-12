@@ -8,11 +8,12 @@ Element:		AdverseEvent
 Based on:		ClinicalStatement
 Description:	"A record of an untoward or unexpected event in a patient under treatment, and which does not necessarily have to have a causal relationship with that treatment. Adverse events may capture either a workflow breach that may or may not result in harm, but must be documented for quality improvement purposes, or an adverse finding whether or not it can be traceable to an actual workflow breach."
 0..1			Identifier
-1..1			SubjectOfRecord is type SubjectOfRecord-2
+1..1			SubjectOfRecord is type AdverseEventSubjectOfRecord
 1..1			OccurrenceTime
 0..1			Type from MedDRAVS
 1..1			Seriousness from SeriousnessVS  // to be replaced with http://hl7.org/fhir/ValueSet/adverse-event-seriousness in FHIR 4
 //0..1			TBD "PatternOfEvent"  // from STDM
+0..1			AdverseEventRecorder
 0..1			Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome
 0..1			CommentOrDescription
 0..*			AdverseEventCondition
@@ -20,6 +21,14 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 0..*			ActionTaken
 0..1			AssociatedStudy
 
+    Element:		AdverseEventSubjectOfRecord
+	Based on:		SubjectOfRecord
+	Description:	"A choice of Patient, ResearchSubject, Medication, or Device. These are the potential subjects for AdverseEvent."
+	Value:			ref(Patient) or ref(ResearchSubject) or ref(Medication) or ref(Device)
+
+	Element:		AdverseEventRecorder
+	Description:	"A choice of Patient or Practitioner as recorder."
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
 
 	Element:		Seriousness
 	Concept:		MTH#C2985911
