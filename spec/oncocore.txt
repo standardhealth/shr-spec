@@ -16,12 +16,12 @@ Description:    "The presence of malignant neoplastic disease, in which abnormal
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
   	            StageInformation.StageDetail value is type ref(CancerStagePanel)
 0..0            Severity
-0..1            MorphologyBehavior from MorphologyBehaviorVS
+0..1            MorphologyBehavior
 
 	Element:		MorphologyBehavior
 	Concept:		SCT#246463000 "Behavior of tumor (attribute)"
 	Description:	"A description of the morphology and behavioral characteristics of the cancer."
-	Value:			CodeableConcept
+	Value:			CodeableConcept from MorphologyBehaviorVS
 
 
 EntryElement:   CancerHistologicType
@@ -31,7 +31,7 @@ Description:    "Classification of the cancer by the type of tissue in which the
 // MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
                 DataValue from CancerHistologicTypeVS
-                SubjectOfInformation value is type ref(CancerCondition)
+                SubjectOfInformation is type SubjectOfInformation-2
 0..0	        BodySite
 0..0            Device
 
@@ -42,7 +42,7 @@ Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
                 DataValue from http://loinc.org/vs/LL213-0
                 Code is LNC#21858-6 "Grade Cancer"
-                SubjectOfInformation value is type ref(CancerCondition)
+                SubjectOfInformation is type SubjectOfInformation-2
 0..0		    BodySite
 0..0            Device
 0..0            PanelMembers
@@ -82,8 +82,8 @@ Description:    "The status of the cancer, in terms of whether it is stable, wor
 0..0            DataAbsentReason  // in the code set
                 //Code is SCT#246453008 "Course of illness (attribute)"
                 Code is LNC#88040-1 "Response to cancer treatment"
-				SubjectOfRecord is type PatientSOR
-                SubjectOfInformation value is type ref(CancerCondition)
+				SubjectOfRecord is type SubjectOfRecord-5
+                SubjectOfInformation is type SubjectOfInformation-2 
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
 0..0		    BodySite
 0..0            Device	
@@ -105,7 +105,7 @@ Description:	"The earliest date of diagnosis (clinical or laboratory) of an illn
 Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
 0..0            ReferenceRange
 0..0			BodySite
-                SubjectOfInformation value is type ref(CancerCondition)
+                SubjectOfInformation is type SubjectOfInformation-2
 */
 
 /* Discussion: How to capture date and site of first metastases.
@@ -122,7 +122,7 @@ EntryElement:   DistantMetastases
 Based on:       CancerCondition
 Description:    "Records the history of secondard neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
                 Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
-0..1            PartOf value is type ref(CancerCondition)
+0..1            PartOf is type PartOf-2
                 BodySite.BodySiteCode from MetastasisBodySiteVS if covered
 
 
@@ -131,7 +131,7 @@ Based on:		BodyStructure
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
                 Code from CancerHistologicTypeVS
-0..1            PartOf value is type ref(CancerCondition)
+0..1            PartOf is type PartOf-2
 0..0			Severity
 0..0			StageInformation
 0..1            IsPrimaryTumor
@@ -144,8 +144,9 @@ Description:    "The presence of an abnormal mass of tissue (neoplasm) that resu
 
 EntryElement: 	TumorDimensions
 Based on:		CodedLaboratoryObservation
+Description:	"The size of a given tumor along different dimensions."
 0..0			DataValue
-	            SubjectOfInformation is type TumorSOI
+	            SubjectOfInformation is type SubjectOfInformation-3
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
 				Components.ObservationComponent
@@ -199,10 +200,20 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 						Code is TBD#TBD
 		                DataValue from TumorMarginDescriptionVS
 
-Element:        TumorSOI
+Element:        SubjectOfInformation-3
 Based on:		SubjectOfInformation
 Description:	"A tumor as SubjectOfInformation."
 Value:			ref(Tumor)
+
+Element:        SubjectOfInformation-2
+Based on:       SubjectOfInformation
+Description:    "A cancer condition as the subject of information."
+Value:          ref(CancerCondition)
+
+Element:		PartOf-2
+Based on:		PartOf
+Description:	"A cancer condition."
+Value:			ref(CancerCondition)
 
 /*
 Element:		TumorCellularity

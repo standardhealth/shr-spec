@@ -79,9 +79,9 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
-1..1			SubjectOfRecord is type PatientOrGroupOrDeviceOrLocationSOR
-				Author is type PersonOrOrganizationAuthor
-				InformationSource is type PersonOrOrganizationIS
+1..1			SubjectOfRecord is type SubjectOfRecord-1
+				Author is type Author-2
+				InformationSource is type InformationSource-1
 				CareContext value is type ref(Encounter)
 
 		Element:		RelevantTime
@@ -92,7 +92,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 
 		Element:		SubjectOfInformation
 		Description:	"The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)"
-		Value:			ref(Resource) or CodeableConcept
+		Value:			ref(DomainResource) or CodeableConcept
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -222,7 +222,7 @@ Description:	"A panel that does not have an overall value that summarizes the en
 Element:		SocialHistoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"A simplified observation for social histories."
-1..1			SubjectOfRecord is type PatientSOR
+1..1			SubjectOfRecord is type SubjectOfRecord-5
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
 0..0			BodySite
@@ -242,8 +242,8 @@ Description:		"A condition that is or may be present in a subject. 'Condition' i
 SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 				Author value is type ref(Practitioner) // only a practitioner can add items to the problem list
-				InformationSource is type PersonIS
-1..1			SubjectOfRecord is type PatientSOR   // restricted in DSTU 2 (from Patient or Group)
+				InformationSource is type InformationSource-2
+1..1			SubjectOfRecord is type SubjectOfRecord-5   // restricted in DSTU 2 (from Patient or Group)
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
 1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
@@ -354,14 +354,15 @@ Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObser
 0..*			RelatedRequest is type ReferralOrProcedureOrMedicationRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
 0..1			ServiceCategory	
-0..1			SubjectOfRecord is type PatientOrGroupOrDeviceOrLocationSOR
+0..1			SubjectOfRecord is type SubjectOfRecord-1
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
 0..1			CareContext
 0..1			RelevantTime
-0..1			StatementDateTime
-0..*			Participation
-				Participation.Participant is type PractitionerOrOrganizationParticipant
+1..1			StatementDateTime  // 'issued' is required in DSTU-2
+0..1			Participation
+1..1			Participation.Participant is type Participant-5  // performer is required in DSTU-2
 0..0			Participation.ParticipationPeriod
+0..0			Participation.ParticipationType
 0..0			Participation.OnBehalfOf
 0..*			ref(Specimen)
 0..*			ref(Observation)  // Panel members?

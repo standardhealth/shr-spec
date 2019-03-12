@@ -77,8 +77,8 @@ Description:	"A record of the use of a medication. If the medication is given as
 Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the recorder (who recorded the statement). SHR adds the recorder as an extension, as part of standardizing clinical statements.
 Medication not taken has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
 ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason. In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
-				InformationSource is type PersonOrOrganizationIS
-				SubjectOfRecord value is type ref(Patient) // no Group in DSTU2
+				InformationSource is type InformationSource-1
+				SubjectOfRecord is type SubjectOfRecord-5 // no Group in DSTU2
 1..1			StatementDateTime // us-core required
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
 				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
@@ -96,11 +96,11 @@ Description:	"A record of the use of a medication. If the medication is given as
 Although FHIR MedicationAdministration supports date of administration and performer, it lacks common provenance elements, creation date, asserter, and recorder. These are supported as optional extensions.
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
-				SubjectOfRecord value is type ref(Patient)  // no Group in DSTU2
+				SubjectOfRecord is type SubjectOfRecord-5  // no Group in DSTU2
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
 				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..1			Participation
-				Participation.Participant is type PersonParticipant  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
+				Participation.Participant is type Participant-1  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
 0..0			Participation.ParticipationType				
 				RelatedRequest value is type ref(MedicationRequest)		
 
@@ -118,7 +118,7 @@ Description:	"Information on the ability and cooperation of the patient in takin
 Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time, independent of any specific medication."
 				Code is MTH#C0746935 "Medication Nonadherence"
 				DataValue from QualitativeFrequencyVS
-0..1			SubjectOfInformation is type MedicationExposureSOI
+0..1			SubjectOfInformation is type SubjectOfInformation-1
 				Components.ObservationComponent
 includes 		0..* MedicationNonAdherenceReason
 
@@ -135,7 +135,7 @@ Description:	"An order for a medication to be dispensed and instructions for use
 Value sets for status are in direct conflict between DSTU2 Argonaut and STU3 US-Core.
 Category does not exist in DSTU2 and is provided as an extension.
 Intent was added in STU3 and is provided as an extension with required binding."
-				SubjectOfRecord value is type ref(Patient)
+				SubjectOfRecord is type SubjectOfRecord-5
 1..1			Medication
 0..1			Dosage
 1..1			Author value is type ref(Practitioner) // only a practitioner 
