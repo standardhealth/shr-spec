@@ -29,7 +29,6 @@ Description:    "A structured set of questions intended to guide the collection 
 0..1            VersionString
 0..1            NameAsText
 0..1            Title
-                StatusOrActive is type Status
 1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
 0..1            IsExperimental
 0..*            SubjectType
@@ -161,25 +160,30 @@ EntryElement:   QuestionnaireResponse
 Based on:       DomainResource
 Description:    "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to."
 0..1            Identifier
-0..*            RelatedRequest value is type ReferralOrProcedureRequest
-0..*            PartOf value is type ObservationOrProcedure
+0..*            RelatedRequest is type ReferralOrProcedureRequest
 0..1            ref(Questionnaire)
-                StatusOrActive is type Status
 1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
-0..1            SubjectOfInformation value is type ref(DomainResource)
+0..1            FocusOfResponse value is type ref(DomainResource)
 0..1            CareContext
 0..1            StatementDateTime
-0..1            Author value is type PersonOrDevice
-0..1            InformationSource value is type PatientOrPractitionerOrRelatedPerson
+0..1            QuestionnaireResponseRecorder
+0..1			PersonInformationSource
 0..*            QuestionnaireResponseItem
 
+    Element:    FocusOfResponse
+    Description:    "The subject of the questionnaire response. This could be a patient, organization, practitioner, device, etc. This is who/what the answers apply to, but is not necessarily the source of information."
+    Value:      ref(DomainResource)
+
+	Element:		QuestionnaireResponseRecorder
+	Description:	"The recorder of the information, who received and recorded the answers. For example, the nurse taking a list of medications reported by the patient."
+	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson) or ref(Device) 
 
     Element:    QuestionnaireResponseItem
     Description:  "Questions and sections within the Questionnaire."
     1..1        IdentifierString
     0..1        DetailsLink
     0..1        Question
-    0..1        SubjectOfInformation value is type ref(DomainResource)
+    0..1        FocusOfResponse
     0..*        Answer
     0..*        QuestionnaireResponseItem
 
@@ -189,7 +193,7 @@ Description:    "A structured set of questions and their answers. The questions 
         0..*   QuestionnaireResponseItem
 
         Element:  ReferralOrProcedureRequest
-        Based on:   ActionRequested
+        Based on:   RelatedRequest
         Value:  ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
 
         Element:    ObservationOrProcedure

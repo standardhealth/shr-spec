@@ -9,7 +9,6 @@ Description:		"Abstract class representing any type of action or event."
 0..*			ReasonCode
 0..*			ReasonReference
 1..1			SubjectOfRecord
-				StatusOrActive is type Status
 
 		Element:		ReasonCode
 		Concept:		MTH#C0566251
@@ -57,7 +56,7 @@ Description:		"Abstract class representing an event occurrence or performance of
 		Element:		RelatedRequest
 		Concept:		TBD
 		Description:	"The proposal, order, or plan that is partly or wholly fulfilled by the performance of this act."
-		Value:			ref(ActionRequested)
+		Value:			ref(MedicationRequest) or ref(ProcedureRequest) or ref(ReferralRequest)
 	
 	/*	
 		Element:		EnactsPlan
@@ -76,7 +75,7 @@ Abstract Element:	ActionRequested
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
 0..1			Type  // type of request
-0..1			Author
+//0..1			Requester TODO: generic Requester cannot be supported until overriding choices with other choices is supported in CIMPL
 1..1			RequestIntent
 1..1			Status // should be from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU2 change (conflicting required value sets in MedicationRequest between argo and us-core) 
@@ -86,8 +85,6 @@ Description:		"Abstract class representing a request for any type of action to b
 0..1 			PriorityCode //should be from http://hl7.org/fhir/ValueSet/request-priority  // DSTU2 change (conflicting value sets)
 0..*			Annotation
 0..1			CommunicationMethod
-0..0			InformationSource
-0..0			Recorder
 
 		Element:		RequestIntent
 		Description:	"Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
@@ -106,7 +103,7 @@ Description:		"Abstract class representing a request for any type of action to b
 		Element:		Recipient
 		Concept:		TBD
 		Description:	"Who this request is being addressed to."
-		Value:			ref(EntityOrRole)
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 		
 		Element:		CommunicationMethod
 		Concept:		TBD

@@ -8,45 +8,50 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-// TODO: Document reasons to used SNOMED as opposed to ICD-O-3
+
 EntryElement:   CancerCondition
 Based on:	    Condition
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
-                Code from CancerDisorderVS
+                Code from CancerDisorderVS  // TODO: Document reasons to used SNOMED as opposed to ICD-O-3
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
-  	            StageInformation.StageDetail value is type CancerStagePanel
+  	            StageInformation.StageDetail value is type ref(CancerStagePanel)
 0..0            Severity
-0..1            MorphologyBehavior from MorphologyBehaviorVS
+0..1            MorphologyBehavior
 
 	Element:		MorphologyBehavior
 	Concept:		SCT#246463000 "Behavior of tumor (attribute)"
 	Description:	"A description of the morphology and behavioral characteristics of the cancer."
-	Value:			CodeableConcept
-
+	Value:			CodeableConcept from MorphologyBehaviorVS
 
 EntryElement:   CancerHistologicType
-// MK ? PLEASE EXPLAIN:  did not use precoordinated codes because only available for clinical and pathologic. 
+// MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
 Based on:       SimpleCodedLaboratoryObservation
 Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
-// MK ? PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
+// MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
                 DataValue from CancerHistologicTypeVS
-                SubjectOfInformation value is type ref(CancerCondition)
+				Performer is type PractitionerPerformer
+0..1			RelatedCancerCondition
 0..0	        BodySite
 0..0            Device
+
+	Element:	RelatedCancerCondition
+	Description:	"Cancer condition this information relates to."
+	Value:		ref(CancerCondition)
 
 
 EntryElement:   CancerHistologicGrade
 // did not use precoordinated codes because only available for clinical and pathologic.
 Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
-Concept:        LNC#21858-6 "Grade Cancer"
                 DataValue from http://loinc.org/vs/LL213-0
                 Code is LNC#21858-6 "Grade Cancer"
-                SubjectOfInformation value is type ref(CancerCondition)
+				Performer is type PractitionerPerformer
+0..1			RelatedCancerCondition
 0..0		    BodySite
 0..0            Device
 0..0            PanelMembers
+0..0			Components
 
 /* DISCUSSION: Options and pros/cons for modeling progression/disease status:
 
@@ -73,47 +78,33 @@ ii. The lesion(s) examined could be pre-coordinated in the observation code, for
 iii. BodySite could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
 iv. Create an extension for recording which lesion(s) were evaluated. That's always a last resort; an addition downside is that suitable codes do not exist. Still, this is probably the least bad of the proposed solutions.
 
-Conclusion:
-
 */
-
-
 
 EntryElement:   CancerDiseaseStatus 
 Based on:       CodedNonLaboratoryObservation
 Description:    "The status of the cancer, in terms of whether it is stable, worsening (progressing), improving (responding), or in remission."
+                Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from CancerDiseaseStatusVS // or LL4721-8
 0..0            DataAbsentReason  // in the code set
                 //Code is SCT#246453008 "Course of illness (attribute)"
-                Code is LNC#88040-1 "Response to cancer treatment"
-                SubjectOfInformation value is type CancerCondition
+				Performer is type PractitionerPerformer
+				SubjectOfRecord is type PatientSubjectOfRecord
+0..1			RelatedCancerCondition
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
 0..0		    BodySite
 0..0            Device	
 0..0            PanelMembers
 0..0            Components
 
-        Element:    CancerConditionOrMetastases
-        Description:    "A choice of CancerCondition or DistantMetastases. Needed to restrict the SubjectOfInformation of CancerDiseaseStatus."
-        Value:  ref(CancerCondition) or ref(DistantMetastases)
+		Element:	PractitionerPerformer
+		Based on:	Performer
+		Description: "The actor that carried out the observation or action."
+		Value:		ref(Practitioner)
 
 		Element:	EvidenceType
 		Description:	"The type of evidence considered in making the determination."
 		Value:		CodeableConcept	
 
-
-
-/**** replaced by Onset of CancerCondition 
-EntryElement:	EarliestDateOfCancerCondition
-//TODO_discussion: added, but not convinced we need a separate element for this given the WhenClinicallyRecognized property of Condition.
-Based on:		SimpleNonLaboratoryObservation
-Concept:		LNC#77975-1 "Earliest date of diagnosis"
-Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerCondition."
-Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
-0..0            ReferenceRange
-0..0			BodySite
-                SubjectOfInformation value is type ref(CancerCondition)
-*/
 
 /* Discussion: How to capture date and site of first metastases.
 Could be modeled with condition, observation, or clinical impression.
@@ -129,16 +120,21 @@ EntryElement:   DistantMetastases
 Based on:       CancerCondition
 Description:    "Records the history of secondard neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
                 Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
-0..1            PartOf value is type ref(CancerCondition)
+0..1			RelatedCancerCondition
                 BodySite.BodySiteCode from MetastasisBodySiteVS if covered
+				PersonInformationSource is type PractitionerInformationSource
 
+		Element:	PractitionerInformationSource
+		Based on:	PersonInformationSource
+		Description:	"The information comes from a practitioner who asserts the condition."
+		Value:		ref(Practitioner)
 
 EntryElement:   Tumor
 Based on:		BodyStructure
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
                 Code from CancerHistologicTypeVS
-0..1            PartOf value is type ref(CancerCondition)
+0..1			RelatedCancerCondition
 0..0			Severity
 0..0			StageInformation
 0..1            IsPrimaryTumor
@@ -151,20 +147,24 @@ Description:    "The presence of an abnormal mass of tissue (neoplasm) that resu
 
 EntryElement: 	TumorDimensions
 Based on:		CodedLaboratoryObservation
+Description:	"The size of a given tumor along different dimensions."
 0..0			DataValue
-	            SubjectOfInformation value is type ref(Tumor)
+1..1			RelatedTumor
 				Code is SCT#263605001 "Tumor size (observable entity)"
 0..0            PanelMembers
-				Components.ObservationComponent
-					includes 0..1	TumorLongestDimension
-					includes 0..1	TumorDimension2
-					includes 0..1   TumorDimension3
-					includes 0..1	SizeOfGrossTumorBed
+1..1			Components.ObservationComponent
+				includes 0..1	TumorLongestDimension
+				includes 0..1	TumorDimension2
+				includes 0..1   TumorDimension3
+				includes 0..1	SizeOfGrossTumorBed
+
+	Element:	RelatedTumor
+	Description:  "The tumor that is being characterized."
+	Value:		ref(Tumor)
 
 		Element:		TumorLongestDimension
 		Description:	"The longest dimension of the tumor."
 		Based on:		QuantitativeObservationComponent
-		Concept:		LNC#33728-7 "Size.maximum dimension in Tumor"
                         Code is LNC#33728-7 "Size.maximum dimension in Tumor"
 		                DataValue.Quantity.Units is UCUM#mm		
 		
@@ -189,30 +189,28 @@ Based on:		CodedLaboratoryObservation
 		                DataValue.Quantity.Units is UCUM#mm	
 
 
-EntryElement: 	TumorMargins
+EntryElement: 	TumorInvolvementAtSurgicalMargin
 Based on:		CodedLaboratoryObservation
-Concept:		MTH#C4086369
 Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-                DataValue from PositiveNegativeVS
-				Code is MTH#C4086369
+				Code is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
+				DataValue from SurgicalMarginInvolvementVS
+// Specimen should be required!
 0..0            PanelMembers
-				Components.ObservationComponent
-					includes 0..1	TumorMarginDescription
-// Do we need to record the method? whether the result of imaging, or study of a removed tumor after lumpectomy?	
+0..0			Components
 
-		Element:		TumorMarginDescription
-		Based on:		CodedObservationComponent
-		Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
-						Code is TBD#TBD
-		                DataValue from TumorMarginDescriptionVS
 
 /*
+EntryElement:	TumorMarginDescription
+Based on:		CodedObservationComponent
+Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
+				Code is TBD#TBD
+		        DataValue from TumorMarginDescriptionVS
+
 Element:		TumorCellularity
 Concept:		MTH#C4055283
 Based on:		QuantitativeObservationComponent
 Description:	"Percentage of cells in a sample that are cancerous"
 				DataValue.Quantity.Units is UCUM#%
-
 
 Element:		PercentageOfInSituDisease
 Based on:		QuantitativeObservationComponent
@@ -220,6 +218,13 @@ Concept:		TBD
 Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 			    DataValue.Quantity.Units is UCUM#%
 
+EntryElement:	EarliestDateOfCancerCondition
+// TODO_discussion: Not convinced we need a separate element for this given the Onset property of Condition.
+Based on:		SimpleNonLaboratoryObservation
+Concept:		LNC#77975-1 "Earliest date of diagnosis"
+Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerCondition."
+Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
+0..0            ReferenceRange
+0..0			BodySite
+
 */
-
-

@@ -4,12 +4,11 @@ Namespace:		shr.core
 Abstract Element:	EncounterOrEpisode
 Based on:			DomainResource
 Description:		"Abstract element representing a group of services delivered to a patient."
-				StatusOrActive is type Status
 1..1			Status 
 0..*			StatusHistory
 0..1			TimePeriod
 0..*			EncounterDiagnosis
-1..1			SubjectOfRecord value is type ref(Patient)   // EpisodeOfCare restricted in v2 (otherwise could be Patient or Group)
+1..1			SubjectOfRecord is type PatientSubjectOfRecord  // EpisodeOfCare restricted in v2 (otherwise could be Patient or Group)
 0..*			Type
 0..1			ref(Organization)
 //0..*			ref(Account)
@@ -33,7 +32,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 0..1			PriorityCode could be from http://hl7.org/fhir/ValueSet/v3-ActPriority
 0..*			ref(EpisodeOfCare)
 0..*			Participation
-				Participation.Participant value is type PractitionerOrRelatedPerson 
+				Participation.Participant is type EncounterParticipant
 				Participation.ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type if covered
 0..1			ref(Appointment)
 0..1			Duration
@@ -41,6 +40,11 @@ Description:	"A description of an interaction between a patient and healthcare p
 //0..1			Hospitalization
 0..*			EncounterLocation
 0..1			PartOf value is type ref(Encounter)
+
+		Element:		EncounterParticipant
+		Based on:		Participant
+		Description:	"A choice of Practitioner and RelatedPerson as participant"
+		Value:			ref(Practitioner) or ref(RelatedPerson)
 
 		Element:		StatusHistory
 		Description:	"List of past encounter statuses"
@@ -92,11 +96,11 @@ Description:	"An association between a patient and an organization / healthcare 
 EntryElement:	ReferralRequest
 Based on:		ActionRequested
 Description:	"Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
-				Author value is type PersonOrOrganizationOrDevice
-				SubjectOfRecord value is type PatientOrGroup
+0..1			ReferralRequester
+				SubjectOfRecord is type ProcedureSubjectOfRecord
 0..*			Replaces
 				Replaces value is type ref(ReferralRequest)
-				Recipient value is type PractitionerOrOrganization
+0..*			ReferralRecipient
 1..1			Status from http://hl7.org/fhir/ValueSet/request-status
 				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 				Type could be from http://hl7.org/fhir/ValueSet/referral-type
@@ -105,6 +109,13 @@ Description:	"Used to record and send details about a request for referral servi
 0..1			CommentOrDescription
 0..*			RelatedInformation
 
+        Element:		ReferralRequester
+		Description:	"The person or organization originating this referral"
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
+		
+		Element:		ReferralRecipient
+		Description:	"The practitioner or organization receiving the referral."
+		Value:			ref(Practitioner) or ref(Organization)
 
 		Element:	ServiceType
 		Description:	"A service requested or to be performed during this appointment"
@@ -122,8 +133,7 @@ Description:	"Used to record and send details about a request for referral servi
 EntryElement:	Appointment
 Based on:		DomainResource
 Description:	"A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
-1..1	StatusOrActive is type Status
-		Status from http://hl7.org/fhir/ValueSet/appointmentstatus
+1..1	Status from http://hl7.org/fhir/ValueSet/appointmentstatus
 0..1	ServiceCategory
 0..*	ServiceType
 0..*	Specialty
@@ -155,9 +165,14 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 	Element:	AppointmentParticipation
 	Description:	"Participants involved in appointment"
 	1..*		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type if covered
-	0..1		Participant value is type PersonOrDeviceOrLocation  // HealthcareService not implemented yet
+	0..1		Participant is type AppointmentParticipant  // HealthcareService not implemented yet
 	0..1		Need from http://hl7.org/fhir/ValueSet/participantrequired
 	1..1		Status from http://hl7.org/fhir/ValueSet/participationstatus
+
+			Element:	AppointmentParticipant
+			Based on:	Participant
+			Description:	"A choice of Person (in any role) or Organization, Device or Location as participants."
+			Value:		ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device) or ref(Location)
 
 			Element:	Need
 			Description: "A code expressing the degree or type of need for the person or item."

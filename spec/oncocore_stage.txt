@@ -27,17 +27,20 @@ Value:          CodeableConcept from CancerStagingSystemVS if covered
 Abstract Element:  CancerStagePanel
 Based on:       HeadlessPanel
 Description:    "A panel that contains cancer staging information. This abstract class is the parent of panels containing information related to clinical and pathologic staging."
+0..1            RelatedCancerCondition
 0..1            CancerStageTiming
 0..1            Method is type CancerStagingSystem
-                SubjectOfInformation value is type ref(CancerCondition)
+                Performer is type PractitionerPerformer
 
 Abstract Element:  CancerStagePanelMember
 Based on:       CodedNonLaboratoryObservation
 Description:    "Abstract parent class for members of cancer staging panels. Cancer panel members must include a timing element and staging system, and focus on a cancer disorder. Specific realizations will have value sets specific to certain staging systems."
-                SubjectOfInformation value is type ref(CancerCondition)
+                SubjectOfRecord is type PatientSubjectOfRecord
+                Performer is type PractitionerPerformer
+0..1            RelatedCancerCondition
 1..1            CancerStageTiming 
 0..1            Method is type CancerStagingSystem
-0..0		BodySite
+0..0		    BodySite
 0..0            ReferenceRange
 0..0            Components
 0..0            PanelMembers
@@ -48,6 +51,7 @@ Based on:       CancerStagePanelMember
 Description:    "Abstract partent class for TNM staging panel members. Includes a stage suffix and TNM staging system."
 0..1            CancerStageSuffix
                 CancerStagingSystem from TNMTumorStagingSystemVS if covered
+
 
 
 EntryElement:   TNMClinicalPrognosticStagePanel
