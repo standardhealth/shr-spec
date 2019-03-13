@@ -73,15 +73,17 @@ Description:	"Abstract class representing medication exposure, independent of wh
 EntryElement:	MedicationStatement
 Based on:		MedicationExposure
 Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
-Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
-Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the recorder (who recorded the statement). SHR adds the recorder as an extension, as part of standardizing clinical statements.
-Medication not taken has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
+Description:	"A record of the use of a medication. 
+Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). 
+The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
 ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason. In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
+//SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
+//SHR adds the recorder as an extension, as part of standardizing clinical statements.
 0..1			MedicationStatementInformationSource
-				SubjectOfRecord is type PatientSubjectOfRecord // no Group in DSTU2
+				  SubjectOfRecord is type PatientSubjectOfRecord // no Group in DSTU2
 1..1			StatementDateTime // us-core required
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
+				  Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
 0..1			ReasonCode // Upper cardinality imposed by DSTU 2
 0..1			ReasonReference value is type ref(Condition)
 0..0			Participation
@@ -97,7 +99,7 @@ ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limite
 EntryElement:	MedicationAdministration
 Based on:		MedicationExposure
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
-Although FHIR MedicationAdministration supports date of administration and performer, it lacks common provenance elements, creation date, asserter, and recorder. These are supported as optional extensions.
+Although FHIR MedicationAdministration supports date of administration, information source, performer, it lacks common provenance elements, statement creation date, author, and recorder. These are supported as optional extensions.
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
 				SubjectOfRecord is type PatientSubjectOfRecord  // no Group in DSTU2
