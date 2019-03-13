@@ -4,15 +4,33 @@ Uses:  			shr.core
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
+CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
+
+Element:		GenomicsReport
+Based on:		DiagnosticReport
+Concept:		LNC#81247-9 "Master HL7 genetic variant reporting panel "
+Description:	"Genetic analysis summary report"
+0..*			GeneticMarkerAnalysisResult
+1..1			Category is OBSCAT#GE
+
+EntryElement:	CancerGenomicsReport
+Based on:		GenomicsReport
+Concept:		TBD  // MLT: need LOINC number for cancer genomics report
+Description:	"Cancer genetic analysis summary report"
+//				CancerGeneticMarkerAnalysisResult is type GeneticMarkerAnalysisResult	// MLT: generates error (??)
+0..*			CancerGeneticMarkerAnalysisResult		// placeholder until I can fix the type constraint above.
+0..0			GeneticMarkerAnalysisResult		// wonky fix until I can fix the type constraint above.
+				Code should be from CancerGeneticTestRegistryVS  // the identifier from the Genetic Test Registry value set filtered for cancer-relevant genetic tests.  Note this is an example to accommodate local test codes since there is no one comprehensive genetic test standard and LOINC does not include enough.
 
 Element:		GeneticMarkerAnalysisResult
 Based on:		LaboratoryObservation
 Concept:		SCT#20889005 "Genetic marker function (observable entity)"
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
-				Code from https://www.ncbi.nlm.nih.gov/gtr if covered // the identifier from the Genetic Test Registry
+				Code from http://www.genenames.org if covered  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. It's left "generic" as any LOINC code. 
 				Method from GeneticTestMethodVS if covered
 0..0			DataValue // panel, no numerical or coded result
-//  MK: What gene are we looking at? mlt: identified in two places: 1) Code through the GTR ID, 2) in the GeneName element below.
+//  MK: What gene are we looking at?  identified in two places: 1) Code through the GTR ID, 2) in the GeneName element below.  MLT: not really.  The GTR ID can be a panel.  Regardless, GTR ID should move to GenomicsReport.
 0..0			ReferenceRange
 0..1			GenomicSourceClass
 0..1			GeneName
@@ -43,7 +61,7 @@ Element:		DNASequenceVariantName
 Based on:		ObservationComponent
 Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
 				Code is LNC#48004-6 "DNA change (c.HGVS)"
-				DataValue value is type string
+				DataValue from http://hl7.org/fhir/ValueSet/clinvar if covered
 
 Element:		DNASequenceVariantId
 Based on:		ObservationComponent
@@ -71,6 +89,5 @@ EntryElement:	CancerGeneticMarkerAnalysisResult
 Based on:		GeneticMarkerAnalysisResult
 Concept:		TBD#TBD "Cancer Genetic Test DataValue"
 Description:	"A panel that analyses different components of a genetic test specific to cancer-related genetic markers."
-				Code from CancerGeneticTestRegistryVS if covered // the identifier from the Genetic Test Registry value set (filtered for cancer-relevant genetic tests.)
 				GeneName.CodeableConcept from CancerGeneVS if covered
 0..0			Components
