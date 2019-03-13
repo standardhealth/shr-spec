@@ -57,7 +57,6 @@ Abstract Element:	ConditionOrObservation
 Based on:		ClinicalStatement
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 1..1			Code
-				StatusOrActive is type Status
 
 
 EntryElement:	Observation
@@ -72,7 +71,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			RelevantTime
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
-0..1			SubjectOfInformation
+0..*			Performer
 0..1			BodySite
 0..1			CommentOrDescription
 0..1			Interpretation
@@ -80,20 +79,22 @@ For an Observation, the Code describes the aspect or property of the subject bei
 0..1			ReferenceRange
 0..1			Components
 0..1			PanelMembers
-1..1			SubjectOfRecord value is type PatientOrGroupOrDeviceOrLocation
-				Author value is type PersonOrOrganization 
-				InformationSource value is type PersonOrOrganization
+1..1			SubjectOfRecord is type ObservationSubjectOfRecord
 				CareContext value is type ref(Encounter)
 
+        Element:		ObservationSubjectOfRecord
+		Based on:		SubjectOfRecord
+		Description:	"A choice of Patient, Group, Device, or Location. These are the potential subjects for an Observation."
+		Value:			ref(Patient) or ref(Group) or ref(Device) or ref(Location)
+
 		Element:		RelevantTime
-		Concept:		TBD
 		Description:	"The time or time period that the statement addresses.
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
 		Value:			dateTime or TimePeriod 
 
-		Element:		SubjectOfInformation
-		Description:	"The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)"
-		Value:			ref(DomainResource) or CodeableConcept
+		Element:	Performer
+		Description: "The actor that carried out the observation or action."
+		Value:		ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
 
 		Element:		Interpretation
 		Concept:		MTH#C0420833
@@ -223,7 +224,7 @@ Description:	"A panel that does not have an overall value that summarizes the en
 Element:		SocialHistoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"A simplified observation for social histories."
-1..1			SubjectOfRecord value is type PatientOnly
+1..1			SubjectOfRecord is type PatientSubjectOfRecord
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
 0..0			BodySite
@@ -242,8 +243,8 @@ Based on:		ConditionOrObservation
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
-				InformationSource value is type PatientOrPractitionerOrRelatedPerson
-1..1			SubjectOfRecord value is type ref(Patient)   // restricted in DSTU 2 (from Patient or Group)
+0..1			PersonInformationSource
+1..1			SubjectOfRecord is type PatientSubjectOfRecord   // restricted in DSTU 2 (from Patient or Group)
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
 0..*			BodySite
 1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
@@ -259,18 +260,23 @@ SHR Condition uses the SHR BodySite structure that includes not only a code, but
 //0..*			ConditionCause
 //0..1			Criticality
 
-			Element:		Evidence
-			Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
-			0..*		Manifestation
-			0..*		DomainResource
+        Element:		PersonInformationSource
+		Description:	"The person who provided the information, not necessarily the patient."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
 
-				Element:	Manifestation
-				Description: "Clinical symptoms/signs."
-				Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
-			Element:		ConditionCause
-			Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
-			Value:			CodeableConcept or ref(Entity) or ref(ConditionOrObservation)
+		Element:		Evidence
+		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
+		0..*		Manifestation
+		0..*		DomainResource
+
+			Element:	Manifestation
+			Description: "Clinical symptoms/signs."
+			Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
+
+		Element:		ConditionCause
+		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
+		Value:			CodeableConcept or ref(Entity) or ref(ConditionOrObservation)
 			// probably other attributes needed, such as likelihood or type of cause
 
 			Element:		ClinicalStatus
@@ -348,20 +354,20 @@ Based on:		Condition
 Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
 				Code from CongenitalAbnormalitiesVS if covered
 
-
 EntryElement:	DiagnosticReport
 Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObservation
-0..*			RelatedRequest value is type ReferralOrProcedureOrMedicationRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
+0..*			RelatedRequest is type MedicationStatementRelatedRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
 0..1			ServiceCategory	
-0..1			SubjectOfRecord value is type PatientOrGroupOrDeviceOrLocation
+0..1			SubjectOfRecord is type ObservationSubjectOfRecord
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
 0..1			CareContext
 0..1			RelevantTime
-0..1			StatementDateTime
-0..*			Participation
-				Participation.Participant value is type PractitionerOrOrganization
+1..1			StatementDateTime  // 'issued' is required in DSTU-2
+0..1			Participation
+1..1			Participation.Participant is type DiagnosticReportParticipant  // performer is required in DSTU-2
 0..0			Participation.ParticipationPeriod
+0..0			Participation.ParticipationType
 0..0			Participation.OnBehalfOf
 0..*			ref(Specimen)
 0..*			ref(Observation)  // Panel members?
@@ -371,8 +377,13 @@ Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObser
 0..*			DiagnosisCode
 0..*			OriginalReport
 
-    Element:  ReferralOrProcedureOrMedicationRequest
-    Based on:   ActionRequested
+    Element:		DiagnosticReportParticipant
+	Based on:		Participant
+	Description:	"A choice of Practitioner or Organization as participant."
+	Value:			ref(Practitioner) or ref(Organization)
+
+    Element:  MedicationStatementRelatedRequest
+    Based on:   RelatedRequest
     Value:  ref(ReferralRequest) or ref(ProcedureRequest) or ref(MedicationRequest) // CarePlan not yet implemented
 
 	Element:		Conclusion

@@ -34,7 +34,6 @@ Outside of ODH, the employment arrangement between an employer and a person (one
 				Code is LNC#74165-2 "HistoryOfEmploymentStatus"
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 0..0			Components
-0..0			SubjectOfInformation
 
 EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
@@ -45,13 +44,11 @@ Outside of ODH, a characterization of the employment arrangement between an empl
 				Code is LNC#87510-4 "Date of Retirement"
 0..0			Components
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
-0..0			SubjectOfInformation
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
 0..0			Components
 0..0			RelevantTime // Since the result data value contains the time period of combat zone activity, the relevant time is redundant
-0..0			SubjectOfInformation
 
 EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
@@ -61,13 +58,17 @@ Example: a person has worked for a total of 30 years as a building carpenter (Oc
 Usual Work does not include work that was unpaid or voluntary."
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186
 				Code is LNC#21843-8	"History of Usual occupation"
-				SubjectOfInformation value is type CodeableConcept
-				SubjectOfInformation from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion // family member value set
+0..1			SubjectOfInformationCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion // family member value set
 				Components.ObservationComponent
 includes 1..1 	UsualIndustry 
 includes 0..1	UsualOccupationDuration 
 1..1			RelevantTime 
 				RelevantTime value is type TimePeriod
+
+	Element:		SubjectOfInformationCode
+	Description:	"The person referred the information in this resource relates to, if different than the person of record."
+		//The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)
+	Value:			CodeableConcept
 
 	Element:		UsualIndustry
 	Based on:		CodedObservationComponent
@@ -93,8 +94,7 @@ A person's job can be a social determinant of their health and information about
 At a minimum, it is important to have a record of a person's current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
 0..0			DataValue
 0..0			DataAbsentReason
-				SubjectOfInformation value is type CodeableConcept
-				SubjectOfInformation from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion 
+0..1			SubjectOfInformationCode from https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.1.11.19579/expansion 
 				Code is LNC#11341-5 "History of Occupation"
 0..1			Employer // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 				Components.ObservationComponent
