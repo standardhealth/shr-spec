@@ -370,12 +370,18 @@ Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObser
 0..0			Participation.ParticipationType
 0..0			Participation.OnBehalfOf
 0..*			ref(Specimen)
-0..*			ref(Observation)  // Panel members?
+//0..*			ref(Observation)  // Panel members?
+0..*			DiagnosticReportResult
 //0..*			ref(ImagingStudy)
 0..*			ref(Media)
 0..1			Conclusion
 0..*			DiagnosisCode
 0..*			OriginalReport
+
+// mlt: added Result to diagnostic report since this attribute can be sliced.
+	Element: 		DiagnosticReportResult
+	Description:	"Observations that are part of this diagnostic report. Observations can be simple name/value pairs (e.g. `atomic results`), or they can be grouping observations that include references to other members of the group (e.g. `panels`). (source: HL7 FHIR DiagnosticReport resource)"
+	Value:			ref(Observation)
 
     Element:		DiagnosticReportParticipant
 	Based on:		Participant
