@@ -43,7 +43,7 @@ Description:    "Classification of the cancer by the type of tissue in which the
 
 	Element:	RelatedCancerCondition
 	Description:	"Cancer condition this information relates to."
-	Value:		ref(CancerCondition) or ref(DistantMetastases)
+	Value:		ref(CancerCondition) or ref(DistantMetastases) or ref(Tumor)
 
 
 EntryElement:   CancerHistologicGrade
@@ -102,11 +102,6 @@ Description:    "The status of the cancer, in terms of whether it is stable, wor
 0..0            PanelMembers
 0..0            Components
 
-		Element:	PractitionerPerformer
-		Based on:	Performer
-		Description: "The actor that carried out the observation or action."
-		Value:		ref(Practitioner)
-
 		Element:	EvidenceType
 		Description:	"The type of evidence considered in making the determination."
 		Value:		CodeableConcept	
@@ -124,7 +119,7 @@ Conclusion: Having a place for the onset date of mets, which is an mCODE require
 
 EntryElement:   DistantMetastases
 Based on:       CancerCondition
-Description:    "Records the history of secondard neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
+Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
                 Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
 0..1			RelatedCancerCondition
                 BodySite.BodySiteCode from MetastasisBodySiteVS if covered
@@ -135,7 +130,8 @@ Description:    "Records the history of secondard neoplasms, including location(
 		Description:	"The information comes from a practitioner who asserts the condition."
 		Value:		ref(Practitioner)
 
-EntryElement:   Tumor
+
+EntryElement:   Tumor  // a condition, not a cancer condition
 Based on:		BodyStructure
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
