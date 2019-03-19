@@ -12,41 +12,51 @@ Based on:		DiagnosticReport
 Concept:		LNC#81247-9 "Master HL7 genetic variant reporting panel "
 Description:	"Genetic analysis summary report"
 1..1			Category is OBSCAT#GE
-				DiagnosticReportResult value is type ref(GeneticMarkerAnalysisResult)
+//				DiagnosticReportResult value is type ref(GeneticMarkerAnalysisResult)
 
 EntryElement:	CancerGenomicsReport
 Based on:		GenomicsReport
 Concept:		TBD  // MLT: need LOINC number for cancer genomics report
 Description:	"Cancer genetic analysis summary report"
 				Code should be from CancerGeneticTestRegistryVS 
+0..*			CancerGeneticMarkerAnalysisResult
 
 Element:		GeneticMarkerAnalysisResult
 Based on:		LaboratoryObservation
 Concept:		SCT#20889005 "Genetic marker function (observable entity)"
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
-				Code from http://www.genenames.org if covered  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. It's left "generic" as any LOINC code. 
+				Code from http://loinc.org  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. They reference any LOINC code. 
 				Method from GeneticTestMethodVS if covered
 0..0			DataValue // panel, no numerical or coded result
 //  MK: What gene are we looking at?  identified in two places: 1) Code through the GTR ID, 2) in the GeneName element below.  MLT: not really.  The GTR ID can be a panel.  Regardless, GTR ID should move to GenomicsReport.
 0..0			ReferenceRange
-0..1			GenomicSourceClass
-0..1			GeneName
-0..1			DNARegionName
-0..1			DNASequenceVariantName
-0..1			DNASequenceVariantId
-0..1			DNASequenceVariantType
+// 0..1			GenomicSourceClass
+// 0..1			GeneName
+// 0..1			DNARegionName
+// 0..1			DNASequenceVariantName
+// 0..1			DNASequenceVariantId
+// 0..1			DNASequenceVariantType
 0..0			BodySite
 0..0			PanelMembers
+				Components.ObservationComponent
+					includes 0..1	GenomicSourceClass
+					includes 0..1	GeneName
+//					includes 0..1	DNARegionName
+					includes 0..1	DNASequenceVariantName
+//					includes 0..1	DNASequenceVariantId
+					includes 0..1	DNASequenceVariantType
 
 Element:		GenomicSourceClass
+Based on:		CodedObservationComponent
 Concept:		LNC#48002-0 "Genomic source class [Type]"
 Description:	"The genomic class of the specimen being analyzed: Germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome. (source: LOINC)"
 Value:			CodeableConcept from GenomicSourceClassVS	// LOINC preferred answer list for LNC#48002-0.
 
 Element:		GeneName
-Concept:		LNC#48018-6 "Gene studied [ID]"
+Based on:		CodedObservationComponent
 Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: LOINC)"
-Value:			CodeableConcept from http://www.genenames.org if covered
+				Code is LNC#48018-6 "Gene studied [ID]"
+				DataValue should be from http://www.genenames.org 
 				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
 Element:		DNARegionName
@@ -82,9 +92,15 @@ Description:	"A substance found in tissue or blood or other body fluids that may
 0..0			Device
 
 
-EntryElement:	CancerGeneticMarkerAnalysisResult
+Element:		CancerGeneticMarkerAnalysisResult
 Based on:		GeneticMarkerAnalysisResult
 Concept:		TBD#TBD "Cancer Genetic Test DataValue"
 Description:	"A panel that analyses different components of a genetic test specific to cancer-related genetic markers."
-				GeneName.CodeableConcept from CancerGeneVS if covered
-0..0			Components
+0..1			CancerGeneName
+
+Element:		CancerGeneName
+Based on:		GeneName
+Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: LOINC)"
+				Code is LNC#48018-6 "Gene studied [ID]"
+				DataValue from CancerGeneVS if covered
+				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
