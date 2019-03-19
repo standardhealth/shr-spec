@@ -1,0 +1,137 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.core
+
+
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:		UCUM = http://unitsofmeasure.org
+CodeSystem: 	OBSCAT = http://hl7.org/fhir/observation-category
+
+//----------------Vital Sign Panel----------------
+
+EntryElement:	VitalSignsPanel
+Based on:	NonLaboratoryObservation
+Description: ""
+		Code is LNC#85353-1 "Vital signs, weight, height, head circumference, oxygen saturation and BMI panel"
+0..0	DataValue
+0..0	BodySite
+0..0	Method
+0..0	Device
+0..0	ReferenceRange
+0..0	Components
+		PanelMembers.Observation
+includes 0..1 BodyHeight
+includes 0..1 BodyWeight
+includes 0..1 BloodPressure
+includes 0..1 RespiratoryRate
+includes 0..1 HeartRate
+includes 0..1 OxygenSaturation
+includes 0..1 BodyTemperature
+includes 0..1 BodyLength
+includes 0..1 HeadCircumference
+includes 0..1 BodyMassIndex
+
+//------------------ Vital Sign ---------------------------
+
+Abstract Element:  VitalSign
+Based on:		QuantitativeNonLaboratoryObservation
+Description:	"Abstract class parent for all vital sign profiles."
+1..1			Category is OBSCAT#vital-signs
+
+EntryElement:	BodyHeight
+Based on:		VitalSign
+Description:	"The distance from the sole to the crown of the head."
+				Code is LNC#8302-2 "Body height"
+				DataValue.Quantity.Units is UCUM#cm "cm"
+//				Precondition from BodyHeightQualifierVS
+
+EntryElement:	BodyWeight
+Based on:		VitalSign
+Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
+				Code is LNC#29463-7  // CIMI uses 3141-9 "Body weight Measured" but Argonaut, US-Core, and FHIR R4 all use 29462-7
+				DataValue.Quantity.Units is UCUM#kg "kg"
+//				Precondition from BodyWeightQualifierVS
+
+EntryElement:	BloodPressure  // EvaluationResultRecorded with components
+Based on:		VitalSign
+Concept:		LNC#55284-4
+Description:	"The force of circulating blood on the walls of the arteries."
+				Code is LNC#55284-4
+0..0			DataValue
+				Components.ObservationComponent
+includes 0..1 	SystolicPressure 
+includes 0..1 	DiastolicPressure
+//				BodySite from BloodPressureBodySiteVS
+//				EvaluationMethod from BloodPressureMethodVS
+//				Precondition from BloodPressureQualifierVS
+//0..1			HeadTiltAngle
+		
+	Element:		SystolicPressure
+	Based on:		QuantitativeObservationComponent
+	Description:	"The blood pressure during the contraction of the left ventricle of the heart, when blood pressure is at its highest."
+					Code is LNC#8480-6
+					DataValue.Quantity.Units is UCUM#mm[Hg] "mmHg"
+
+	Element:		DiastolicPressure
+	Based on:		QuantitativeObservationComponent
+	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
+					Code is LNC#8462-4
+					DataValue.Quantity.Units is UCUM#mm[Hg] "mmHg"
+
+EntryElement:	RespiratoryRate
+Based on:		VitalSign
+Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."
+				Code is LNC#9279-1 "Respiratory rate"
+				DataValue.Quantity.Units is UCUM#/min "/min"
+//0..1			EvaluationMethod from RespiratoryRateMethodVS
+//				Precondition from RespiratoryRateQualifierVS
+
+EntryElement:	HeartRate
+Based on:		VitalSign
+Concept:		LNC#8867-4
+Description:	"The number of times the heart ventricles contract per unit of time, usually per minute."
+				Code is LNC#8867-4 "Heart rate"
+				DataValue.Quantity.Units is UCUM#/min "/min"
+//				Precondition from HeartRateQualifierVS
+//0..1			EvaluationMethod from HeartRateMethodVS
+
+EntryElement:	OxygenSaturation
+Based on:		VitalSign
+Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
+// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (which is good because it doesn't presume a method.)
+				Code is LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
+				DataValue.Quantity.Units is UCUM#% "%"
+//0..1			BodySite.BodySiteCode from OxygenSaturationBodySiteVS
+
+EntryElement:	BodyTemperature
+Based on:		VitalSign
+Description:	"The measure of the level of heat in the body."
+				Code is LNC#8310-5 "Body temperature"
+				DataValue.Quantity.Units is UCUM#Cel "C"
+//				BodySite.BodySiteCode from BodyTemperatureBodySiteVS
+//				Precondition from BodyTemperatureQualifierVS
+
+EntryElement:	BodyLength
+Based on:		VitalSign
+Description:	"The distance from the sole of the foot to the crown of the head, lying down (typically 0-2 years)."
+				Code is LNC#8306-3 "Body length"
+				DataValue.Quantity.Units is UCUM#cm "cm"
+
+EntryElement:	HeadCircumference
+Based on:		VitalSign
+Description:	"Circumference of the head (typically 0-2 years)."
+				Code is LNC#8287-5 "Head Occipital-frontal circumference by Tape measure"
+				DataValue.Quantity.Units is UCUM#cm "cm"
+
+EntryElement:	BodyMassIndex
+Based on:		VitalSign
+Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
+				Code is LNC#39156-5 "Body mass index (BMI) [Ratio]"
+				DataValue.Quantity.Units is UCUM#kg/m2  "kg/m2"
+
+
+/*
+	Element: 		HeadTiltAngle // This qualifier is only used during a tilt table test.
+	Concept: 		LNC#8360-0
+	Description:	"The angle at which the head is tilted relative to a level position while physiologic tests are taken."
+	Value:			Quantity with units UCUM#deg "deg"
+*/
