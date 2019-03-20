@@ -150,6 +150,7 @@ Based on:		NonLaboratoryObservation
 Concept:		TBD
 Description:	"The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
 				DataValue value is type Quantity
+				Interpretation from QuantitativeResultInterpretationVS if covered
 
 EntryElement:	SimpleCodedNonLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation
@@ -180,7 +181,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 	includes 	0..1 AccessionIdentifier
 	includes	0..1 FillerOrderNumber
 	includes	0..1 PlacerOrderNumber
-				Performer is type PractitionerPerformer // workaround for bug where the slicing ADDS the declared types rather than RESTRICTS the declared types
+				Performer is type PractitionerPerformer // partial workaround for bug where the slicing ADDS the declared types rather than RESTRICTS the declared types
 				Performer
 	includes 	0..1 ResponsibleObserver
 	includes	0..1 PerformingLaboratory
@@ -211,6 +212,12 @@ Description:	"A coded finding based on a specimen collected from a patient."
 		Description:	"Director of the laboratory performing the test."
 //		Value:			ref(Practitioner)
 
+		Element:		PractitionerPerformer
+		Based on:		Performer
+		Description: 	"The practitioner that carried out the observation or action."
+		Value:			ref(Practitioner)
+
+
 EntryElement:	CodedLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A coded result from a laboratory test."
@@ -233,6 +240,7 @@ EntryElement:	QuantitativeLaboratoryObservation
 Based on:		LaboratoryObservation
 Description:	"A quantiative result from a laboratory test."
 				DataValue value is type Quantity
+				Interpretation from QuantitativeResultInterpretationVS if covered
 
 EntryElement:	SimpleQuantitativeLaboratoryObservation
 Based on:		CodedNonLaboratoryObservation

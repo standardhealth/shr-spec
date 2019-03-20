@@ -53,9 +53,6 @@ Description:	"Abstract class parent for all vital sign profiles."
 		Description:	"The type of device used to make the measurement, expressed as a code. If a specific device is to be recorded, use Device."
 		Value:			CodeableConcept
 */
-		Element:		BodyPosition
-		Description:	"The position of the body."
-		Value:			CodeableConcept from BodyPositionVS if covered
 
 EntryElement:	BodyWeight
 Based on:		VitalSign
@@ -95,7 +92,7 @@ Description:	"The force of circulating blood on the walls of the arteries."
 				Code is LNC#55284-4 "Blood pressure systolic and diastolic"
 0..0			DataValue
 				BodySite.BodySiteCode from BloodPressureBodySiteVS if covered
-				Precondition from BloodPressurePreconditionVS if covered
+				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from BloodPressureMethodVS if covered
 				Components.ObservationComponent
 includes 0..1 	SystolicPressure 
@@ -120,8 +117,8 @@ Description:	"The rate of breathing (inhalation and exhalation) measured within 
 				Code is LNC#9279-1 "Respiratory rate"
 				DataValue.Quantity.Units is UCUM#/min "{breaths}/min"
 0..0			BodySite
-				Precondition from RespiratoryPreconditionVS if covered
-				Method from RespiratoryMethodVS if covered
+				Precondition from CardiopulmonaryPreconditionVS if covered
+				Method from RespiratoryRateMethodVS if covered
 				Components.ObservationComponent
 0..1			BodyPosition
 0..0			Components
@@ -133,28 +130,43 @@ Description:	"The number of times the heart ventricles contract per unit of time
 				Code is LNC#8867-4 "Heart rate"
 				DataValue.Quantity.Units is UCUM#/min "/min"
 				BodySite.BodySiteCode from HeartRateBodySiteVS if covered
-				Precondition from HeartRatePreconditionVS if covered
+				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from HeartRateMethodVS if covered
 0..0			Components
 
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
 Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
-// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (which is good because it doesn't presume a method.)
+// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (good because it doesn't presume a method).
 				Code is LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
 				DataValue.Quantity.Units is UCUM#% "%"
 				BodySite.BodySiteCode from OxygenSaturationBodySiteVS
-				Precondition from OxygenSaturationPreconditionVS
-//				DeviceType from OxygenSaturationDeviceTypeVS
-0..0			Components
+				Precondition from CardiopulmonaryPreconditionVS
+				Method from OxygenSaturationMethodVS
+				Components.ObservationComponent
+	includes	0..1	SupplementalOxygenFlowrate
+	includes	0..1	SupplementalOxygenConcentration
 
+	Element:	SupplementalOxygenFlowrate
+	Based on:	QuantitativeObservationComponent
+	Description: "Oxygen gas flow rate delivered to subject during oxygen therapy"
+				Code is LNC#19941-4 "Oxygen gas flow Oxygen delivery system"
+				DataValue.Quantity.Units is UCUM#L/min "L/min"
+
+	Element:	SupplementalOxygenConcentration
+	Based on:	QuantitativeObservationComponent
+	Description: "Percentage of oxygen delivered to subject during oxygen therapy"
+				Code is LNC#3150-0 "Inhaled oxygen concentration"
+				DataValue.Quantity.Units is UCUM#% "%"
+	
 EntryElement:	BodyTemperature
 Based on:		VitalSign
 Description:	"The measure of the level of heat in the body."
 				Code is LNC#8310-5 "Body temperature"
 				DataValue.Quantity.Units is UCUM#Cel "C"
-//				BodySite.BodySiteCode from BodyTemperatureBodySiteVS
+				BodySite.BodySiteCode from BodyTemperatureBodySiteVS
 //				Precondition from BodyTemperatureQualifierVS
+				Method from BodyTemperatureMethodVS
 0..0			Components
 
 EntryElement:	HeadCircumference
@@ -162,6 +174,10 @@ Based on:		VitalSign
 Description:	"Circumference of the head (typically 0-2 years)."
 				Code is LNC#8287-5 "Head Occipital-frontal circumference by Tape measure"
 				DataValue.Quantity.Units is UCUM#cm "cm"
+0..0			Precondition
+0..0			Method
+0..0			BodySite
+0..0			Components
 0..0			Components
 
 EntryElement:	BodyMassIndex
@@ -169,6 +185,9 @@ Based on:		VitalSign
 Description:	"A general indicator of the body fat an individual is carrying based upon the ratio of weight to height."
 				Code is LNC#39156-5 "Body mass index (BMI) [Ratio]"
 				DataValue.Quantity.Units is UCUM#kg/m2  "kg/m2"
+0..0			Precondition
+0..0			Method
+0..0			BodySite
 0..0			Components
 
 
