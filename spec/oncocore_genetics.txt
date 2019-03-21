@@ -7,50 +7,47 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
 
-Element:		GenomicsReport
+EntryElement:	GenomicsReport
 Based on:		DiagnosticReport
-Concept:		LNC#81247-9 "Master HL7 genetic variant reporting panel "
+Concept:		LNC#81247-9 "Master HL7 genetic variant reporting panel"
 Description:	"Genetic analysis summary report"
 1..1			Category is OBSCAT#GE
-//				DiagnosticReportResult value is type ref(GeneticMarkerAnalysisResult)
+0..*			GeneticMarkerAnalysisResult
+
 
 EntryElement:	CancerGenomicsReport
 Based on:		GenomicsReport
-Concept:		TBD  // MLT: need LOINC number for cancer genomics report
 Description:	"Cancer genetic analysis summary report"
-				Code should be from CancerGeneticTestRegistryVS 
-0..*			CancerGeneticMarkerAnalysisResult
+				Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
+//				DataValue should be from CancerGeneticTestRegistryVS 
+				GeneticMarkerAnalysisResult is type CancerGeneticMarkerAnalysisResult
 
-Element:		GeneticMarkerAnalysisResult
+
+Element:	GeneticMarkerAnalysisResult
 Based on:		LaboratoryObservation
-Concept:		SCT#20889005 "Genetic marker function (observable entity)"
+// Concept:		
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
-				Code from http://loinc.org  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. They reference any LOINC code. 
-				Method from GeneticTestMethodVS if covered
+				Code is SCT#20889005 "Genetic marker function (observable entity)"
+//				Code from http://loinc.org  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. They reference any LOINC code. 
+//				Method should be from GeneticTestMethodVS
 0..0			DataValue // panel, no numerical or coded result
-//  MK: What gene are we looking at?  identified in two places: 1) Code through the GTR ID, 2) in the GeneName element below.  MLT: not really.  The GTR ID can be a panel.  Regardless, GTR ID should move to GenomicsReport.
 0..0			ReferenceRange
-// 0..1			GenomicSourceClass
-// 0..1			GeneName
-// 0..1			DNARegionName
-// 0..1			DNASequenceVariantName
-// 0..1			DNASequenceVariantId
-// 0..1			DNASequenceVariantType
 0..0			BodySite
 0..0			PanelMembers
 				Components.ObservationComponent
 					includes 0..1	GenomicSourceClass
 					includes 0..1	GeneName
-//					includes 0..1	DNARegionName
+					includes 0..1	DNARegionName
 					includes 0..1	DNASequenceVariantName
-//					includes 0..1	DNASequenceVariantId
+					includes 0..1	DNASequenceVariantId
 					includes 0..1	DNASequenceVariantType
 
 Element:		GenomicSourceClass
 Based on:		CodedObservationComponent
-Concept:		LNC#48002-0 "Genomic source class [Type]"
+// Concept:		LNC#48002-0 "Genomic source class [Type]"
 Description:	"The genomic class of the specimen being analyzed: Germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome. (source: LOINC)"
-Value:			CodeableConcept from GenomicSourceClassVS	// LOINC preferred answer list for LNC#48002-0.
+				Code is LNC#48002-0 "Genomic source class [Type]"
+				DataValue should be from GenomicSourceClassVS
 
 Element:		GeneName
 Based on:		CodedObservationComponent
@@ -60,9 +57,11 @@ Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (so
 				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
 Element:		DNARegionName
-Concept:		LNC#47999-8 "DNA region name [Identifier]"
+Based on:		ObservationComponent
+// Concept:		LNC#47999-8 "DNA region name [Identifier]"
 Description:	"A human readable name for the region of interest. Typically Exon #, Intron # or other. NOTE: This is not standardized and is mainly for convenience and display purposes."
-Value:			string
+				Code is LNC#47999-8 "DNA region name [Identifier]"
+				DataValue value is type string
 
 Element:		DNASequenceVariantName
 Based on:		ObservationComponent
@@ -80,7 +79,7 @@ Element:		DNASequenceVariantType
 Based on:		CodedObservationComponent
 Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
 				Code is LNC#48005-3 "DNA change type"
-				DataValue from DNAChangeTypeVS
+				DataValue from DNAChangeTypeVS if covered
 
 
 EntryElement:	TumorMarkerObservation
@@ -92,11 +91,12 @@ Description:	"A substance found in tissue or blood or other body fluids that may
 0..0			Device
 
 
-Element:		CancerGeneticMarkerAnalysisResult
+EntryElement:	CancerGeneticMarkerAnalysisResult
 Based on:		GeneticMarkerAnalysisResult
-Concept:		TBD#TBD "Cancer Genetic Test DataValue"
 Description:	"A panel that analyses different components of a genetic test specific to cancer-related genetic markers."
-0..1			CancerGeneName
+				Code is SCT#20889005 "Genetic marker function (observable entity)" // mlt: needs Cancer-specific genetic test concept
+				Method should be from GeneticTestMethodVS
+0..0			ReferenceRange
 
 Element:		CancerGeneName
 Based on:		GeneName
