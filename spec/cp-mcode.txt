@@ -1,0 +1,196 @@
+Grammar:        ContentProfile 1.0
+
+// Required fields (1..1 or 1..*) don't need to be marked must-support so (currently) they are not included in this list. But, I wonder if they will be missed in the data dictionary?
+Namespace: shr.core
+    Patient:  // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender 
+        Person.DateOfBirth MS
+        Person.AdministrativeGender MS
+        Person.Race.RaceCode MS
+        Person.Ethnicity.EthnicityCode MS
+        Person.Address.PostalCode MS
+        // How to restrict out the boolean or make dateTime only MS in mCODE only?
+        Person.Deceased MS
+    Condition:
+        // Required: SubjectOfRecord, Category, Status, ClinicalStatus, Code
+        SubjectOfRecord MS
+        Code MS
+        ClinicalStatus MS
+    MedicationStatement:
+        // Required: StatementDateTime, Medication, OccurrenceTimeOrPeriod, Status, SubjectOfRecord
+        SubjectOfRecord MS
+        MedicationCodeOrReference  MS  // Code only?  i.e., [CodeableConcept]? 
+        OccurrenceTimeOrPeriod  MS
+        TerminationReason  MS
+        TreatmentIntent  MS
+    ECOGPerformanceStatus:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        Interpretation MS
+        RelevantTime MS
+    KarnofskyPerformanceStatus:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        Interpretation MS
+        RelevantTime MS
+    SurgicalProcedure:
+        SubjectOfRecord MS
+        Code MS
+        OccurrenceTimeOrPeriod MS
+        TreatmentIntent MS
+        // BodySite unnecessary if code is pre-coordinated
+    RadiationProcedure:  
+        // Required: SubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
+        SubjectOfRecord MS
+        Code MS
+        OccurrenceTimeOrPeriod MS
+        TreatmentIntent MS
+        // BodySite unnecessary if code is pre-coordinated
+    BloodPressure: 
+        // Required: SubjectOfRecord, Category, Status and Code
+        SubjectOfRecord MS
+        Code MS
+// Uncomment out when ready
+//        Components.ObservationComponent[SystolicPressure].DataValue
+//        Components.ObservationComponent[DiastolicPressure].DataValue
+        RelevantTime MS
+    BodyHeight:
+        // Required: SubjectOfRecord, Category, Status and Code
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        RelevantTime MS
+    BodyWeight:
+        // Required: SubjectOfRecord, Category, Status and Code
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        RelevantTime MS
+
+Namespace: oncocore
+    CancerCondition:
+        SubjectOfRecord MS
+        Code MS
+        ClinicalStatus MS
+        BodySite.BodySiteCode MS
+        MorphologyBehavior MS
+        DateOfDiagnosis MS
+        CancerHistologicType MS
+    DistantMetastases:
+        SubjectOfRecord MS
+        Code MS
+        DateOfDiagnosis MS
+        //  No BodySite because ICD-O-3 code will pre-coordinate body site
+
+//  For all TNM elements, Required: Code, Status, SubjectOfRecord
+//  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
+    TNMClinicalStageGroup:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        Method MS
+        RelevantTime MS
+    TNMClinicalPrimaryTumorClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TNMClinicalRegionalNodesClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TNMClinicalDistantMetastasesClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TNMPathologicStageGroup:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        Method MS
+        RelevantTime MS
+    TNMPathologicPrimaryTumorClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TNMPathologicRegionalNodesClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TNMPathologicDistantMetastasesClassification:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        CancerStageSuffix MS
+        CancerStageTiming MS
+        RelevantTime MS
+    TumorMarkerObservation:
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        RelevantTime MS
+//      Specimen.Type -- MK: Is this minimal?
+    CancerGeneticMarkerAnalysisResult:
+        // subject to change when May updates genomics model
+        // Required: Code, Status, Category, SubjectOfRecord
+        SubjectOfRecord MS
+        Code MS
+        DNARegionName MS
+        DNASequenceVariantId.DataValue MS
+        DNASequenceVariantName.DataValue MS
+        DNASequenceVariantType.DataValue MS
+        GeneName MS
+        GenomicSourceClass MS
+        Method MS
+        RelevantTime MS
+        Specimen.Type  MS // ??
+    CancerDiseaseStatus:
+        // Required: Code, Status, SubjectOfRecord
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+        EvidenceType MS
+        RelevantTime MS
+
+Namespace: shr.lab
+    CBCWAutoDifferentialPanel:
+        // Required: Code, Status, Category, SubjectOfRecord
+        SubjectOfRecord MS
+        Code MS
+//   Uncomment when supported
+//        PanelMembers.Observation[CBCMustSupportPanelMember]
+        SubjectOfRecord MS
+        RelevantTime MS
+    ComprehensiveMetabolic2000SerumOrPlasmaPanel:
+        // Required: Code, Status, Category, SubjectOfRecord
+        SubjectOfRecord MS    
+        Code MS
+//   Uncomment when supported
+//        PanelMembers.Observation[CMPMustSupportPanelMember]
+        SubjectOfRecord MS
+        RelevantTime MS
+    CBCMustSupportPanelMember:
+         // Required: Code, Status, Category, SubjectOfRecord
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
+    CMPMustSupportPanelMember:
+        // Required: Code, Status, Category, SubjectOfRecord
+        SubjectOfRecord MS
+        Code MS
+        DataValue MS
