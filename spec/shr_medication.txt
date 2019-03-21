@@ -57,7 +57,6 @@ Description:	"The dosage of the medication. The data structure is flexible and c
 		Value:			BodySiteCode
 
 		Element:		MaximumDosePerTimePeriod
-		Concept:		TBD
 		Description:	"The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
 		Value:			Ratio
 
@@ -65,9 +64,13 @@ Description:	"The dosage of the medication. The data structure is flexible and c
 Abstract Element:	MedicationExposure
 Based on:			ActionPerformed
 Description:	"Abstract class representing medication exposure, independent of whether reported in a medication statement or medication administration. Does not include medication requests (prescriptions)."
-1..1			Medication
+1..1			MedicationCodeOrReference
 0..1			Dosage
 0..0			Method // because of Dosage.Method
+
+		Element:	MedicationCodeOrReference
+		Description: "A choice of a medication code or reference."
+		Value:		CodeableConcept or ref(Medication)
 
 
 EntryElement:	MedicationStatement
@@ -129,29 +132,29 @@ Value sets for status are in direct conflict between DSTU2 Argonaut and STU3 US-
 Category does not exist in DSTU2 and is provided as an extension.
 Intent was added in STU3 and is provided as an extension with required binding."
 				SubjectOfRecord is type PatientSubjectOfRecord
-1..1			Medication
-0..1			Dosage
-1..1			MedicationRequester
+1..1		MedicationCodeOrReference
+0..1		Dosage
+1..1		MedicationRequester
 				Status //from http://hl7.org/fhir/ValueSet/medication-request-status
 				// incompatible value sets between DSTU2 Argonaut and STU3
 				// Cannot override value set constraint from http://hl7.org/fhir/ValueSet/medication-order-status to http://hl7.org/fhir/ValueSet/medication-request-status
 				PriorityCode from http://hl7.org/fhir/ValueSet/medication-request-priority
 				Type should be from http://hl7.org/fhir/ValueSet/medication-admin-category
 				RequestIntent from http://hl7.org/fhir/ValueSet/medication-request-intent
-1..1			StatementDateTime
+1..1		StatementDateTime
 				ExpectedPerformanceTime value is type TimePeriod
-0..0			ExpectedPerformerType
+0..0		ExpectedPerformerType
 				Recipient value is type ref(Organization)
-0..1			NumberOfRefillsAllowed
-0..1			QuantityPerDispense
-0..1			SupplyDuration
-0..1			SubstitutionAllowed
-0..1			SubstitutionReason from
+0..1		NumberOfRefillsAllowed
+0..1		QuantityPerDispense
+0..1		SupplyDuration
+0..1		SubstitutionAllowed
+0..1		SubstitutionReason from
 http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason
-0..1			ReasonCode could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
-0..1			ReasonReference value is type ref(Condition)
-0..0			CommunicationMethod // not needed
-0..1			Annotation  // upper card restricted by us-core-medicationrequest
+0..1		ReasonCode could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
+0..1		ReasonReference value is type ref(Condition)
+0..0		CommunicationMethod // not needed
+0..1		Annotation  // upper card restricted by us-core-medicationrequest
 
 	Element:		MedicationRequester
 	Description:	"The individual, organization or device that initiated the request and has responsibility for its activation."
