@@ -1,6 +1,8 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 
+CodeSystem:		IDTYPE = http://terminology.hl7.org/CodeSystem/v2-0203
+
 Abstract Element:	EntityOrRole
 Based on:			DomainResource
 Description:		"Abstract parent class for both Entity and Role."
@@ -40,14 +42,15 @@ EntryElement:	Practitioner
 Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art.
-HumanName is limited to one required value by US-Core. Gender is required by US-Core."
+HumanName is limited to one required value by US-Core. Gender is required by US-Core. US-Core required an identifier, either a NPI (preferred) or tax id."
 1..1			Person
 0..1			Status from ActiveOrInactiveVS
 1..1			Person.HumanName   // only one (limitation imposed by us-core)
 // 0..*			Affiliation // handled by ProviderRelationship in FHIR
 1..*			Identifier
 				Identifier
-includes 		1..1 NationalProviderIdentifier
+includes 		0..1 NationalProviderIdentifier
+includes		0..1 TaxIdentificationNumber
 0..*    		Qualification
 
 	Element:    	Affiliation
@@ -57,8 +60,13 @@ includes 		1..1 NationalProviderIdentifier
 
 	Element: 		NationalProviderIdentifier
 	Based on:		Identifier
-	Concept:		MTH#C1549728
 	Description:	"NPI: a unique 10 digit number to allow US healthcare providers to identify themselves in a standard way throughout the healthcare industry."
+	1..1			Type is IDTYPE#PRN
+
+	Element: 		TaxIdentificationNumber
+	Based on:		Identifier
+	Description:	"Tax identification number for the practitioner."
+	1..1			Type is IDTYPE#TAX
 
 	Element:		Qualification
 	Concept:		MTH#C0037778
@@ -223,7 +231,7 @@ EntryElement:	Medication
 Based on:		Entity
 Concept:		MTH#C0013227
 Description:	"A type of prescription drug or over-the-counter drug that is used to prevent, treat, or relieve symptoms of a disease or abnormal condition, but excluding vaccines.
-In FHIR DSTU2 and STU3, Medication lacks the identifer attribute, which is included in SHR as an extension.
+In FHIR DSTU2 and STU3, Medication lacks the identifier attribute, which is included in SHR as an extension.
 DSTU2 lacks the status attribute, which is required by US-Core.
 Batch is 0..1 in FHIR R4, and accordingly is restricted here."
 				Status from http://hl7.org/fhir/ValueSet/medication-status
@@ -581,8 +589,8 @@ Description:	"A specimen is a substance, physical object, or collection of objec
 		
 		Element:		AccessionIdentifier
 		Based on:		Identifier
-		Concept:		TBD
 		Description:	"Identifier assigned by the lab"
+		1..1			Type is IDTYPE#ACSN
 		
 		Element:		HandlingRisk
 		Concept:		TBD

@@ -53,10 +53,13 @@ NonLaboratoryObservation maps to Observation:
 
 LaboratoryObservation maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-observationresults: 
 	Specimen maps to specimen
+	Identifier maps to identifier (slice on = Type.coding.code; slice strategy = includes)
+	Performer maps to performer (slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 
 Condition maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-condition:
 // dstu 2 change (different mapping target)
 	Identifier maps to identifier
+
 	StatementDateTime maps to dateRecorded
 	PersonInformationSource maps to asserter
 	SubjectOfRecord maps to patient
@@ -93,7 +96,7 @@ DiagnosticReport maps to DiagnosticReport:
 	Participation.Participant maps to performer
 	RelatedRequest maps to request
 	Specimen maps to specimen
-	Observation maps to result
+	Observation maps to result (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
 // ref(ImagingStudy) or imaging manifest
 	Media maps to image.link
     Conclusion maps to conclusion
