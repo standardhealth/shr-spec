@@ -79,7 +79,7 @@ Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether
 Description:	"A record of the use of a medication. 
 Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). 
 The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
-ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason. In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
+ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick one type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously."
 //SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
 //SHR adds the recorder as an extension, as part of standardizing clinical statements.
 0..1			MedicationStatementInformationSource
@@ -98,6 +98,10 @@ ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limite
 		Description:	"The informant for this medication statement."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
+	Element:		TerminationReason
+	Description:	"A code explaining unplanned or premature termination of a plan of treatment, course of medication, or research study."
+	Value:			CodeableConcept
+
 
 EntryElement:	MedicationAdministration
 Based on:		MedicationExposure
@@ -106,14 +110,14 @@ Although FHIR MedicationAdministration supports date of administration, informat
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
 				SubjectOfRecord is type PatientSubjectOfRecord  // no Group in DSTU2
-0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
+0..1		Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
 				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
-0..1			Participation
+0..1		Participation
 				Participation.Participant is type PersonParticipant  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
-0..0			Participation.ParticipationType				
+0..0		Participation.ParticipationType				
 				RelatedRequest value is type ref(MedicationRequest)		
 
-        Element:		PersonParticipant
+    Element:		PersonParticipant
 		Based on:		Participant
 		Description:	"A choice of Patient, Practitioner and RelatedPerson as participant."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)

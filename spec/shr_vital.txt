@@ -44,6 +44,7 @@ Description:	"Abstract class parent for all vital sign profiles."
 0..0			BodySite.ClockDirection
 0..0			BodySite.DistanceFromLandmark
 0..0			PanelMembers
+0..0			Device
 
 		Element:		Precondition
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
@@ -56,7 +57,7 @@ Description:	"Abstract class parent for all vital sign profiles."
 
 EntryElement:	BodyWeight
 Based on:		VitalSign
-Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
+Description:	"The mass or quantity of heaviness of an individual. This LOINC code should not be used for fetal body weight estimates."
 				Code is LNC#29463-7  // CIMI uses 3141-9 "Body weight Measured" but Argonaut, US-Core, and FHIR R4 all use 29462-7
 				DataValue.Quantity.Units is UCUM#kg "kg"
 				Precondition from BodyWeightPreconditionVS if covered
@@ -75,6 +76,10 @@ Description:	"The distance from the sole to the crown of the head."
 0..0			BodySite
 0..0			Components
 
+	Element:		BodyPosition
+	Description:	"The position or physical attitude of the body."
+	Value:			CodeableConcept from BodyPositionVS if covered
+
 EntryElement:	BodyLength
 Based on:		VitalSign
 Description:	"The distance from the sole of the foot to the crown of the head, lying down (typically 0-2 years)."
@@ -91,6 +96,7 @@ Based on:		VitalSign
 Description:	"The force of circulating blood on the walls of the arteries."
 				Code is LNC#55284-4 "Blood pressure systolic and diastolic"
 0..0			DataValue
+0..0			DataAbsentReason
 				BodySite.BodySiteCode from BloodPressureBodySiteVS if covered
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from BloodPressureMethodVS if covered
@@ -98,6 +104,7 @@ Description:	"The force of circulating blood on the walls of the arteries."
 includes 0..1 	SystolicPressure 
 includes 0..1 	DiastolicPressure
 0..1			BodyPosition
+0..1			BloodPressureCuffSize
 
 	Element:		SystolicPressure
 	Based on:		QuantitativeObservationComponent
@@ -110,6 +117,10 @@ includes 0..1 	DiastolicPressure
 	Description:	"The blood pressure after the contraction of the heart while the chambers of the heart refill with blood, when the pressure is lowest."
 					Code is LNC#8462-4
 					DataValue.Quantity.Units is UCUM#mm[Hg] "mmHg"
+
+	Element:		BloodPressureCuffSize
+	Description:	"The size of cuff used, if applicable."
+	Value:			CodeableConcept from BloodPressureCuffSizeVS
 
 EntryElement:	RespiratoryRate
 Based on:		VitalSign
@@ -137,7 +148,7 @@ Description:	"The number of times the heart ventricles contract per unit of time
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
 Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
-// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (good because it doesn't presume a method).
+// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (latter code doesn't presume a method).
 				Code is LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
 				DataValue.Quantity.Units is UCUM#% "%"
 				BodySite.BodySiteCode from OxygenSaturationBodySiteVS
@@ -178,7 +189,7 @@ Description:	"Circumference of the head (typically 0-2 years)."
 0..0			Method
 0..0			BodySite
 0..0			Components
-0..0			Components
+0..0			Device
 
 EntryElement:	BodyMassIndex
 Based on:		VitalSign
@@ -189,6 +200,7 @@ Description:	"A general indicator of the body fat an individual is carrying base
 0..0			Method
 0..0			BodySite
 0..0			Components
+0..0			Device
 
 
 /*
