@@ -12,22 +12,16 @@ CodeSystem:     UCUM = http://unitsofmeasure.org
 EntryElement:   CancerCondition
 Based on:	    Condition
 Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
-                Code from CancerDisorderVS  // TODO: Document reasons to used SNOMED as opposed to ICD-O-3
+                Code from CancerDisorderVS if covered // TODO: Document reasons to used SNOMED as opposed to ICD-O-3
 //                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
   	            StageInformation.StageDetail value is type ref(CancerStageGroup)
 0..0            Severity
 0..1            MorphologyBehavior
-0..1			DateOfDiagnosis
 
 	Element:		MorphologyBehavior
 	Concept:		SCT#246463000 "Behavior of tumor (attribute)"
 	Description:	"A description of the morphology and behavioral characteristics of the cancer."
 	Value:			CodeableConcept from MorphologyBehaviorVS
-
-	Element:		DateOfDiagnosis
-	Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
-	Value:			date
-
 
 EntryElement:   CancerHistologicType
 // MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
@@ -38,7 +32,7 @@ Description:    "Classification of the cancer by the type of tissue in which the
                 DataValue from CancerHistologicTypeVS
 				Performer is type PractitionerPerformer
 0..1			RelatedCancerCondition
-0..0	        BodySite
+0..0	        BodyLocation
 0..0            Device
 
 	Element:	RelatedCancerCondition
@@ -54,7 +48,7 @@ Description:    "A description of a tumor based on how abnormal the cancer cells
                 Code is LNC#21858-6 "Grade Cancer"
 				Performer is type PractitionerPerformer
 0..1			RelatedCancerCondition
-0..0		    BodySite
+0..0		    BodyLocation
 0..0            Device
 0..0            PanelMembers
 0..0			Components
@@ -81,7 +75,7 @@ It appears that Observation.derivedFrom is the closest match, it is designed to 
 c) How to represent the lesion evaluated? (not necessary in mCODE, but required for Brain Mets study.)
 i. Instead of the cancer condition, the focus (Observation.focus) could be a reference to the lesion(s) evaluated. Downside is that this would require a separate Condition or BodyStructure resource for parts of the cancer, e.g., primary tumor, metastatic tumors, and or target lesions. 
 ii. The lesion(s) examined could be pre-coordinated in the observation code, for example, status of metastates, status of overall disease, status of target lesions. The upside is that these ARE different observations, and that difference would be reflected in the Observation.code. The downside is these codes don't exist, and creating more precoordinated codes is generally undesirable, unscalable solution.
-iii. BodySite could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
+iii. BodyLocation could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
 iv. Create an extension for recording which lesion(s) were evaluated. That's always a last resort; an addition downside is that suitable codes do not exist. Still, this is probably the least bad of the proposed solutions.
 
 */
@@ -91,13 +85,11 @@ Based on:       CodedNonLaboratoryObservation
 Description:    "The status of the cancer, in terms of whether it is stable, worsening (progressing), improving (responding), or in remission."
                 Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from CancerDiseaseStatusVS // or LL4721-8
-0..0            DataAbsentReason  // in the code set
-                //Code is SCT#246453008 "Course of illness (attribute)"
 				Performer is type PractitionerPerformer
 				SubjectOfRecord is type PatientSubjectOfRecord
 0..1			RelatedCancerCondition
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
-0..0		    BodySite
+0..0		    BodyLocation
 0..0            Device	
 0..0            PanelMembers
 0..0            Components
@@ -120,10 +112,11 @@ Conclusion: Having a place for the onset date of mets, which is an mCODE require
 EntryElement:   DistantMetastases
 Based on:       CancerCondition
 Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
-                Code is SCT#128462008 "Secondary malignant neoplastic disease (disorder)"  // disorder code is appropriate because we are modeling as a condition
+                Code from DistantMetastasesVS
 0..1			RelatedCancerCondition
-                BodySite.BodySiteCode from MetastasisBodySiteVS if covered
+0..0            BodyLocation  // BodyLocation is precoordinated in the code.
 				PersonInformationSource is type PractitionerInformationSource
+0..0			StageInformation
 
 		Element:	PractitionerInformationSource
 		Based on:	PersonInformationSource
@@ -227,6 +220,6 @@ Concept:		LNC#77975-1 "Earliest date of diagnosis"
 Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerCondition."
 Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
 0..0            ReferenceRange
-0..0			BodySite
+0..0			BodyLocation
 
 */

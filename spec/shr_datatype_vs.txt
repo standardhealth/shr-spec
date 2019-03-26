@@ -5,7 +5,7 @@ CodeSystem:		LNC = http://loinc.org
 CodeSystem:		MTH = http://ncimeta.nci.nih.gov
 CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
 CodeSystem:		UCUM = http://unitsofmeasure.org
-CodeSystem:		UGLY = http://hl7.org/fhir/quantity-comparator
+CodeSystem:		COMP = http://hl7.org/fhir/quantity-comparator
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:		CURRENCY = urn:iso:std:iso:4217
 
@@ -29,36 +29,19 @@ ValueSet: 				CodingQualifierVS
 #default_code			"The code was supplied by the system by default, because no specific coded value was available."
 */
 
-
-ValueSet:           BodyPositionVS
-Description:        "Human body positions associated with actions or observations."
-SCT#40199007	    "Supine body position"
-SCT#33586001	    "Sitting position"	
-SCT#10904000	    "Orthostatic body position"
-SCT#414585002	    "Left lateral tilt"	
-SCT#415346000	    "Right lateral tilt"
-SCT#30212006	    "Fowler's position"	
-SCT#26527006	    "Inverse Trendelenburg position"
-SCT#102536004	    "Left lateral decubitus position"	
-SCT#1240000	        "Prone body position"	
-SCT#102538003	    "Recumbent body position"
-SCT#423413008	    "Reverse trendelenburg positioning"	
-SCT#102535000	    "Right lateral decubitus position"
-SCT#34106002	    "Trendelenburg position"
-
 ValueSet:				ClockDirectionVS
 Description:		"The relative direction of an object described using the analogy of a 12-hour clock to describe angles and directions. One imagines a clock face lying either upright or flat in front of oneself, and identifies the twelve hour markings with the directions in which they point."
 Includes codes descending from SCT#272485000 "Clockface position (qualifier value)"
 
 ValueSet:		UpperBoundTypeVS
 Description:	"Indicates the actual value is lt (<) or lte (<=) the given value."
-UGLY#<			"The actual value is less than the given value."
-UGLY#<=			"The actual value is less than or equal to the given value."
+COMP#<			"The actual value is less than the given value."
+COMP#<=			"The actual value is less than or equal to the given value."
 
 ValueSet:		LowerBoundTypeVS
 Description:	"Indicates the actual value is gt (>) or gte (>=) the given value."
-UGLY#>			"The actual value is greater than the given value."
-UGLY#>=			"The actual value is greater than or equal to the given value."
+COMP#>			"The actual value is greater than the given value."
+COMP#>=			"The actual value is greater than or equal to the given value."
 
 ValueSet:			StatisticTypeVS
 Description:		"How to interpret a reported quantity, i.e, whether the quantity is an maximum, minimum, mean, median, etc."
@@ -204,11 +187,6 @@ MTH#C0750558		"Unlikely or improbable, e.g., an event with 20% to 40% likelihood
 MTH#C3841878			"Very unlikely, highly improbable, e.g., an event with less than 20% but non-zero likelihood"
 // Do not include "definitely not" because that could creates an implicit modifier
 
-ValueSet: 				ThreePriorityVS
-#primary				"The first or primary item or alterative in a preference list."
-#secondary				"The second or backup preference."
-#third_or_lower			"An alternative to primary and secondard choices in a preference list."
-
 
 ValueSet: 		SettingVS
 Description:	"What type of place is found at a given location. More than one descriptor may be applicable."
@@ -267,35 +245,6 @@ Description:    "Mime types that apply to photographic images."
 #image/svg+xml  ".svg"
 #image/tiff     ".tiff"
 
-ValueSet:			PositiveNegativeVS
-Description:		"Value set containing the values positive and negative. VSAC  value set OID 2.16.840.1.113762.1.4.1166.62."
-SCT#10828004		"Positive"
-SCT#260385009		"Negative"
-
-ValueSet:     PositiveNegativeIndeterminateVS
-Description:  "Value set containing the values positive, negative and indeterminate. Equivalent to values in LOINC answer list LL2038-9/LL759-2"
-SCT#10828004  "Positive (qualifier value)"
-SCT#260385009 "Negative (qualifier value)"
-SCT#82334004  "Indeterminate (qualifier value)"
-
-ValueSet:		PositiveNegativeEquivocalVS
-Description:	"Interpretation of a test result as positive, negative or equivocal. Equivalent values to LOINC LL2009-0."
-SCT#10828004	"Positive (qualifier value)"  //LA6576-8
-SCT#260385009	"Negative (qualifier value)"  //LA6577-6
-SCT#42425007	"Equivocal (qualifier value)" //LA11885-3
-
-ValueSet:   PositiveNegativeEquivocalIndeterminateVS
-Description:  "Interpretation of a test result as positive, negative, equivocal, or indeterminate."
-SCT#10828004	"Positive (qualifier value)"
-SCT#260385009	"Negative (qualifier value)"
-SCT#42425007	"Equivocal (qualifier value)"
-SCT#82334004  "Indeterminate (qualifier value)"
-
-ValueSet:       PresentAbsentVS
-Description:    "Whether a feature or condition is present or absent."
-SCT#52101004    "Present (qualifier value)"
-SCT#2667000     "Absent (qualifier value)"  
-
 ValueSet:			LanguageQualifierVS
 Description:		"A code indicating whether the language is preferred, secondary, or practiced in an unconventional or limited way."
 #preferred_spoken	"Preferred language"
@@ -306,6 +255,21 @@ Description:		"A code indicating whether the language is preferred, secondary, o
 #braille			"Reads using braille"
 #lipreads			"Uses lipreading (speechreading)"
 #aac				"Uses augmentative and alternative communication"
+
+ValueSet:       DetectedNotDetectedVS 
+Description:    "Value set consisting of the answers Detected (Present) and NotDetected (Absent). The terms detected and not detected are preferred because they reflect outcomes of experimental observation, while present and absent suggest ground truth. This value set reconciles or combines LOINC answer lists LL956-4"
+SCT#260373001   "Detected (qualifier value)"
+SCT#260415000   "Not detected (qualifier value)"
+SCT#42425007	"Equivocal (qualifier value)"
+SCT#82334004    "Indeterminate (qualifier value)"
+
+ValueSet:		PositiveNegativeVS
+Description:	"Interpretation of a test result as positive, negative or equivocal. Equivalent values to LOINC LL2009-0."
+SCT#10828004	"Positive (qualifier value)"  //LA6576-8
+SCT#260385009	"Negative (qualifier value)"  //LA6577-6
+SCT#42425007	"Equivocal (qualifier value)"
+SCT#82334004    "Indeterminate (qualifier value)"
+
 
 /* not used
 ValueSet:			TelephoneTypeVS
@@ -320,58 +284,78 @@ Description:			"How an address is used by the subject, for example, as a dwellin
 #former_address			"Address (residence, postal, or work address) that is no longer in use"
 #mailing_address		"Address is a postal address, such as a PO box"
 #work_address			"Address of place of business where the subject is employed"
-
-
 */
 
-
-ValueSet:       BodySiteVS
+ValueSet:       BodyLocationVS
 Concept:        MTH#C1545955
 Description:    "Codes that describe normal and pathologic anatomic systems, regions, cavities, and spaces."
 Includes codes descending from SCT#123037004  "Body Structure"
 
-ValueSet:       AnatomicalDirectionVS
-Concept:        NCI#C99074
-Description:    "Anatomical location or specimen further detailing directionality. Codes are from NCI"
-NCI#C25231 "ANTERIOR Denoting the front portion of the body or a structure."
-NCI#C25423 "APICAL Relating to or located at the apex."
-NCI#C90067 "BASAL Relating to or located at the lowest portion of a structure."
-NCI#C73851 "CAUDAL Toward the tail in a body."
-NCI#C25445 "CENTRAL A point or area that is approximately central within some larger region or structure."
-NCI#C37936 "CRANIAL Toward the head in a body."
-NCI#C25240 "DEEP Extending relatively far inward."
-NCI#C25237 "DISTAL Situated farthest from a point of reference."
-NCI#C45874 "DORSAL Pertaining to the back or upper surface of the body."
-NCI#C90376 "DORSOLATERAL Toward the back and side of a body."
-NCI#C90386 "FORE Of or involving the front of a main body."
-NCI#C90393 "HIND Of or involving the back of a main body."
-NCI#C25353 "INFERIOR Pertaining to a point below a given reference point."
-NCI#C37980 "INNER Inside or closer to the inside of the body or object."
-NCI#C73705 "INTERMEDIATE Located between two points or extremes."
-NCI#C25309 "LOWER The bottom one of two."
-NCI#C25232 "MEDIAL Toward the middle or in a limb toward the median plane."
-NCI#C81170 "MIDLINE A medial line, especially the medial line or medial plane of the body (or some part of the body)."
-NCI#C27958 "NASAL Of, or related to, or in the direction of the nose."
-NCI#C38166 "OUTER Being on or toward the outside of the body or object."
-NCI#C25233 "PERIPHERAL On or near an edge or constituting an outer boundary;the outer area."
-NCI#C25622 "POSTERIOR Denoting the back portion of the body or a structure."
-NCI#C94393 "ROSTRAL Toward the muzzle in the head."
-NCI#C25239 "SUPERFICIAL Of or pertaining to the exterior surface."
-NCI#C25235 "SUPERIOR Pertaining to a point above a given reference point."
-NCI#C25245 "SURFACE The extended two-dimensional outer layer or area of a three-dimensional object."
-NCI#C117754 "TEMPORAL Of, or related to, anatomic sites that are located in the cranium, brain, and eye."
-NCI#C90069 "TIP The pointed end of a structure."
-NCI#C25355 "UPPER The top one of two."
-NCI#C45875 "VENTRAL Pertaining to the front or lower surface of the body."
-NCI#C98798 "VENTROLATERAL Of or pertaining to the front and side of a main body."
+// TO DO: Sort out which are directions (e.g., above and below), and which are sides (e.g. left and right)
+ValueSet:       LocationQualifierVS
+Description:    "Additional terms further detailing a body location, such as laterality."
+SCT#419161000 	"Unilateral left"	
+SCT#419465000 	"Unilateral right"	
+SCT#51440002 	"Bilateral"
+SCT#49370004 	"Lateral"	
+SCT#264217000 	"Superior"	
+SCT#261089000 	"Inferior"	
+SCT#255551008 	"Posterior"	
+SCT#351726001 	"Below"	
+SCT#352730000 	"Above"
+SCT#14414005    "Peripheral"
+SCT#255549009   "Anterior"
+SCT#261122009   "Lower"
+SCT#261183002   "Upper"
+SCT#255551008   "Posterior"
+SCT#421812003   "Top"
+SCT#261089000   "Inferior"
+SCT#49370004    "Lateral"
+SCT#255561001   "Medial"
+SCT#264217000   "Superior"
+SCT#131185001   "Vertical long axis"
+SCT#33096000    "Vertical"
+SCT#62824007    "Transverse"
+SCT#103340004   "Short axis"
+SCT#255584008   "Septal"
+SCT#263869007   "Separate"
+SCT#62372003    "Segmental"
+SCT#32400000    "Preaxial"
+SCT#90069004    "Posterolateral"
+SCT#264153007   "Posterior pole"
+SCT#261165005   "Posterior dorsal"
+SCT#60583000    "Postaxial"
+SCT#103343002   "Parasagittal"
+SCT#264114003   "Ostium"
+SCT#298107004   "Orthotopic"
+SCT#103341000   "Off axis"
+SCT#261136004   "Mural"
+SCT#103342007   "Mid-longitudinal"
+SCT#261129000   "Mediolateral"
+SCT#260528009   "Median"
+SCT#112233002   "Marginal"
+SCT#38717003    "Longitudinal"
+SCT#103339001   "Long axis"
+SCT#18769003    "Juxta-posed"
+SCT#83167003    "Intracellular"
+SCT#131186000   "Horizontal long axis"
+SCT#298108009   "Heterotopic"
+SCT#263759007   "Foraminal"
+SCT#69320009    "Extracellular"
+SCT#261788001   "Exteriorized"
+SCT#33843005    "Efferent"
+SCT#298109001   "Ectopic"
+SCT#65424008    "Contiguous"
+SCT#37197008    "Anterolateral"
+SCT#261045000   "Anterior dorsal"
+SCT#255593009   "Circumferential"
 
-/*-------------
-NCI Value: C99073 LAT, Codelist extensible: Yes
-C13332 BILATERAL Affecting both sides of the body, or a pair of organs. Bilateral
-C25307 CONTRALATERAL Having to do with the opposite side of the body, in relation to a pre-existing reference point.
-C25308 IPSILATERAL Having to do with the same side of the body, in relation to a pre-existing reference point.
-C25230 LATERAL Situated at or extending to the side. Lateral
-C25229 LEFT Being or located on or directed toward the side of the body to the west when facing north.
-C25228 RIGHT Being or located on or directed toward the side of the body to the east when facing north.
-C68598 UNILATERAL Affecting one side of the body or one of a pair of organs. Unilateral
-----------------*/
+ValueSet:       LandmarkTypeVS
+Description:    "The type of feature that constitutes the landmark, for example, particularly if the landmark is an acquired body structure or physical object."
+SCT#361083003       "Normal anatomy (body structure)"
+SCT#341000119102	"Tattoo of skin"	
+SCT#275322007	    "Scar"
+SCT#38033009        "Amputation stump (body structure)"
+SCT#13136005        "Injection site (morphologic abnormality)"
+SCT#43526002        "Operative site (morphologic abnormality)"
+Includes codes descending from SCT#40388003 "Implant, device (physical object)"

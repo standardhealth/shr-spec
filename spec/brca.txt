@@ -11,19 +11,16 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
 Element:		BreastSite
-Based on:		BodySite
+Based on:		BodyLocation
 Description:	"A body site specific to the breast structure."
-				BodySiteCode from BreastSiteVS
-1..1 			Laterality
-0..0			AnatomicalDirection
-//	TODO: causes mapping error
-//				DistanceFromLandmark.Quantity.Units is UCUM#cm
+				LocationCode from BreastSiteVS
+				Landmark.DistanceToBodyLocation.Quantity.Units is UCUM#cm
 
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
 				Type from BreastSpecimenTypeVS
-				CollectionSite.BodySite is type BreastSite
+				CollectionSite.BodyLocation is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
 				PartOf value is type ref(BreastSpecimen)
 0..1			ColdIschemiaTime
@@ -41,7 +38,7 @@ Description:	"Diagnosis of cancer originating in the tissues of the breast, and 
 				Code from BreastCancerDisorderVS 		
 				StageInformation.StageDetail value is type CancerStageGroup
 				Evidence.Manifestation should be from BreastCancerDetectionVS  // can't change to 'could be' (example) because us-core uses 'should be' (preferred) binding
-				BodySite is type BreastSite
+				BodyLocation is type BreastSite
 
 EntryElement:	BreastCancerHistologicType
 Based on:		CancerHistologicType
@@ -72,13 +69,12 @@ Description:	"A panel of breast cancer staging information that is performed pri
 //				PanelMembers.Observation.TNMPathologicPrimaryTumorClassification is type BreastTNMPathologicPrimaryTumorClassification
 //				PanelMembers.Observation.TNMPathologicRegionalNodesClassification is type BreastTNMPathologicRegionalNodesClassification
 //				PanelMembers.Observation.TNMPathologicDistantMetastasesClassification is type BreastTNMPathologicDistantMetastasesClassification
-				PanelMembers.Observation
-					includes 0..1	HER2ReceptorStatus
-					includes 0..1	EstrogenReceptorStatus
-					includes 0..1	ProgesteroneReceptorStatus
-					includes 0..1	DCISNuclearGrade
-					includes 0..1	BreastCancerHistologicGrade
-
+			PanelMembers.Observation										
+			includes 0..1	HER2ReceptorStatus
+			includes 0..1	EstrogenReceptorStatus
+			includes 0..1	ProgesteroneReceptorStatus
+			includes 0..1	DCISNuclearGrade
+			includes 0..1	BreastCancerHistologicGrade
 
 
 EntryElement:	BreastClinicalLymphNodeInvolvement
@@ -86,16 +82,16 @@ Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in breast cancer."
 0..1			RelatedCancerCondition
-				BodySite is type BreastLymphNodeBodySite
+				BodyLocation is type BreastLymphNodeBodyLocation
 				Method from LymphNodeClinicalMethodVS if covered
 				Components.ObservationComponent
 					includes 0..1 	LymphNodeMobility
 					includes 0..1	LymphNodeSize
 
-EntryElement:	BreastLymphNodeBodySite
-Based on:		BodySite
+EntryElement:	BreastLymphNodeBodyLocation
+Based on:		BodyLocation
 Description:	"A body site specific to the breast lymph node structure."
-				BodySiteCode should be from BreastLymphNodeGroupVS if covered
+				LocationCode should be from BreastLymphNodeGroupVS if covered
 
 Element:   		LymphNodeMobility
 Based on:       CodedObservationComponent
@@ -192,7 +188,7 @@ EntryElement:	HER2ReceptorStatus
 Based on:		TumorMarkerObservation
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 				DataValue value is type CodeableConcept
-			    DataValue from PositiveNegativeEquivocalIndeterminateVS
+			    DataValue from PositiveNegativeVS
 				Code from HER2byIHCScoreVS
 				Specimen is type BreastSpecimen
 0..0			Method // pre-coordinated in the Code
@@ -205,10 +201,10 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 EntryElement:	HER2byIHC
 Based on:		TumorMarkerObservation
 Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
-				Code from HER2byIHCInterpretationTestsVS
+				Code from HER2byIHCTestsVS
 				DataValue value is type CodeableConcept
 				DataValue from HER2byIHCScoreVS
-				Interpretation from PositiveNegativeEquivocalIndeterminateVS
+				Interpretation from PositiveNegativeVS
 0..0			Method  // pre-coordinated in the Code
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
@@ -228,9 +224,9 @@ Based on:		TumorMarkerObservation
 Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
 0..0			DataValue
 0..0			DataAbsentReason
-				Code from HER2byFISHInterpretationTestsVS
+				Code from HER2byFISHTestsVS
 				Method from HER2FISHMethodVS // single or double probe
-				Interpretation from PositiveNegativeEquivocalIndeterminateVS
+				Interpretation from PositiveNegativeVS
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
 					includes 0..1	AverageHER2SignalsPerCell
@@ -262,8 +258,8 @@ Based on:		TumorMarkerObservation
 Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue" 
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
-				Code from EstrogenReceptorInterpretationTestsVS
-				DataValue from PositiveNegativeIndeterminateVS
+				Code from EstrogenReceptorTestsVS
+				DataValue from PositiveNegativeVS
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
 					includes 0..1	EstrogenReceptorNuclearPositivity
@@ -291,8 +287,8 @@ EntryElement:	ProgesteroneReceptorStatus
 Based on:		TumorMarkerObservation
 Concept:		LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
 Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity."
-				Code from ProgesteroneReceptorInterpretationTestsVS	
-				DataValue from PositiveNegativeIndeterminateVS
+				Code from ProgesteroneReceptorTestsVS	
+				DataValue from PositiveNegativeVS
 				Specimen is type BreastSpecimen			
 				Components.ObservationComponent
 					includes 0..1	ProgesteroneReceptorNuclearPositivity
@@ -556,7 +552,7 @@ Value:			CodeableConcept from PositiveNegativeVS
 //				GeneName from GeneIdentifierVS
 0..0			ReferenceRange
 //0..0			DeltaFlag
-0..0			BodySite
+0..0			BodyLocation
 				Components.ObservationComponent
 includes 0..1	Refseq
 
