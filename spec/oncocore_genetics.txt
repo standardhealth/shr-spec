@@ -28,13 +28,14 @@ Based on:		LaboratoryObservation
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
 //				Method should be from GeneticTestMethodVS
 				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept
-				DataValue from PositiveNegativeUnknownVS
+				DataValue from PositiveNegativeVS  // mlt:  changed to mk-preferred value set.
 0..0			ReferenceRange
 0..0			BodySite
 0..0			PanelMembers.Observation
 				Components.ObservationComponent
-					includes 0..1	GeneName
+					includes 0..*	GeneName
 					includes 0..1	DNARegionDescription
+					includes 0..*	GeneMutationToBeTestedID
 
 EntryElement:	GeneticVariant
 Based on:		LaboratoryObservation
@@ -65,12 +66,22 @@ Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (so
 				DataValue should be from http://www.genenames.org 
 				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
+// mlt: Region Description is optional in the CG obs-region-studied profile. Should we just exclude?
 Element:		DNARegionDescription
 Based on:		ObservationComponent
 Description:	"a narrative description of the range(s) of DNA sequences examined in this sequencing study."
 				Code is LNC#81293-3 "Description of ranges of DNA sequences examined"
 				DataValue value is type string
 0..0			ReferenceRange
+
+Element:		GeneMutationToBeTestedID
+Based on:		ObservationComponent
+Description:	"For targeted mutation analysis, report the mutations that the study is designed to detect."
+				Code is LNC#36908-2 "Gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal.  The value is reported as a string using the HGVS nomenclature."
+				DataValue value is type string
+0..0			ReferenceRange
+0..0			PanelMembers
+
 
 Element:		DNAChangeTranscriptcHGVS
 Based on:		ObservationComponent
