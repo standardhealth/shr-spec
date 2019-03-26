@@ -12,7 +12,8 @@ Based on:		DiagnosticReport
 Concept:		LNC#81247-9 "Master HL7 genetic variant reporting panel"
 Description:	"Genetic analysis summary report"
 1..1			Category is OBSCAT#GE
-0..*			GeneticMarkerAnalysisResult
+0..*			GeneticRegionStudied // same as Region Studied
+0..*			GeneticVariant
 
 
 EntryElement:	CancerGenomicsReport
@@ -20,34 +21,42 @@ Based on:		GenomicsReport
 Description:	"Cancer genetic analysis summary report"
 				Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
 //				DataValue should be from CancerGeneticTestRegistryVS 
-				GeneticMarkerAnalysisResult is type CancerGeneticMarkerAnalysisResult
+				GeneticRegionStudied is type CancerGeneticRegionStudied
 
-
-Element:	GeneticMarkerAnalysisResult
-Based on:		LaboratoryObservation
-// Concept:		
+Element:		GeneticRegionStudied
+Based on:		LaboratoryObservation	
 Description:	"The process of isolating and testing the DNA of an embryo or a person to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder. (source: NCI Thesaurus)"
-				Code is SCT#20889005 "Genetic marker function (observable entity)"
-//				Code from http://loinc.org  // MLT: the DSTU2 http://hl7.org/fhir/StructureDefinition/genetics profile does not further specify code. They reference any LOINC code. 
 //				Method should be from GeneticTestMethodVS
-0..0			DataValue // panel, no numerical or coded result
+				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept
+				DataValue from PositiveNegativeUnknownVS
+0..0			ReferenceRange
+0..0			BodySite
+0..0			PanelMembers.Observation
+				Components.ObservationComponent
+					includes 0..1	GeneName
+					includes 0..1	DNARegionDescription
+
+EntryElement:	GeneticVariant
+Based on:		LaboratoryObservation
+Description:	"An alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. (source: NCI)"
+				Code is LNC#69548-6 "Genetic variant assessment"
+				DataValue from GeneticVariantAssessmentVS
 0..0			ReferenceRange
 0..0			BodySite
 0..0			PanelMembers
 				Components.ObservationComponent
 					includes 0..1	GenomicSourceClass
-					includes 0..1	GeneName
-					includes 0..1	DNARegionName
-					includes 0..1	DNASequenceVariantName
-					includes 0..1	DNASequenceVariantId
-					includes 0..1	DNASequenceVariantType
+					includes 0..1	DNAChangeTranscriptcHGVS
+					includes 0..1	ComplexVariantCode
+					includes 0..1	ComplexVariantHGVSName
+					includes 0..1	DNAChangeType  	
 
 Element:		GenomicSourceClass
 Based on:		CodedObservationComponent
 // Concept:		LNC#48002-0 "Genomic source class [Type]"
 Description:	"The genomic class of the specimen being analyzed: Germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome. (source: LOINC)"
 				Code is LNC#48002-0 "Genomic source class [Type]"
-				DataValue should be from GenomicSourceClassVS
+				DataValue from GenomicSourceClassVS
 
 Element:		GeneName
 Based on:		CodedObservationComponent
@@ -56,30 +65,45 @@ Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (so
 				DataValue should be from http://www.genenames.org 
 				// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
-Element:		DNARegionName
+Element:		DNARegionDescription
 Based on:		ObservationComponent
-// Concept:		LNC#47999-8 "DNA region name [Identifier]"
-Description:	"A human readable name for the region of interest. Typically Exon #, Intron # or other. NOTE: This is not standardized and is mainly for convenience and display purposes."
-				Code is LNC#47999-8 "DNA region name [Identifier]"
+Description:	"a narrative description of the range(s) of DNA sequences examined in this sequencing study."
+				Code is LNC#81293-3 "Description of ranges of DNA sequences examined"
 				DataValue value is type string
+0..0			ReferenceRange
 
-Element:		DNASequenceVariantName
+Element:		DNAChangeTranscriptcHGVS
 Based on:		ObservationComponent
 Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
 				Code is LNC#48004-6 "DNA change (c.HGVS)"
-				DataValue from http://hl7.org/fhir/ValueSet/clinvar if covered
+				DataValue value is type string
 
+/*
+// replaced by ComplexVariantCode
 Element:		DNASequenceVariantId
 Based on:		ObservationComponent
 Description:	"A DNA Marker identifier conveys a universal or standard repository identifier for definitive characterstics of a DNA Marker. (recommend using NCBI dbSNP ids - rs#) (source: LOINC)"
 				Code is LNC#48003-8 "DNA sequence variation identifier [Identifier]"
-				DataValue value is type string
+				DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
+*/
 
-Element:		DNASequenceVariantType
+Element:		ComplexVariantCode
+Based on:		CodedObservationComponent
+Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
+				Code is LNC#81260-2 "Complex genetic variant [ID]"
+				DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
+
+Element:		ComplexVariantHGVSName
+Based on:		CodedObservationComponent
+Description:	"This term is used to report the name of the complex variant found in this study in HGVS format. For example, c.[886C>T;457G>C], which represents two separate base substitutions in one gene on one chromosome, or c.[886C>T];[457G>C], which represents two separate base substitutions in one gene on two different chromosomes. (source: LOINC)"
+				Code is LNC#81262-8 "	Complex variant HGVS name"
+				DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
+
+Element:		DNAChangeType		// AminoAcidChangepHGVS 
 Based on:		CodedObservationComponent
 Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
 				Code is LNC#48005-3 "DNA change type"
-				DataValue from DNAChangeTypeVS if covered
+				// DataValue from DNAChangeTypeVS if covered // mlt: move to 48019-4
 
 
 EntryElement:	TumorMarkerObservation
@@ -91,11 +115,12 @@ Description:	"A substance found in tissue or blood or other body fluids that may
 0..0			Device
 
 
-EntryElement:	CancerGeneticMarkerAnalysisResult
-Based on:		GeneticMarkerAnalysisResult
+EntryElement:	CancerGeneticRegionStudied
+Based on:		GeneticRegionStudied
 Description:	"A panel that analyses different components of a genetic test specific to cancer-related genetic markers."
-				Code is SCT#20889005 "Genetic marker function (observable entity)" // mlt: needs Cancer-specific genetic test concept
+				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept
 				Method should be from GeneticTestMethodVS
+				Components.ObservationComponent.GeneName is type CancerGeneName
 0..0			ReferenceRange
 
 Element:		CancerGeneName
