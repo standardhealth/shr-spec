@@ -14,7 +14,7 @@ Description: "A summary of vital signs, including weight, height (or length), bl
 		Code is LNC#85353-1 "Vital signs, weight, height, head circumference, oxygen saturation and BMI panel"
 1..1    SubjectOfRecord is type PatientSubjectOfRecord
 0..0	DataValue
-0..0	BodySite
+0..0	BodyLocation
 0..0	Method
 0..0	Device
 0..0	ReferenceRange
@@ -39,11 +39,10 @@ Description:	"Abstract class parent for all vital sign profiles."
 1..1			Category is OBSCAT#vital-signs
 1..1			SubjectOfRecord is type PatientSubjectOfRecord
 0..*			Precondition
-0..0			BodySite.Laterality // we use pre-coordinated body site codes
-0..0			BodySite.AnatomicalDirection
-0..0			BodySite.ClockDirection
-0..0			BodySite.DistanceFromLandmark
+0..0			BodyLocation.LocationQualifier // using pre-coordinated body site codes 
+0..0			BodyLocation.Landmark
 0..0			PanelMembers
+0..0			Device
 
 		Element:		Precondition
 		Description:	"A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar. "
@@ -56,12 +55,12 @@ Description:	"Abstract class parent for all vital sign profiles."
 
 EntryElement:	BodyWeight
 Based on:		VitalSign
-Description:	"The mass or quantity of heaviness of an individual. Does not include estimates of fetal bodyweight."
+Description:	"The mass or quantity of heaviness of an individual. This LOINC code should not be used for fetal body weight estimates."
 				Code is LNC#29463-7  // CIMI uses 3141-9 "Body weight Measured" but Argonaut, US-Core, and FHIR R4 all use 29462-7
 				DataValue.Quantity.Units is UCUM#kg "kg"
 				Precondition from BodyWeightPreconditionVS if covered
 				Method from BodyWeightMethodVS if covered
-0..0			BodySite
+0..0			BodyLocation
 0..0			Components
 
 EntryElement:	BodyHeight
@@ -72,8 +71,12 @@ Description:	"The distance from the sole to the crown of the head."
 				Precondition from BodyHeightPreconditionVS if covered
 				Method from BodyHeightLengthMethodVS if covered
 0..1			BodyPosition
-0..0			BodySite
+0..0			BodyLocation
 0..0			Components
+
+	Element:		BodyPosition
+	Description:	"The position or physical attitude of the body."
+	Value:			CodeableConcept from BodyPositionVS if covered
 
 EntryElement:	BodyLength
 Based on:		VitalSign
@@ -83,7 +86,7 @@ Description:	"The distance from the sole of the foot to the crown of the head, l
 0..0			Precondition
 				Method from BodyHeightLengthMethodVS
 0..1			BodyPosition
-0..0			BodySite
+0..0			BodyLocation
 0..0			Components
 
 EntryElement:	BloodPressure  // Implemented with components
@@ -91,13 +94,15 @@ Based on:		VitalSign
 Description:	"The force of circulating blood on the walls of the arteries."
 				Code is LNC#55284-4 "Blood pressure systolic and diastolic"
 0..0			DataValue
-				BodySite.BodySiteCode from BloodPressureBodySiteVS if covered
+0..0			DataAbsentReason
+				BodyLocation.LocationCode from BloodPressureBodyLocationVS if covered
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from BloodPressureMethodVS if covered
 				Components.ObservationComponent
 includes 0..1 	SystolicPressure 
 includes 0..1 	DiastolicPressure
 0..1			BodyPosition
+0..1			BloodPressureCuffSize
 
 	Element:		SystolicPressure
 	Based on:		QuantitativeObservationComponent
@@ -111,12 +116,16 @@ includes 0..1 	DiastolicPressure
 					Code is LNC#8462-4
 					DataValue.Quantity.Units is UCUM#mm[Hg] "mmHg"
 
+	Element:		BloodPressureCuffSize
+	Description:	"The size of cuff used, if applicable."
+	Value:			CodeableConcept from BloodPressureCuffSizeVS
+
 EntryElement:	RespiratoryRate
 Based on:		VitalSign
 Description:	"The rate of breathing (inhalation and exhalation) measured within in a unit time, expressed as breaths per minute."
 				Code is LNC#9279-1 "Respiratory rate"
 				DataValue.Quantity.Units is UCUM#/min "{breaths}/min"
-0..0			BodySite
+0..0			BodyLocation
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from RespiratoryRateMethodVS if covered
 				Components.ObservationComponent
@@ -129,7 +138,7 @@ Concept:		LNC#8867-4
 Description:	"The number of times the heart ventricles contract per unit of time, usually per minute."
 				Code is LNC#8867-4 "Heart rate"
 				DataValue.Quantity.Units is UCUM#/min "/min"
-				BodySite.BodySiteCode from HeartRateBodySiteVS if covered
+				BodyLocation.LocationCode from HeartRateBodyLocationVS if covered
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from HeartRateMethodVS if covered
 0..0			Components
@@ -137,10 +146,10 @@ Description:	"The number of times the heart ventricles contract per unit of time
 EntryElement:	OxygenSaturation
 Based on:		VitalSign
 Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
-// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (good because it doesn't presume a method).
+// Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (latter code doesn't presume a method).
 				Code is LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
 				DataValue.Quantity.Units is UCUM#% "%"
-				BodySite.BodySiteCode from OxygenSaturationBodySiteVS
+				BodyLocation.LocationCode from OxygenSaturationBodyLocationVS
 				Precondition from CardiopulmonaryPreconditionVS
 				Method from OxygenSaturationMethodVS
 				Components.ObservationComponent
@@ -164,7 +173,7 @@ Based on:		VitalSign
 Description:	"The measure of the level of heat in the body."
 				Code is LNC#8310-5 "Body temperature"
 				DataValue.Quantity.Units is UCUM#Cel "C"
-				BodySite.BodySiteCode from BodyTemperatureBodySiteVS
+				BodyLocation.LocationCode from BodyTemperatureBodyLocationVS
 //				Precondition from BodyTemperatureQualifierVS
 				Method from BodyTemperatureMethodVS
 0..0			Components
@@ -176,9 +185,9 @@ Description:	"Circumference of the head (typically 0-2 years)."
 				DataValue.Quantity.Units is UCUM#cm "cm"
 0..0			Precondition
 0..0			Method
-0..0			BodySite
+0..0			BodyLocation
 0..0			Components
-0..0			Components
+0..0			Device
 
 EntryElement:	BodyMassIndex
 Based on:		VitalSign
@@ -187,8 +196,9 @@ Description:	"A general indicator of the body fat an individual is carrying base
 				DataValue.Quantity.Units is UCUM#kg/m2  "kg/m2"
 0..0			Precondition
 0..0			Method
-0..0			BodySite
+0..0			BodyLocation
 0..0			Components
+0..0			Device
 
 
 /*

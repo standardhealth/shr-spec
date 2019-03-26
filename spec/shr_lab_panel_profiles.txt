@@ -1,0 +1,48 @@
+Grammar:	      DataElement 5.0
+Namespace:	    shr.lab
+Description:    "Profiles of common laboratory tests."
+Uses:           shr.core
+
+CodeSystem:     UCUM = http://unitsofmeasure.org
+CodeSystem:     SCT = http://snomed.info/sct
+
+EntryElement:   CBCWAutoDifferentialPanel
+Based on:       HeadlessLaboratoryPanel
+Description:    "57021-8 CBC W Auto Differential panel - Blood. 
+This profile is used to validate the panel, including the codes of the panel members, but not the panel members themselves. The panel members are stand-alone observations that must validate against the appropriate laboratory profile."
+1..1            SubjectOfRecord is type PatientSubjectOfRecord
+                Code is LNC#57021-8
+                PanelMembers.Observation
+  includes 0..* CBCWAutoDifferentialPanelCoreElement
+  includes 0..* CBCWAutoDifferentialPanelNonCoreElement
+
+// Instances that satisfy CBCWAutoDifferentialPanelCoreElement will are required to satisfy the corresponding profiles in lab_2000 which determines the DataValue type or answer set for common LOINC codes
+        EntryElement:   CBCWAutoDifferentialPanelCoreElement
+        Based on:       SimpleQuantitativeLaboratoryObservation
+        Description:    "Must-support members of the CompleteBloodCountPanelByAutomatedCountPanel"
+                        Code from CBCWAutoDifferentialPanelCoreElementVS    
+
+        EntryElement:   CBCWAutoDifferentialPanelNonCoreElement
+        Based on:       SimpleQuantitativeLaboratoryObservation
+        Description:    "Optional members of the CompleteBloodCountPanelByAutomatedCountPanel"
+                        Code from CBCWAutoDifferentialPanelNonCoreElementVS
+
+EntryElement:   ComprehensiveMetabolic2000SerumOrPlasmaPanel
+Based on:       HeadlessLaboratoryPanel
+Description:    "24323-8 Comprehensive metabolic 2000 panel - Serum or Plasma.  This profile is used to validate the panel, including the codes of the panel members, but not the panel members themselves. The panel members are stand-alone observations that must validate against the appropriate laboratory profile."
+1..1            SubjectOfRecord is type PatientSubjectOfRecord
+                Code is LNC#24323-8
+                PanelMembers.Observation
+  includes 0..* CMP2000SerumOrPlasmaCoreElement
+  includes 0..* CMP2000SerumOrPlasmaNonCoreElement
+
+        EntryElement:   CMP2000SerumOrPlasmaCoreElement
+        Based on:       SimpleQuantitativeLaboratoryObservation
+        Description:    "Must-support members of the CompleteBloodCountPanelByAutomatedCountPanel"
+                        Code from CMP2000SerumOrPlasmaCoreElementVS 
+                        
+        EntryElement:   CMP2000SerumOrPlasmaNonCoreElement
+        Based on:       SimpleQuantitativeLaboratoryObservation
+        Description:    "Optional members of the CompleteBloodCountPanelByAutomatedCountPanel"
+                        Code from CMP2000SerumOrPlasmaNonCoreElementVS    
+   
