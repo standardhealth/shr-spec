@@ -1,4 +1,4 @@
-<p><font color="red">*** This is the <strong>DRAFT VERSION 0.3 ALPHA</strong> of the Minimum Common Oncology Data Elements (mCODE&#8482;) implementation guide. ***</font></p>
+<p><font color="red">*** This is a <strong>DRAFT VERSION </strong> of the Minimum Common Oncology Data Elements (mCODE&#8482;) implementation guide. ***</font></p>
 
 <p>&nbsp;</p>
 
@@ -22,10 +22,10 @@
 <p>mCODE will only include the minimal set of genetic related elements relevant to capture in an EHR to drive treatment options. </p>
 <p>mCODE aligns with the <a href = "https://www.healthit.gov/sites/default/files/sync_for_genes_report_november_2017.pdf">Sync for Genes</a> approach to adopting a layered-based adoption model. With mCODE's initial emphasis on a minimal set of elements to drive treatment, there is no immediate need to model and store whole sequence reads that would be sent from an NGS labs.  Rather, only the relevant genetics labs test results and variant names and interpretation, noted by Sync for Genes as levels 1 and 2, would suffice. Subsequently, the mCODE implementation mapped to the <a href = "https://www.hl7.org/fhir/genomics.html#observation-genetics">observation-genetics profile</a> as much as possible.</p>
 
-<h3>Identifying Genetic Tests</h3>
-<p>mCODE aligns with the <a href="https://www.ncbi.nlm.nih.gov/gtr/">Genetic Test Registry (GTR)</a> as the primary source for identifying genetic tests, assigning the relevant GTR ID to the <i>GeneticMarkerAnalysisResult.code</i> element.</p>
+<h3>Genetic Test Identifiers</h3>
+<p>The <a href="https://www.ncbi.nlm.nih.gov/gtr/">Genetic Test Registry (GTR)</a> is currently the best source for identifying genetic tests. However, the user should be aware that the GTR is not a reliable source, since the test data is voluntarily updated and there is no overarching data steward.</p>
 
-<p>The <strong><i>GeneticMarkerAnalysisResult</i></strong> profile provides an extensible value set of genetic tests related to cancer-linked molecular markers.  The initial terms in this value set were curated based on the following filter criteria in the GTR <i>TestVersion</i> data:</p>
+<p>The <strong><i>GeneticMarkerAnalysisResult</i></strong> profile provides an extensible value set of genetic tests related to cancer-linked molecular markers taken from the GTR <i>TestVersion</i> data, using the following method:</p>
 <ul>
     <li>A lexical query of the condition_identifiers field containing key cancer related terms like 'cancer' and 'tumor'.</li>
     <li>Tests based in the United States as country of origin.</li>
@@ -34,8 +34,13 @@
 </ul>
 
 <h3>Additional Notes</h3>
-<p>The <strong><i>geneticsGene</i></strong> attribute is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set. </p>
-<p>The <i>CancerGeneVS</i> value set includes the HUGO approved symbol rather than the full representation of the Gene ID (in the format approved_symbol:identifier). This choice was pragmatic since a certain number of systems store the symbol rather than the non-semantic identifier assigned by HUGO.  Nevertheless, the approved symbol for the gene is unique so it is possible to derive the identifier from the HUGO dataset if needed.</p>
+<ul>
+    <li>The <strong><i>geneticsGene</i></strong> attribute is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set.</li>
+    <p></p>
+    <li>The <i>CancerGeneVS</i> value set contains the HGNC code followed by the HUGO approved symbol embedded within the full description of the term in the value set.</li>
+    <p></p>
+</ul>
+
 
 <h2>Sources of Information</h2>
 <p>References used in the mCODE biomarker model include:</p>
