@@ -695,41 +695,49 @@ Concept:		MTH#C0013153
 Description:	"The way a substance enters an organism after contact, particularly, the route of drug administration."
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
-Element:		BodySite
-Concept:		SCT#758637006 "Anatomical location (property) (qualifier value)"
+Element:		BodyLocation
 Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart.
-SHR creates a BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
-1..1			BodySiteCode
-0..1 			Laterality
-0..1			DistanceFromLandmark
-0..1			AnatomicalDirection
-0..1			ClockDirection
+The BodyLocation includes code and optional qualifiers of anatomical side or direction. The body location can also be determined from one or more body landmarks.
+If the code for the body location includes laterality and/or direction, the LocationQualifier might be unnecessary.
+Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how the same address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodyLocation (BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
+1..1			LocationCode
+0..* 			LocationQualifier
+0..*			Landmark
 
-	Element:		BodySiteCode
-	Concept:		TBD
-	Description:	"Code for the anatomical location or landmark, without laterality, direction, or other modifiers needed to completely specify the body site."
-	Value:			CodeableConcept should be from BodySiteVS
 
-	Element:		Laterality
-	Concept:		MTH#C0925205 "Anatomical laterality"
-	Description:	"Anatomical location or specimen further detailing the side(s) of interest."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/bodysite-laterality
+	Element:		LocationCode
+	Description:	"Code for the body location, optionally defining laterality or direction."
+	Value:			CodeableConcept should be from BodyLocationVS
 
-	Element:		AnatomicalDirection
-	Concept:		NCI#C99074
-	Description:	"Anatomical location or specimen further detailing directionality."
-	Value:			CodeableConcept from AnatomicalDirectionVS
+	Element:		LocationQualifier
+	Description:	"Additional information, such as laterality or direction, that helps define the body location."
+	Value:			CodeableConcept from LocationQualifierVS if covered
 
-	Element:		ClockDirection
-	Concept:		LNC#72294-2
-	Description:	"A direction indicated by an angle relative to 12 o'clock."
-	Value:			CodeableConcept from ClockDirectionVS
+	Element:		Landmark
+	Description:	"An anatomical landmark that helps determine a body location."
+	0..1			Type from LandmarkTypeVS
+	0..1			LocationCode from BodyLocationVS 
+	0..*			LocationQualifier from LocationQualifierVS
+	0..1			DirectionToBodyLocation
+	0..1			DistanceToBodyLocation
 
-	Element:		DistanceFromLandmark
-	Concept:		TBD
-	Description:	"How far the anatomical location of interest is from the given landmark"
-	Value:			Quantity
-					Quantity.Units.Coding from UnitsOfLengthVS
+
+		Element:		DirectionToBodyLocation
+		Description:	"The direction from the landmark to the body location of interest."
+		Value:			ClockDirection or AnatomicalDirection
+
+			Element:    	ClockDirection
+			Description:	"A direction indicated by an angle relative to 12 o'clock."
+			Value:			CodeableConcept from ClockDirectionVS
+
+			Element:		AnatomicalDirection // underlaying/over
+			Description:	"A direction based on planes, surfaces, and orientations of the body."
+			Value:			CodeableConcept from LocationQualifierVS  //TO DO: isolate values that are directions
+
+		Element:		DistanceToBodyLocation
+		Description:	"How far the anatomical location of interest is from the given landmark"
+		Value:			Quantity
+						Quantity.Units.Coding from UnitsOfLengthVS
 
 Element:		Identifier
 Concept:		MTH#C0600091

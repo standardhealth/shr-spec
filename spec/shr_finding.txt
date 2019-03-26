@@ -73,7 +73,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
 0..*			Performer
-0..1			BodySite
+0..1			BodyLocation
 0..1			CommentOrDescription
 0..1			Interpretation
 0..1			Device
@@ -175,7 +175,7 @@ Description:	"A coded finding based on a specimen collected from a patient."
 1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 1..1			SubjectOfRecord
 0..1			Specimen
-0..0			BodySite  // BodySite is determined indirectly from Specimen.CollectionSite
+0..0			BodyLocation  // BodyLocation is determined indirectly from Specimen.CollectionSite
 				Category is OBSCAT#laboratory
 				Identifier
 	includes 	0..1 AccessionIdentifier
@@ -251,7 +251,7 @@ EntryElement:   LaboratoryPanel
 Based on:       LaboratoryObservation
 Description:    "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
 0..0            Components
-0..0		    BodySite
+0..0		    BodyLocation
 0..0            Device
 
 EntryElement:	HeadlessLaboratoryPanel
@@ -265,7 +265,7 @@ EntryElement:   Panel
 Based on:       Observation
 Description:    "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
 0..0            Components
-0..0		    BodySite
+0..0		    BodyLocation
 0..0            Device
 
 EntryElement:	HeadlessPanel
@@ -281,7 +281,7 @@ Description:	"A simplified observation for social histories."
 1..1			SubjectOfRecord is type PatientSubjectOfRecord
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
-0..0			BodySite
+0..0			BodyLocation
 0..0			ReferenceRange
 0..0			PanelMembers
 0..0			Device
@@ -296,12 +296,12 @@ EntryElement:	Condition
 Based on:		ConditionOrObservation
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
-SHR Condition uses the SHR BodySite structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
+SHR Condition uses the SHR BodyLocation structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
 				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
 0..1			PersonInformationSource
 1..1			SubjectOfRecord is type PatientSubjectOfRecord   // restricted in DSTU 2 (from Patient or Group)
 1..1			Category from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
-0..*			BodySite
+0..*			BodyLocation
 1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
 0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
@@ -309,11 +309,16 @@ SHR Condition uses the SHR BodySite structure that includes not only a code, but
 0..1			Onset
 0..1			Abatement
 0..1			Evidence
+0..1			DateOfDiagnosis
 // Stuff from CIMI eliminated
 //0..1			WhenClinicallyRecognized
 //0..1			PresentOnAdmission
 //0..*			ConditionCause
 //0..1			Criticality
+
+		Element:		DateOfDiagnosis
+		Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
+		Value:			date
 
         Element:		PersonInformationSource
 		Description:	"The person who provided the information, not necessarily the patient."
@@ -404,7 +409,7 @@ Description:	"A comorbidity refers to one or more diseases or conditions that oc
 
 EntryElement:	BodyStructure
 Based on:		Condition
-Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodySiteCode is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and location (corresponding to BodySite.BodySiteCode. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
+Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodyLocation is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and a location. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
 				Code from BodyStructureVS if covered
 0..0			ReferenceRange
 
