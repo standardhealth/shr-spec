@@ -54,14 +54,14 @@ Based on:			ObservationComponent
 Description:		"A non-independent finding whose result is a quantity."
 					DataValue value is type Quantity
 
-Abstract Element:	ConditionOrObservation
+Abstract Element:	SituationStatement
 Based on:		ClinicalStatement
 Description:	"An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
 1..1			Code
 
 
 EntryElement:	Observation
-Based on:		ConditionOrObservation
+Based on:		SituationStatement
 Concept:		TBD
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
@@ -293,7 +293,7 @@ Description:	"The result of social history questions, whose answer is expressed 
 				DataValue value is type CodeableConcept
 
 EntryElement:	Condition
-Based on:		ConditionOrObservation
+Based on:		SituationStatement
 Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
 SHR Condition uses the SHR BodyLocation structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
@@ -336,7 +336,7 @@ SHR Condition uses the SHR BodyLocation structure that includes not only a code,
 
 		Element:		ConditionCause
 		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
-		Value:			CodeableConcept or ref(Entity) or ref(ConditionOrObservation)
+		Value:			CodeableConcept or ref(Entity) or ref(SituationStatement)
 			// probably other attributes needed, such as likelihood or type of cause
 
 			Element:		ClinicalStatus
@@ -420,10 +420,10 @@ Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birt
 				Code from CongenitalAbnormalitiesVS if covered
 
 EntryElement:	DiagnosticReport
-Based on:		ConditionOrObservation  // TODO: need a new term for ConditionOrObservation
+Based on:		SituationStatement
 0..*			RelatedRequest is type MedicationStatementRelatedRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-0..1			ServiceCategory	
+0..1			Category	
 0..1			SubjectOfRecord is type ObservationSubjectOfRecord
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
 0..1			CareContext
