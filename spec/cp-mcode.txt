@@ -2,7 +2,8 @@ Grammar:        ContentProfile 1.0
 
 // Required fields (1..1 or 1..*) don't need to be marked must-support so (currently) they are not included in this list. But, I wonder if they will be missed in the data dictionary?
 Namespace: shr.core
-    Patient:  // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender
+    Patient:  
+        // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender
         Person.DateOfBirth MS
         Person.AdministrativeGender MS
         Person.Race MS
@@ -34,23 +35,11 @@ Namespace: shr.core
         DataValue MS
         Interpretation MS
         RelevantTime MS
-    SurgicalProcedure:
-        ProcedureSubjectOfRecord MS
-        Code MS
-        OccurrenceTimeOrPeriod MS
-        TreatmentIntent MS
-        // BodyLocation unnecessary if code is pre-coordinated
-    RadiationProcedure:
-        // Required: ProcedureSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
-        ProcedureSubjectOfRecord MS
-        Code MS
-        OccurrenceTimeOrPeriod MS
-        TreatmentIntent MS
-        // BodyLocation unnecessary if code is pre-coordinated
     BloodPressure:
         // Required: PatientSubjectOfRecord, Category, Status and Code
         PatientSubjectOfRecord MS
         Code MS
+        Components MS
 // Uncomment out when ready
 //        Components.ObservationComponent[SystolicPressure].DataValue
 //        Components.ObservationComponent[DiastolicPressure].DataValue
@@ -77,7 +66,7 @@ Namespace: oncocore
         MorphologyBehavior MS
         DateOfDiagnosis MS
         // CancerHistologicType MS // CM: not a valid field
-    DistantMetastases:
+    Metastases:
         PatientSubjectOfRecord MS
         Code MS
         DateOfDiagnosis MS
@@ -140,22 +129,11 @@ Namespace: oncocore
         CancerStageTiming MS
         RelevantTime MS
     TumorMarkerObservation:
-        ObservationSubjectOfRecord MS
+        PatientSubjectOfRecord MS
         Code MS
         DataValue MS
         RelevantTime MS
-//      Specimen.Type -- MK: Is this minimal?
-    CancerGeneticRegionStudied:
-        // subject to change when May updates genomics model
-        // Required: Code, Status, Category, SubjectOfRecord
-        ObservationSubjectOfRecord MS
-        Code MS
-        // Components.ObservationComponent[DNARegionDescription] MS                 // CM: includes type not yet supported in CP
-        // Components.ObservationComponent[GeneMutationToBeTestedID].DataValue MS   // CM: includes type not yet supported in CP
-        // Components.ObservationComponent[CancerGeneName] MS                       // CM: includes type not yet supported in CP
-        Method MS
-        RelevantTime MS
-        // Specimen.Type  MS // CM: Since specimen is a reference, FHIR does not allow you to "drill into" it in a profile on Observation.
+//      Specimen.Type -- MK: Is this minimal?.
     CancerDiseaseStatus:
         // Required: Code, Status, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
@@ -163,6 +141,40 @@ Namespace: oncocore
         DataValue MS
         EvidenceType MS
         RelevantTime MS
+    CancerRelatedSurgicalProcedure:
+        PatientSubjectOfRecord MS
+        Code MS
+        OccurrenceTimeOrPeriod MS
+        TreatmentIntent MS
+        // BodyLocation unnecessary if code is pre-coordinated
+    CancerRelatedRadiationProcedure:
+        // Required: ProcedureSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
+        PatientSubjectOfRecord MS
+        Code MS
+        OccurrenceTimeOrPeriod MS
+        TreatmentIntent MS
+        // BodyLocation unnecessary if code is pre-coordinated
+    CancerGenomicsReport:
+        PatientSubjectOfRecord MS
+        CancerGeneticRegionAnalysis MS
+    CancerGeneticRegionAnalysis:
+        // subject to change when May updates genomics model
+        // Required: Code, Status, Category, SubjectOfRecord
+        PatientSubjectOfRecord MS
+        Code MS
+        Method MS
+        RelevantTime MS
+        Components MS
+        PanelMembers MS
+        // Components.ObservationComponent[DNARegionDescription] MS                 // CM: includes type not yet supported in CP
+        // Components.ObservationComponent[GeneMutationToBeTestedID].DataValue MS   // CM: includes type not yet supported in CP
+        // Components.ObservationComponent[CancerGeneName] MS                       // CM: includes type not yet supported in CP
+        // Specimen.Type  MS // CM: Since specimen is a reference, FHIR does not allow you to "drill into" it in a profile on Observation
+    GeneticVariantFound:
+        PatientSubjectOfRecord MS
+        Code MS
+        RelevantTime MS
+        Components MS     
 
 Namespace: shr.lab
     CBCWAutoDifferentialPanel:
@@ -183,6 +195,6 @@ Namespace: shr.lab
         RelevantTime MS
     CMP2000SerumOrPlasmaCoreElement:
          // Required: Code, Status, Category, SubjectOfRecord
-        ObservationSubjectOfRecord MS
+        PatientSubjectOfRecord MS
         Code MS
         DataValue MS
