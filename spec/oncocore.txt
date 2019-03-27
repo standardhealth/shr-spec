@@ -37,7 +37,7 @@ Description:    "Classification of the cancer by the type of tissue in which the
 
 	Element:	RelatedCancerCondition
 	Description:	"Cancer condition this information relates to."
-	Value:		ref(CancerCondition) or ref(DistantMetastases) or ref(Tumor)
+	Value:		ref(CancerCondition) or ref(Metastases) or ref(Tumor)
 
 
 EntryElement:   CancerHistologicGrade
@@ -109,10 +109,10 @@ Could be modeled with condition, observation, or clinical impression.
 Conclusion: Having a place for the onset date of mets, which is an mCODE requirement, is a +1 for Condition...so is the ability to give multiple body sites. Use of Condition to describe a part of another condition is consistent with the philosophy used for wounds, where each wound is a separate condition, each wound tunnel on the wound is a (sub)condition, the length of the tunnel is an observation on the wound tunnel. Another advantage is that using condition provides a natural way to track the progression of the mets, separate from the progression of the entire disease (see discussion on DiseaseStatus).
 */
 
-EntryElement:   DistantMetastases
+EntryElement:   Metastases
 Based on:       CancerCondition
 Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
-                Code from DistantMetastasesVS
+                Code from MetastasesVS
 0..1			RelatedCancerCondition
 0..0            BodyLocation  // BodyLocation is precoordinated in the code.
 				PersonInformationSource is type PractitionerInformationSource
@@ -193,6 +193,19 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 0..0            PanelMembers
 0..0			Components
 
+
+EntryElement:	CancerRelatedSurgicalProcedure
+Based on:		SurgicalProcedure
+Description:	"A surgical action addressing a cancer condition, independent of action context."
+// It is cancer-related only if the reason is a cancer condition
+0..1			ReasonReference value is type CancerCondition
+0..1			ReasonCode from CancerDisorderVS
+
+EntryElement:	CancerRelatedRadiationProcedure
+Based on:		RadiationProcedure
+// It is cancer-related only if the reason is a cancer conditio
+0..1			ReasonReference value is type CancerCondition
+0..1			ReasonCode from CancerDisorderVS
 
 /*
 EntryElement:	TumorMarginDescription
