@@ -701,7 +701,7 @@ The BodyLocation includes code and optional qualifiers of anatomical side or dir
 If the code for the body location includes laterality and/or anatomical direction, the corresponding attributes might be unnecessary.
 Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how an address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 1..1			LocationCode
-0..1 			BodySide
+0..1 			Laterality
 0..1			AnatomicalDirection
 0..*			RelationToLandmark
 
@@ -710,7 +710,7 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 	Description:	"Code for the body location, optionally pre-coordinating laterality or direction."
 	Value:			CodeableConcept should be from BodyLocationVS
 
-	Element:		BodySide
+	Element:		Laterality
 	Description:	"Additional information, such as laterality or direction, that helps define the body location."
 	Value:			CodeableConcept from LateralityVS if covered
 
@@ -728,7 +728,7 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 		Element:		LandmarkLocation
 		Description:	"The body location of the landmark."
 		0..1			LocationCode
-		0..1			BodySide
+		0..1			Laterality
 		0..1			AnatomicalDirection
 
 
@@ -742,7 +742,7 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 
 			Element:		AnatomicalDirection // underlaying/over
 			Description:	"A direction based on planes, surfaces, and orientations of the body."
-			Value:			CodeableConcept should be from LocationQualifierVS  //TO DO: isolate values that are directions
+			Value:			CodeableConcept should be from AnatomicalDirectionVS  //TO DO: isolate values that are directions
 
 		Element:		LandmarkToBodyLocationDistance
 		Description:	"How far the anatomical location of interest is from the given landmark"
@@ -750,7 +750,6 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 						Quantity.Units.Coding from UnitsOfLengthVS
 
 Element:		Identifier
-Concept:		MTH#C0600091
 Description:	"Business identifier or external id for this resource."
 0..1			IdentifierString  // cardinality aligns with FHIR STU3
 0..1			Purpose from http://hl7.org/fhir/ValueSet/identifier-use
