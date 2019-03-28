@@ -1,0 +1,40 @@
+Grammar:	    DataElement 5.0
+Namespace:	    shr.lab
+Uses:           shr.core
+
+EntryElement:   ProfileVariation
+Description:    "New resource that describes the acceptable variations on a given profile. Allowed variations are fixed values and value set bindings. The variations themselves are given in a CSV file."
+1..1            BaseResourceOrProfile
+1..1            TableOfVariants
+1..*            ColumnDefinition
+
+    Element:        BaseResourceOrProfile
+    Description:    "The resource or profile on which the variations are based."
+    Value:          uri
+
+    Element:        TableOfVariants
+    Description:    "Where the table of variations is found."
+    Value:          Url
+
+    Element:        ColumnDefinition
+    Description:    "The meaning of the columns in the external file with respect to the base resource or profile."
+    1..1            ColumnNumber
+    1..1            CorrespondingProperty
+    1..1            ConstraintType
+
+        Element:        ColumnNumber
+        Description:    "Reference to a column in the external file. The first column is column 1."
+        Value:          positiveInt
+
+        Element:        CorrespondingProperty
+        Description:    "A field name or path to the logical model field that the value binds. Uses path syntax."
+        Value:          string // a path to the target field
+
+        Element:        ConstraintType
+        Description:    "Indicates how the data in the spreadsheet should be applied."
+        Value:          CodeableConcept from ConstraintTypeVS
+
+
+
+
+

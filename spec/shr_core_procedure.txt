@@ -7,7 +7,7 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 EntryElement:	Procedure
 Based on:		ActionPerformed
 Description:	"A procedure that has been performed."
-				SubjectOfRecord is type ProcedureSubjectOfRecord
+				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodyLocation
 0..1			PartOf value is type ref(Procedure)
@@ -28,12 +28,6 @@ Description:	"A procedure that has been performed."
 0..1			Outcome
 0..*			MaterialUsed
 
-
-    Element:		ProcedureSubjectOfRecord
-	Based on:		SubjectOfRecord
-	Description:	"A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
-	Value:			ref(Patient) or ref(Group)
-
 	Element:		ProcedureParticipant
 	Based on:		Participant
 	Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
@@ -52,7 +46,7 @@ Description:	"A procedure that has been performed."
 EntryElement:	ProcedureRequest
 Based on:		ActionRequested
 Description:	"A request for a procedure to be performed. May be a proposal or an order."
-				SubjectOfRecord is type ProcedureSubjectOfRecord
+				SubjectOfRecord is type ReferralSubjectOfRecord
 				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
 				// DSTU 2 change (different required value sets in v2 and v3)
 				Status // from http://hl7.org/fhir/ValueSet/request-status  
@@ -79,6 +73,12 @@ Description:	"A request for a procedure to be performed. May be a proposal or an
 		Element:		ProcedureRequester
 		Description:	"The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
 		Value:			ref(Practitioner) or ref(Device)
+
+		Element:		ReferralSubjectOfRecord
+		Based on:		SubjectOfRecord
+		Description:	"A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
+		Value:			ref(Patient) or ref(Group)
+
 
 //---------- Specialized Types of Procedure Topics ----------------
 
@@ -107,7 +107,6 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 EntryElement:	SurgicalProcedure
 Based on:		Procedure
 Concept:		TBD
-Description:	"A surgical action."
 				Code from SurgicalProcedureVS if covered
 				BodyLocation is type SurgicalBodyLocation // includes the role of the body site in the procedure
 				Method from SurgicalMethodVS
