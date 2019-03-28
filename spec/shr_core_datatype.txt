@@ -698,31 +698,41 @@ Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 Element:		BodyLocation
 Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart.
 The BodyLocation includes code and optional qualifiers of anatomical side or direction. The body location can also be determined from one or more body landmarks.
-If the code for the body location includes laterality and/or direction, the LocationQualifier might be unnecessary.
-Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how the same address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodyLocation (BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
+If the code for the body location includes laterality and/or anatomical direction, the corresponding attributes might be unnecessary.
+Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how an address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 1..1			LocationCode
-0..* 			LocationQualifier
-0..*			Landmark
+0..1 			BodySide
+0..1			AnatomicalDirection
+0..*			RelationToLandmark
 
 
 	Element:		LocationCode
-	Description:	"Code for the body location, optionally defining laterality or direction."
+	Description:	"Code for the body location, optionally pre-coordinating laterality or direction."
 	Value:			CodeableConcept should be from BodyLocationVS
 
-	Element:		LocationQualifier
+	Element:		BodySide
 	Description:	"Additional information, such as laterality or direction, that helps define the body location."
-	Value:			CodeableConcept from LocationQualifierVS if covered
+	Value:			CodeableConcept from LateralityVS if covered
 
-	Element:		Landmark
+	Element:		RelationToLandmark
 	Description:	"An anatomical landmark that helps determine a body location."
-	0..1			Type from LandmarkTypeVS
-	0..1			LocationCode from BodyLocationVS 
-	0..*			LocationQualifier from LocationQualifierVS
-	0..1			DirectionToBodyLocation
-	0..1			DistanceToBodyLocation
+	0..1			LandmarkType
+	0..1			LandmarkLocation
+	0..1			LandmarkToBodyLocationDirection
+	0..1			LandmarkToBodyLocationDistance
+
+		Element:		LandmarkType
+		Description:	"The type of feature that constitutes the landmark, for example, particularly if the landmark is an acquired body structure or physical object."
+		Value:			CodeableConcept from LandmarkTypeVS if covered
+
+		Element:		LandmarkLocation
+		Description:	"The body location of the landmark."
+		0..1			LocationCode
+		0..1			BodySide
+		0..1			AnatomicalDirection
 
 
-		Element:		DirectionToBodyLocation
+		Element:		LandmarkToBodyLocationDirection
 		Description:	"The direction from the landmark to the body location of interest."
 		Value:			ClockDirection or AnatomicalDirection
 
@@ -732,9 +742,9 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 
 			Element:		AnatomicalDirection // underlaying/over
 			Description:	"A direction based on planes, surfaces, and orientations of the body."
-			Value:			CodeableConcept from LocationQualifierVS  //TO DO: isolate values that are directions
+			Value:			CodeableConcept should be from LocationQualifierVS  //TO DO: isolate values that are directions
 
-		Element:		DistanceToBodyLocation
+		Element:		LandmarkToBodyLocationDistance
 		Description:	"How far the anatomical location of interest is from the given landmark"
 		Value:			Quantity
 						Quantity.Units.Coding from UnitsOfLengthVS
