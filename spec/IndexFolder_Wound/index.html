@@ -8,60 +8,55 @@
 <li><a href="#Terminology">Terminology Overview</a></li>
 <li><a href="#Credits">Credits</a></li>
 </ul>
-<p>&nbsp;</p>
 
 <h1><a name="Disclaimers"></a>Disclaimers</h1>
 <p></p>
 <ul>
-    <li>This implementation guide is not a publication of Orders and Observations, HSPC, CIMI, or Intermountain Healthcare. 
-    </li>
-    <li>This IG has not been approved or endorsed by any organization.
-    </li>
+    <li>This implementation guide is not a publication of HL7 Orders and Observations Work Group, HSPC, CIMI, or Intermountain Healthcare.</li>
+    <li>This IG has not been approved or endorsed by any organization.</li>
+    <li>It has not been certified for, nor is it guaranteed to be fit for, any clinical use whatever.</li>
 </ul>
-<p>&nbsp;</p>
 
 <h1><a name="Background"></a>Background</h1>
 
-<p>The use case under consideration involves repeated assessments of the same wound that can occur at different times during the clinical course of the wound. These multiple assessments trace a relationship to a persistent representation of a wound condition by means of a wound identifier.</p>
-
-<p>&nbsp;</p>
-
-
-
-<h1>Purpose</h1>
-
-<h1></h1>Considerations</h1>
-Are the profiles valid?
-Can the profiles express the clinical need?
-Do the profiles mesh together to form a coherent and accurate picture?
-Are the relationships between the profiles correct?
-Are the correct codes and value sets used?
-
-
+<p>This is one of three efforts to model the same clinical content. An alternate Skin and Wound IG created by Intermountain Healthcare can be found <a href="http://models.opencimi.org/ig/skin-and-wound-fhir-profiles/">here</a>. Another IG, focused more on podiatry wounds but sharing similar content, is found <a href="http://wildfhir3.aegis.net/ig/hspcskinwoundassert/index.html">here</a>. The IG authors have worked together and have openly shared clinical content and modeling ideas. The end products, however, are not the same.</p>
+<p>The use case under consideration involves:</p>
+<ul>
+    <li>Assessing the condition of a patient's skin.</li>
+    <li>Documenting new and existing wounds. </li>
+    <li>Assessing the ongoing condition of a wound, initially and periodically during the clinical course of the condition.</li>
+</ul>
+<p>Also included are specialized profiles that represent wounds of the foot.</p>
+<p>Some of the main design goals of this IG are as follows:
+<ul> 
+    <li>Keep the number of profiles low by making use of observation components rather than self-contained observations. There are only 7 Observation-based profiles in this IG (Skin Assessment, Wound Assessment, Wound Bed Assessment, Tunneling Assessment, Undermining Assessment, Wound Size, and Exudate Assessment), compared to approximately 35 in Intermountain's.</li>
+    <li>Carefully model relationship among the observations and sub-observations. It should be absolutely clear which length corresponds to which wound tunnel, which clock direction corresponds to that tunnel, and which tunnel belongs with which wound, on which patient.</li>
+    <li>Be precise about what observations concern the wound itself, and which describe its clinical course. Properties that can change over time are included in assessments. For example, the wound trend, which can change over time (e.g., from worsening to stable to improving), is part of assessments.</li>
+    <li>Create valid profiles that express the clinical needs accurately, and mesh together to form a coherent and accurate picture of the patient's skin and wounds.</li>
+    <li>Use appropriate codes and vetted value sets.</li>
+    <li>Be fully consistent with US-Core Profiles.</li>
+</ul> 
+</p>
 
 
 <h1><a name="Modeling"></a>Modeling Wounds and Skin and Wound Assessments</h1>
-<p></p>
-<p>The other key to our approach representing each wound by a condition. A wound is an identifiable entity located at a particular body site that maintains its identity over a period of time. As such, a wound has properties indicative of a condition, including onset time and abatement time. Explicitly representing the wound allows multiple observations about the wound to refer back to the same wound.</p>
+
+<p>The model is summarized by the following illustration:</p>
 
 <img src="SkinWound-050.png" alt="Skin and Wound Assessment Logical Model" width="1100" />
 
-<p>The wound is modeled as a condition, and assessments are modeled as complex observations (with components and related observations).</p>
-<p>One of the key features of wound assessment is that observations have a hierarchical structure of containment with 1-to-many relationships at each level. For example, a patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient can have a measured length. This presents a modeling challenge.</p>
-<p>In this implementation, we use components when appropriate and sub-observations where necessary. Panel-type sub-observations are required where the panel observations themselves have sub-observations or components.</p>
+<p>The wound is an identifiable entity located at a particular body site that maintains its identity over a period of time. As such, a wound has properties of a condition, in particular, an onset time and (potentially) an abatement time. Representing the wound as a condition (problem) allows multiple observations about the wound to refer back to the same wound. </p>
 
-<p>&nbsp;</p>
+<p>An alternative would be to model the assessments as DiagnosticReports. We did not take that approach because Observations provide all the necessary functionality, whereas DiagnosticReports do not support components.</p>
+
+<p>One of the key features of wound assessment is that observations have a hierarchical structure with 1-to-many relationships at each level. For example, a patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient can have a measured length. This presents a modeling challenge.</p>
+<p>In this implementation, we use Observation components when appropriate and sub-observations (Observation.related) where necessary. Panel-type sub-observations are required where the panel observations themselves have sub-observations or components.</p>
 
 <h1><a name="Terminology"></a>Terminology</h1>
-
-TBD
-
-<p>&nbsp;</p>
-
+<p>Consistent with the evolving consensus, this IG uses LOINC for "questions" and SNOMED-CT for "answers". The codes and value set, in most cases, have been borrowed from the Intermountain implementation of Skin and Wound IG.</p>
 
 <h1><a name="Credits"></a>Credits</h1>
-<p>Skin and wound domain content was provided by Susan Matney.</p>
-<p>Podiatry domain content was provided by Reed Gelzer, Trustworthy EHR LLC and Michael Brody, TLD Systems</p>
+<p>Much of the skin and wound domain content was provided by Susan Matney. Additional podiatry content was provided by Reed Gelzer, Trustworthy EHR LLC and Michael Brody, TLD Systems</p>
 <p>Discussion and feedback was generously provided by all members of the CIMI Work Group especially the co-chairs, Dr. Stan Huff, Claude Nanjo, Galen Mulrooney, and Richard Esmond.</p>
 <p>This implementation guide was authored by Dr. Mark Kramer using the <a href="https://github.com/standardhealth/shr-cli/wiki">Clinical Information Modeling and Profiling Language (CIMPL),</a> a free, open source toolchain from <a href="https://www.mitre.org/">MITRE Corporation</a>.</p>
 

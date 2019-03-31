@@ -17,7 +17,7 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Category is OBSCAT#exam
 1..1			Code from WoundTypeVS if covered
-1..1			Identifier is type WoundIdentifier
+1..1			WoundIdentifier
 0..1			ConditionCause from WoundTypeEtiologyVS
 1..1			BodyLocation
 0..0			Severity  // not sure if zeroing it out is wise, but severity is not part of LOINC panel
@@ -26,10 +26,9 @@ The WoundIdentifier serves as a link between this assertion and assessments of t
 0..1			PresentOnAdmission
 0..1			Recurrence
 
-		Element:	WoundIdentifier
-		Based on:	Identifier
-		Concept:	LNC#81666-0
-		Description: "A human-readable identifier for the lesion; e.g., a letter or integer."
+		Element:		WoundIdentifier
+		Description: 	"A human-readable identifier for the lesion; e.g., a letter or integer."
+		Value:			string
 
 		Element:		PresentOnAdmission
 		Concept:		LNC#89251-3 "Condition present on admission"
@@ -51,20 +50,20 @@ Description:	"Group of observations regarding the properties and severity of a w
 0..0			DataAbsentReason
 1..1			WoundIdentifier
 				SubjectOfRecord is type PatientSubjectOfRecord
-				Interpretation is type WoundAssessmentInterpretation
+				Interpretation from WoundAssessmentInterpretationVS if covered
 0..0			BodyLocation // carried by wound assertion
 0..0			Device
 0..0			ReferenceRange		
 0..*			Attachment is type PhotographicImage  // 72170-4  	Photographic image	[Attachment]
 				Components.ObservationComponent
-includes 0..1	WoundEpisode  // should this really move to wound assert, per Nathan??
-includes 0..1	WoundTrend    // should this really move to wound assert, per Nathan??
-includes 0..1 	WoundPeriwoundCondition   // 72301-5  	Description of Periwound
-includes 0..*	WoundVisibleInternalStructure  //89250-5  Device or anatomic structure visible in wound
+includes 0..1	WoundEpisode  // moved from wound assert
+includes 0..1	WoundTrend    // moved from wound assert
+includes 0..1 	WoundPeriwoundCondition  
+includes 0..*	WoundVisibleInternalStructure 
 includes 0..1	WoundGradation
-//includes 0..1	WoundTunnelingDetectedNotDetected  //  72298-3  	Tunneling of Wound	R	 present/absent	   	 
-//includes 0..1	WoundUnderminingDetectedNotDetected // 72295-9  	Undermining of Wound	R
-//includes 0..1	WoundExudateDetectedNotDetected // 89259-6  	Presence of wound exudate
+includes 0..1	WoundTunneling
+includes 0..1	WoundUndermining
+includes 0..1	WoundExudate
 				PanelMembers.Observation
 includes 0..1	WoundBedAssessment
 includes 0..1	WoundEdgeAssessment
@@ -96,30 +95,24 @@ includes 0..1	WoundSize
 		Description:	"The grade of the wound."
 						Code is TBD#TBD
 						DataValue from WoundGradationVS
-/*
-		Element:		WoundTunnelingDetectedNotDetected
+
+		Element:		WoundTunneling
 		Based on:		CodedObservationComponent
 		Description:	"The presence or absence of wound tunneling."
 						Code is LNC#72298-3 "Tunneling of Wound"
 						DataValue from DetectedNotDetectedVS
 
-		Element:		WoundUnderminingDetected
+		Element:		WoundUndermining
 		Based on:		CodedObservationComponent
 		Description:	"The presence or absence of wound undermining."
 						Code is LNC#72295-9 "Undermining of Wound"
 						DataValue from DetectedNotDetectedVS
 
-		Element:		WoundExudateDetectedNotDetected
+		Element:		WoundExudate
 		Based on:		CodedObservationComponent
 		Description:	"The presence or absence of wound exudate."
 						Code is LNC#89259-6 "Presence of wound exudate"
 						DataValue from DetectedNotDetectedVS
-*/
-		Element:		WoundAssessmentInterpretation
-		Based on:		Interpretation
-		Concept: 		LNC#80338-7
-		Description:	"Overall assessement of whether the wound is within normal parameters."
-		Value:			CodeableConcept from WoundAssessmentInterpretationVS if covered // text values can be enteredt
 
 		Element:		WoundTrend
 		Based on:		CodedObservationComponent
