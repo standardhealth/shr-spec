@@ -15,6 +15,7 @@ Based on:       CodedNonLaboratoryObservation
 Description:    "A panel that contains cancer staging information. This class is the parent of panels containing information related to clinical and pathologic staging, including TNMClinicalStageGroup and TNMPathologicStageGroup."
 1..1            SubjectOfRecord is type PatientSubjectOfRecord
 0..1            RelatedCancerCondition  // in R4, this can map to Observation.focus
+1..1            DataValue
 0..1            Method is type CancerStagingSystem
                 Performer is type PractitionerPerformer
 0..0            Components
@@ -26,8 +27,9 @@ Based on:       SimpleCodedNonLaboratoryObservation
 Description:    "Abstract parent class for members of cancer staging panels. Cancer panel members must include a timing element and staging system, and focus on a cancer disorder. Specific realizations will have value sets specific to certain staging systems."
                 SubjectOfRecord is type PatientSubjectOfRecord
                 Performer is type PractitionerPerformer
+1..1            DataValue
 0..1            RelatedCancerCondition
-1..1            CancerStageTiming 
+0..1            CancerStageTiming 
 0..1            Method is type CancerStagingSystem
 0..0            BodyLocation
 0..0            Device
@@ -108,11 +110,13 @@ Element:        CancerStageTiming
 Description:	"Indicates when staging was done, in terms of treatment landmarks."
 Value:          CodeableConcept from CancerStageTimingVS if covered
 
-Element:        CancerStageSuffix
-Description:    "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
-Value:          CodeableConcept //from CancerStageSuffixVS  VS only includes terms applicable to BrCa.
-
 Element:        CancerStagingSystem
 Based on:       Method
 Description:    "Method of Staging (attribute) -  SCT#260713006"
 Value:          CodeableConcept from CancerStagingSystemVS if covered
+
+/*
+Element:        CancerStageSuffix
+Description:    "A suffix used in conjuction with certain cancer stage categories, usually qualifying how the category value was determined."
+Value:          CodeableConcept from CancerStageSuffixVS  VS only includes terms applicable to BrCa.
+*/

@@ -8,22 +8,40 @@ CodeSystem:     LNC = http://loinc.org
 CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     UCUM = http://unitsofmeasure.org
 
-
-EntryElement:   CancerCondition
-Based on:	    Condition
-Description:    "The presence of malignant neoplastic disease, in which abnormal cells divide without control and can invade nearby tissues."
-                Code from CancerDisorderVS if covered // TODO: Document reasons to used SNOMED as opposed to ICD-O-3
-//                StageInformation.StageSummary from http://loinc.org/vs/LL240-3   // Commented out because LL240-3 only applies to TNM stage group - is this correct?
-  	            StageInformation.StageDetail value is type ref(CancerStageGroup)
+Abstract Element:	CancerCondition
+Based on:		Condition
+Description:	"Abstract class for describing a primary or secondary metastatic neoplastic diseases."
+				PersonInformationSource is type PractitionerInformationSource
+0..1            HistologyMorphologyBehavior
+				BodyLocation.LocationCode from CancerBodyLocationVS if covered
 0..0            Severity
-0..1            MorphologyBehavior
 
-	Element:		MorphologyBehavior
-	Concept:		SCT#246463000 "Behavior of tumor (attribute)"
-	Description:	"A description of the morphology and behavioral characteristics of the cancer."
-	Value:			CodeableConcept from MorphologyBehaviorVS
+EntryElement:   PrimaryCancerCondition
+Based on:	    CancerCondition
+Description:    "Primary cancer condition, in which abnormal cells divide without control and can invade nearby tissues."
+                Code from PrimaryCancerDisorderVS if covered
+  	            StageInformation.StageDetail value is type ref(CancerStageGroup)
 
-EntryElement:   CancerHistologicType
+	Element:		HistologyMorphologyBehavior
+	Description:	"A description of the morphologic and behavioral characteristics of the cancer."
+	Value:			CodeableConcept from HistologyMorphologyBehaviorVS
+
+EntryElement:   SecondaryCancerCondition
+Based on:       Condition
+Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases."
+                Code from SecondaryCancerConditionVS
+0..1			RelatedCancerCondition
+0..0            Severity
+0..0			StageInformation
+
+		Element:	PractitionerInformationSource
+		Based on:	PersonInformationSource
+		Description:	"The information comes from a practitioner who asserts the condition."
+		Value:		ref(Practitioner)
+
+
+/*
+EntryElement:   CancerHistologicType  // Morphology ICD-O-3
 // MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
 Based on:       SimpleCodedLaboratoryObservation
 Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
@@ -34,10 +52,11 @@ Description:    "Classification of the cancer by the type of tissue in which the
 0..1			RelatedCancerCondition
 0..0	        BodyLocation
 0..0            Device
+*/
 
 	Element:	RelatedCancerCondition
 	Description:	"Cancer condition this information relates to."
-	Value:		ref(CancerCondition) or ref(Metastases) or ref(Tumor)
+	Value:		ref(PrimaryCancerCondition) or ref(SecondaryCancerCondition) or ref(Tumor)
 
 
 EntryElement:   CancerHistologicGrade
@@ -109,26 +128,12 @@ Could be modeled with condition, observation, or clinical impression.
 Conclusion: Having a place for the onset date of mets, which is an mCODE requirement, is a +1 for Condition...so is the ability to give multiple body sites. Use of Condition to describe a part of another condition is consistent with the philosophy used for wounds, where each wound is a separate condition, each wound tunnel on the wound is a (sub)condition, the length of the tunnel is an observation on the wound tunnel. Another advantage is that using condition provides a natural way to track the progression of the mets, separate from the progression of the entire disease (see discussion on DiseaseStatus).
 */
 
-EntryElement:   Metastases
-Based on:       CancerCondition
-Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. The locations are those in LOINC LL#LL61-3."
-                Code from MetastasesVS
-0..1			RelatedCancerCondition
-0..0            BodyLocation  // BodyLocation is precoordinated in the code.
-				PersonInformationSource is type PractitionerInformationSource
-0..0			StageInformation
 
-		Element:	PractitionerInformationSource
-		Based on:	PersonInformationSource
-		Description:	"The information comes from a practitioner who asserts the condition."
-		Value:		ref(Practitioner)
-
-
-EntryElement:   Tumor  // a condition, not a cancer condition
+EntryElement:   Tumor
 Based on:		BodyStructure
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
-                Code from CancerHistologicTypeVS
+                Code from HistologyMorphologyBehaviorVS
 0..1			RelatedCancerCondition
 0..0			Severity
 0..0			StageInformation
@@ -199,13 +204,13 @@ Based on:		SurgicalProcedure
 Description:	"A surgical action addressing a cancer condition, independent of action context."
 // It is cancer-related only if the reason is a cancer condition
 0..1			ReasonReference value is type CancerCondition
-0..1			ReasonCode from CancerDisorderVS
+0..1			ReasonCode from AnyCancerDisorderCodeVS
 
 EntryElement:	CancerRelatedRadiationProcedure
 Based on:		RadiationProcedure
 // It is cancer-related only if the reason is a cancer conditio
 0..1			ReasonReference value is type CancerCondition
-0..1			ReasonCode from CancerDisorderVS
+0..1			ReasonCode from AnyCancerDisorderCodeVS
 
 /*
 EntryElement:	TumorMarginDescription
