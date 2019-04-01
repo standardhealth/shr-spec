@@ -20,13 +20,13 @@ Element:		OccupationalDataSection
 Based on:		Section
 Description:	"Section in the OccupationalDataForHealth composition, containing the person's occupational data, past and present."
 				DomainResource 
-includes 0..*   PersonEmploymentStatus
+includes 0..*   EmploymentStatus
 includes 0..*	RetirementDate
 includes 0..*	CombatZonePeriod 
 includes 0..1	UsualWork
 includes 0..*	PastOrPresentJob
 
-EntryElement:	PersonEmploymentStatus
+EntryElement:	EmploymentStatus
 Based on:		CodedSocialHistoryObservation
 Description:	"The self-reported current and/or historical status about a person’s economic relationship to work (e.g. having one or more jobs), including start and end dates.
 A person's Employment Status could change over time, for example, a person could be employed following a period of choosing to not be in the labor force.
@@ -34,6 +34,7 @@ Outside of ODH, the employment arrangement between an employer and a person (one
 				Code is LNC#74165-2 "HistoryOfEmploymentStatus"
 				DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
 0..0			Components
+0..0			SubjectOfInformationCode
 
 EntryElement:	RetirementDate
 Based on:		SocialHistoryObservation
@@ -44,11 +45,15 @@ Outside of ODH, a characterization of the employment arrangement between an empl
 				Code is LNC#87510-4 "Date of Retirement"
 0..0			Components
 0..0			RelevantTime // The result value contains the date of retirement, so having a relevant time would be redundant.
+0..0			SubjectOfInformationCode
 
 EntryElement:	CombatZonePeriod
 Based on:		SocialHistoryObservation
+Description:	"Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work. Both civilian workers, such as Department of Defense contractors, and military service members could have worked in combat zones. Multiple periods in combat zone should be recorded using multiple FHIR resources."
+				DataValue value is type TimePeriod
 0..0			Components
 0..0			RelevantTime // Since the result data value contains the time period of combat zone activity, the relevant time is redundant
+0..0			SubjectOfInformationCode
 
 EntryElement:	UsualWork
 Based on:		CodedSocialHistoryObservation
@@ -64,11 +69,6 @@ includes 1..1 	UsualIndustry
 includes 0..1	UsualOccupationDuration 
 1..1			RelevantTime 
 				RelevantTime value is type TimePeriod
-
-	Element:		SubjectOfInformationCode
-	Description:	"The person referred the information in this resource relates to, if different than the person of record."
-		//The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)
-	Value:			CodeableConcept
 
 	Element:		UsualIndustry
 	Based on:		CodedObservationComponent
