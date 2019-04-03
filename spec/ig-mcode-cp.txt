@@ -9,8 +9,7 @@ Namespace: shr.core
         Person.Race MS
         Person.Ethnicity MS
         Person.Address.PostalCode MS
-        // How to restrict out the boolean or make dateTime only MS in mCODE only?
-        Person.Deceased MS
+        Person.Deceased MS  // Person.Deceased.dateTime only
     ComorbidCondition:
         // Required: PatientSubjectOfRecord, Category, Status, ClinicalStatus, Code
         PatientSubjectOfRecord MS
@@ -80,8 +79,9 @@ Namespace: oncocore
         PatientSubjectOfRecord MS  // req
         Code MS  // req
         ClinicalStatus MS  // req
+        HistologyMorphologyBehavior MS
         DateOfDiagnosis MS  // req if known (MS)
-        //  No BodyLocation because ICD-O-3 code will pre-coordinate body site
+        //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
 
 //  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
 //  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
@@ -143,13 +143,13 @@ Namespace: oncocore
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        EvidenceType MS
         RelevantTime MS
     CancerRelatedSurgicalProcedure:  // req if known
         PatientSubjectOfRecord MS  // req
         Code MS   // req
         OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
         TreatmentIntent MS  // req if known
+        RelatedCancerCondition MS
         // BodyLocation unnecessary if code is pre-coordinated
     CancerRelatedRadiationProcedure:
         // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
@@ -157,9 +157,11 @@ Namespace: oncocore
         Code MS
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
+        RelatedCancerCondition MS
         // BodyLocation unnecessary if code is pre-coordinated
     CancerGenomicsReport:
         PatientSubjectOfRecord MS
+        Participation.Participant MS   // Laboratory name
         CancerGeneticRegionAnalysisResult MS
     CancerGeneticRegionAnalysisResult:
         // subject to change when May updates genomics model
@@ -189,12 +191,16 @@ Namespace: shr.lab
 //        PanelMembers.Observation[CBCMustSupportPanelMember]
         PatientSubjectOfRecord MS
         RelevantTime MS
+    CBCWAutoDifferentialPanelCoreElement:
+        PatientSubjectOfRecord MS
+        Code MS
+        DataValue MS
     ComprehensiveMetabolic2000SerumOrPlasmaPanel:
         // Required: Code, Status, Category, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
         Code MS
 //   Uncomment when supported
-//        PanelMembers.Observation[CMPMustSupportPanelMember]
+//      PanelMembers.Observation[CMPMustSupportPanelMember]
         PatientSubjectOfRecord MS
         RelevantTime MS
     CMP2000SerumOrPlasmaCoreElement:
