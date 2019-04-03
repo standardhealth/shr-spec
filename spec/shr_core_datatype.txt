@@ -406,24 +406,26 @@ Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units is UCUM#%
 
+
+
+/* not used -- keep for future use
 Element:		QualitativeLikelihood
 Concept:		TBD
 Description:	"A qualitative (subjective) likelihood."
-Value:			CodeableConcept from QualitativeLikelihoodVS
+Value:			CodeableConcept from QualitativeLikelihood
 
-/* NOT suitable data types
 Element:		Length
 Concept:		MTH#C1444754
 Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
 Value:			Quantity with Coding from UnitsOfLengthVS
 
 Element:		Depth
-Concept:		SCT#131197000 "Depth (qualifier value)"
+Concept:		SCT#131197000 "Depth"
 Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
 Value:			Quantity with units UCUM#cm
 
 Element:		Area
-Concept:		SCT#42798000 "Area (qualifier value)"
+Concept:		SCT#42798000 "Area"
 Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
 Value:			Quantity with units UCUM#cm2
 
@@ -436,16 +438,6 @@ Element:		Circumference
 Concept:		MTH#C0332520
 Description:	"The length of such a boundary line of a figure, area, or object."
 */
-
-
-
-// --------------- Times and Time TimePeriods ----------------
-
-Element:		QualitativeDateTime
-Concept:		TBD
-Description:	"A point in time, described qualitatively."
-Value:			CodeableConcept from QualitativeDateTimeVS
-
 
 // -----------  Age --------------------------
 
@@ -470,27 +462,12 @@ Value:			CodeableConcept from GestationalTimePeriodVS  // e.g., entire pregnancy
 //-------------- Duration and Frequency  -----------------
 
 
-Element:		SemiquantDuration
-Concept:		TBD
-Description:	"The duration of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeDurationVS
-
 Element:		Frequency   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
 Based on:		Ratio
 Concept:		MTH#C0376249
 Description:	"How many occurrences of an event per unit of time."
 				Numerator.Quantity with units UCUM#1
 				Denominator.Quantity.Units from http://hl7.org/fhir/ValueSet/units-of-time
-
-Element:		SemiquantFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described semi-quantitatively."
-Value:			CodeableConcept from SemiquantitativeFrequencyVS
-
-Element:		QualitativeFrequency
-Concept:		TBD
-Description:	"The frequency of an event, described qualitatively."
-Value:			CodeableConcept from QualitativeFrequencyVS
 
 
 //------------- Interpretations of Time -------------------
@@ -702,7 +679,7 @@ If the code for the body location includes laterality and/or anatomical directio
 Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how an address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 1..1			LocationCode
 0..1 			Laterality
-0..1			AnatomicalDirection
+0..1			Orientation
 0..*			RelationToLandmark
 
 
@@ -711,8 +688,12 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 	Value:			CodeableConcept should be from BodyLocationVS
 
 	Element:		Laterality
-	Description:	"Additional information, such as laterality or direction, that helps define the body location."
+	Description:	"Body side of the body location, if needed to distinguish from a similar location on the other side of the body."
 	Value:			CodeableConcept from LateralityVS if covered
+
+	Element:		Orientation
+	Description:	"Orientation of the body location, if needed to distinguish from a similar location in another orientation."
+	Value:			CodeableConcept from OrientationVS if covered
 
 	Element:		RelationToLandmark
 	Description:	"An anatomical landmark that helps determine a body location."
@@ -729,16 +710,16 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 		Description:	"The body location of the landmark."
 		0..1			LocationCode
 		0..1			Laterality
-		0..1			AnatomicalDirection
+		0..1			Orientation
 
 
 		Element:		LandmarkToBodyLocationDirection
 		Description:	"The direction from the landmark to the body location of interest."
-		Value:			ClockDirection or AnatomicalDirection
+		Value:			ClockFaceDirection or AnatomicalDirection
 
-			Element:    	ClockDirection
+			Element:    	ClockFaceDirection
 			Description:	"A direction indicated by an angle relative to 12 o'clock."
-			Value:			CodeableConcept from ClockDirectionVS
+			Value:			CodeableConcept from ClockFaceDirectionVS
 
 			Element:		AnatomicalDirection // underlaying/over
 			Description:	"A direction based on planes, surfaces, and orientations of the body."

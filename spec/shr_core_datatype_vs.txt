@@ -29,9 +29,9 @@ ValueSet: 				CodingQualifierVS
 #default_code			"The code was supplied by the system by default, because no specific coded value was available."
 */
 
-ValueSet:				ClockDirectionVS
+ValueSet:				ClockFaceDirectionVS
 Description:		"The relative direction of an object described using the analogy of a 12-hour clock to describe angles and directions. One imagines a clock face lying either upright or flat in front of oneself, and identifies the twelve hour markings with the directions in which they point."
-Includes codes descending from SCT#272485000 "Clockface position (qualifier value)"
+Includes codes descending from SCT#272485000 "Clockface position"
 
 ValueSet:		UpperBoundTypeVS
 Description:	"Indicates the actual value is lt (<) or lte (<=) the given value."
@@ -99,6 +99,8 @@ MTH#C0747967	"PRIOR TO CONCEPTION"
 MTH#C0585037	"Entire pregnancy time period"
 MTH#C1839947    "Birth-newborn period"
 
+
+/* currently not used, but save
 ValueSet:				QualitativeDateTimeVS
 Description:            "Qualitative and approximate descriptions of time, relative to the present time."
 #past					"A time or time period in the indefinite past"
@@ -134,6 +136,7 @@ Description:            "Qualitative and approximate descriptions of durations, 
 #minutes				"Several minutes but less than an hour"
 #seconds				"Several seconds but less than a minute"
 
+
 ValueSet:				SemiquantitativeFrequencyVS
 Description:            "Semi-quanitative but approximate descriptions of frequency of an event, on human scale of minutes, hours, days, weeks, months, etc."
 #never					"Never"
@@ -150,42 +153,69 @@ Description:            "Semi-quanitative but approximate descriptions of freque
 #minutely				"Every minute"
 #continuously			"Continuously"
 
-ValueSet: 				QualitativeFrequencyVS
-Description:			"Value set indicating the frequency of an event in qualitative terms."
-#always					"Virtually always or every time"
-#usually				"Frequently or often"
-#sometimes				"Occasionally or sometimes"
-#rarely					"Rarely"
-#never					"Never"
-
-ValueSet:				YesNoVS
-Description:			"Value set indicating yes or no (values drawn from Snomed CT)."
-SCT#373066001			"Yes (qualifier value)"
-SCT#373067005			"No (qualifier value)"
-
-ValueSet: 				YesNoUnknownVS
-Description:			"A value set containing yes, no, and unknown."
-SCT#373066001			"Yes (qualifier value)"
-SCT#373067005			"No (qualifier value)"
-SCT#261665006			"Unknown (qualifier value)"
-
-ValueSet:				QualitativeValueScaleVS
-Description:			"Terms that describe a level, such as a level of physical activity, in qualitative terms, e.g., high, medium, low."
-#very_high				"Very high"
-#high					"High"
-#medium				    "Medium"
-#low					"Low"
-#very_low				"Very low"
-
-ValueSet:				QualitativeLikelihoodVS
-Description:			"The likelihood of an event or state, expressed qualitatively. Qualitative likelihoods are associated with judgments and assessments. Values are based on US Intelligence Community's standard language used to describe judgements of likelihood."
+ValueSet:			QualitativeLikelihoodVS
+Description:		"The likelihood of an event or state, expressed qualitatively. Qualitative likelihoods are associated with judgments and assessments. Values are based on US Intelligence Community's standard language used to describe judgements of likelihood."
 MTH#C3899394	    "Definitely; with certainty or near-complete certainty, an event that definitely has or almost certainly will happen"
 MTH#C3840799		"Very likely, highly probable, e.g., an event with more than 80% but less than 100% likelihood"
 MTH#C0750492		"Probably, e.g., an event with 60% to 80% likelihood"
 MTH#C3842586		"Fifty percent; Roughly equal chance or even odds of happening, between 40% and 60% probability"
 MTH#C0750558		"Unlikely or improbable, e.g., an event with 20% to 40% likelihood"
-MTH#C3841878			"Very unlikely, highly improbable, e.g., an event with less than 20% but non-zero likelihood"
+MTH#C3841878		"Very unlikely, highly improbable, e.g., an event with less than 20% but non-zero likelihood"
 // Do not include "definitely not" because that could creates an implicit modifier
+
+*/ 
+
+ValueSet:				YesNoVS
+Description:			"Value set indicating yes or no (values drawn from Snomed CT), equivalent to LL361-7."
+SCT#373066001			"Yes"
+SCT#373067005			"No"
+
+ValueSet: 				YesNoUnknownVS
+Description:			"A value set containing yes, no, and unknown."
+SCT#373066001			"Yes"
+SCT#373067005			"No"
+SCT#261665006			"Unknown"
+
+ValueSet:               GradedFrequencyVS
+Description:            "Answers to 'how often' questions. A 5-value qualitative scale of frequency of an event equivalent to LL1016-6, LL1024-0, LL346-8."    	 
+SCT#444841000124107     "Never (none of the time)"	 
+SCT#444891000124103     "Rarely, infrequently" 
+SCT#444901000124104     "Some of the time (sometimes)" 
+SCT#70232002            "Frequently (often)"
+SCT#444961000124103     "Most of the time (almost always)" 
+SCT#255238004           "Continuously"
+SCT#42425007	        "Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative."
+SCT#82334004            "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+
+ValueSet:               GradedPortionVS
+Description:            "Answers to 'how much of' questions, such as 'how much of the time do/did you...' A 5-value qualitative scale, equivalent to LL2095-9, LL1017-4"    	 	
+SCT#260413007           "None" 
+SCT#255507004           "Small (amount)" 
+SCT#27768009            "Some" 
+SCT#4757001             "Most" 
+SCT#255503000           "Entire"   // 260232004 "Whole"    
+SCT#42425007	        "Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative."
+SCT#82334004            "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+
+ValueSet:          GradedAmountVS
+Description:       "A set of codes that give a qualitative description of the amount of something, for example, the volume of wound exudate."
+SCT#260413007       "None"
+SCT#55605001        "Minimal"   //  263865001 "Scanty"
+SCT#255507004       "Small"
+SCT#255508009       "Medium" //  6736007  "Moderate"
+SCT#255509001       "Large"
+SCT#42425007	    "Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative."
+SCT#82334004        "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+
+ValueSet:           ConditionStatusTrendVS
+Description:        "Standardized value set that describes the trend or status of a disease, condition, or ability. Based on LL2751-7, LL4721-8."
+SCT#260415000       "Not detected"   //SCT#SCT#723506003 "Resolved"     SCT#103338009 "In full remission"
+SCT#385633008       "Improving"   //SCT#390771008       "Improvement of status"
+SCT#58158008        "Stable"    //SCT#409052007       "Stabilization of status"
+SCT#230993007       "Worsening"  //SCT#390772001       "Deterioration of status"
+SCT#42425007	    "Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative."
+SCT#82334004        "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+
 
 
 ValueSet: 		SettingVS
@@ -228,7 +258,7 @@ Description:	"What type of place is found at a given location. More than one des
 
 ValueSet:		PerformanceGradingScaleVS
 Concept:		TBD
-Description:	"A simple performance grading scale. Also useful for grading quality."
+Description:	"A simple performance grading scale. Also useful for grading quality and knowledge."
 #excellent		"Excellent"
 #very_good		"Very good"
 #good			"Good"
@@ -257,18 +287,18 @@ Description:		"A code indicating whether the language is preferred, secondary, o
 #aac				"Uses augmentative and alternative communication"
 
 ValueSet:       DetectedNotDetectedVS 
-Description:    "Value set consisting of the answers Detected (Present) and NotDetected (Absent). The terms detected and not detected are preferred because they reflect outcomes of experimental observation, while present and absent suggest ground truth. This value set reconciles or combines LOINC answer lists LL956-4"
-SCT#260373001   "Detected (qualifier value)"
-SCT#260415000   "Not detected (qualifier value)"
-SCT#42425007	"Equivocal (qualifier value). Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative"
-SCT#82334004    "Indeterminate (qualifier value). Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+Description:    "Value set consisting of the answers Detected (Present) and NotDetected (Absent). The terms detected and not detected are preferred because they reflect outcomes of experimental observation, while present and absent suggest ground truth. This value set reconciles or combines LOINC answer lists LL956-4, LL750-1, LL744-4,  LL955-6, LL3950-4, LL3250-9, LL2872-1, LL2410-0, LL2355-7." 
+SCT#260373001   "Detected"
+SCT#260415000   "Not detected"
+SCT#42425007	"Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative."
+SCT#82334004    "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
 
 ValueSet:		PositiveNegativeVS
-Description:	"Interpretation of a test result as positive, negative or equivocal. Equivalent values to LOINC LL2009-0."
-SCT#10828004	"Positive (qualifier value)"  //LA6576-8
-SCT#260385009	"Negative (qualifier value)"  //LA6577-6
-SCT#42425007	"Equivocal (qualifier value). Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative"
-SCT#82334004    "Indeterminate (qualifier value). Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
+Description:	"Interpretation of a test result as positive, negative or equivocal. Equivalent values to LOINC LL360-9, LL2329-2, LL2038-9, LL2021-5, LL2010-8, LL2009-0 ."
+SCT#10828004	"Positive"  //LA6576-8
+SCT#260385009	"Negative"  //LA6577-6
+SCT#42425007	"Equivocal. Equivocal represents a borderline value, too close to call; for example, a value very close to a cut-off between positive and negative"
+SCT#82334004    "Indeterminate. Indeterminate means the results were uninterpretable, or cannot be determined; technical issues prevented obtaining a valid result."
 
 
 /* not used
@@ -297,61 +327,127 @@ SCT#419161000 	"Unilateral left"
 SCT#419465000 	"Unilateral right"	
 SCT#51440002 	"Bilateral"
 
-// TO DO: Curate this...sort out which are directions (e.g., above and below), and which are sides (e.g. left and right)
-ValueSet:       AnatomicalDirectionVS
-Description:    "Additional terms further detailing a body location, such as laterality."
-SCT#49370004 	"Lateral"	
-SCT#264217000 	"Superior"	
-SCT#261089000 	"Inferior"	
-SCT#255551008 	"Posterior"	
-SCT#351726001 	"Below"	
-SCT#352730000 	"Above"
-SCT#14414005    "Peripheral"
-SCT#255549009   "Anterior"
-SCT#261122009   "Lower"
-SCT#261183002   "Upper"
-SCT#255551008   "Posterior"
-SCT#421812003   "Top"
-SCT#261089000   "Inferior"
-SCT#49370004    "Lateral"
-SCT#255561001   "Medial"
-SCT#264217000   "Superior"
-SCT#131185001   "Vertical long axis"
-SCT#33096000    "Vertical"
-SCT#62824007    "Transverse"
-SCT#103340004   "Short axis"
-SCT#255584008   "Septal"
-SCT#263869007   "Separate"
-SCT#62372003    "Segmental"
-SCT#32400000    "Preaxial"
-SCT#90069004    "Posterolateral"
-SCT#264153007   "Posterior pole"
-SCT#261165005   "Posterior dorsal"
-SCT#60583000    "Postaxial"
-SCT#103343002   "Parasagittal"
-SCT#264114003   "Ostium"
-SCT#298107004   "Orthotopic"
-SCT#103341000   "Off axis"
-SCT#261136004   "Mural"
-SCT#103342007   "Mid-longitudinal"
-SCT#261129000   "Mediolateral"
-SCT#260528009   "Median"
-SCT#112233002   "Marginal"
-SCT#38717003    "Longitudinal"
-SCT#103339001   "Long axis"
-SCT#18769003    "Juxta-posed"
-SCT#83167003    "Intracellular"
-SCT#131186000   "Horizontal long axis"
-SCT#298108009   "Heterotopic"
-SCT#263759007   "Foraminal"
-SCT#69320009    "Extracellular"
-SCT#261788001   "Exteriorized"
-SCT#33843005    "Efferent"
-SCT#298109001   "Ectopic"
-SCT#65424008    "Contiguous"
-SCT#37197008    "Anterolateral"
-SCT#261045000   "Anterior dorsal"
-SCT#255593009   "Circumferential"
+
+// TO DO: Curate this...sort out which are directions (e.g., above and below), and which are orientations
+ValueSet:          OrientationVS
+Description:       "Terms that specify anatomical orientation."
+SCT#255549009      "Anterior"
+SCT#261045000      "Anterior dorsal"
+SCT#37197008       "Anterolateral"
+//Anteroposterior: From front to back, as opposed to posteroanterior.
+//Caudad: Toward the feet (or tail in embryology), as opposed to cranial.
+SCT#255593009      "Circumferential"
+//Caudal: Pertaining to, situated in, or toward the tail or the hind part. Or below another structure.
+SCT#65424008       "Contiguous"
+//Cranial: Toward the head, as opposed to caudad.
+//Deep: Away from the exterior surface or further into the body, as opposed to superficial.
+SCT#46053002       "Distal"
+SCT#255554000      "Dorsal"
+SCT#298109001      "Ectopic"
+SCT#33843005       "Efferent"
+SCT#261788001      "Exteriorized"
+SCT#69320009       "Extracellular"
+SCT#263759007      "Foraminal"
+SCT#298108009      "Heterotopic"
+SCT#131186000      "Horizontal long axis"
+SCT#261089000      "Inferior"
+//Inferolateral: Below and to one side. Both inferior and lateral.
+SCT#83167003       "Intracellular"
+SCT#18769003       "Juxta-posed"
+SCT#49370004       "Lateral"
+SCT#103339001      "Long axis"
+SCT#38717003       "Longitudinal"
+SCT#261122009      "Lower"
+SCT#112233002      "Marginal"
+SCT#255561001      "Medial"
+SCT#260528009      "Median"
+SCT#261129000      "Mediolateral"
+SCT#103342007      "Mid-longitudinal"
+SCT#261136004      "Mural"
+SCT#103341000      "Off axis"
+SCT#298107004      "Orthotopic"
+SCT#264114003      "Ostium"
+SCT#103343002      "Parasagittal"
+SCT#14414005       "Peripheral"
+SCT#264147007      "Plantar"
+SCT#60583000       "Postaxial"
+SCT#255551008      "Posterior"
+SCT#261165005      "Posterior dorsal"
+SCT#264153007      "Posterior pole"
+//Posteroanterior: From back to front, as opposed to anteroposterior.
+SCT#90069004       "Posterolateral"
+SCT#32400000       "Preaxial"
+//Pronation: Rotation of the forearm and hand so that the palm is down (and the corresponding movement of the foot and leg with the sole down), as opposed to supination.
+//Prone: With the front or ventral surface downward (lying face down), as opposed to supine.
+//Proximal: Toward the beginning, as opposed to distal.
+//Sagittal: A vertical plane passing through the standing body from front to back. The mid-sagittal, or median plane, splits the body into left and right halves.
+SCT#62372003       "Segmental"
+SCT#263869007      "Separate"
+SCT#255584008      "Septal"
+SCT#103340004      "Short axis"
+//Superficial: On the surface or shallow, as opposed to deep.
+SCT#264217000      "Superior"
+//Supination: Rotation of the forearm and hand so that the palm is upward (and the corresponding movement of the foot and leg), as opposed to pronation.
+// Supine: With the back or dorsal surface downward (lying face up), as opposed to prone.
+SCT#421812003      "Top"
+SCT#62824007       "Transverse"
+SCT#261183002      "Upper"
+//Ventral: Pertaining to the abdomen, as opposed to dorsal.
+SCT#33096000       "Vertical"
+SCT#131185001      "Vertical long axis"
+
+ValueSet:          AnatomicalDirectionVS
+Description:       "Terms that specify anatomical direction."
+SCT#255549009      "Anterior"
+SCT#261045000      "Anterior dorsal"
+SCT#37197008       "Anterolateral"
+SCT#255593009      "Circumferential"
+SCT#65424008       "Contiguous"
+SCT#46053002       "Distal"
+SCT#255554000      "Dorsal"
+SCT#298109001      "Ectopic"
+SCT#33843005       "Efferent"
+SCT#261788001      "Exteriorized"
+SCT#69320009       "Extracellular"
+SCT#263759007      "Foraminal"
+SCT#298108009      "Heterotopic"
+SCT#131186000      "Horizontal long axis"
+SCT#261089000      "Inferior"
+SCT#83167003       "Intracellular"
+SCT#18769003       "Juxta-posed"
+SCT#49370004       "Lateral"
+SCT#103339001      "Long axis"
+SCT#38717003       "Longitudinal"
+SCT#261122009      "Lower"
+SCT#112233002      "Marginal"
+SCT#255561001      "Medial"
+SCT#260528009      "Median"
+SCT#261129000      "Mediolateral"
+SCT#103342007      "Mid-longitudinal"
+SCT#261136004      "Mural"
+SCT#103341000      "Off axis"
+SCT#298107004      "Orthotopic"
+SCT#264114003      "Ostium"
+SCT#103343002      "Parasagittal"
+SCT#14414005       "Peripheral"
+SCT#264147007      "Plantar"
+SCT#60583000       "Postaxial"
+SCT#255551008      "Posterior"
+SCT#261165005      "Posterior dorsal"
+SCT#264153007      "Posterior pole"
+SCT#90069004       "Posterolateral"
+SCT#32400000       "Preaxial"
+SCT#62372003       "Segmental"
+SCT#263869007      "Separate"
+SCT#255584008      "Septal"
+SCT#103340004      "Short axis"
+SCT#264217000      "Superior"
+SCT#421812003      "Top"
+SCT#62824007       "Transverse"
+SCT#261183002      "Upper"
+SCT#33096000       "Vertical"
+SCT#131185001      "Vertical long axis"
+
 
 ValueSet:       LandmarkTypeVS
 Description:    "The type of feature that constitutes the landmark, for example, particularly if the landmark is an acquired body structure or physical object."
