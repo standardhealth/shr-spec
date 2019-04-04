@@ -9,8 +9,7 @@ Namespace: shr.core
         Person.Race MS
         Person.Ethnicity MS
         Person.Address.PostalCode MS
-        // How to restrict out the boolean or make dateTime only MS in mCODE only?
-        Person.Deceased MS
+        Person.Deceased MS  // Person.Deceased.dateTime only
     ComorbidCondition:
         // Required: PatientSubjectOfRecord, Category, Status, ClinicalStatus, Code
         PatientSubjectOfRecord MS
@@ -23,12 +22,12 @@ Namespace: shr.core
         OccurrenceTimeOrPeriod  MS
         TerminationReason  MS
         TreatmentIntent  MS
-    ECOGPerformanceStatus:
-        PatientSubjectOfRecord MS
-        Code MS
-        DataValue MS
+    ECOGPerformanceStatus:  // req if known
+        PatientSubjectOfRecord MS  // req
+        Code MS  // req
+        DataValue MS  // req
 //        Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
-        RelevantTime MS
+        RelevantTime MS  // req if known
     KarnofskyPerformanceStatus:
         PatientSubjectOfRecord MS
         Code MS
@@ -56,49 +55,58 @@ Namespace: shr.core
         Code MS
         DataValue MS
         RelevantTime MS
+/*---------------
+MS = if known
+I = affected by constraints
+http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
+1) required   1..1  MS  
+2) required if known  0..1  MS 
+3) conditionally required  0..1 MS I  --- defer
+4) conditionally required if known  0..1 MS I  --- defer
+---------------data dictionary--------------
+5) optional 0..1
+------------------*/
 
 Namespace: oncocore
-    CancerCondition:
-        PatientSubjectOfRecord MS
-        Code MS
-        ClinicalStatus MS
-        BodyLocation.LocationCode MS
-        MorphologyBehavior MS
-        DateOfDiagnosis MS
-        // CancerHistologicType MS // CM: not a valid field
-    Metastases:
-        PatientSubjectOfRecord MS
-        Code MS
-        DateOfDiagnosis MS
-        //  No BodyLocation because ICD-O-3 code will pre-coordinate body site
+    PrimaryCancerCondition:  // req if known
+        PatientSubjectOfRecord MS  // req
+        Code MS    // req
+        ClinicalStatus MS  // req
+        BodyLocation.LocationCode MS  // conditional
+        HistologyMorphologyBehavior MS  // conditional
+        DateOfDiagnosis MS  // req if known (MS)
+    SecondaryCancerCondition:  // req if known
+        PatientSubjectOfRecord MS  // req
+        Code MS  // req
+        ClinicalStatus MS  // req
+        HistologyMorphologyBehavior MS
+        DateOfDiagnosis MS  // req if known (MS)
+        //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
 
 //  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
 //  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
-    TNMClinicalStageGroup:
-        PatientSubjectOfRecord MS
-        Code MS
-        DataValue MS
-        CancerStagingSystem MS
-        RelevantTime MS
+    TNMClinicalStageGroup:  // req if known
+        PatientSubjectOfRecord MS  // req
+        Code MS  // req
+        DataValue MS  // req
+        CancerStagingSystem MS  // req
+        RelevantTime MS  // req if known
     TNMClinicalPrimaryTumorClassification:
-        PatientSubjectOfRecord MS
-        Code MS
-        DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
-        CancerStageTiming MS
-        RelevantTime MS
+        PatientSubjectOfRecord MS  // req
+        Code MS   // req
+        DataValue MS  // req
+        CancerStageTiming MS  // req if known
+        RelevantTime MS  // req if known
     TNMClinicalRegionalNodesClassification:
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
         CancerStageTiming MS
         RelevantTime MS
     TNMClinicalDistantMetastasesClassification:
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicStageGroup:
@@ -107,25 +115,22 @@ Namespace: oncocore
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
-    TNMPathologicPrimaryTumorClassification:
+    TNMPathologicPrimaryTumorClassification:  // req if known
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicRegionalNodesClassification:
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicDistantMetastasesClassification:
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        // CancerStageSuffix MS // CM: not a valid field
         CancerStageTiming MS
         RelevantTime MS
     TumorMarkerObservation:
@@ -133,19 +138,18 @@ Namespace: oncocore
         Code MS
         DataValue MS
         RelevantTime MS
-//      Specimen.Type -- MK: Is this minimal?.
     CancerDiseaseStatus:
         // Required: Code, Status, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-        EvidenceType MS
         RelevantTime MS
-    CancerRelatedSurgicalProcedure:
-        PatientSubjectOfRecord MS
-        Code MS
-        OccurrenceTimeOrPeriod MS
-        TreatmentIntent MS
+    CancerRelatedSurgicalProcedure:  // req if known
+        PatientSubjectOfRecord MS  // req
+        Code MS   // req
+        OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
+        TreatmentIntent MS  // req if known
+        RelatedCancerCondition MS
         // BodyLocation unnecessary if code is pre-coordinated
     CancerRelatedRadiationProcedure:
         // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
@@ -153,11 +157,13 @@ Namespace: oncocore
         Code MS
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
+        RelatedCancerCondition MS
         // BodyLocation unnecessary if code is pre-coordinated
     CancerGenomicsReport:
         PatientSubjectOfRecord MS
-        CancerGeneticRegionAnalysis MS
-    CancerGeneticRegionAnalysis:
+        Participation.Participant MS   // Laboratory name
+        CancerGeneticRegionAnalysisResult MS
+    CancerGeneticRegionAnalysisResult:
         // subject to change when May updates genomics model
         // Required: Code, Status, Category, SubjectOfRecord
         PatientSubjectOfRecord MS
@@ -185,12 +191,16 @@ Namespace: shr.lab
 //        PanelMembers.Observation[CBCMustSupportPanelMember]
         PatientSubjectOfRecord MS
         RelevantTime MS
+    CBCWAutoDifferentialPanelCoreElement:
+        PatientSubjectOfRecord MS
+        Code MS
+        DataValue MS
     ComprehensiveMetabolic2000SerumOrPlasmaPanel:
         // Required: Code, Status, Category, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
         Code MS
 //   Uncomment when supported
-//        PanelMembers.Observation[CMPMustSupportPanelMember]
+//      PanelMembers.Observation[CMPMustSupportPanelMember]
         PatientSubjectOfRecord MS
         RelevantTime MS
     CMP2000SerumOrPlasmaCoreElement:

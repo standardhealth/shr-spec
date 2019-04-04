@@ -1,0 +1,98 @@
+<p>This a FHIR Implementation Guide (IG) for Skin and Wound Assessment.</p>
+
+<h1>Contents</h1>
+<ul>
+<li><a href="#Disclaimers">Disclaimers</a></li>
+<li><a href="#Background">Background</a></li>
+<li><a href="#Modeling">Modeling Approach</a></li>
+<li><a href="#Alternatives">Modeling Alternatives</a></li>
+<li><a href="#Terminology">Terminology Overview</a></li>
+<li><a href="#Credits">Credits</a></li>
+</ul>
+
+<h1><a name="Disclaimers"></a>Disclaimers</h1>
+<p></p>
+<ul>
+    <li>This implementation guide is not a publication of HL7 Orders and Observations Work Group, HSPC, CIMI, or Intermountain Healthcare.</li>
+    <li>This IG has not been approved or endorsed by any organization.</li>
+    <li>It has not been certified for, nor is it guaranteed to be fit for, any clinical use whatever.</li>
+</ul>
+
+<h1><a name="Background"></a>Background</h1>
+
+<p>This is one of three efforts to model the same clinical content. An alternate Skin and Wound IG created by Intermountain Healthcare can be found <a href="http://models.opencimi.org/ig/skin-and-wound-fhir-profiles/">here</a>. Another IG, focused more on podiatry wounds but sharing similar content, is found <a href="http://wildfhir3.aegis.net/ig/hspcskinwoundassert/index.html">here</a>. The IG authors have worked together and have openly shared clinical content and modeling ideas. The end products, however, are not the same.</p>
+<p>The use case under consideration involves:</p>
+<ul>
+    <li>Assessing the condition of a patient's skin.</li>
+    <li>Documenting new and existing wounds. </li>
+    <li>Assessing the ongoing condition of a wound, initially and periodically during the clinical course of the condition.</li>
+</ul>
+<p>Also included are specialized profiles that represent wounds of the foot.</p>
+<p>Some of the main design goals of this IG are as follows:</p>
+<ul> 
+    <li>Keep the number of profiles low by making use of observation components rather than self-contained observations. There are only 7 Observation-based profiles in this IG (Skin Assessment, Wound Assessment, Wound Bed Assessment, Tunneling Assessment, Undermining Assessment, Wound Size, and Exudate Assessment), compared to approximately 35 in Intermountain's.</li>
+    <li>Carefully model relationship among the observations and sub-observations. It should be absolutely clear which length corresponds to which wound tunnel, which clock direction corresponds to that tunnel, and which tunnel belongs with which wound, on which patient.</li>
+    <li>Be precise about what observations concern the wound itself, and which describe its clinical course. Properties that can change over time are included in assessments. For example, the wound trend, which can change over time (e.g., from worsening to stable to improving), is part of assessments.</li>
+    <li>Create valid profiles that express the clinical needs accurately, and mesh together to form a coherent and accurate picture of the patient's skin and wounds.</li>
+    <li>Use appropriate codes and vetted value sets.</li>
+    <li>Be fully consistent with US-Core Profiles.</li>
+</ul> 
+
+
+<h1><a name="Modeling"></a>Modeling Approach</h1>
+
+<p>The model is summarized by the following illustration:</p>
+
+<img src="SkinWound-050.png" alt="Skin and Wound Assessment Logical Model" width="1100" />
+
+<p>The wound is an identifiable entity at a particular body site that maintains its identity over a period of time. It has an onset and (potentially) an abatement time. As such, wound is a profile of Condition. Representing the wound as a condition (problem) allows multiple observations about the wound to refer back to the same wound. </p>
+
+<p>One of the key features of wound assessment is that observations have a hierarchical structure with 1-to-many relationships at each level. For example, a patient can have multiple wounds, each wound can have multiple tunnels, and each tunnel on each wound on each patient can have a measured length. This presents a modeling challenge.</p>
+<p>In this implementation, we use Observation components when appropriate and sub-observations (Observation.related) where necessary. Panel-type sub-observations are required where the panel observations themselves have sub-observations or components.</p>
+
+<h1><a name="Alternatives"></a>Modeling Alternatives</h1>
+<p>This problem offers many modeling options. In this section, we explore several modeling alternatives. Some aspects could be combined to form additional alternatives.</p>
+<h2>Alternative 1: Use Diagnostic Report instead of Observations</h2>
+<p>According to US Core, "Laboratory results are grouped and summarized using the DiagnosticReport resource which typically reference Observation resource(s). Each Observation resource represents an individual laboratory test and result value, a “nested” panel (such as a microbial susceptibility panel) which references other observations, or rarely a laboratory test with component result values."</p>
+<p>If we were to follow US Core, the Wound Assessment would not be an Observation, but a Diagnostic Report. It would reference the Sub-Observations (Wound Tunneling, Exudate Assessment, Wound Bed Assessment, etc.)in the manner presented here. We did not take that approach because the Wound Assessment has components that do not require independent observations, and DiagnosticReports do not support components.</p>
+
+<h2>Alternative 2: Use Components to Replace Sub-Observations</h2>
+<p>This approach is depicted below:</p>
+<img src="SkinWoundAlternative1.png" alt="Skin and Wound Assessment Alternative Model" width="1100" />
+<p>This approach replaces every sub-observation (Wound Tunneling, Exudate Assessment, Wound Bed Assessment, etc.) with observation components. This is actually feasible -- there is no need for multiple Observations. Each wound, observed at a given time, only has one length, width, depth. Each wound, observed at a given time, can only have one exudate odor, volume, color, and amount. So these properties can be modeled using observation components on Wound Assessment.</p>
+<p>The only significant complexity comes from the need to pair up each wound tunnel length with its corresponding clock direction, each bed color with its corresponding bed area percent, and each undermining length with its corresponding clock direction. To handle this requirement in the context of components-only, we can exploit the fact that FHIR arrays are order-preserving. Specifically, we can make a requirements that corresponding arrays be the same length, and interpret the n-th element of the tunneling length array to correspond to the n-th element of the clock direction array, associate the m-th element of the bed color array with the m-th element of the bed color area array, etc. Using this approach, only two Observation-based profiles would be necessary (Wound Assessment and Skin Assessment). </p>
+<p>On the whole, this approach appears the simplest of all, and may be preferred to the approach presented in this IG. A minor disadvantage is losing the grouping provided by the sub-observations. For example, the five aspects of exudate assessment are not grouped together into a single observation.</p>
+
+<h2>Alternative 3: Use Observations to Replace Components</h2>
+<p>The approach maximizes the number of observations and makes each observation about the same wound a separate, self-contained observation. For example, the length, width, and depth of the wound would be modeled as three separate observations.</p>
+<p>A downside of this approach is that it creates the maximum number of separate pieces of information, making it harder to re-create a coherent whole. For example, pairing a wound bed color with the corresponding wound bed area percentage requires following a link from the wound bed observation to the wound bed color observation to the wound bed area percentage observation. The wound bed area percentage observation is uninterpretable by itself, which violates the principle that observations should be able to be interpreted individually.</p>
+
+<h2>Alternative 4: Use Conditions to Replace Certain Observations</h2>
+<p>Some aspects of wounds, for example, wound tunnels, can be considered conditions unto themselves. They have an onset, exist for a period time, and then abate. If tunnels and underminings are modeled this way, then the features of those conditions (e.g., tunnel length and direction) can be modeled using extensions. </p>
+<p>The downside of this approach is that the tunnel length and direction will change over time, and are best modeled by related observations. Having observations related to the tunnel would allow the tracking of the tunnel length over time.</p>
+
+<h2>Alternative 5: Combining Aspects of Alternatives 3 and 4</h2>
+<p>This approach, presented as a less-than-optimal approach, combines features of Alternatives 3 and 4:</p>
+<img src="SkinWoundAlternative2.png" alt="Skin and Wound Assessment Alternative Model 2" width="1100" />
+<p>There are several problems here:</p>
+<ul> 
+    <li>When wound tunnels, undermining, and exudate are modeled as conditions, properties that can be observed periodically over time should not be modeled as extensions. Using extensions means that the only way to track time-varying quantities like exudate volume and tunnel length is by going back through previous resource versions. The correct approach would have been to create a tunnel observation panel and relate it back to the tunnel assertion/condition through a tunnel ID.</li>
+    <li>Properties of the wound condition that are not time-varying, such as the wound etiology, have been modeled as observations. Even if the state of knowledge of wound etiology changes, it should be updated on the wound assertion. </li>
+    <li>The model uses related observations where components would be more concise and easily interpreted. Too many observations complicates querying and retrieving information, and necessitates re-assembly to form a coherent whole.</li>
+    <li>Observations have been used for things that cannot stand alone, such as wound bed appearance percentage, which is only interpretable in association with wound bed appearance.</li>
+</ul> 
+
+<h1><a name="Terminology"></a>Terminology</h1>
+<p>Consistent with the evolving consensus, this IG uses LOINC for "questions" and SNOMED-CT for "answers". The codes and value set, in most cases, have been borrowed from the Intermountain implementation of Skin and Wound IG.</p>
+
+<h1><a name="Credits"></a>Credits</h1>
+<p>Much of the skin and wound domain content was provided by Susan Matney. Additional podiatry content was provided by Reed Gelzer, Trustworthy EHR LLC and Michael Brody, TLD Systems</p>
+<p>Discussion and feedback was generously provided by all members of the CIMI Work Group especially the co-chairs, Dr. Stan Huff, Claude Nanjo, Galen Mulrooney, and Richard Esmond.</p>
+<p>This implementation guide was authored by Dr. Mark Kramer using the <a href="https://github.com/standardhealth/shr-cli/wiki">Clinical Information Modeling and Profiling Language (CIMPL),</a> a free, open source toolchain from <a href="https://www.mitre.org/">MITRE Corporation</a>.</p>
+
+
+<p>&nbsp;</p>
+<footer>
+    <hr>
+    <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 18-03443-4</small></font></p>
+</footer>
