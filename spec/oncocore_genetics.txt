@@ -13,15 +13,11 @@ Description:	"Genetic analysis summary report"
 				Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Category is OBSCAT#GE
-				Observation is type GeneticRegionAnalysisResult
+				Observation is type GeneticRegionAnalyzed
 // 0..0			ImagingStudy (not yet defined in SHR)
 
-EntryElement:	CancerGenomicsReport
-Based on:		GenomicsReport
-Description:	"Cancer genetic analysis summary report"
-				GeneticRegionAnalysisResult is type CancerGeneticRegionAnalysisResult
 
-EntryElement:	GeneticRegionAnalysisResult
+EntryElement:	GeneticRegionAnalyzed
 Based on:		LaboratoryObservation
 Description:	"Results of analyzing a specified genetic region to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder."
 				SubjectOfRecord is type PatientSubjectOfRecord
@@ -60,19 +56,6 @@ Description:	"Results of analyzing a specified genetic region to detect the pres
 						Code is LNC#36908-2 "Gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
 						DataValue from http://varnomen.hgvs.org if covered
 		0..0			DataAbsentReason
-
-EntryElement:	CancerGeneticRegionAnalysisResult
-Based on:		GeneticRegionAnalysisResult
-Description:	"Results of analyzing a specified genetic region for cancer-related genetic variants."
-				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept
-				Components.ObservationComponent.GeneName is type CancerGeneName  // DOES NOT WORK -- CIMPL can't constrain a slice
-
-		Element:		CancerGeneName
-		Based on:		GeneName
-		Description:	"The gene name, using HUGO Gene Nomenclature Committee (HGNC) identifier. (source: LOINC)"
-						Code is LNC#48018-6 "Gene studied [ID]"
-						DataValue from CancerGeneVS if covered
-						// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
 
 
 EntryElement:	GeneticVariantFound
@@ -138,6 +121,30 @@ Based on:		LaboratoryObservation
 Concept:		LNC#21924-6 "Tumor marker Cancer"
 Description:	"A substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). (Source: NCI Dictionary of Cancer Terms).  Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis."
 				SubjectOfRecord is type PatientSubjectOfRecord
-				Code from TumorMarkerVS if covered 
+				Code from TumorMarkerTestVS if covered 
 0..0			BodyLocation
 0..0			Device
+
+
+
+/* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
+
+EntryElement:	CancerGenomicsReport
+Based on:		GenomicsReport
+Description:	"Cancer genetic analysis summary report"
+				GeneticRegionAnalyzed is type CancerGeneticRegionAnalyzed
+
+EntryElement:	CancerGeneticRegionAnalyzed
+Based on:		GeneticRegionAnalysisResult
+Description:	"Results of analyzing a specified genetic region for cancer-related genetic variants."
+				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept -- MK: Since that doesn't exist, there's no point in specializing GeneticRegionAnalyzed to cancer.  
+	// DOES NOT WORK -- CIMPL can't constrain a slice.. so Genename is not taken from CancerGeneNameVS
+				Components.ObservationComponent.GeneName is type CancerGeneName
+
+		Element:		CancerGeneName
+		Based on:		GeneName
+		Description:	"The gene name, using HUGO Gene Nomenclature Committee (HGNC) identifier. (source: LOINC)"
+						Code is LNC#48018-6 "Gene studied [ID]"
+						DataValue from CancerGeneVS if covered
+						// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
+*/
