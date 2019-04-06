@@ -2,39 +2,65 @@ Grammar:	    DataElement 5.0
 Namespace:	    shr.lab
 Uses:           shr.core
 
-EntryElement:   ProfileVariation
-Description:    "New resource that describes the acceptable variations on a given profile. Allowed variations are fixed values and value set bindings. The variations themselves are given in a CSV file."
-1..1            BaseResourceOrProfile
-1..1            TableOfVariants
-1..*            ColumnDefinition
+CodeSystem:     LNC = http://loinc.org
 
-    Element:        BaseResourceOrProfile
-    Description:    "The resource or profile on which the variations are based."
+EntryElement:   LoincLab
+Based on:       SimpleLaboratoryObservation
+                Code is LNC#TBD
+
+
+/*
+EntryElement:   ValidationData
+Based on:       DomainResource
+Description:    "A resource that links to an external table that describes the acceptable variations on a given resource or profile."
+1..1            CanonicalUrl
+1..1            BaseStructureDefinition
+1..1            TableUrl
+1..1            PrimaryKeyField
+0..1            PrimaryKeyColumn
+1..*            Column
+
+    Element:        CanonicalUrl
+    Description:    "The canonical URL of the validation table instance. This URL SHALL be included in the meta.profile of any resource asserting it should be validated using a particular validation table."
     Value:          uri
 
-    Element:        TableOfVariants
-    Description:    "Where the table of variations is found."
-    Value:          Url
+    Element:        BaseStructureDefinition
+    Description:    "The canonical url of the resource or profile the instance data must conform to."
+    Value:          uri
 
-    Element:        ColumnDefinition
+    Element:        TableUrl
+    Description:    "Where the validation table is found."
+    Value:          uri
+
+    Element:        PrimaryKeyField
+    Description:    "A field name or path of the field that serves as the primary key to the lookup table. "
+    Value:          string
+
+    Element:        PrimaryKeyColumn
+    Description:    "If the primary key column is not given, the key is assumed to be located in the first column of the table."
+    Value:          positiveInt
+
+    Element:        Column
     Description:    "The meaning of the columns in the external file with respect to the base resource or profile."
+    1..1            TargetField
     1..1            ColumnNumber
-    1..1            CorrespondingProperty
     1..1            ConstraintType
+    0..1            SplitCharacter
+
+        Element:        TargetField
+        Description:    "A field name or path to the logical model field that the value binds. Uses path syntax."
+        Value:          string // a path to the target field
 
         Element:        ColumnNumber
         Description:    "Reference to a column in the external file. The first column is column 1."
         Value:          positiveInt
 
-        Element:        CorrespondingProperty
-        Description:    "A field name or path to the logical model field that the value binds. Uses path syntax."
-        Value:          string // a path to the target field
-
         Element:        ConstraintType
         Description:    "Indicates how the data in the spreadsheet should be applied."
         Value:          CodeableConcept from ConstraintTypeVS
 
+        Element:        SplitCharacter
+        Description:    "If the data in the column can contain a list, the separator character used to split the list into individual items."
+        Value:          string
 
-
-
-
+*/
