@@ -1,6 +1,16 @@
 Grammar:        ContentProfile 1.0
+/*---------------
+Levels of Data Element Support
+1) 1..1 = required 
+2) 0..1  MS = required if known
+3) 0..1 MS I = conditionally required  0..1 MS I  --- defer
+4) 0..1 MS I = conditionally required if known  0..1 MS I  --- defer
+See
+http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
+------------------*/
 
-// Required fields (1..1 or 1..*) don't need to be marked must-support so (currently) they are not included in this list. But, I wonder if they will be missed in the data dictionary?
+// Required fields don't need to be marked must-support so (currently) they are not included in this list. 
+
 Namespace: shr.core
     Patient:  
         // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender
@@ -26,20 +36,20 @@ Namespace: shr.core
         PatientSubjectOfRecord MS  // req
         Code MS  // req
         DataValue MS  // req
-//        Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
+//      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
         RelevantTime MS  // req if known
     KarnofskyPerformanceStatus:
         PatientSubjectOfRecord MS
         Code MS
         DataValue MS
-//        Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
+//      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
         RelevantTime MS
     BloodPressure:
         // Required: PatientSubjectOfRecord, Category, Status and Code
         PatientSubjectOfRecord MS
         Code MS
         Components.ObservationComponent MS
-// Uncomment out when ready
+// Uncomment out when we have the ability to put MS on components 
 //        Components.ObservationComponent[SystolicPressure].DataValue
 //        Components.ObservationComponent[DiastolicPressure].DataValue
         RelevantTime MS
@@ -55,17 +65,6 @@ Namespace: shr.core
         Code MS
         DataValue MS
         RelevantTime MS
-/*---------------
-MS = if known
-I = affected by constraints
-http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
-1) required   1..1  MS  
-2) required if known  0..1  MS 
-3) conditionally required  0..1 MS I  --- defer
-4) conditionally required if known  0..1 MS I  --- defer
----------------data dictionary--------------
-5) optional 0..1
-------------------*/
 
 Namespace: oncocore
     PrimaryCancerCondition:  // req if known
@@ -159,11 +158,11 @@ Namespace: oncocore
         TreatmentIntent MS
         RelatedCancerCondition MS
         // BodyLocation unnecessary if code is pre-coordinated
-    CancerGenomicsReport:
+    GenomicsReport:
         PatientSubjectOfRecord MS
         Participation.Participant MS   // Laboratory name
-        CancerGeneticRegionAnalysisResult MS
-    CancerGeneticRegionAnalysisResult:
+        GeneticRegionAnalyzed MS
+    GeneticRegionAnalyzed:
         // subject to change when May updates genomics model
         // Required: Code, Status, Category, SubjectOfRecord
         PatientSubjectOfRecord MS
@@ -174,7 +173,7 @@ Namespace: oncocore
         PanelMembers MS
         // Components.ObservationComponent[DNARegionDescription] MS                 // CM: includes type not yet supported in CP
         // Components.ObservationComponent[GeneMutationToBeTestedID].DataValue MS   // CM: includes type not yet supported in CP
-        // Components.ObservationComponent[CancerGeneName] MS                       // CM: includes type not yet supported in CP
+        // Components.ObservationComponent[GeneName] MS                       // CM: includes type not yet supported in CP
         // Specimen.Type  MS // CM: Since specimen is a reference, FHIR does not allow you to "drill into" it in a profile on Observation
     GeneticVariantFound:
         PatientSubjectOfRecord MS
@@ -187,24 +186,10 @@ Namespace: shr.lab
         // Required: Code, Status, Category, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
         Code MS
-//   Uncomment when supported
-//        PanelMembers.Observation[CBCMustSupportPanelMember]
-        PatientSubjectOfRecord MS
         RelevantTime MS
-    CBCWAutoDifferentialPanelCoreElement:
-        PatientSubjectOfRecord MS
-        Code MS
-        DataValue MS
     ComprehensiveMetabolic2000SerumOrPlasmaPanel:
         // Required: Code, Status, Category, PatientSubjectOfRecord
         PatientSubjectOfRecord MS
         Code MS
-//   Uncomment when supported
-//      PanelMembers.Observation[CMPMustSupportPanelMember]
-        PatientSubjectOfRecord MS
         RelevantTime MS
-    CMP2000SerumOrPlasmaCoreElement:
-         // Required: Code, Status, Category, SubjectOfRecord
-        PatientSubjectOfRecord MS
-        Code MS
-        DataValue MS
+
