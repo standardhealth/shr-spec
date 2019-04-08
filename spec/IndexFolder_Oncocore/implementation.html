@@ -1,0 +1,91 @@
+<p><font color="red">*** This is a <strong>DRAFT VERSION</strong> of the Minimum Common Oncology Data Elements (mCODE&#8482;) implementation guide. ***</font></p>
+<p>&nbsp;</p>
+
+<h1><a name="#Implementation"></a>Appendix A: Technical  Implementation Notes</h1>
+
+<p>This section contains content specific for FHIR implementers.  This allows for introductory and overview content to be shared among the broader community which includes clinicians, project leaders, and executive decision makers.</p>
+
+<p>&nbsp;</p>
+
+<h2>General Notes</h2>
+
+<h3><i>Data Dictionary and FHIR IG alignment</i></h3>
+<ul>
+    <li>The data dictionary elements are meant to address a clinical and project leadership audience who seek a high level list of mCODE elements and might not reflect the detailed list of of must-support elements which appear in the FHIR IG.</li>
+    <p></p>
+    <li>mCODE profiles align, where possible, with the <a href="http://www.fhir.org/guides/argonaut/r2/">Argonaut Data Query IG</a>  profiles, which are based on <a href="http://hl7.org/fhir/DSTU2/index.html">FHIR DSTU2</a>. However extensions to the Argonaut profiles may exist in cases where there was better alignment between a change to a subsequent FHIR release with mCODE elements.
+    </li>    
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Treatment</h2>
+
+<p>The following mCODE FHIR profiles are relevant to cancer treatment:</p>
+<ul>
+    <li><em>CancerRelatedRadiationProcedure</em></li>
+    <li><em>CancerRelatedSurgicalProcedure</em></li> 
+    <li><em>MedicationStatement</em></li> 
+</ul>
+
+<h2>Laboratory and Vital Signs</h2>
+
+<h3><i>Tumor Markers</i></h3>
+<p>mCODE identifies a dedicated FHIR profile called <strong><i>TumorMarkerObservation</i></strong> for the identification of serum and tissue-based tumor markers.</p>
+<ul>
+    <li>Tumor marker tests identified by their LOINC order code. The assigned TumorMarkerTestVS value set is also extensible to account for new LOINC version and code updates.</li>
+    <p></p>
+    <li>The TumorMarkerTestVS lists the most common tests for tumor markers but does not further align by cancer type.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Genomics Reporting</h2>
+
+<ul>
+    <li>The <strong><i>geneticsGene</i></strong> attribute is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set.</li>
+    <p></p>
+    <li>The <i>CancerGeneVS</i> value set contains the HGNC code followed by the HUGO approved symbol embedded within the full description of the term in the value set.</li>
+    <p></p>
+</ul>
+
+<p>&nbsp;</p>
+<h2><a name="#TerminologyOverview"></a>FHIR Terminology Overview</h2>
+
+<p>This implementation guide supplies terminology bindings drawn primarily from LOINC for "observables", and SNOMED-CT for values, results and findings. There are a few exceptions to this: </p>
+    <ul>
+        <li>When appropriate codes are not available in the preferred vocabulary, alternative vocabularies are used, in the following order of preference: SNOMED-CT (if the element is an observable), NCI Thesaurus and Metathesaurus, and local codes;
+        </li>
+        <p></p>
+        <li>When LOINC is used to specify an observable and LOINC specifies a normative answer list for that term, the normative list is used instead of an equivalent SNOMED CT value set.</li>
+    </ul>
+
+<p>Value sets from the FHIR specification are reused to the extent possible. In addition to the FHIR shr.base specification (DSTU2, DSTU3 and R4), Argonaut Data Query Implementation Guide, and the US Core Implementation Guide were also considered.</p>
+
+<p>There may be differences across these specifications in the value sets used, as well as binding strength. This guide addresses these discrepancies by using the lowest common denominator amongst the specifications. This approach is not without challenges, as there cases where different value sets are required by different specifications, which leaves no choice but to opt for one value set over another.</p>
+
+<p>&nbsp;</p>
+
+<h3><i>Local Value Sets</i></h3>
+
+<p>This guide includes multiple value sets created specifically to support the terminology needs of the models. These value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value needs needed to be extended.</p>
+
+<p><strong>NOTE:</strong>There is a known issue with HL7's FHIR implementation guide publisher that causes an error in the expansion of local value sets in the implementation guide. While this prevents the value sets from being shown in the value set pages, the content of the value sets is correctly expanded in json and xml, which readers can access from the indivual value set pages.</p>
+
+<p>&nbsp;</p>
+
+<h3><i>Exception Values</i></h3>
+
+<p>FHIR structurally separates missing value reasons (exception values) from answer sets. For example, FHIR uses two attributes, Observation.value and Observation.dataAbsentReason. For this reason, when LOINC answer lists included missing value explanations, those answers were separated and placed in a separate value set.&nbsp;However, we note that LOINC answer sets are not very consistent with regard to missing value reasons, and possibly incomplete. This leaves open a question on what a cross-cutting normative set of missing value reasons or exception values might be.</p>
+
+<p>&nbsp;</p>
+
+<h3><i>Cancer Staging and Proprietary Terminologies</i></h3>
+
+<p>The AJCC staging system is recognized as one of the most widely-used standards for cancer staging. However, this guide does not include any AJCC terminology due to unresolved copyright issues. As such,<i><strong>elements related to staging may not currently include required terminology bindings</strong></i>.</p>
+
+<p>&nbsp;</p>
+<footer>
+    <hr>
+    <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
+</footer>
