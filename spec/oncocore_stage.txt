@@ -1,5 +1,5 @@
 Grammar:		DataElement 5.0
-Namespace:		oncocore
+Namespace:		onco.core
 Description:	"SHR implementation of ASCO requirements."
 Uses:  			shr.core
 
@@ -14,8 +14,9 @@ Abstract Element:  CancerStageGroup
 Based on:       CodedNonLaboratoryObservation
 Description:    "A panel that contains cancer staging information. This class is the parent of panels containing information related to clinical and pathologic staging, including TNMClinicalStageGroup and TNMPathologicStageGroup."
 1..1            SubjectOfRecord is type PatientSubjectOfRecord
-0..1            RelatedCancerCondition  // in R4, this can map to Observation.focus
+0..1            ref(PrimaryCancerCondition)
 1..1            DataValue
+0..0            DataAbsentReason
 0..1            Method is type CancerStagingSystem
                 Performer is type PractitionerPerformer
 0..0            Components
@@ -28,7 +29,8 @@ Description:    "Abstract parent class for members of cancer staging panels. Can
                 SubjectOfRecord is type PatientSubjectOfRecord
                 Performer is type PractitionerPerformer
 1..1            DataValue
-0..1            RelatedCancerCondition
+0..0            DataAbsentReason
+0..1            ref(PrimaryCancerCondition)
 0..1            CancerStageTiming 
 0..1            Method is type CancerStagingSystem
 0..0            BodyLocation
@@ -71,14 +73,14 @@ Description:    "Classification of the primary tumor, based on its size and exte
 
 EntryElement: 	TNMClinicalRegionalNodesClassification
 Based on:		CancerStageClassification
-Description:    "Classification of the presence or absence of metastases in regional lymph nodes, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies. (adapted from NCI Dictionary of Cancer Terms)"
+Description:    "Classification of the presence or absence of metastases in regional lymph nodes, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies (definition adapted from NCI Dictionary of Cancer Terms)."
                 Code is LNC#21906-3 "Regional lymph nodes.clinical [Class] Cancer"
                 DataValue from TNMRegionalNodesClassificationVS if covered //if covered because SCT content might not be fully up-to-date with AJCC 8th edition. LNC#21906-3 has normative answer list http://loinc.org/vs/LL238-7
                 CancerStageTiming is SCT#385349001 "Clinical stage (observable entity)"
 
 EntryElement:   TNMClinicalDistantMetastasesClassification
 Based on:		CancerStageClassification
-Description:    "Classification of the presence or absense of metastases in remote anatomical locations, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies. (adapted from NCI Dictionary of Cancer Terms)" 
+Description:    "Classification of the presence or absense of metastases in remote anatomical locations, assessed using tests that are done before surgery. These include physical exams, imaging tests, laboratory tests (such as blood tests), and biopsies (definition adapted from NCI Dictionary of Cancer Terms)." 
                 Code is LNC#21907-1 "Distant metastases.clinical [Class] Cancer"
                 DataValue from TNMDistantMetastasesClassificationVS if covered //if covered because SCT content might not be fully up-to-date with AJCC 8th edition. LNC#21907-1 has normative answer list http://loinc.org/vs/LL239-5
                 CancerStageTiming is SCT#385349001 "Clinical stage (observable entity)"
