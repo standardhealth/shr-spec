@@ -22,32 +22,27 @@ Namespace: shr.core
         Person.Deceased MS  // Person.Deceased.dateTime only
     ComorbidCondition:
         // Required: PatientSubjectOfRecord, Category, Status, ClinicalStatus, Code
-        PatientSubjectOfRecord MS
         Code MS
         ClinicalStatus MS
     MedicationStatement:
         // Required: StatementDateTime, Medication, OccurrenceTimeOrPeriod, Status, PatientSubjectOfRecord
-        PatientSubjectOfRecord MS
         MedicationCodeOrReference  MS  // Code only?  i.e., [CodeableConcept]?
         OccurrenceTimeOrPeriod  MS
         TerminationReason  MS
         TreatmentIntent  MS
     ECOGPerformanceStatus:  // req if known
-        PatientSubjectOfRecord MS  // req
-        Code MS  // req
         DataValue MS  // req
+        RelevantTime MS
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
         RelevantTime MS  // req if known
     KarnofskyPerformanceStatus:
         PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
         RelevantTime MS
     BloodPressure:
         // Required: PatientSubjectOfRecord, Category, Status and Code
-        PatientSubjectOfRecord MS
-        Code MS
+        RelevantTime MS
         Components.ObservationComponent MS
 // Uncomment out when we have the ability to put MS on components 
 //        Components.ObservationComponent[SystolicPressure].DataValue
@@ -55,27 +50,21 @@ Namespace: shr.core
         RelevantTime MS
     BodyHeight:
         // Required: PatientSubjectOfRecord, Category, Status and Code
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         RelevantTime MS
     BodyWeight:
         // Required: PatientSubjectOfRecord, Category, Status and Code
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         RelevantTime MS
 
 Namespace: onco.core
     PrimaryCancerCondition:  // req if known
-        PatientSubjectOfRecord MS  // req
         Code MS    // req
         ClinicalStatus MS  // req
         BodyLocation.LocationCode MS  // conditional
         HistologyMorphologyBehavior MS  // conditional
         DateOfDiagnosis MS  // req if known (MS)
     SecondaryCancerCondition:  // req if known
-        PatientSubjectOfRecord MS  // req
         Code MS  // req
         ClinicalStatus MS  // req
         HistologyMorphologyBehavior MS
@@ -85,86 +74,75 @@ Namespace: onco.core
 //  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
 //  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
     TNMClinicalStageGroup:  // req if known
-        PatientSubjectOfRecord MS  // req
-        Code MS  // req
         DataValue MS  // req
         CancerStagingSystem MS  // req
         RelevantTime MS  // req if known
     TNMClinicalPrimaryTumorClassification:
-        PatientSubjectOfRecord MS  // req
-        Code MS   // req
         DataValue MS  // req
         CancerStageTiming MS  // req if known
         RelevantTime MS  // req if known
     TNMClinicalRegionalNodesClassification:
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStageTiming MS
         RelevantTime MS
     TNMClinicalDistantMetastasesClassification:
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicStageGroup:
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
     TNMPathologicPrimaryTumorClassification:  // req if known
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicRegionalNodesClassification:
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStageTiming MS
         RelevantTime MS
     TNMPathologicDistantMetastasesClassification:
-        PatientSubjectOfRecord MS
-        Code MS
         DataValue MS
         CancerStageTiming MS
         RelevantTime MS
     TumorMarkerObservation:
-        PatientSubjectOfRecord MS
         Code MS
         DataValue MS
         RelevantTime MS
     CancerDiseaseStatus:
         // Required: Code, Status, PatientSubjectOfRecord
-        PatientSubjectOfRecord MS
         Code MS
         DataValue MS
         RelevantTime MS
     CancerRelatedSurgicalProcedure:  // req if known
-        PatientSubjectOfRecord MS  // req
         Code MS   // req
         OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
         TreatmentIntent MS  // req if known
+<<<<<<< HEAD
+=======
+        ReasonReference MS
+        ReasonCode MS
+        >>>>>>> Update mCODE content profile
         // BodyLocation unnecessary if code is pre-coordinated
     CancerRelatedRadiationProcedure:
         // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
-        PatientSubjectOfRecord MS
         Code MS
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
+        ReasonReference MS
+        ReasonCode MS
+<<<<<<< HEAD
+=======
+        ReasonReference MS
+        ReasonCode MS
+>>>>>>> Update mCODE content profile
         // BodyLocation unnecessary if code is pre-coordinated
     GenomicsReport:
-        PatientSubjectOfRecord MS
         Participation.Participant MS   // Laboratory name
         GeneticRegionAnalyzed MS
     GeneticRegionAnalyzed:
         // subject to change when May updates genomics model
         // Required: Code, Status, Category, SubjectOfRecord
-        PatientSubjectOfRecord MS
-        Code MS
         Method MS
         RelevantTime MS
         Components.ObservationComponent MS
@@ -174,20 +152,16 @@ Namespace: onco.core
         // Components.ObservationComponent[GeneName] MS                       // CM: includes type not yet supported in CP
         // Specimen.Type  MS // CM: Since specimen is a reference, FHIR does not allow you to "drill into" it in a profile on Observation
     GeneticVariantFound:
-        PatientSubjectOfRecord MS
-        Code MS
         RelevantTime MS
         Components.ObservationComponent MS     
 
 Namespace: shr.lab
     CBCWAutoDifferentialPanel:
         // Required: Code, Status, Category, PatientSubjectOfRecord
-        PatientSubjectOfRecord MS
-        Code MS
         RelevantTime MS
+        PanelMembers MS
     ComprehensiveMetabolic2000SerumOrPlasmaPanel:
         // Required: Code, Status, Category, PatientSubjectOfRecord
-        PatientSubjectOfRecord MS
-        Code MS
         RelevantTime MS
+        PanelMembers MS
 
