@@ -624,10 +624,13 @@ Description:	"The way a substance enters an organism after contact, particularly
 Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/route-codes
 
 Element:		BodyLocation
-Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart.
-The BodyLocation includes code and optional qualifiers of anatomical side or direction. The body location can also be determined from one or more body landmarks.
-If the code for the body location includes laterality and/or anatomical direction, the corresponding attributes might be unnecessary.
-Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how an address structure can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
+Description:	"A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart. Body location is a flexible structure that allows the location to be determined by a single code, or a code plus laterality and/or orientation. The body location can also be specified in relation to one or more body landmarks. SNOMED CT is used in all cases. 
++ Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
++ Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
++ Relation to landmark: The location relative to a landmark is specified by:
+    - Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
+	- Specifying the direction and distance from the landmark to the body location. 
+Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 1..1			LocationCode
 0..1 			Laterality
 0..1			Orientation
@@ -647,25 +650,28 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 	Value:			CodeableConcept from OrientationVS if covered
 
 	Element:		RelationToLandmark
-	Description:	"An anatomical landmark that helps determine a body location."
+	Description:	"The relationship between a landmark that helps determine a body location and the body location itself. The location relative to a landmark is specified by:
+	* Specifying the location and type of landmark using a body site code and optional laterality/orientation, 
+	* Specifying the direction from the landmark to the body location, and
+	* Specifying the distance from the landmark to the body location."
 	0..1			LandmarkType
 	0..1			LandmarkLocation
 	0..1			LandmarkToBodyLocationDirection
 	0..1			LandmarkToBodyLocationDistance
 
 		Element:		LandmarkType
-		Description:	"The type of feature that constitutes the landmark, for example, particularly if the landmark is an acquired body structure or physical object."
+		Description:	"The type of feature that constitutes the landmark, particularly if the landmark is an acquired body structure or physical object."
 		Value:			CodeableConcept from LandmarkTypeVS if covered
 
 		Element:		LandmarkLocation
-		Description:	"The body location of the landmark."
+		Description:	"The body location of the landmark, specified by a location code and optional laterality and orientation."
 		0..1			LocationCode
 		0..1			Laterality
 		0..1			Orientation
 
 
 		Element:		LandmarkToBodyLocationDirection
-		Description:	"The direction from the landmark to the body location of interest."
+		Description:	"The direction from the landmark to the body location of interest, given as a clockface direction or anatomical direction."
 		Value:			ClockFaceDirection or AnatomicalDirection
 
 			Element:    	ClockFaceDirection
@@ -677,7 +683,7 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 			Value:			CodeableConcept should be from AnatomicalDirectionVS  //TO DO: isolate values that are directions
 
 		Element:		LandmarkToBodyLocationDistance
-		Description:	"How far the anatomical location of interest is from the given landmark"
+		Description:	"How far the body location of interest is from the given landmark."
 		Value:			Quantity
 						Quantity.Units.Coding from UnitsOfLengthVS
 
