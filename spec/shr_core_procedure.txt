@@ -38,7 +38,7 @@ Description:	"A procedure that has been performed."
 
     Element:        TreatmentIntent
     Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
-    Description:	"The intended result from a given treatment.  Examples include curative, palliative, and supportive."
+    Description:	"The purpose of a treatment. A simplified set of values include only two choices: curative and palliative. Curative is defined as any treatment meant to reduce or control a disease process, even if a 'cure' is not anticipated. Palliative includes treatments meant to reduce symptoms and side effects, such as antiemetics. If a treatment does both, it should be recorded as curative."
     Value:          CodeableConcept from TreatmentIntentVS
 
 	Element:		FocalDevice
@@ -106,6 +106,7 @@ Description:	"A procedure performed on a collected specimen such as a blood pane
 
 EntryElement:	SurgicalProcedure
 Based on:		Procedure
+				Participation.Participant is type PractitionerProcedureParticipant
 				Code from SurgicalProcedureVS if covered
 				BodyLocation is type SurgicalBodyLocation // includes the role of the body site in the procedure
 				Method from SurgicalMethodVS
@@ -120,10 +121,16 @@ Based on:		Procedure
 	Description:	"Describes the role played by the body site in the surgery."
 	Value:			CodeableConcept from SurgicalBodyLocationRoleVS if covered
 
+	Element:		PractitionerProcedureParticipant
+	Based on:		ProcedureParticipant
+	Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
+	Value:			ref(Practitioner)
+
 
 EntryElement:   RadiationProcedure
 Based on:       Procedure
 Description:    "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
+				Participation.Participant is type PractitionerProcedureParticipant
     	    	Code from RadiationProcedureVS if covered
 0..1    		RadiationDosePerFraction
 0..1    		RadiationFractionsDelivered
