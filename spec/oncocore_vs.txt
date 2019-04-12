@@ -25,7 +25,7 @@ SCT#255052006 "/9 ICD-O-3 suffix, Malignant tumor of unknown origin"
 */
 
 ValueSet:   CancerHistologicGradeVS
-Description:  "The classification for the grade of the tumor. This is a subset of the LOINC answer list LL213-0, which represents allowable values for NAACCR data item #440. The original answer list is outdated, as it includes terms pointing to the lineage of hematopoietic/lymphoid neoplasms, which have been retired by NAACCR as of version 18 Data Standards and Data Dictionary."
+Description:  "The grade of the tumor. This is a subset of the LOINC answer list LL213-0, which represents allowable values for NAACCR data item #440. The original answer list is outdated, as it includes terms pointing to the lineage of hematopoietic/lymphoid neoplasms, which have been retired by NAACCR as of version 18 Data Standards and Data Dictionary."
 SCT#54102005  "G1 grade (finding)"
 SCT#1663004   "G2 grade (finding)"
 SCT#61026006  "G3 grade (finding)"
@@ -94,14 +94,11 @@ SCT#250724005 "Tumor marker measurement (procedure)"
 SCT#386344002 "Laboratory data interpretation (procedure)"
 //MTH#C0005516	"Biological markers"
 
-ValueSet:		CancerStageTimingVS
+ValueSet:		TimeOfClassificationVS
 //TODO: the value set is missing codes for recurrence and anatomical staging.
-//TODO: need new terms for post-therapeutic clinical and pathological staging.
-Description:	"When staging was done, relative to treatment events (qualifier)."
+Description:	"When staging was performed, relative to treatment events."
 SCT#385349001   "Clinical stage (observable entity)"
-//#cli		    "Clinical stage: Staging performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
-SCT#405978005   "Pathologic stage (observable entity)"    //TODO_discussion: using SCT instead of local codes, we lose the definition. Also strange to use an observable in a value set.
-//#path         "Pathologic stage: Staging performed based on examination of tissue samples removed during surgery, in addition to physical examination and imaging."
+SCT#405978005   "Pathologic stage (observable entity)"
 //#postther_cli   "Post-therapeutic (post-neoadjuvant) clinical staging based on clinical examination after the first treatment with systemic drugs or radiation, when no surgery has been performed."
 //#postther_path  "Post-therapeutic (post-neoadjuvant) pathologic staging, based  on tissue samples removed during surgery after the first treatment with systemic drugs or radiation."
 
@@ -109,10 +106,10 @@ ValueSet:   CancerStagingSystemVS   // replaces local value set in BrCa spec
 Description: "The system used to identify cancer/tumor stage"
 Includes codes descending from SCT#254292007 "Tumor staging (tumor staging)" //TODO: consider staging systems in NCI MTH and determine if there are gaps.
 
-ValueSet:   TNMTumorStagingSystemVS    // TODO: Need to include version of staging system (this is not sufficient)
-Description:    "System used for TNM classification. Includes the following codes:
+ValueSet:   TNMCancerStagingSystemVS    // TODO: Need to include version of staging system (this is not sufficient)
+Description:    "System used for staging, when staging uses TNM categories. Includes the following codes/staging systems:
   SCT#444256004 'American Joint Commission on Cancer, Cancer Staging Manual, 6th edition neoplasm staging system (tumor staging)'
-  SCT#443830009 'American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging'
+  SCT#443830009 'American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging)'
   #AJCC8 'American Joint Commission on Cancer, Cancer Staging Manual, 8th edition neoplasm staging system (tumor staging)'
   SCT#258235000 'International Union Against Cancer (tumor staging)'"
 /* RM 12/19/2018: < SCT#254293002 includes content from SCT that is at best misguided, at worst incorrect. The terms focus on the cancer type (prostate, breast) rather the edition of the TNM staging system.  
@@ -124,7 +121,7 @@ Includes codes descending from SCT#254293002 "Tumor-node-metastasis (TNM) tumor
   SCT#258235000 "International Union Against Cancer (tumor staging)"
 
 ValueSet: TNMStageGroupVS
-Description: "Classification of the extent of the disease, according to the TNM staging rules, typically taking into account several anatomic and prognostic elements."
+Description: "Category describing the extent of the disease, according to the TNM staging rules, typically taking into account several anatomic and prognostic elements."
 SCT#309689007 "Occult carcinoma - stage (qualifier value)"
 Includes codes descending from SCT#261613009  "Stage 0"
 Includes codes descending from SCT#258215001  "Stage 1"
@@ -132,8 +129,8 @@ Includes codes descending from SCT#258219007  "Stage 2"
 Includes codes descending from SCT#258224005  "Stage 3"
 Includes codes descending from SCT#258228008  "Stage 4"
 
-ValueSet: TNMPrimaryTumorClassificationVS
-Description: "Classifications of the primary tumor according to TNM staging rules."
+ValueSet: TNMPrimaryTumorCategoryVS
+Description: "Categories of the primary tumor according to TNM staging rules."
 Includes codes descending from SCT#44401000 "Tis category (finding)"
 Includes codes descending from SCT#23351008 "T1 category (finding)"
 Includes codes descending from SCT#67673008 "T2 category (finding)"
@@ -143,18 +140,18 @@ Includes codes descending from SCT#65565005 "T4 category (finding)"
 SCT#67101007 "TX category (finding)"
 SCT#58790005  "T0 category (finding)"
 
-ValueSet: TNMRegionalNodesClassificationVS
-Description: "Classifications of regional lymph nodes according to TNM staging rules."
+ValueSet: TNMRegionalNodesCategoryVS
+Description: "Categories of regional lymph nodes according to TNM staging rules."
 Includes codes descending from SCT#385382003 "Node category finding (finding)"
 
 
-ValueSet: TNMDistantMetastasesClassificationVS
-Description: "Classifications of distant metastases according to TNM staging rules."
+ValueSet: TNMDistantMetastasesCategoryVS
+Description: "Categories of distant metastases according to TNM staging rules."
 Includes codes descending from SCT#385380006 "Metastasis category finding"
 
 /*
 ValueSet:   CancerStageSuffixVS
-Description: "Modifiers related to the staging category. Examples of modifiers include the type of procedure performed in determining the pathological node classification. The staging suffix notation is the abbreviation enclosed by parentheses.  For example, CN1a(sn) where (sn) designates that the N category was identified based on a sentinel node biopsy."
+Description: "Modifiers related to the staging category. Examples of modifiers include the type of procedure performed in determining the pathological node category. The staging suffix notation is the abbreviation enclosed by parentheses.  For example, CN1a(sn) where (sn) designates that the N category was identified based on a sentinel node biopsy."
 #sn     "sentinel node biopsy"
 #f      "Fine needle aspiration or core biopsy"
 */

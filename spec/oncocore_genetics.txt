@@ -15,8 +15,12 @@ Description:	"Genetic analysis summary report"
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Category is OBSCAT#GE
 				Observation is type GeneticRegionAnalyzed
+0..1			GeneticSpecimenType
 // 0..0			ImagingStudy (not yet defined in SHR)
 
+		Element:		GeneticSpecimenType
+		Description:	"The type of material tested in this report."
+		Value:			CodeableConcept from GeneticSpecimenTypeVS if covered
 
 EntryElement:	GeneticRegionAnalyzed
 Based on:		CodedLaboratoryObservation
@@ -27,13 +31,13 @@ Description:	"Results of analyzing a specified genetic region to detect the pres
 				DataValue from DetectedNotDetectedVS  // mlt:  changed to mk-preferred value set which replaces PresentAbsentVS with DetectedNotDetectedVS.  For CGWG, this ideally should be constrained to present|absent|indeterminate.
 0..0			BodyLocation
 				Components.ObservationComponent
-					includes 0..*	GeneName
+					includes 0..*	GeneName // GeneStudied
 					includes 0..1	DNARegionDescription
 					includes 0..*	MutationTestedFor
 				PanelMembers.Observation
 					includes 0..* GeneticVariantFound
 
-		Element:		GeneName
+		Element:		GeneName  
 		Based on:		CodedObservationComponent
 		Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: [LOINC](https://s.details.loinc.org/LOINC/48018-6.html?sections=Comprehensive))"
 						Code is LNC#48018-6 "Gene studied [ID]"
@@ -44,7 +48,7 @@ Description:	"Results of analyzing a specified genetic region to detect the pres
 		// mlt20190410: deemed out of scope for mCODE 0.9; changed to Element and removed from component; kept as "reserved for future use."
 		Element:		DNARegionDescription
 		Based on:		ObservationComponent
-		Description:	"a narrative description of the range(s) of DNA sequences examined in this sequencing study."
+		Description:	"A narrative description of the range(s) of DNA sequences examined in this sequencing study."
 						Code is LNC#81293-3 "Description of ranges of DNA sequences examined"
 						DataValue value is type string
 		0..0			ReferenceRange
