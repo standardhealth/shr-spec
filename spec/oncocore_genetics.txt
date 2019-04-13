@@ -5,8 +5,8 @@ Uses:  			shr.core
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
-CodeSystem:		V2 = http://hl7.org/fhir/v2/0131
 CodeSystem:		HGVS = http://varnomen.hgvs.org
+
 
 EntryElement:	GenomicsReport
 Based on:		DiagnosticReport
@@ -14,52 +14,52 @@ Description:	"Genetic analysis summary report"
 				Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Category is OBSCAT#GE
-				Observation is type GeneticRegionAnalyzed
-0..1			GeneticSpecimenType
+0..1			SpecimenType from GeneticSpecimenTypeVS if covered
+0..*			RegionStudied
+				Observation
+					includes 0..* GeneticVariantFound
+					includes 0..* GeneticMutationTestResult
 // 0..0			ImagingStudy (not yet defined in SHR)
 
-		Element:		GeneticSpecimenType
-		Description:	"The type of material tested in this report."
-		Value:			CodeableConcept from GeneticSpecimenTypeVS if covered
+		Element:	RegionStudied
+		Description:  "A description of the coverage of the genome that was tested for variants."
+		Value:		string
 
-EntryElement:	GeneticRegionAnalyzed
+EntryElement:	GeneticMutationTestResult
 Based on:		CodedLaboratoryObservation
-Description:	"Results of analyzing a specified genetic region to detect the presence of genetic alterations or defects that may predispose to the future development of a disease or disorder."
+Description:	"A test for one specific mutation on a particular gene."
 				SubjectOfRecord is type PatientSubjectOfRecord
-				Method from GeneticTestMethodVS if covered
-				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept
-				DataValue from DetectedNotDetectedVS  // mlt:  changed to mk-preferred value set which replaces PresentAbsentVS with DetectedNotDetectedVS.  For CGWG, this ideally should be constrained to present|absent|indeterminate.
+				Code is LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
+1..1			MutationTested
+				Method from GeneticTestMethodVS
+1..1			DataValue from PositiveNegativeVS
+0..0			DataAbsentReason
+0..0			ReferenceRange
 0..0			BodyLocation
-				Components.ObservationComponent
-					includes 0..*	GeneName // GeneStudied
-					includes 0..1	DNARegionDescription
-					includes 0..*	MutationTestedFor
-				PanelMembers.Observation
-					includes 0..* GeneticVariantFound
+0..0			PanelMembers
 
-		Element:		GeneName  
-		Based on:		CodedObservationComponent
-		Description:	"HUGO Gene Nomenclature Committee (HGNC) identifier for a gene. (source: [LOINC](https://s.details.loinc.org/LOINC/48018-6.html?sections=Comprehensive))"
-						Code is LNC#48018-6 "Gene studied [ID]"
-						DataValue should be from http://www.genenames.org 
-						// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
-		0..0			DataAbsentReason
+		Element:	MutationTested
+		Description:  "The specific genetic variant that is targeted by this test."
+		0..1 		GeneStudied
+		0..1 		VariantIdentifier
+		0..* 		VariantHGVSName
+		0..1		VariantDescription
 
-		// mlt20190410: deemed out of scope for mCODE 0.9; changed to Element and removed from component; kept as "reserved for future use."
-		Element:		DNARegionDescription
-		Based on:		ObservationComponent
-		Description:	"A narrative description of the range(s) of DNA sequences examined in this sequencing study."
-						Code is LNC#81293-3 "Description of ranges of DNA sequences examined"
-						DataValue value is type string
-		0..0			ReferenceRange
-		0..0			DataAbsentReason
+			Element:		GeneStudied
+			Description: "A gene targeted for mutation analysis using HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HBNC official gene symbol. For example, the official gene sysbol for epidermal growth factor receptor is EGFR."
+			Value:			CodeableConcept from http://www.genenames.org if covered  // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
 
-		Element:		MutationTestedFor
-		Based on:		CodedObservationComponent
-		Description:	"For targeted mutation analysis, the mutations that the study is designed to detect. The mutation tested for is reported as using the HGVS sequence variant nomenclature."
-						Code is LNC#36908-2 "Gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
-						DataValue from http://varnomen.hgvs.org if covered
-		0..0			DataAbsentReason
+			Element:		VariantIdentifier
+			Description: 	"The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
+			Value:			CodeableConcept from https://www.ncbi.nlm.nih.gov/clinvar if covered 
+
+			Element:		VariantHGVSName
+			Description:	"Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
+			Value:			string   // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+
+			Element:		VariantDescription
+			Description:	"A clinician-friendly description for the variant. This could be, but not limited to, the protein change associated with the variation. For example, the protein change associated with Clinvar 3236 is G482V."
+			Value:			string
 
 
 EntryElement:	GeneticVariantFound
@@ -67,25 +67,53 @@ Based on:		LaboratoryObservation
 Description:	"An alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. (source: NCI)"
 				SubjectOfRecord is type PatientSubjectOfRecord
 				Code is LNC#69548-6 "Genetic variant assessment"
-0..0			DataValue //  from DetectedNotDetectedVS -- not needed, since only variants that ARE detected are reported
+				Method from GeneticTestMethodVS
+0..0			DataValue
 0..0			DataAbsentReason
 0..0			ReferenceRange
 0..0			BodyLocation
 0..0			PanelMembers
-				Method from GeneticTestMethodVS
 				Components.ObservationComponent
 					includes 0..1	GenomicSourceClass
-//					includes 0..1	DNAChangeTranscriptcHGVS
-//					includes 0..1	ComplexVariantCode
-					includes 0..1	ComplexVariantHGVSName
-					includes 0..1	ComplexVariantCommonName
-//					includes 0..1	DNAChangeType  	
+					includes 0..1	VariantFoundIdentifier
+					includes 0..*	VariantFoundHGVSName
+					includes 0..1	VariantFoundDescription
 
 		Element:		GenomicSourceClass
 		Based on:		CodedObservationComponent
 		Description:	"The genomic class of the specimen being analyzed: Germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome. (source: LOINC)"
 						Code is LNC#48002-0 "Genomic source class [Type]"
 						DataValue from GenomicSourceClassVS
+		0..0			DataAbsentReason
+
+		Element:		VariantFoundIdentifier
+		Based on:		CodedObservationComponent
+		Description: 	"The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
+						Code is LNC#48003-8 "DNA sequence variation identifier"
+						DataValue from https://www.ncbi.nlm.nih.gov/clinvar if covered 
+		0..0			DataAbsentReason
+
+		Element:		VariantFoundHGVSName
+		Based on:		ObservationComponent
+		Description:	"Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
+						Code is LNC#81262-8 "Complex variant HGVS name"
+						DataValue value is type string // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+		0..0			DataAbsentReason	
+
+		Element:		VariantFoundDescription 
+		Based on:		ObservationComponent
+		Description:	"Description of the variant. Ideally, this should be a human-readable 'thumbnail' display."
+						Code is LNC#47998-0 "DNA sequence variation display name"
+						DataValue value is type string 
+		0..0			DataAbsentReason
+
+
+
+/* out of scope for mCODE 0.9
+
+//					includes 0..1	DNAChangeType
+//					includes 0..1	DNAChangeTranscriptcHGVS
+//					includes 0..1	ComplexVariantCode
 
 		Element:		DNAChangeTranscriptcHGVS
 		Based on:		ObservationComponent
@@ -100,24 +128,12 @@ Description:	"An alteration in the most common DNA nucleotide sequence. The term
 						Code is LNC#81260-2 "Complex genetic variant [ID]"
 						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
 
-		Element:		ComplexVariantHGVSName
-		Based on:		ObservationComponent
-		Description:	"This term is used to report the name of the complex variant found in this study in HGVS format. For example, c.[886C>T;457G>C], which represents two separate base substitutions in one gene on one chromosome, or c.[886C>T];[457G>C], which represents two separate base substitutions in one gene on two different chromosomes. (source: LOINC)"
-						Code is LNC#81262-8 "Complex variant HGVS name"
-						DataValue from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
-
-		Element:		ComplexVariantCommonName
-		Based on:		ObservationComponent
-		Description:	"Thumbnail 'textual display' convention of a single DNA Marker and its interpretation (source: LOINC).  This ideally should be a human-readable display of the value 'ComplexVariantHGVSName'"
-						Code is LNC#47998-0 "DNA sequence variation display name"
-						DataValue value is type string 
-
 		Element:		DNAChangeType		// AminoAcidChangepHGVS 
 		Based on:		CodedObservationComponent
 		Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
 						Code is LNC#48005-3 "DNA change type"
 						// DataValue from DNAChangeTypeVS if covered // mlt: move to 48019-4
-
+*/
 
 
 EntryElement:	TumorMarkerObservation
