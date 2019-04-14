@@ -10,8 +10,12 @@ CodeSystem:		HGVS = http://varnomen.hgvs.org
 
 EntryElement:	GenomicsReport
 Based on:		DiagnosticReport
-Description:	"Genetic analysis summary report"
-				Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
+Description:	"Genetic analysis summary report. The report may include one or more tests, with two distinct test types. The first type is a targeted mutation test, where a specific mutation on a specific gene is tested for. The result is either positive or negative for that mutation. The second type is a more general test for variants. This type of test returns the identity of variants found in a certain region of the genome. 
+
+The identity of laboratory tests is typically represented by a LOINC code. However, many genetic tests and panels do not have LOINC codes, although some might have an identifier in NCBI Genetic Testing Registry (GTR), a central location for voluntary submission of genetic test information by providers. To identify the diagnostic report, the name of the report should be put into text sub-field of the code structure. If there is a coded identifier from GTR, LOINC, or other source, then it should be included into the the code sub-field of the code structure. If there is no suitable code, the code can be omitted.
+
+The perfomer of the test (organization or practitioner) should be included in the FHIR profile as the perfomer.actor."
+//	MK - commented out -- see bug #134	Code is LNC#81247-9 "Master HL7 genetic variant reporting panel"
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Category is OBSCAT#GE
 0..1			SpecimenType from GeneticSpecimenTypeVS if covered
@@ -136,15 +140,20 @@ Description:	"An alteration in the most common DNA nucleotide sequence. The term
 */
 
 
-EntryElement:	TumorMarkerObservation
+EntryElement:	TumorMarkerTest
 Based on:		LaboratoryObservation
 Concept:		LNC#21924-6 "Tumor marker Cancer"
-Description:	"A substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). (Source: [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms/def/tumor-marker/)).  Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis."
+Description:	"The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from NCI Dictionary of Cancer Terms and Cancer.net)"
+				DataValue is type TumorMarkerTestDataValue
 				SubjectOfRecord is type PatientSubjectOfRecord
 				Code from TumorMarkerTestVS if covered 
 0..0			BodyLocation
 0..0			Device
 
+		Element:	TumorMarkerTestDataValue
+		Based on:	DataValue
+		Description: "A restricted set of value types that could be associated with a tumor marker test."
+		Value:		CodeableConcept or Quantity or Ratio
 
 
 /* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.

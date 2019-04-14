@@ -99,7 +99,7 @@ iv. Create an extension for recording which lesion(s) were evaluated. That's alw
 
 EntryElement:   CancerDiseaseStatus 
 Based on:       CodedNonLaboratoryObservation
-Description:    "The status of the cancer, in terms of whether it is stable, worsening (progressing), improving (responding), or in remission."
+Description:    "The clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based on one or several kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
                 Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from ConditionStatusTrendVS
 				Performer is type PractitionerPerformer
@@ -202,12 +202,15 @@ Description:	"The edge or border of the tissue removed in cancer surgery. The ma
 
 EntryElement:	CancerRelatedSurgicalProcedure
 Based on:		SurgicalProcedure
-Description:	"A surgical action addressing a cancer condition. Any surgical procedure relevant to the cancer condition is of interest in mCODE. 
-
-In the context of FHIR, the way to indicate that unrelated surgeries are _not_ included in mCODE involves constraining the ReasonReference or ReasonCode to a cancer condition."
+Description:	"A surgical action addressing a cancer condition."
 // It is cancer-related only if the reason is a cancer condition
-0..1			ReasonReference value is type ref(CancerCondition)
+0..1			ReasonReference is type CancerReasonReference
 0..1			ReasonCode from CancerDisorderVS if covered
+
+		Element:	CancerReasonReference
+		Based on:	ReasonReference
+		Description: "Reference to a primary or secondary cancer condition."
+		Value:		ref(PrimaryCancerCondition) or ref(SecondaryCancerCondition)
 
 EntryElement:	CancerRelatedRadiationProcedure
 Based on:		RadiationProcedure
@@ -215,7 +218,7 @@ Description:	"A radiological treatment addressing a cancer condition. Any radiol
 
 In the context of FHIR, the way to indicate that unrelated radiation procedures are _not_ included in mCODE involves constraining the ReasonReference or ReasonCode to a cancer condition."
 // It is cancer-related only if the reason is a cancer condition
-0..1			ReasonReference value is type ref(CancerCondition)
+0..1			ReasonReference is type CancerReasonReference
 0..1			ReasonCode from CancerDisorderVS if covered
 
 /*
