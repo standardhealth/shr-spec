@@ -19,7 +19,7 @@ Description:	"A body site specific to the breast structure."
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
-				Type from BreastSpecimenTypeVS
+				SpecimenType from BreastSpecimenTypeVS
 				CollectionSite.BodyLocation is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
 				PartOf value is type BreastSpecimen
@@ -50,12 +50,12 @@ Description:	"Classification of breast cancer according to histopathologic subty
 
 EntryElement:	BreastTNMPrognosticClinicalStageGroup
 Based on:		TNMClinicalStageGroup
-Description:	"The stage group breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The group includes supporting information including T, N, and M classifications, as well as prognostic factors (HER2, estrogen, progesterone receptor status, etc.), as related observations. The panel can include one but not both DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
+Description:	"The stage group breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The group includes supporting information including T, N, and M categories, as well as prognostic factors (HER2, estrogen, progesterone receptor status, etc.), as related observations. The panel can include one but not both DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
 				Code is TBD#TBD // was MTH#C2216702 "Malignant Neoplasm of Breast Staging" //Not LNC#21908-9 since that is AJCC-specific and also not breast cancer specific. We do however, give the LOINC list of stage values as the preferred codes.
 // 				Currently it is not possible to substitute the type of a slice, so the following three statements are commented out.
-//				PanelMembers.Observation.TNMClinicalPrimaryTumorClassification is type BreastTNMClinicalPrimaryTumorClassification
-//				PanelMembers.Observation.TNMClinicalRegionalNodesClassification is type BreastTNMClinicalRegionalNodesClassification
-//				PanelMembers.Observation.TNMClinicalDistantMetastasesClassification is type BreastTNMClinicalDistantMetastasesClassification
+//				PanelMembers.Observation.TNMClinicalPrimaryTumorCategory is type BreastTNMClinicalPrimaryTumorCategory
+//				PanelMembers.Observation.TNMClinicalRegionalNodesCategory is type BreastTNMClinicalRegionalNodesCategory
+//				PanelMembers.Observation.TNMClinicalDistantMetastasesCategory is type BreastTNMClinicalDistantMetastasesCategory
 				PanelMembers.Observation
 					includes 0..1	HER2ReceptorStatus
 					includes 0..1	EstrogenReceptorStatus
@@ -67,9 +67,9 @@ EntryElement:	BreastTNMPathologicStageGroup
 Based on:		TNMPathologicStageGroup
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
 Description:	"A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel includes biomarkers and histologic grade scales used specifically for breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
-//				PanelMembers.Observation.TNMPathologicPrimaryTumorClassification is type BreastTNMPathologicPrimaryTumorClassification
-//				PanelMembers.Observation.TNMPathologicRegionalNodesClassification is type BreastTNMPathologicRegionalNodesClassification
-//				PanelMembers.Observation.TNMPathologicDistantMetastasesClassification is type BreastTNMPathologicDistantMetastasesClassification
+//				PanelMembers.Observation.TNMPathologicPrimaryTumorCategory is type BreastTNMPathologicPrimaryTumorCategory
+//				PanelMembers.Observation.TNMPathologicRegionalNodesCategory is type BreastTNMPathologicRegionalNodesCategory
+//				PanelMembers.Observation.TNMPathologicDistantMetastasesCategory is type BreastTNMPathologicDistantMetastasesCategory
 			PanelMembers.Observation										
 			includes 0..1	HER2ReceptorStatus
 			includes 0..1	EstrogenReceptorStatus
@@ -396,45 +396,45 @@ The is currently no LOINC code for Mammaprint test."
 
 /************* Temporarily cut out by MK 3/20/2019 -Just to de-clutter unused elements ************
 
-EntryElement: 	BreastTNMClinicalPrimaryTumorClassification
-Based on:		TNMClinicalPrimaryTumorClassification
+EntryElement: 	BreastTNMClinicalPrimaryTumorCategory
+Based on:		TNMClinicalPrimaryTumorCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
+Description:	"Category based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
 				PanelMembers.Observation
 					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
 
-EntryElement:	BreastTNMClinicalRegionalNodesClassification
-Based on:		TNMClinicalRegionalNodesClassification
+EntryElement:	BreastTNMClinicalRegionalNodesCategory
+Based on:		TNMClinicalRegionalNodesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification of the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
 				PanelMembers.Observation
 					includes 0..*	BreastClinicalLymphNodeInvolvement
 
 // TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
-EntryElement:	BreastTNMClinicalDistantMetastasesClassification
-Based on:		TNMClinicalDistantMetastasesClassification
+EntryElement:	BreastTNMClinicalDistantMetastasesCategory
+Based on:		TNMClinicalDistantMetastasesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification of the presence or absense of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
 
-EntryElement:	BreastTNMPathologicPrimaryTumorClassification
-Based on:		TNMPathologicPrimaryTumorClassification
+EntryElement:	BreastTNMPathologicPrimaryTumorCategory
+Based on:		TNMPathologicPrimaryTumorCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
+Description:	"Category describing the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
 				PanelMembers.Observation
 					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
 
-EntryElement:	BreastTNMPathologicRegionalNodesClassification
-Based on:		TNMPathologicRegionalNodesClassification
+EntryElement:	BreastTNMPathologicRegionalNodesCategory
+Based on:		TNMPathologicRegionalNodesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
 				PanelMembers.Observation
 					includes 0..*	BreastPathologicalLymphNodeInvolvement
 
 // TODO: add in relationships to Met location and Method since both evaluate M category values.
-EntryElement:	BreastTNMPathologicDistantMetastasesClassification
-Based on:		TNMPathologicDistantMetastasesClassification
+EntryElement:	BreastTNMPathologicDistantMetastasesCategory
+Based on:		TNMPathologicDistantMetastasesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the presence or absense of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
 
 */
 
@@ -452,7 +452,7 @@ Description:	"An abnormal mass of tissue that results when cells divide more tha
 				FindingSiteConditionTopic.FindingSiteIdentifier is type TumorIdentifier
 0..0			ConditionPresenceContext.Severity
 				FindingSiteConditionTopic.FindingMethod should be from BreastCancerDetectionVS
-0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorCategory
 
 ********** LEGACY END ************/
 
