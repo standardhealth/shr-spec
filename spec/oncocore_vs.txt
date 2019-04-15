@@ -6,11 +6,11 @@ CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     ICD10CM = http://hl7.org/fhir/sid/icd-10-cm
 
 ValueSet:     CancerBodyLocationVS
-Description:  "Codes describing the location of primary or secondary cancer. The value set includes all codes SNOMED-CT body structure hierarchy. The cancer body location code can also come from ICD-O-3 topography codes, however, those codes are not included here due to intellectual property restrictions. ICD-O-3 topography codes do conform to mCODE requirements."
+Description:  "Codes describing the location(s) of primary or secondary cancer. The value set includes all codes SNOMED-CT body structure hierarchy. The cancer body location may also be expressed using ICD-O-3 topography codes, however, those codes are not included here due to intellectual property restrictions. No other code systems are considered conformant."
 Includes codes descending from SCT#123037004  "Body Structure"
 
 ValueSet:   HistologyMorphologyBehaviorVS
-Description: "The histologic type codes can be taken either from ICD-O-3 morphology codes (including behavior suffix) or SNOMED CT neoplasm morphology codes. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6 or /9. The ICD-O-3 codes are not included here due to intellectual property restrictions. ICD-O-3 codes do conform to mCODE requirements."
+Description: "Codes representing of the structure, arrangement, and behavioral characteristics of tumors and cancer cells. Codes are preferrably taken from the SNOMED CT hierarchy under 108369006 Neoplasm (morphologic abnormality). ICD-O-3 morphology codes (including behavior suffix) can also be used. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6 or /9. Only SNOMED CT and ICD-O-3 are considered conformant to the specification."
 Includes codes descending from SCT#108369006 "Neoplasm (morphologic abnormality)"
 
 /*
@@ -94,26 +94,14 @@ SCT#250724005 "Tumor marker measurement (procedure)"
 SCT#386344002 "Laboratory data interpretation (procedure)"
 //MTH#C0005516	"Biological markers"
 
-ValueSet:   CancerStagingSystemVS   // replaces local value set in BrCa spec
-Description: "The system used to identify cancer/tumor stage"
-Includes codes descending from SCT#254292007 "Tumor staging (tumor staging)" //TODO: consider staging systems in NCI MTH and determine if there are gaps.
-
-ValueSet:   TNMCancerStagingSystemVS    // TODO: Need to include version of staging system (this is not sufficient)
-Description:    "System used for staging, when staging uses TNM categories. Includes the following codes/staging systems:
-  SCT#444256004 'American Joint Commission on Cancer, Cancer Staging Manual, 6th edition neoplasm staging system (tumor staging)'
-  SCT#443830009 'American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging)'
-  #AJCC8 'American Joint Commission on Cancer, Cancer Staging Manual, 8th edition neoplasm staging system (tumor staging)'
-  SCT#258235000 'International Union Against Cancer (tumor staging)'"
-/* RM 12/19/2018: < SCT#254293002 includes content from SCT that is at best misguided, at worst incorrect. The terms focus on the cancer type (prostate, breast) rather the edition of the TNM staging system.  
-Includes codes descending from SCT#254293002 "Tumor-node-metastasis (TNM) tumor
- staging system (tumor staging)" */
-  SCT#444256004 "American Joint Commission on Cancer, Cancer Staging Manual, 6th edition neoplasm staging system (tumor staging)"
-  SCT#443830009 "American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging)"
-  #AJCC8 "American Joint Commission on Cancer, Cancer Staging Manual, 8th edition neoplasm staging system (tumor staging)"
-  SCT#258235000 "International Union Against Cancer (tumor staging)"
+ValueSet:   CancerStagingSystemVS 
+Description:    "System used for staging, when staging uses TNM categories. Because SNOMED CT does not currently have a code representing AJCC Version 8, specify the exact text 'AJCC Version 8' in the text sub-field of the code structure, and omit the code."
+SCT#444256004 "American Joint Commission on Cancer, Cancer Staging Manual, 6th edition neoplasm staging system (tumor staging)"
+SCT#443830009 "American Joint Commission on Cancer, Cancer Staging Manual, 7th edition neoplasm staging system (tumor staging)"
+SCT#258235000 "International Union Against Cancer (tumor staging)"
 
 ValueSet: TNMStageGroupVS
-Description: "Value set containing categories describing the extent of the disease, according to the TNM staging rules, typically taking into account several anatomic and prognostic elements."
+Description: "Value set containing categories describing the extent of the disease, according to the TNM staging rules, typically taking into account several anatomic and prognostic elements. SNOMED CT codes are preferred, but AJCC codes (preferrably, version 8) are also considered acceptable, but are not listed here due to intellectual property restrictions."
 SCT#309689007 "Occult carcinoma - stage (qualifier value)"
 Includes codes descending from SCT#261613009  "Stage 0"
 Includes codes descending from SCT#258215001  "Stage 1"
@@ -122,7 +110,7 @@ Includes codes descending from SCT#258224005  "Stage 3"
 Includes codes descending from SCT#258228008  "Stage 4"
 
 ValueSet: TNMPrimaryTumorCategoryVS
-Description: "Categories of the primary tumor according to TNM staging rules."
+Description: "Categories of the primary tumor according to TNM staging rules. SNOMED CT codes are preferred, but AJCC codes (preferrably, version 8) are also considered acceptable, but are not listed here due to intellectual property restrictions."
 Includes codes descending from SCT#44401000 "Tis category (finding)"
 Includes codes descending from SCT#23351008 "T1 category (finding)"
 Includes codes descending from SCT#67673008 "T2 category (finding)"
@@ -133,12 +121,11 @@ SCT#67101007 "TX category (finding)"
 SCT#58790005  "T0 category (finding)"
 
 ValueSet: TNMRegionalNodesCategoryVS
-Description: "Categories of regional lymph nodes according to TNM staging rules."
+Description: "Categories of regional lymph nodes according to TNM staging rules. SNOMED CT codes are preferred, but AJCC codes (preferrably, version 8) are also considered acceptable, but are not listed here due to intellectual property restrictions."
 Includes codes descending from SCT#385382003 "Node category finding (finding)"
 
-
 ValueSet: TNMDistantMetastasesCategoryVS
-Description: "Categories of distant metastases according to TNM staging rules."
+Description: "Categories of distant metastases according to TNM staging rules. SNOMED CT codes are preferred, but AJCC codes (preferrably, version 8) are also considered acceptable, but are not listed here due to intellectual property restrictions."
 Includes codes descending from SCT#385380006 "Metastasis category finding"
 
 /*
