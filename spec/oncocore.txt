@@ -13,35 +13,31 @@ Based on:		Condition
 Description:	"Abstract class for describing a primary or secondary metastatic neoplastic diseases."
 				PersonInformationSource is type PractitionerInformationSource
 0..1            HistologyMorphologyBehavior
-				BodyLocation.LocationCode from CancerBodyLocationVS if covered
+				Category is SCT#64572001 "Disease"
+				BodyLocation.LocationCode should be from CancerBodyLocationVS
 0..0            Severity
 
 	Element:		HistologyMorphologyBehavior
 	Description:	"A description of the morphologic and behavioral characteristics of the cancer."
-	Value:			CodeableConcept from HistologyMorphologyBehaviorVS if covered
+	Value:			CodeableConcept should be from HistologyMorphologyBehaviorVS
+
+	Element:	PractitionerInformationSource
+	Based on:	PersonInformationSource
+	Description:	"The information comes from a practitioner who asserts the condition."
+	Value:		ref(Practitioner)
 
 EntryElement:   PrimaryCancerCondition
 Based on:	    CancerCondition
-Description:    "Primary cancer condition, in which abnormal cells divide without control and can invade nearby tissues. A primary cancer is defined as the original site (organ or tissue) where a cancer began."
+Description:    "Records the history of the primary cancer condition, in which abnormal cells divide without control and can invade nearby tissues."
                 Code from PrimaryCancerDisorderVS if covered
-				Category is SCT#64572001 "Disease"
   	            StageInformation.StageDetail value is type ref(CancerStageGroup)
 
 EntryElement:   SecondaryCancerCondition
-Based on:       Condition
-Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer is when a primary cancer spreads to another area of the body."
-				PersonInformationSource is type PractitionerInformationSource
-                Code from SecondaryCancerDisorderVS if covered
-0..1            HistologyMorphologyBehavior
+Based on:       CancerCondition
+Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site."
+				Code from SecondaryCancerDisorderVS if covered
 0..1			ref(PrimaryCancerCondition)
-0..0            Severity
 0..0			StageInformation
-
-		Element:	PractitionerInformationSource
-		Based on:	PersonInformationSource
-		Description:	"The information comes from a practitioner who asserts the condition."
-		Value:		ref(Practitioner)
-
 
 /*
 EntryElement:   CancerHistologicType  // Morphology ICD-O-3
@@ -99,7 +95,7 @@ iv. Create an extension for recording which lesion(s) were evaluated. That's alw
 
 EntryElement:   CancerDiseaseStatus 
 Based on:       CodedNonLaboratoryObservation
-Description:    "The clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based on one or several kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
+Description:    "A clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based a single type or multiple kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
                 Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from ConditionStatusTrendVS
 				Performer is type PractitionerPerformer

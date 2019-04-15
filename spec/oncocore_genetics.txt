@@ -31,27 +31,27 @@ The perfomer of the test (organization or practitioner) should be included in th
 
 EntryElement:	GeneticMutationTestResult
 Based on:		CodedLaboratoryObservation
-Description:	"A test for one specific mutation on a particular gene."
+Description:	"A test for a specific mutation on a particular gene."
 				SubjectOfRecord is type PatientSubjectOfRecord
 				Code is LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
+0..1 			GeneStudied
 1..1			MutationTested
-				Method from GeneticTestMethodVS
+				Method from GeneticTestMethodVS if covered
 1..1			DataValue from PositiveNegativeVS
 0..0			DataAbsentReason
 0..0			ReferenceRange
 0..0			BodyLocation
 0..0			PanelMembers
 
+		Element:		GeneStudied
+		Description: "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HBNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
+		Value:			CodeableConcept from http://www.genenames.org if covered  // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
+
 		Element:	MutationTested
 		Description:  "The specific genetic variant that is targeted by this test."
-		0..1 		GeneStudied
 		0..1 		VariantIdentifier
 		0..* 		VariantHGVSName
 		0..1		VariantDescription
-
-			Element:		GeneStudied
-			Description: "A gene targeted for mutation analysis using HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HBNC official gene symbol. For example, the official gene sysbol for epidermal growth factor receptor is EGFR."
-			Value:			CodeableConcept from http://www.genenames.org if covered  // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
 
 			Element:		VariantIdentifier
 			Description: 	"The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
@@ -68,10 +68,10 @@ Description:	"A test for one specific mutation on a particular gene."
 
 EntryElement:	GeneticVariantFound
 Based on:		LaboratoryObservation
-Description:	"An alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. (source: NCI)"
+Description:	"Data structure recording an alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance."
 				SubjectOfRecord is type PatientSubjectOfRecord
 				Code is LNC#69548-6 "Genetic variant assessment"
-				Method from GeneticTestMethodVS
+				Method from GeneticTestMethodVS if covered
 0..0			DataValue
 0..0			DataAbsentReason
 0..0			ReferenceRange
