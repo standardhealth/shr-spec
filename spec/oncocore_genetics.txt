@@ -4,7 +4,7 @@ Uses:  			shr.core
 
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:     LNC = http://loinc.org
-CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:		DSS = http://terminology.hl7.org/CodeSystem/v2-0074
 CodeSystem:		HGVS = http://varnomen.hgvs.org
 
 
@@ -14,10 +14,13 @@ Description:	"Genetic analysis summary report. The report may include one or mor
 
 The identity of laboratory tests is typically represented by a LOINC code. However, many genetic tests and panels do not have LOINC codes, although some might have an identifier in NCBI Genetic Testing Registry (GTR), a central location for voluntary submission of genetic test information by providers. To identify the diagnostic report, the name of the report must be in the text sub-field of the code structure. If there is a coded identifier from GTR, LOINC, or other source, then it should be included into the the code sub-field of the code structure. If there is no suitable code, the code can be omitted.
 
-The performer of the test (organization or practitioner) should be included in the FHIR profile as the performer.actor."
+The performer of the test (organization or practitioner) should be included in the FHIR profile as the performer.actor.
+
+FHIR implementation note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This may be contrary to the Argonaut specification, which assigns the category LAB to any diagnostic report containing a laboratory result."
+
 				Code should be from https://www.ncbi.nlm.nih.gov/gtr
 				SubjectOfRecord is type PatientSubjectOfRecord
-1..1			Category is OBSCAT#GE
+1..1			Category is DSS#GE
 0..1			SpecimenType from GeneticSpecimenTypeVS if covered
 0..*			RegionStudied
 				Observation
@@ -160,11 +163,6 @@ Implementation note: The data value element is 'required if known' (0..1) becaus
 
 
 /* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
-
-EntryElement:	CancerGenomicsReport
-Based on:		GenomicsReport
-Description:	"Cancer genetic analysis summary report"
-				GeneticRegionAnalyzed is type CancerGeneticRegionAnalyzed
 
 EntryElement:	CancerGeneticRegionAnalyzed
 Based on:		GeneticRegionAnalysisResult
