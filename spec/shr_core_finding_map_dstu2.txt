@@ -1,0 +1,106 @@
+Grammar:	Map 5.1
+Namespace:	shr.core
+Target:		FHIR_DSTU_2
+
+
+Observation maps to Observation:
+	Identifier maps to identifier
+	SubjectOfRecord maps to subject
+	Performer maps to performer
+	Code maps to code
+	Method maps to method
+	// dstu 2 change (name change)
+	CommentOrDescription maps to comments  
+	Category maps to category
+	BodyLocation.LocationCode maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	Device maps to device
+	StatementDateTime maps to issued
+	ReferenceRange maps to referenceRange
+	ReferenceRange.Range.LowerBound maps to referenceRange.low
+	ReferenceRange.Range.UpperBound maps to referenceRange.high
+	// dstu 2 change
+	ReferenceRange.Type maps to referenceRange.meaning 
+	// dstu 2 change (no such attribute)
+//	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo 
+// dstu 2 change (no such attribute) 
+//	ReferenceRange.ApplicableAgeRange maps to referenceRange.age 
+	Components.ObservationComponent maps to component (slice on = code.coding.code; slice strategy = includes)
+	Components.ObservationComponent.Code maps to component.code
+	Components.ObservationComponent.DataValue maps to component.value[x]
+	Components.ObservationComponent.DataAbsentReason maps to component.dataAbsentReason
+	 // dstu 2 change (no such attribute)
+	//Components.ObservationComponent.Interpretation maps to component.interpretation 
+	Components.ObservationComponent.ReferenceRange maps to component.referenceRange
+	fix related.type to #has-member
+	PanelMembers maps to related
+	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	DataValue maps to value[x]
+	DataAbsentReason maps to dataAbsentReason
+	Interpretation maps to interpretation
+//	Issued maps to issued
+	Status maps to status
+	RelevantTime maps to effective[x]
+	// dstu 2 change (name change)
+	CareContext maps to encounter 
+//	DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
+
+NonLaboratoryObservation maps to Observation:
+	constrain specimen to 0..0
+
+LaboratoryObservation maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-observationresults: 
+	Specimen maps to specimen
+	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
+	Performer maps to performer (slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+Condition maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-condition:
+// dstu 2 change (different mapping target)
+	Identifier maps to identifier
+
+	StatementDateTime maps to dateRecorded
+	PersonInformationSource maps to asserter
+	SubjectOfRecord maps to patient
+	Category maps to category
+	Identifier maps to identifier
+	Code maps to code
+	BodyLocation.LocationCode maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	CareContext maps to encounter
+	ClinicalStatus maps to clinicalStatus
+	Status maps to verificationStatus
+	Onset maps to onset[x]
+	Abatement maps to abatement[x]
+	Severity maps to severity
+	StageInformation maps to stage
+	StageInformation.StageSummary maps to stage.summary
+	StageInformation.StageDetail maps to stage.assessment
+	Evidence.Manifestation maps to evidence.code
+	Evidence.DomainResource maps to evidence.detail		
+	
+
+DiagnosticReport maps to DiagnosticReport:
+	Identifier maps to identifier
+	Status maps to status
+	Code maps to code
+	Category maps to category
+	SubjectOfRecord maps to subject 
+	CareContext maps to encounter
+	RelevantTime maps to effective[x]
+	StatementDateTime maps to issued
+	Participation.ParticipationType maps to performer.extension
+	Participation.Participant maps to performer
+	RelatedRequest maps to request
+	Specimen maps to specimen
+	Observation maps to result (slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+// ref(ImagingStudy) or imaging manifest
+	Media maps to image.link
+    Conclusion maps to conclusion
+	DiagnosisCode maps to codedDiagnosis
+	OriginalReport maps to presentedForm
+
+SocialHistoryObservation maps to Observation:
+	SubjectOfInformationCode maps to modifierExtension

@@ -1,0 +1,144 @@
+Grammar:        ContentProfile 1.0
+/*---------------
+Levels of Data Element Support
+1) 1..1 = required 
+2) 0..1  MS = required if known
+3) 0..1 MS I = conditionally required  0..1 MS I  --- defer
+4) 0..1 MS I = conditionally required if known  0..1 MS I  --- defer
+See
+http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
+------------------*/
+
+// Required fields don't need to be marked must-support so (currently) they are not included in this list. 
+
+Namespace: shr.core
+    Patient:  
+        // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender
+        Person.DateOfBirth MS
+        Person.AdministrativeGender MS
+        Person.Race MS
+        Person.Ethnicity MS
+        Person.Address.PostalCode MS
+        Person.Deceased MS  // Person.Deceased.dateTime only
+    ComorbidCondition:
+        // Required: PatientSubjectOfRecord, Category, Status, ClinicalStatus, Code
+        Code MS
+        ClinicalStatus MS
+    MedicationStatement:
+        // Required: StatementDateTime, Medication, OccurrenceTimeOrPeriod, Status, PatientSubjectOfRecord
+        MedicationCodeOrReference  MS  // Code only?  i.e., [CodeableConcept]?
+        OccurrenceTimeOrPeriod  MS
+        TerminationReason  MS
+        TreatmentIntent  MS
+    ECOGPerformanceStatus:  // req if known
+        DataValue MS  // req
+//      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
+        RelevantTime MS  // req if known
+    KarnofskyPerformanceStatus:
+        PatientSubjectOfRecord MS
+        DataValue MS
+//      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
+        RelevantTime MS
+    BloodPressure:
+        // Required: PatientSubjectOfRecord, Category, Status and Code
+        Components.ObservationComponent MS
+// Uncomment out when we have the ability to put MS on components 
+//        Components.ObservationComponent[SystolicPressure].DataValue
+//        Components.ObservationComponent[DiastolicPressure].DataValue
+        RelevantTime MS
+    BodyHeight:
+        // Required: PatientSubjectOfRecord, Category, Status and Code
+        DataValue MS
+        RelevantTime MS
+    BodyWeight:
+        // Required: PatientSubjectOfRecord, Category, Status and Code
+        DataValue MS
+        RelevantTime MS
+
+Namespace: onco.core
+    PrimaryCancerCondition:  // req if known
+        Code MS    // req
+        ClinicalStatus MS  // req
+        BodyLocation.LocationCode MS  //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
+        HistologyMorphologyBehavior MS  // conditional
+        DateOfDiagnosis MS  // req if known (MS)
+    SecondaryCancerCondition:  // req if known
+        Code MS  // req
+        ClinicalStatus MS  // req
+        HistologyMorphologyBehavior MS
+        DateOfDiagnosis MS  // req if known (MS)
+        
+//  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
+//  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
+    TNMClinicalStageGroup: 
+        DataValue MS 
+        CancerStagingSystem MS 
+        RelevantTime MS 
+    TNMClinicalPrimaryTumorCategory:
+        DataValue MS 
+        RelevantTime MS 
+    TNMClinicalRegionalNodesCategory:
+        DataValue MS
+        RelevantTime MS
+    TNMClinicalDistantMetastasesCategory:
+        DataValue MS
+        RelevantTime MS
+    TNMPathologicStageGroup:
+        DataValue MS
+        CancerStagingSystem MS
+        RelevantTime MS
+    TNMPathologicPrimaryTumorCategory:  // req if known
+        DataValue MS
+        RelevantTime MS
+    TNMPathologicRegionalNodesCategory:
+        DataValue MS
+        RelevantTime MS
+    TNMPathologicDistantMetastasesCategory:
+        DataValue MS
+        RelevantTime MS
+    TumorMarkerTest:
+        Code MS
+        TumorMarkerTestDataValue MS
+        RelevantTime MS
+    CancerDiseaseStatus:
+        // Required: Code, Status, PatientSubjectOfRecord
+        DataValue MS
+        RelevantTime MS
+    CancerRelatedSurgicalProcedure:  // req if known
+        Code MS   // req
+        OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
+        TreatmentIntent MS  // req if known
+    CancerRelatedRadiationProcedure:
+        // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
+        Code MS
+        BodyLocation.LocationCode MS
+        OccurrenceTimeOrPeriod MS
+        TreatmentIntent MS
+    GenomicsReport:
+        Code MS  // Test name in Code.Text
+        Participation.Participant MS   // Laboratory name
+        Observation MS
+        SpecimenType MS
+        RelevantTime MS
+        
+    GeneticMutationTestResult:
+        Method MS
+        RelevantTime MS
+        GeneStudied MS
+        MutationTested MS
+        DataValue MS
+    GeneticVariantFound:
+        Method MS
+        RelevantTime MS
+        Components.ObservationComponent MS     
+
+Namespace: shr.lab
+    CBCWAutoDifferentialPanel:
+        // Required: Code, Status, Category, PatientSubjectOfRecord
+        RelevantTime MS
+        PanelMembers MS
+    ComprehensiveMetabolic2000SerumOrPlasmaPanel:
+        // Required: Code, Status, Category, PatientSubjectOfRecord
+        RelevantTime MS
+        PanelMembers MS
+

@@ -1,0 +1,50 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.core
+
+EntryElement:	ResearchStudy
+Based on:		Entity
+Description:	"A clinical trial or similar research study. Reference: list of FDA data elements describing a research study: prsinfo.clinicaltrials.gov/definitions.html "
+1..1			Title
+1..1			Identifier
+0..1			CommentOrDescription
+0..1			PartOf value is type ref(ResearchStudy)
+0..*			Enrollment
+0..1			EffectiveTimePeriod
+0..1			Sponsor
+0..1			Jurisdiction
+0..*			ContactDetail
+0..1			PrincipalInvestigator
+0..*			Location
+0..1			TerminationReason
+0..*			Annotation
+0..*			StudyArm
+1..1			Status from http://hl7.org/fhir/ValueSet/research-study-status
+
+	Element:		Enrollment
+	Concept:		MTH#C4041024
+	Description:	"Description of the group or groups enrolled or qualified to be enrolled in the study."
+	Value:			ref(Group)
+	
+	Element:		Sponsor
+	Description:	"The organization responsible for the execution of the study."
+	Value:			ref(Organization)
+	
+	Element:		PrincipalInvestigator
+	Description:	"Indicates the individual who has primary oversite of the execution of the study."
+	Value:			ref(Practitioner)
+	
+	Element:		StudyArm
+	Description:	"Arm refers to pre-specified group or subgroup of participant(s) in a clinical trial assigned to receive specific intervention(s) (or no intervention) according to a protocol."
+	1..1			Title
+	0..1			Type from StudyArmTypeVS
+	0..1			CommentOrDescription
+
+EntryElement:	ResearchSubject
+Based on:		Role
+Description:	"Record of a subject's enrollment and participation in a research study."
+0..1			Identifier // cardinality constraint
+1..1			ref(Patient)
+1..1			ref(ResearchStudy)
+1..1 			Status from http://hl7.org/fhir/ValueSet/research-subject-status
+1..1			ParticipationPeriod
+0..1			TerminationReason from ResearchSubjectTerminationReasonVS

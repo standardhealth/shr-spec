@@ -1,7 +1,7 @@
 Grammar:		DataElement 5.0
 Namespace:		brca
 Description:	"Breast Cancer data elements."
-Uses:			shr.core, oncocore
+Uses:			shr.core, onco.core
 
 CodeSystem:     LNC = http://loinc.org
 CodeSystem:     UCUM = http://unitsofmeasure.org
@@ -11,21 +11,18 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 
 Element:		BreastSite
-Based on:		BodySite
+Based on:		BodyLocation
 Description:	"A body site specific to the breast structure."
-				BodySiteCode from BreastSiteVS
-1..1 			Laterality
-0..0			AnatomicalDirection
-//	TODO: causes mapping error
-//				DistanceFromLandmark.Quantity.Units is UCUM#cm
+				LocationCode from BreastSiteVS
+				RelationToLandmark.LandmarkToBodyLocationDistance.Quantity.Units is UCUM#cm
 
 EntryElement:	BreastSpecimen
 Based on:		Specimen
 Description:	"Specimen resulting from biopsy or excision of breast and surrounding tissue."
-				Type from BreastSpecimenTypeVS
-				CollectionSite.BodySite is type BreastSite
+				SpecimenType from BreastSpecimenTypeVS
+				CollectionSite.BodyLocation is type BreastSite
 				CollectionMethod from BreastSpecimenCollectionMethodVS
-				PartOf value is type ref(BreastSpecimen)
+				PartOf value is type BreastSpecimen
 0..1			ColdIschemiaTime
 
 		Element:	 	ColdIschemiaTime
@@ -35,52 +32,50 @@ Description:	"Specimen resulting from biopsy or excision of breast and surroundi
 
 
 EntryElement:	BreastCancerCondition
-Based on:		CancerCondition
+Based on:		PrimaryCancerCondition
 Concept:		SCT#126926005 "Neoplasm of breast (disorder)"
 Description:	"Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
-				Code from BreastCancerDisorderVS 		
-				StageInformation.StageDetail value is type BreastTNMClinicalPrognosticStagePanel //or BreastTNMPathologicPrognosticStagePanel
-				Evidence.Manifestation should be from BreastCancerDetectionVS  // can't change to 'could be' because us-core uses preferred binding
-				BodySite is type BreastSite
-
-
+				Code from BreastCancerDisorderVS 	
+				HistologyMorphologyBehavior from BreastCarcinomaHistologicTypeVS	
+				StageInformation.StageDetail value is type CancerStageGroup
+				Evidence.Manifestation should be from BreastCancerDetectionVS  // can't change to 'could be' (example) because us-core uses 'should be' (preferred) binding
+				BodyLocation is type BreastSite
+/*
 EntryElement:	BreastCancerHistologicType
 Based on:		CancerHistologicType
 Description:	"Classification of breast cancer according to histopathologic subtypes, as determined by microscopic observation of breast tissue samples."
 				Code is LNC#44638-5 "Histologic type in Breast tumor"
 				DataValue from BreastCarcinomaHistologicTypeVS
+*/
 
-
-EntryElement:	BreastTNMClinicalPrognosticStagePanel
-Based on:		TNMClinicalPrognosticStagePanel
-// Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
-Description:	"A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
+EntryElement:	BreastTNMPrognosticClinicalStageGroup
+Based on:		TNMClinicalStageGroup
+Description:	"The stage group breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The group includes supporting information including T, N, and M categories, as well as prognostic factors (HER2, estrogen, progesterone receptor status, etc.), as related observations. The panel can include one but not both DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
 				Code is TBD#TBD // was MTH#C2216702 "Malignant Neoplasm of Breast Staging" //Not LNC#21908-9 since that is AJCC-specific and also not breast cancer specific. We do however, give the LOINC list of stage values as the preferred codes.
-//				PanelMembers.Observation.TNMClinicalPrimaryTumorClassification is type BreastTNMClinicalPrimaryTumorClassification
-//				PanelMembers.Observation.TNMClinicalRegionalNodesClassification is type BreastTNMClinicalRegionalNodesClassification
-//				PanelMembers.Observation.TNMClinicalDistantMetastasesClassification is type BreastTNMClinicalDistantMetastasesClassification
+// 				Currently it is not possible to substitute the type of a slice, so the following three statements are commented out.
+//				PanelMembers.Observation.TNMClinicalPrimaryTumorCategory is type BreastTNMClinicalPrimaryTumorCategory
+//				PanelMembers.Observation.TNMClinicalRegionalNodesCategory is type BreastTNMClinicalRegionalNodesCategory
+//				PanelMembers.Observation.TNMClinicalDistantMetastasesCategory is type BreastTNMClinicalDistantMetastasesCategory
 				PanelMembers.Observation
 					includes 0..1	HER2ReceptorStatus
 					includes 0..1	EstrogenReceptorStatus
 					includes 0..1	ProgesteroneReceptorStatus
 					includes 0..1	DCISNuclearGrade
-					includes 0..1	BreastCancerHistologicGrade		
-					
+					includes 0..1	BreastCancerHistologicGrade	
 
-EntryElement: 	BreastTNMClinicalPrimaryTumorClassification
-Based on:		TNMClinicalPrimaryTumorClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
-				PanelMembers.Observation
-					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
-
-
-EntryElement:	BreastTNMClinicalRegionalNodesClassification
-Based on:		TNMClinicalRegionalNodesClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification of the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
-				PanelMembers.Observation
-					includes 0..*	BreastClinicalLymphNodeInvolvement
+EntryElement:	BreastTNMPathologicStageGroup
+Based on:		TNMPathologicStageGroup
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
+Description:	"A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel includes biomarkers and histologic grade scales used specifically for breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
+//				PanelMembers.Observation.TNMPathologicPrimaryTumorCategory is type BreastTNMPathologicPrimaryTumorCategory
+//				PanelMembers.Observation.TNMPathologicRegionalNodesCategory is type BreastTNMPathologicRegionalNodesCategory
+//				PanelMembers.Observation.TNMPathologicDistantMetastasesCategory is type BreastTNMPathologicDistantMetastasesCategory
+			PanelMembers.Observation										
+			includes 0..1	HER2ReceptorStatus
+			includes 0..1	EstrogenReceptorStatus
+			includes 0..1	ProgesteroneReceptorStatus
+			includes 0..1	DCISNuclearGrade
+			includes 0..1	BreastCancerHistologicGrade
 
 
 EntryElement:	BreastClinicalLymphNodeInvolvement
@@ -88,18 +83,16 @@ Based on:		ComponentOnlyNonLaboratoryObservation
 Concept:		MTH#C0806692 "Lymph Node Involvement"
 Description:	"Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in breast cancer."
 0..1			RelatedCancerCondition
-				BodySite is type BreastLymphNodeBodySite
+				BodyLocation is type BreastLymphNodeBodyLocation
 				Method from LymphNodeClinicalMethodVS if covered
 				Components.ObservationComponent
 					includes 0..1 	LymphNodeMobility
 					includes 0..1	LymphNodeSize
 
-
-EntryElement:	BreastLymphNodeBodySite
-Based on:		BodySite
+EntryElement:	BreastLymphNodeBodyLocation
+Based on:		BodyLocation
 Description:	"A body site specific to the breast lymph node structure."
-				BodySiteCode should be from BreastLymphNodeGroupVS if covered
-
+				LocationCode should be from BreastLymphNodeGroupVS if covered
 
 Element:   		LymphNodeMobility
 Based on:       CodedObservationComponent
@@ -110,51 +103,13 @@ Description:    "The degree of mobility of a lymph node or lymph node group upon
 
 Element:		LymphNodeSize
 Based on:		QuantitativeObservationComponent
-Concept:		SCT#364109001 "Size of lymph node (observable entity)"
 Description:	"Size of the lymph node or lymph node group which is being clinically assessed."
 				Code is SCT#364109001 "Size of lymph node (observable entity)"
 				DataValue.Quantity.Units is UCUM#mm
 
-// TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
-EntryElement:	BreastTNMClinicalDistantMetastasesClassification
-Based on:		TNMClinicalDistantMetastasesClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
-Description:	"Classification of the presence or absense of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
-
-
-EntryElement:	BreastTNMPathologicPrognosticStagePanel
-Based on:		TNMPathologicPrognosticStagePanel
-// Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
-Description:	"A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel includes biomarkers and histologic grade scales used specifically for breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
-//				PanelMembers.Observation.TNMPathologicPrimaryTumorClassification is type BreastTNMPathologicPrimaryTumorClassification
-//				PanelMembers.Observation.TNMPathologicRegionalNodesClassification is type BreastTNMPathologicRegionalNodesClassification
-//				PanelMembers.Observation.TNMPathologicDistantMetastasesClassification is type BreastTNMPathologicDistantMetastasesClassification
-				PanelMembers.Observation
-					includes 0..1	HER2ReceptorStatus
-					includes 0..1	EstrogenReceptorStatus
-					includes 0..1	ProgesteroneReceptorStatus
-					includes 0..1	DCISNuclearGrade
-					includes 0..1	BreastCancerHistologicGrade
-
-
-EntryElement:	BreastTNMPathologicPrimaryTumorClassification
-Based on:		TNMPathologicPrimaryTumorClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
-				PanelMembers.Observation
-					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
-
-EntryElement:	BreastTNMPathologicRegionalNodesClassification
-Based on:		TNMPathologicRegionalNodesClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
-				PanelMembers.Observation
-					includes 0..*	BreastPathologicalLymphNodeInvolvement
-
 
 EntryElement:	BreastPathologicalLymphNodeInvolvement
 Based on:		LaboratoryObservation
-Concept:		SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 Description:	"Pathological assessment of lymph nodes for presence of cancer cells in staging the N category in cancers."
 				Code is SCT#399656008 "Status of tumor metastasis to regional lymph nodes (observable entity)"
 0..0			DataValue
@@ -228,18 +183,11 @@ Description:	"Pathological assessment of lymph nodes for presence of cancer cell
 						DataValue should be from http://loinc.org/vs/LL748-5  // mlt: LL748-5 missing one term from original VS (indeterminate)
 
 
-// TODO: add in relationships to Met location and Method since both evaluate M category values.
-EntryElement:	BreastTNMPathologicDistantMetastasesClassification
-Based on:		TNMPathologicDistantMetastasesClassification
-// Concept inherited from parent class, was not breast-specific in BrCa ballot.
-Description:	"Classification of the presence or absense of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
-
-
 EntryElement:	HER2ReceptorStatus
-Based on:		TumorMarkerObservation
+Based on:		TumorMarkerTest
 Description:	"HER2 receptor status. HER2 is a member of the human epidermal growth factor receptor family of proteins and is encoded by the ERBB2 oncogene. HER2 is overexpressed in 20-30% of breast tumors, and is associated with an aggressive clinical course and poor prognosis. HER2 status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options."
 				DataValue value is type CodeableConcept
-			    DataValue from PositiveNegativeEquivocalIndeterminateVS
+			    DataValue from PositiveNegativeVS
 				Code from HER2byIHCScoreVS
 				Specimen is type BreastSpecimen
 0..0			Method // pre-coordinated in the Code
@@ -250,12 +198,12 @@ Description:	"HER2 receptor status. HER2 is a member of the human epidermal grow
 
 
 EntryElement:	HER2byIHC
-Based on:		TumorMarkerObservation
+Based on:		TumorMarkerTest
 Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (IHC). "
-				Code from HER2byIHCInterpretationTestsVS
+				Code from HER2byIHCTestsVS
 				DataValue value is type CodeableConcept
 				DataValue from HER2byIHCScoreVS
-				Interpretation from PositiveNegativeEquivocalIndeterminateVS
+				Interpretation from PositiveNegativeVS
 0..0			Method  // pre-coordinated in the Code
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
@@ -271,13 +219,13 @@ Description:	"HER2 presence in Breast cancer specimen by Immunohistochemistry (I
 //		0..0			Interpretation //This is zeroed out in the Sep 2018 BrCa IG spec.
 
 EntryElement:	HER2byFISH
-Based on:		TumorMarkerObservation
+Based on:		TumorMarkerTest
 Description:	"HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
 0..0			DataValue
 0..0			DataAbsentReason
-				Code from HER2byFISHInterpretationTestsVS
+				Code from HER2byFISHTestsVS
 				Method from HER2FISHMethodVS // single or double probe
-				Interpretation from PositiveNegativeEquivocalIndeterminateVS
+				Interpretation from PositiveNegativeVS
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
 					includes 0..1	AverageHER2SignalsPerCell
@@ -305,12 +253,12 @@ Description:	"HER2 receptor status as determined by single-probe or dual-probe F
 
 
 EntryElement:	EstrogenReceptorStatus
-Based on:		TumorMarkerObservation
+Based on:		TumorMarkerTest
 Concept:		LNC#16112-5 "Estrogen receptor [Interpretation] in Tissue" 
 Description:	"Estrogen receptor alpha is the predominant estrogen receptor expressed in breast tissue and is overexpressed in around 50% of breast carcinomas. ER status (positive=present or overexpressed; negative=absent) is a factor in determining prognosis and treatment options.
 The current approach is that positive/negative designation is a value, even though that value is (in fact) an interpretation of evidence (NuclearPositivity and AverageStainingIntensity)."
-				Code from EstrogenReceptorInterpretationTestsVS
-				DataValue from PositiveNegativeIndeterminateVS
+				Code from EstrogenReceptorTestsVS
+				DataValue from PositiveNegativeVS
 				Specimen is type BreastSpecimen
 				Components.ObservationComponent
 					includes 0..1	EstrogenReceptorNuclearPositivity
@@ -330,16 +278,16 @@ The current approach is that positive/negative designation is a value, even thou
 	Concept:		LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain" //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
 	Based on:		CodedObservationComponent
 	Description:	"The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
-					Code is LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain" //
+					Code is LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"
 					DataValue from StainingIntensityVS
 
 
 EntryElement:	ProgesteroneReceptorStatus
-Based on:		TumorMarkerObservation
+Based on:		TumorMarkerTest
 Concept:		LNC#16113-3 "Progesterone receptor [Interpretation] in Tissue"
 Description:	"Progesterone receptor status is a factor in determining prognosis and treatment options. The value is the percentage of cells that test (stain) positive for the presence of a receptor. The interpretation of positive or negative (found in the interpretation property) is based on the staining percentage, and may take into account the staining intensity."
-				Code from ProgesteroneReceptorInterpretationTestsVS	
-				DataValue from PositiveNegativeIndeterminateVS
+				Code from ProgesteroneReceptorTestsVS	
+				DataValue from PositiveNegativeVS
 				Specimen is type BreastSpecimen			
 				Components.ObservationComponent
 					includes 0..1	ProgesteroneReceptorNuclearPositivity
@@ -409,7 +357,7 @@ No LOINC code currently exists for this test. We are seeking feedback on the val
 				DataValue value is type IntegerQuantity
 				Code is MTH#C1709318 "Oncotype DX Breast Cancer Assay"
 				Interpretation from RecurrenceRiskScoreInterpretationVS
-				Specimen is type ref(BreastSpecimen)	
+				Specimen is type BreastSpecimen	
 
 
 EntryElement:	OncotypeDxDCISRecurrenceScore
@@ -445,7 +393,51 @@ The is currently no LOINC code for Mammaprint test."
 				Specimen is type BreastSpecimen
 0..0			Device
 
-				
+
+/************* Temporarily cut out by MK 3/20/2019 -Just to de-clutter unused elements ************
+
+EntryElement: 	BreastTNMClinicalPrimaryTumorCategory
+Based on:		TNMClinicalPrimaryTumorCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
+				PanelMembers.Observation
+					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
+
+EntryElement:	BreastTNMClinicalRegionalNodesCategory
+Based on:		TNMClinicalRegionalNodesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
+				PanelMembers.Observation
+					includes 0..*	BreastClinicalLymphNodeInvolvement
+
+// TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
+EntryElement:	BreastTNMClinicalDistantMetastasesCategory
+Based on:		TNMClinicalDistantMetastasesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
+
+EntryElement:	BreastTNMPathologicPrimaryTumorCategory
+Based on:		TNMPathologicPrimaryTumorCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
+				PanelMembers.Observation
+					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
+
+EntryElement:	BreastTNMPathologicRegionalNodesCategory
+Based on:		TNMPathologicRegionalNodesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
+				PanelMembers.Observation
+					includes 0..*	BreastPathologicalLymphNodeInvolvement
+
+// TODO: add in relationships to Met location and Method since both evaluate M category values.
+EntryElement:	BreastTNMPathologicDistantMetastasesCategory
+Based on:		TNMPathologicDistantMetastasesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
+
+*/
+
 /************* LEGACY BEGIN ************		 
 
 EntryElement:	BreastTumor
@@ -460,7 +452,7 @@ Description:	"An abnormal mass of tissue that results when cells divide more tha
 				FindingSiteConditionTopic.FindingSiteIdentifier is type TumorIdentifier
 0..0			ConditionPresenceContext.Severity
 				FindingSiteConditionTopic.FindingMethod should be from BreastCancerDetectionVS
-0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorClassification
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorCategory
 
 ********** LEGACY END ************/
 
@@ -496,8 +488,7 @@ includes 0..1	OtherReceptorScoringSystem
 
 		Element:		NuclearPositivity
 		Based on:		ObservationComponent
-		Concept:		TBD
-		Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
+				Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
 	
 		Element:		PrimaryAntibody
@@ -559,18 +550,16 @@ Value:			CodeableConcept from PositiveNegativeVS
 //				GeneName from GeneIdentifierVS
 0..0			ReferenceRange
 //0..0			DeltaFlag
-0..0			BodySite
+0..0			BodyLocation
 				Components.ObservationComponent
 includes 0..1	Refseq
 
 			Element:		Refseq
 			Based on:		ObservationComponent
-			Concept:		TBD
-			Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
+						Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			CodeableConcept from RefseqVS
 
 EntryElement:	BreastCancerGeneticAnalysisObservation
-Concept:		TBD
 Based on:		Observation
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 				Observation.Code is TBD#TBD
@@ -580,16 +569,14 @@ includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
 
 	Element:		BRCA1Variant
-	Concept:		TBD
-	Based on:		GeneticVariant
+		Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
 //					GeneName is HGNC#BRCA1Gene
 					
 
 	Element:		BRCA2Variant
-	Concept:		TBD
-	Based on:		GeneticVariant
+		Based on:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			CodeableConcept from PositiveNegativeVS
 //					GeneName is HGNC#BRCA2Gene

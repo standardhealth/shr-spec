@@ -1,0 +1,92 @@
+<h1><a name="#Implementation"></a>Appendix A: Technical  Implementation Notes</h1>
+
+<p>This section contains content specific for FHIR implementers.  This allows for introductory and overview content to be shared among the broader community which includes clinicians, project leaders, and executive decision makers.</p>
+
+<p>&nbsp;</p>
+
+<h2>General Notes</h2>
+
+<h3><i>Data Dictionary and FHIR IG alignment</i></h3>
+<ul>
+    <li>The data dictionary elements are meant to address a clinical and project leadership audience who seek a high level list of mCODE elements and might not reflect the detailed list of of must-support elements which appear in the FHIR IG.</li>
+    <p></p>
+    <li>mCODE profiles align, where possible, with the <a href="http://www.fhir.org/guides/argonaut/r2/">Argonaut Data Query IG</a> profiles, which are based on <a href="http://hl7.org/fhir/DSTU2/index.html">FHIR DSTU2</a>. However extensions to the Argonaut profiles may exist in cases where there was better alignment between a change to a subsequent FHIR release with mCODE elements.
+    </li>
+</ul>
+<p>It is anticipated that mCODE will move to <a href="http://hl7.org/fhir/R4/">FHIR Release 4</a> when commercial vendors and US Core and/or Argonaut officially support the parts of R4 required by mCODE.</p>
+
+<h3><i>FHIR Examples</i></h3>
+<ul>
+    <li>Elements in the structured part of FHIR examples may be omitted from the narrative part. The narrative part may also slightly vary in the field description, even though it is semantically equivalent to its structured representation.  This is allowable in FHIR and done on purpose to demonstrate that a FHIR implementer might need to make adjustments to present mCODE elements in a clinically understandable way. </li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Treatment</h2>
+
+<p>The following mCODE FHIR profiles are relevant to cancer treatment:</p>
+<ul>
+    <li><em>CancerRelatedRadiationProcedure</em></li>
+    <li><em>CancerRelatedSurgicalProcedure</em></li> 
+    <li><em>MedicationStatement</em></li> 
+</ul>
+<p>&nbsp;</p>
+
+<h3><i>Representing Clinical Trial Drugs</i></h3>
+<p>Given RxNorm's limitation of including only FDA approved drugs, mCODE represents the MedicationStatement ValueCodeableConcept with a binding of <b>RxNorm <i>(extensible)</i></b>. This allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs.</p>
+
+<h2>Laboratory and Vital Signs</h2>
+
+<h3><i>Tumor Markers</i></h3>
+<p>mCODE identifies a dedicated FHIR profile called <strong><i>TumorMarkerTest</i></strong> for the identification of serum and tissue-based tumor markers.</p>
+<ul>
+    <li>Tumor marker tests identified by their LOINC order code. The assigned TumorMarkerTestVS value set is also extensible to account for new LOINC version and code updates.</li>
+    <p></p>
+    <li>The TumorMarkerTestVS lists the most common tests for tumor markers but does not further align by cancer type.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Genomics Reporting</h2>
+
+<ul>
+    <li>The <strong><i>geneticsGene</i></strong> attribute is not bound to a cancer-specific value set at this time. Nevertheless, we provide a recommended value set of cancer-related genes in the <i>CancerGeneVS</i> value set.</li>
+    <p></p>
+    <li>The <i>CancerGeneVS</i> value set contains the HGNC code followed by the HUGO approved symbol embedded within the full description of the term in the value set.</li>
+    <p></p>
+</ul>
+
+<p>&nbsp;</p>
+<h2><a name="#TerminologyOverview"></a>FHIR Terminology Overview</h2>
+
+<p>This implementation guide supplies terminology bindings drawn primarily from LOINC for "observables", and SNOMED-CT for values, results and findings. When appropriate codes are not available in the preferred vocabulary, alternative vocabularies are used, in the following order of preference: SNOMED-CT (if the element is an observable), NCI Thesaurus and Metathesaurus, and local codes.</P>
+
+<p>Value sets from the FHIR specification are reused to the extent possible. In addition to the FHIR shr.base specification (DSTU2, DSTU3 and R4), Argonaut Data Query Implementation Guide, and the US Core Implementation Guide were also considered.</p>
+
+<p>There may be differences across these specifications in the value sets used, as well as binding strength. This guide addresses these discrepancies by using the lowest common denominator amongst the specifications. This approach is not without challenges, as there cases where different value sets are required by different specifications, which leaves no choice but to opt for one value set over another.</p>
+
+<h3>On SNOMED extensions</h3>
+<p>mCODE aligns with the Systematic Nomenclature of Medicine, Clinical Terms <b>(SNOMED CT) U.S. Edition</b>. SNOMED CT extensions outside of the U.S. Edition (e.g.: HSPC extensions, local extensions) are not included at this time.<p>
+
+<p>The specification of SNOMED US Edition is handled within the FHIR <b>CodeableConcept.version</b> attribute:</i></p>
+<p><code>{version: "http://snomed.info/sct/731000124108"}</code></p>
+<p>where <i>731000124108</i> is the SNOMED namespace assigned to the National Library of Medicine (NLM), who manages the SNOMED US Edition.</p>
+<p>&nbsp;</p>
+
+<h3><i>Local Value Sets</i></h3>
+
+<p>This guide includes multiple value sets created specifically to support the terminology needs of the models. These value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value needs needed to be extended.</p>
+
+<p><strong>NOTE:</strong>There is a known issue with HL7's FHIR implementation guide publisher that causes an error in the expansion of local value sets in the implementation guide. While this prevents the value sets from being shown in the value set pages, the content of the value sets is correctly expanded in json and xml, which readers can access from the indivual value set pages.</p>
+
+<p>&nbsp;</p>
+
+<h3><i>Cancer Staging and Proprietary Terminologies</i></h3>
+
+<p>Several proprietary terminologies, including ICD-O-3 and the American Joint Commission on Cancer (AJCC) Staging System are widely used in the cancer domain. Others, such as Current Procedural Terminology (CPT&#174;), while not cancer-specific, are relevant for the representation of cancer-related procedures, such as surgeries or radiation procedures. This guide does not include content from these terminologies due to licensing restrictions. The guide does, however, indicate where it is appropriate to use codes from such terminologies.</p>
+
+<p>&nbsp;</p>
+<footer>
+    <hr>
+    <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
+</footer>

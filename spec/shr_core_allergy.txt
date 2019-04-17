@@ -1,0 +1,62 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.core
+
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:		CAT = http://hl7.org/fhir/allergy-intolerance-category
+
+
+EntryElement:	AllergyIntolerance
+Based on:		SituationStatement
+Concept:		SCT#473010000 "Hypersensitivity condition (disorder)"  
+// or SCT#420134006 "Propensity to adverse reactions (disorder)"?
+Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in contrast to AdverseEvent)."
+0..1			PersonInformationSource
+0..1			AllergyRecorder // FHIR only allows Patient or Practitioner as recorder
+1..1			SubjectOfRecord is type PatientSubjectOfRecord
+1..1			Status // from http://hl7.org/fhir/ValueSet/allergy-verification-status
+				// Conflict between V2 and V3 -- Cannot override value set constraint from http://hl7.org/fhir/ValueSet/allergy-intolerance-status to http://hl7.org/fhir/ValueSet/allergy-verification-status
+0..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/allergy-clinical-status
+1..1			Code // from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered  		// DSTU 2 change different required value sets
+0..1			SubstanceCategory   // DSTU 2 change (restrict upper cardinality to 1)
+0..1			Onset
+0..1			Type from http://hl7.org/fhir/ValueSet/allergy-intolerance-type
+0..1			Criticality
+0..1			MostRecentOccurrenceTime
+0..*			AllergyIntoleranceReaction
+
+		Element:		AllergyRecorder
+		Description:	"A choice of Patient or Practitioner as recorder."
+		Value:			ref(Patient) or ref(Practitioner)
+
+		Element:		SubstanceCategory
+				Description:	"Categorization of the risk substance as a food, drug, or environmental agent. For difficult-to-classify substances, one can leave this field empty or choose the most typical category."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-category  // change to code?
+
+		Element:		MostRecentOccurrenceTime
+		Description:	"The time of the last or latest of a series of events."
+		Value:			dateTime
+
+		Element:		AllergyIntoleranceReaction
+		Description:	"Observed reaction event associated with the allergy or intolerance, expressed as a condition."
+		0..1			SubstanceCode
+		1..*			Manifestation could be from http://hl7.org/fhir/ValueSet/clinical-findings
+		0..1			BeginDateTime   // from core
+		0..1			Severity from http://hl7.org/fhir/ValueSet/reaction-event-severity
+		0..1			RouteIntoBody
+		0..1			CommentOrDescription
+
+				Element:	SubstanceCode
+								Description: "The substance triggering a particular allergy or intolerance reaction event. The substance may be the same as the substance cited in the AllergyIntolerance, but should be a specific substance rather than a class of substances, if known. For example, if the allergy intolerance DataValue substance is 'shellfish' the substance code for the reaction might be 'oyster'."
+				Value:	    CodeableConcept from http://hl7.org/fhir/us/core/ValueSet-us-core-substance.html if covered
+
+
+
+
+/* Probably the most consistent way to define the absence (no known) allergy is to use an absence assertion, but this is not the way US Core has decided to go. Comments here are for reference only.
+
+//				DataValue from NoKnownAllergyVS
+//				DataValue is SCT#716186003 "No known allergy (situation)"
+//				DataValue is SCT#428607008 "No known environmental allergy (situation)"
+//				DataValue is SCT#429625007  "No known food allergy (situation)"
+//				DataValue is SCT#409137002 "No known drug allergy (situation)"
+*/
