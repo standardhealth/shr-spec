@@ -59,7 +59,7 @@ Namespace: onco.core
     PrimaryCancerCondition:  // req if known
         Code MS    // req
         ClinicalStatus MS  // req
-        BodyLocation.LocationCode MS  // conditional
+        BodyLocation.LocationCode MS  //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
         HistologyMorphologyBehavior MS  // conditional
         DateOfDiagnosis MS  // req if known (MS)
     SecondaryCancerCondition:  // req if known
@@ -67,8 +67,7 @@ Namespace: onco.core
         ClinicalStatus MS  // req
         HistologyMorphologyBehavior MS
         DateOfDiagnosis MS  // req if known (MS)
-        //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
-
+        
 //  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
 //  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
     TNMClinicalStageGroup: 
@@ -109,14 +108,12 @@ Namespace: onco.core
         Code MS   // req
         OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
         TreatmentIntent MS  // req if known
-        // BodyLocation unnecessary if code is pre-coordinated
     CancerRelatedRadiationProcedure:
         // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
         Code MS
-        BodyLocation MS
+        BodyLocation.LocationCode MS
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
-        // BodyLocation unnecessary if code is pre-coordinated
     GenomicsReport:
         Code MS  // Test name in Code.Text
         Participation.Participant MS   // Laboratory name
