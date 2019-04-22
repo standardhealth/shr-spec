@@ -1,10 +1,8 @@
 Grammar:		DataElement 5.0
 Namespace:		shr.core
 
-CodeSystem:		MTH = http://ncimeta.nci.nih.gov 
 
-
-Element:		AdverseEvent
+EntryElement:	AdverseEvent
 Based on:		ClinicalStatement
 Description:	"A record of an untoward or unexpected event in a patient under treatment, and which does not necessarily have to have a causal relationship with that treatment. Adverse events may capture either a workflow breach that may or may not result in harm, but must be documented for quality improvement purposes, or an adverse finding whether or not it can be traceable to an actual workflow breach."
 0..1			Identifier
@@ -31,17 +29,14 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
 
 	Element:		Seriousness
-	Concept:		MTH#C2985911
 	Description:	"A coded value specifying the level of injury suffered by the subject for whom the event is reported, using the CTCAE coding system."
 	Value:			CodeableConcept
 
 	Element:		AdverseEventCondition
-	Concept:		MTH#C1280464
 	Description:	"The condition, sign or symptom triggering the adverse event report."
 	1..1			ref(Condition)
 
 	Element:		CausalAttribution
-	Concept:		MTH#C1510821 "Adverse Event Attribution to Product or Procedure"
 	Description:	"A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
 	1..1			PossibleCause
 	1..1			CauseCategory 
@@ -49,19 +44,19 @@ Description:	"A record of an untoward or unexpected event in a patient under tre
 	0..1			RouteIntoBody  // aka exposure route
 
 			Element:		PossibleCause
-						Description:	"The possible cause of the adverse event."
+			Description:	"The possible cause of the adverse event."
 			Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/substance-code or ref(Substance) or ref(Medication) or ref(MedicationAdministration) or ref(MedicationStatement) or ref(Device) // or ref(ProcedurePerformed) or ref(Immunization) (in FHIR R4)
 
 			Element:		CauseCategory
-						Description:	"Whether the adverse event is attributed to a treatment, course of the disease, unrelated to either, or unknown. "
+			Description:	"Whether the adverse event is attributed to a treatment, course of the disease, unrelated to either, or unknown. "
 			Value:			CodeableConcept from AttributionCategoryVS
 	
 			Element:		Certainty
-						Description:	"The degree of confidence in a conclusion or assertion."
+			Description:	"The degree of confidence in a conclusion or assertion."
 			Value:			CodeableConcept
 
 	Element:		ActionTaken
-		Description:	"The action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
+	Description:	"The action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
 	1..1			CommentOrDescription
 	0..1			ref(ActionStatement)  // such as MedicationChangeStatement
 
@@ -78,6 +73,6 @@ Description:	"A noxious and unintended response to a medicinal product. To be co
 
 			Element:		PossibleDrugCause
 			Based on:		PossibleCause
-						Description:	"Drug suspected as possible cause of the adverse event."
+			Description:	"Drug suspected as possible cause of the adverse event."
 			Value:			ref(Medication) or ref(MedicationAdministration) or ref(MedicationStatement)
 
