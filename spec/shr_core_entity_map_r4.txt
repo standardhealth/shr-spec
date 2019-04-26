@@ -1,0 +1,203 @@
+Grammar:	Map 5.1
+Namespace:	shr.core
+Target:		FHIR_R4
+
+Patient maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient:
+	Identifier maps to identifier
+	constrain active to 0..0
+	Status maps to extension
+	Person.HumanName maps to name
+	Person.AdministrativeGender maps to gender  // changed value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
+	Person.PhotographicImage maps to photo
+	Person.Address maps to address
+	Person.ContactPoint maps to telecom
+	Person.Communication.Language maps to communication.language  // Change binding strength from extensible to preferred
+	Person.Communication.Preferred maps to communication.preferred
+	Person.Communication.SpokenLanguageProficiency maps to communication.extension
+	Person.Communication.WrittenLanguageProficiency maps to communication.extension
+	Person.Communication.LanguageQualifier maps to communication.extension
+	Person.DateOfBirth maps to birthDate
+	Person.MaritalStatus maps to maritalStatus
+//	PlaceOfBirth maps to http://hl7.org/fhir/StructureDefinition/birthPlace
+	Person.MultipleBirth maps to multipleBirth[x]
+	Person.BirthSex maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
+	Person.Race maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-race
+	Person.Ethnicity maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity
+//	MothersMaidenName maps to http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName
+//	MedicalInterpreterNeeded maps to http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired
+	Person.Deceased maps to deceased[x]
+// contact.relationship -- Change value set from http://terminology.hl7.org/ValueSet/v2-0131 to http://hl7.org/fhir/ValueSet/patient-contactrelationship
+// contact.gender -- Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
+// generalPractitioner -- Reference: Added Target Type PractitionerRole
+// link.type -- Change value set from http://hl7.org/fhir/ValueSet/link-type to http://hl7.org/fhir/ValueSet/link-type|4.0.0
+// animal -- deleted
+
+
+Practitioner maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner:
+	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
+	constrain active to 0..0
+	Status maps to extension
+	Person.HumanName maps to name
+	Person.AdministrativeGender maps to gender  // Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
+	Person.PhotographicImage maps to photo
+	Person.Address maps to address
+	Person.ContactPoint maps to telecom
+	Person.Communication.Language maps to communication  // Change binding strength from extensible to preferred
+	Qualification maps to qualification
+	Qualification.Identifier maps to qualification.identifier
+	Qualification.Type maps to qualification.code
+	Qualification.EffectiveTimePeriod maps to qualification.period
+	Qualification.Issuer maps to qualification.issuer
+	
+RelatedPerson maps to RelatedPerson:
+	Identifier maps to identifier
+	constrain active to 0..0
+	Status maps to extension
+	Person.HumanName maps to name
+	Person.DateOfBirth maps to birthDate
+	Person.AdministrativeGender maps to gender  // Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
+	Person.Address maps to address
+	Person.PhotographicImage maps to photo
+	Person.ContactPoint maps to telecom
+	RelationshipToPatient maps to relationship // Max Cardinality changed from 1 to *
+	EffectiveTimePeriod maps to period
+// Added communication, communication.language, communication.preferred
+	
+Organization maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization:
+	Identifier maps to identifier
+//	constrain active to 0..0
+	Status maps to extension
+	OrganizationName maps to name
+	Type maps to type
+	Address maps to address
+	ContactPoint maps to telecom
+	PartOf maps to partOf
+// contact.purpose - Change code system for extensibly bound codes from "http://hl7.org/fhir/contactentity-type" to "http://terminology.hl7.org/CodeSystem/contactentity-type"
+
+Group maps to Group:
+	Identifier maps to identifier
+	constrain active to 0..0
+	Status maps to extension
+	Type maps to type  // Change value set from http://hl7.org/fhir/ValueSet/group-type to http://hl7.org/fhir/ValueSet/group-type|4.0.0
+	Actual maps to actual
+	constrain code to 0..0
+	Title maps to name
+	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]  // Add Type Reference
+	GroupCharacteristic.Code maps to characteristic.code
+	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
+	GroupCharacteristic.TimePeriod maps to characteristic.period
+	MemberParticipation.Member maps to member.entity // Type Reference: Added Target Types PractitionerRole, Group
+	MemberParticipation.ParticipationPeriod maps to member.period
+	MemberParticipation.InactiveFlag maps to member.inactive
+	Count maps to quantity
+// Added managingEntity
+	
+Location maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-location:
+	Identifier maps to identifier
+	Status maps to status // change value set from http://hl7.org/fhir/ValueSet/location-status to http://hl7.org/fhir/ValueSet/location-status|4.0.0
+	OperationalStatus maps to operationalStatus
+	LocationName maps to name
+	Alias maps to alias
+	CommentOrDescription maps to description
+	Mode maps to mode // Change value set from http://hl7.org/fhir/ValueSet/location-mode to http://hl7.org/fhir/ValueSet/location-mode|4.0.0
+	Type maps to type // Max Cardinality changed from 1 to *
+	ContactPoint maps to telecom
+	Address maps to address
+	PhysicalType maps to physicalType
+	Geoposition.Latitude maps to position.latitude
+	Geoposition.Longitude maps to position.longitude
+	Geoposition.Altitude maps to position.altitude
+	ManagingOrganization maps to managingOrganization
+	MobileFacility maps to extension
+	PartOf maps to partOf
+// Added availabilityExceptions, hoursOfOperation (daysOfWeek, allDay, openingTime, closingTime)
+
+Substance maps to Substance:
+	Identifier maps to identifier
+	Type maps to code
+	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/substance-status to http://hl7.org/fhir/ValueSet/substance-status|4.0.0
+	Category maps to category // Change code system for extensibly bound codes from "http://hl7.org/fhir/substance-category" to "http://terminology.hl7.org/CodeSystem/substance-category"
+	CommentOrDescription maps to description
+	Ingredient maps to ingredient
+	Ingredient.IngredientAmount maps to ingredient.quantity
+	Ingredient.SubstanceOrCode maps to ingredient.substance[x]
+
+Medication maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication:
+	Identifier maps to extension  // added identifier !
+	Type maps to code
+	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/medication-status to http://hl7.org/fhir/ValueSet/medication-status|4.0.0
+	DoseForm maps to form
+	Ingredient.SubstanceOrCode maps to ingredient.item[x]
+	Ingredient.IngredientAmount maps to ingredient.amount // deleted
+	Ingredient.IsActiveIngredient maps to ingredient.isActive
+	Brand.IsBrand maps to isBrand  // deleted
+	OverTheCounter maps to isOverTheCounter // deleted
+	Manufacturer maps to manufacturer
+	constrain package.batch to 0..1  // deleted package, added batch
+	LotNumber maps to package.batch.lotNumber // deleted package, added lotNumber
+	ExpirationDate maps to package.batch.expirationDate // deleted package, added expirationDate
+	Package maps to package.container // deleted package
+// Added amount, ingredient.strength, batch, lotNumber, expirationDate
+	
+Specimen maps to Specimen:
+	Identifier maps to identifier
+	SpecimenType maps to type
+	AccessionIdentifier maps to accessionIdentifier
+	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/specimen-status to http://hl7.org/fhir/ValueSet/specimen-status|4.0.0
+	CollectionSource maps to subject // Min Cardinality changed from 1 to 0; Added Target Type Location
+	PartOf maps to parent
+	ReceivedTime maps to receivedTime
+	AmountOrSize maps to collection.quantity
+	CollectionSite.BodyLocation.LocationCode maps to collection.bodySite
+	CollectionSite.BodyLocation.Laterality maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.Orientation maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.RelationToLandmark maps to collection.bodySite.extension
+	CollectionTime maps to collection.collected[x]
+//	SpecimenCollection.Participation.Participant maps to collection.collector  // Added Target Type PractitionerRole
+	CollectionMethod maps to collection.method
+//	SpecimenCollection.RelatedRequest.Value maps to request  // Added Target Type ServiceRequest, removed ProcedureRequest
+	SpecimenContainer.Identifier maps to container.identifier
+	SpecimenContainer.CommentOrDescription maps to container.description
+	SpecimenContainer.Type maps to container.type
+	SpecimenContainer.Capacity maps to container.capacity
+	SpecimenContainer.SpecimenQuantity maps to container.specimenQuantity
+	SpecimenContainer.Additive maps to container.additive[x]
+// Added collection.duration, collection.fastingStatus[x], condition
+
+Device maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-device:
+	Identifier maps to identifier
+	Type maps to type
+	Status maps to status // change value set from http://hl7.org/fhir/ValueSet/device-status to http://hl7.org/fhir/ValueSet/device-status|4.0.0
+	constrain udi to 1..1  // deleted
+	DeviceUdi maps to udi.carrierHRF
+	VendorModelNumber maps to model  // change to modelNumber
+	ManufacturerName maps to manufacturer
+	ManufactureDate maps to manufactureDate
+	ExpirationDate maps to expirationDate
+	VersionString maps to version // Max Cardinality changed from 1 to *, change from string to BackboneElement
+	Url maps to url
+// Added: definition, udiCarrier.*, statusReason, distinctIdentifier, serialNumber, deviceName.*, partNumber, specialization.*, version.*, property.*, parent
+
+Media maps to Media:
+	Identifier maps to identifier
+	RelatedRequest maps to basedOn // Added Target Types ServiceRequest, CarePlan, removed ProcedureRequest
+	Type maps to type  // Min Cardinality changed from 1 to 0, Type changed from code to CodeableConcept, Change binding strength from required to extensible, Change value set from http://hl7.org/fhir/ValueSet/digital-media-type to http://hl7.org/fhir/ValueSet/media-type
+	Subtype  maps to subtype // Renamed from subtype to modality
+	View maps to view
+	SubjectOfRecord maps to subject // added Target Types PractitionerRole, Location
+	CareContext maps to context // renamed to encounter (type ref(encounter?))
+	RelevantTime maps to occurrence[x]  // Renamed from occurrence[x] to created[x]
+	Practitioner maps to operator // Added Target Types PractitionerRole, Organization, CareTeam, Patient, Device, RelatedPerson
+    ReasonCode maps to reasonCode
+	BodyLocation.LocationCode maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	Device maps to device
+	PixelHeight maps to height
+	PixelWidth maps to width
+	Frames maps to frames
+	NumberOfSecondsDuration maps to duration // Type changed from unsignedInt to decimal
+    Attachment maps to content
+    Annotation maps to note
+// Added partOf, status, issued, deviceName

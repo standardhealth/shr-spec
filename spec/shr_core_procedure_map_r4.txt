@@ -1,0 +1,80 @@
+Grammar:	Map 5.1
+Namespace:	shr.core
+Target:		FHIR_R4
+
+
+Procedure maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure:
+	Identifier maps to identifier
+	Code maps to code
+	SubjectOfRecord maps to subject
+	Category maps to category
+	constrain notDone to 0..0  // deleted in R4
+	constrain notDoneReason to 0..0    // deleted in R4
+	BodyLocation.LocationCode maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	PartOf maps to partOf
+	Annotation maps to note
+	CareContext maps to context
+	ReasonCode maps to reasonCode
+	ReasonReference maps to reasonReference  // Added Target Types Procedure, DiagnosticReport, DocumentReference
+	OccurrenceTimeOrPeriod maps to performed[x] // Add Types string, Age, Range
+	Participation maps to performer
+	Participation.Participant maps to performer.actor  // Added Target Type PractitionerRole
+	Participation.ParticipationType maps to performer.role  // deleted R4
+	Participation.OnBehalfOf maps to performer.onBehalfOf
+	Status maps to status  // Change value set from http://hl7.org/fhir/ValueSet/event-status to http://hl7.org/fhir/ValueSet/event-status|4.0.0
+// TODO  The following statement is failing it might be a bug
+//	Method maps to http://hl7.org/fhir/StructureDefinition/procedure-method
+	RelatedRequest.Value maps to basedOn  // added Target Type ServiceRequest, Removed Target Types ProcedureRequest, ReferralRequest
+//	RelatedPlan maps to definition
+	Outcome maps to outcome
+	Location maps to location
+	MaterialUsed maps to usedReference
+	FocalDevice maps to focalDevice
+// Added elements: instantiatesCanonical, instantiatesUri, statusReason, encounter, recorder, asserter, performer.function 
+// Deleted elements: definition
+// Procedure.report Added Target Types DocumentReference, Composition
+
+ProcedureRequest maps to ProcedureRequest:  // Renamed ServiceRequest
+	Identifier maps to identifier
+	StatementDateTime maps to authoredOn
+	ProcedureRequester maps to requester.agent  // drop .agent -- requester type Reference(Practitioner | PractitionerRole | Organization | Patient | RelatedPerson | Device)
+	Type maps to code
+	Category maps to category
+	constrain doNotPerform to 0..0
+	SubjectOfRecord maps to subject  // Reference(Patient | Group | Location | Device)  1..1
+	BodyLocation.LocationCode maps to bodySite 
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	CareContext maps to context  // changed to encounter (ref(Encounter))
+	ReasonCode maps to reasonCode
+	ReasonReference maps to reasonReference  // Reference(Condition | Observation | DiagnosticReport | DocumentReference)
+	Status maps to status // http://hl7.org/fhir/ValueSet/request-status (required)
+	RequestIntent maps to intent  // http://hl7.org/fhir/ValueSet/request-intent (required)
+	ExpectedPerformanceTime maps to occurrence[x]  // dateTime, Period, Timing
+	ExpectedPerformerType maps to performerType // not present; replaced by performer Ref(PractitionerRole)?
+	ExpectedPerformer maps to performer  // Reference(Practitioner | PractitionerRole | Organization | CareTeam | HealthcareService | Patient | Device | RelatedPerson) 0..*
+	Recipient maps to extension
+	PriorityCode maps to priority  // http://hl7.org/fhir/ValueSet/request-priority (required)
+	Annotation maps to note // ok
+// Added instantiatesCanonical, instantiatesUri
+// Added basedOn  Type Reference(CarePlan | ServiceRequest | MedicationRequest)
+// Added replaces Type Reference(ServiceRequest)
+// Added requisition (type Identifier)
+// Added orderDetail (CodeableConcept 0..*)
+// Added quantity[x] (Quantity, Ratio, Range)
+// Added asNeeded[x] (Boolean, CodeableConcept)
+// Added locationCode
+// Added locationReference
+// Added insurance (Reference(Coverage | ClaimResponse))
+// Added supportingInfo (Ref(Any))
+// Added speciment (ref(Specimen))
+// Added patientInstruction (string)
+// Added relevantHistory (ref(Provenance))
+
+
+
+
