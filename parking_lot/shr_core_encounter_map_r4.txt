@@ -16,7 +16,7 @@ Encounter maps to Encounter:
 	PriorityCode maps to priority
 	SubjectOfRecord maps to subject
 	EpisodeOfCare maps to episodeOfCare
-	ReferralRequest maps to basedOn  // ReferralRequest changed to basedOn, Added Target Type ServiceRequest
+	EncounterBasedOn maps to basedOn  // ReferralRequest changed to basedOn, Added Target Type ServiceRequest
 	Participation maps to participant
 	Participation.ParticipationType maps to participant.type
 	Participation.ParticipationPeriod maps to participant.period
@@ -25,6 +25,7 @@ Encounter maps to Encounter:
 	TimePeriod maps to period
 	Duration maps to length
 	ReasonCode maps to reasonCode  // renamed to reasonCode
+	EncounterReasonReference maps to reasonReference
 	EncounterDiagnosis maps to diagnosis
 	EncounterDiagnosis.DiagnosisCode maps to diagnosis.extension
 	EncounterDiagnosis.Condition maps to diagnosis.condition
@@ -38,8 +39,7 @@ Encounter maps to Encounter:
 	EncounterLocation.TimePeriod maps to location.period
 	Organization maps to serviceProvider
 	PartOf maps to partOf
-// Added ServiceDetails, reasonReference, location.physicalType
-// Still haven't added all the hospitalization.* elements
+// Added ServiceDetails, location.physicalType
 
 
 EpisodeOfCare maps to EpisodeOfCare:
@@ -57,7 +57,7 @@ EpisodeOfCare maps to EpisodeOfCare:
 	SubjectOfRecord maps to patient
 	Organization maps to managingOrganization
 	TimePeriod maps to period
-	ReferralRequest maps to referralRequest  // Added Target Type ServiceRequest, removed ReferralRequest
+	ReferralBasedOn maps to referralRequest  // Added Target Type ServiceRequest, removed ReferralRequest
 	CareManager maps to careManager // Added Target Type PractitionerRole
 //	Account maps to account
 
@@ -70,10 +70,9 @@ Appointment maps to Appointment:
 	Specialty maps to specialty
 	Type maps to appointmentType
 	ReasonCode maps to reason // changed to reasonCode
-	ReasonReference maps to extension
+	AppointmentReasonReference maps to extension
 	Indication maps to indication // deleted
 	PriorityRankUnsignedInt maps to priority
-	CommentOrDescription maps to description
 	SupportingInformation maps to supportingInformation
 	TimePeriod.BeginDateTime maps to start
 	TimePeriod.EndDateTime maps to end
@@ -81,7 +80,7 @@ Appointment maps to Appointment:
 	//maps to slot
 	StatementDateTime maps to created
 	//maps to comment
-	ReferralRequest maps to incomingReferral // name changed to basedOn -- type changes also since ReferralRequest doesn't exist
+	AppointmentBasedOn maps to basedOn // name changed to basedOn
  	AppointmentParticipation maps to participant
 	AppointmentParticipation.ParticipationType maps to participant.type
 	AppointmentParticipation.Participant maps to participant.actor // Added Target Type PractitionerRole
@@ -90,6 +89,26 @@ Appointment maps to Appointment:
 	ExpectedPerformanceTime maps to requestedPeriod
 // Added: cancellationReason, reasonReference, patientInstruction, participant.period
 
-
-
+ReferralRequest maps to ServiceRequest:
+	Identifier maps to identifier
+	// maps to defintion
+	ReferralBasedOn maps to basedOn
+	Replaces maps to replaces
+	Requisition maps to requisition
+	Status maps to status
+	RequestIntent maps to intent
+	Code maps to code
+	PriorityCode maps to priority
+	ServiceDetails maps to orderDetails
+	ReferralRequestSubjectOfRecord maps to subject
+	CareContext maps to encounter
+	ExpectedPerformanceTime maps to occurrence[x]
+	StatementDateTime maps to authoredOn
+	ReferralRequester maps to requester
+	ExpectedPerformerType maps to performerType
+	ReferralRecipient maps to performer
+	ReasonCode maps to reasonCode
+	ReferralReasonReference maps to reasonReference
+	SupportingInformation maps to supportingInformation
+	Annotation maps to note
 

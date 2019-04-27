@@ -9,16 +9,19 @@ Description:		"Abstract class representing any type of action or event."
 0..*			ReasonCode
 0..*			ReasonReference
 1..1			SubjectOfRecord
+0..*		    BasedOn
 
 		Element:		ReasonCode
 		Concept:		MTH#C0566251
-		Description:	"The justification, as a code. 
-		Reason is a string or CodeableConcept in DSTU2 but in later versions only a CodeableConcept, so we are not going to support a string."
+		Description:	"The explanation or justification for the current item or action, as a code. 
+		Reason is a string or CodeableConcept in DSTU2 but in later versions only a CodeableConcept."
 		Value:			CodeableConcept
 		
 		Element:		ReasonReference
 		Description:	"The justification, as reference to a condition or observation."
-		Value:			ref(Condition) or ref(Observation) or ref(DiagnosticReport) or ref(DocumentReference)
+
+		Element:		BasedOn
+		Description:	"The proposal, order, or plan that is partly or wholly fulfilled by this item."
 
 Abstract Element:	ActionPerformed
 Based on:			ActionStatement
@@ -27,7 +30,6 @@ Description:		"Abstract class representing an event occurrence or performance of
 0..*				Participation
 1..1				Status  // change to required... should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
 0..1				Method
-0..1				RelatedRequest
 
 		Element:		Participation
 		Description:	"Record of someone or something involvement in an activity or event."
@@ -49,16 +51,6 @@ Description:		"Abstract class representing an event occurrence or performance of
 		Element:		Method
 		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
 		Value:			CodeableConcept  // TODO: limit to a procedure code
-		
-		Element:		RelatedRequest
-		Description:	"The proposal, order, or plan that is partly or wholly fulfilled by the performance of this act."
-		Value:			ref(MedicationRequest) or ref(ProcedureRequest) or ref(ReferralRequest)
-	
-	/*	
-		Element:		EnactsPlan
-		Description:	"The plan that is partly or wholly enacted by the performance of this act."
-		Value:			ref(ActionRequest)
-*/
 
 		Element:		Outcome
 		Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."
@@ -110,9 +102,12 @@ Based on:		ActionRequest
 Description:	"A record of a request for service such as diagnostic investigations, treatments, or operations to be performed."
 // 0..*			InstantiatesCanonical  // not implemented
 // 0..*			InstantiatesUri // not implemented
-// 0..*			BasedOn // not implemented
- 0..*			Replaces
-// 0..1			Requisition // not implemented
+				BasedOn is type ServiceBasedOn
+1..1			Code // card change from 0..1 to accomodate DSTU2 mapping to argo-ProcedureRequest
+0..1			ExpectedPerformer // card change from 0..* to accomodate DSTU2 mapping to argo-ProcedureRequest
+0..1			ReasonCode // card change from 0..*  to accomodate DSTU2 mapping to argo-ProcedureRequest
+0..*			Replaces
+0..1			Requisition
 1..1			RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 0..1			DoNotPerform  // doNotPerform
 0..*			ServiceDetails  // orderDetails
@@ -128,10 +123,20 @@ Description:	"A record of a request for service such as diagnostic investigation
 0..*			ref(Specimen)
 0..*			BodyLocation
 0..1			PatientInstruction
+0..1			ReasonReference is type ServiceReasonReference  // card change from 0..* for DSTU2 mapping to argo-ProcedureRequest
+
+		Element:	ServiceBasedOn
+		Based on:	BasedOn
+		Description:"The original or initiating plan, proposal, or request."
+		Value:		ref(ServiceRequest)
 
 		Element:	Replaces
 		Description:"Request(s) replaced by this request"
 		Value:		ref(ServiceRequest)
+
+		Element:	Requisition
+		Description:"A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier."
+		Value:		Identifier
 
 		Element:	DoNotPerform
 		Description:"A flag, when set to true, indicates that the service/procedure should NOT be performed."
@@ -169,3 +174,8 @@ Description:	"A record of a request for service such as diagnostic investigation
 		Element:	PatientInstruction
 		Description:"Patient or consumer-oriented instructions."
 		Value:		string
+
+		Element:		ServiceReasonReference
+		Based on:		ReasonReference	
+		Description:	"Explanation/Justification for service or service"
+		Value:			ref(Condition) or ref(Observation) or ref(DiagnosticReport) or ref(DocumentReference)

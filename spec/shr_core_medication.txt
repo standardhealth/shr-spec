@@ -90,19 +90,28 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
 				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
 0..1			ReasonCode // Upper cardinality imposed by DSTU 2
-0..1			ReasonReference value is type ref(Condition)
+0..1			ReasonReference is type MedicationReasonReference // value is type ref(Condition)
 0..0			Participation
-				RelatedRequest is type MedicationStatementRelatedRequest // or CarePlan
+				BasedOn is type MedicationStatementBasedOn
 0..1			TreatmentIntent			
 0..*			TerminationReason from TreatmentTerminationReasonVS
 
-		Element:		MedicationStatementInformationSource		
-		Description:	"The informant for this medication statement."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
+	Element:		MedicationStatementInformationSource		
+	Description:	"The informant for this medication statement."
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
 	Element:		TerminationReason
 	Description:	"A code explaining unplanned or premature termination of a plan of treatment, course of medication, or research study."
 	Value:			CodeableConcept
+
+	Element:		MedicationReasonReference
+	Based on:		ReasonReference
+	Description:	"Condition or observation that supports why the medication is being/was taken"
+	Value:			ref(Condition) or ref(Observation) or ref(DiagnosticReport)
+
+	Element:  		MedicationStatementBasedOn
+    Based on:   	BasedOn
+    Value:  		ref(ServiceRequest) or ref(MedicationRequest) or ref(ReferralRequest) or ref(ProcedureRequest) // CarePlan not yet implemented  // 
 
 
 EntryElement:	MedicationAdministration
@@ -111,18 +120,24 @@ Description:	"A record of the use of a medication. If the medication is given as
 Although FHIR MedicationAdministration supports date of administration, information source, performer, it lacks common provenance elements, statement creation date, author, and recorder. These are supported as optional extensions.
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
-				SubjectOfRecord is type PatientSubjectOfRecord  // no Group in DSTU2
+			SubjectOfRecord is type PatientSubjectOfRecord  // no Group in DSTU2
 0..1		Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
-				Status from http://hl7.org/fhir/ValueSet/medication-admin-status
+			Status from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..1		Participation
-				Participation.Participant is type PersonParticipant  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
+			Participation.Participant is type PersonParticipant  //  DSTU 2 change (max cardinality = 1), also, DSTU 2 participant excludes Device
 0..0		Participation.ParticipationType				
-				RelatedRequest value is type ref(MedicationRequest)		
+			BasedOn is type MedicationAdministrationBasedOn
+			ReasonReference is type MedicationReasonReference	
 
     	Element:		PersonParticipant
 		Based on:		Participant
 		Description:	"A choice of Patient, Practitioner and RelatedPerson as participant."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
+
+		Element:		MedicationAdministrationBasedOn
+		Based on:		BasedOn
+		Description:	"The original request, instruction or authority to perform the administration."
+		Value:			ref(MedicationRequest)
 
 Element:		MedicationDispense
 Based on:		MedicationExposure
@@ -157,7 +172,7 @@ Intent was added in STU3 and is provided as an extension with required binding."
 0..1		SubstitutionAllowed
 0..1		SubstitutionReason from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason
 0..1		ReasonCode could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
-0..1		ReasonReference value is type ref(Condition)
+0..1		MedicationReasonReference // value is type ref(Condition)
 0..1		Annotation  // upper card restricted by us-core-medicationrequest
 
 	Element:		NumberOfRefillsAllowed

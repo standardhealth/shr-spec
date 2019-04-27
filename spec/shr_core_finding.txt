@@ -416,7 +416,7 @@ Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birt
 
 EntryElement:	DiagnosticReport
 Based on:		SituationStatement
-0..*			RelatedRequest is type MedicationStatementRelatedRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
+0..*			BasedOn is type DiagnosticReportBasedOn  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
 0..1			Category	
 0..1			SubjectOfRecord is type ObservationSubjectOfRecord
@@ -442,10 +442,6 @@ Based on:		SituationStatement
 	Description:	"A choice of Practitioner or Organization as participant."
 	Value:			ref(Practitioner) or ref(Organization)
 
-    Element:  MedicationStatementRelatedRequest
-    Based on:   RelatedRequest
-    Value:  ref(ReferralRequest) or ref(ProcedureRequest) or ref(MedicationRequest) // CarePlan not yet implemented
-
 	Element:		Conclusion
 	Description:	"Concise and clinically contextualized impression / summary of the diagnostic report."
 	Value:			string
@@ -454,7 +450,11 @@ Based on:		SituationStatement
 	Description:	"Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
 	Value:			ref(Attachment)
 
-
+	Element:		DiagnosticReportBasedOn
+	Based on:		BasedOn
+	Description:	"The request or order that initiated this report."
+	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)
+	// or CarePlan or ImmunizationRecommendation or NutritionOrder or MedicationRequest 
 
 EntryElement:	ClinicalNote
 Based on:		DocumentReference

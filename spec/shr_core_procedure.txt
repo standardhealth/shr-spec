@@ -21,7 +21,9 @@ Description:	"A procedure that has been performed."
 				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant is type ProcedureParticipant
-				RelatedRequest value is type ref(ProcedureRequest)
+0..1			BasedOn is type ProcedureBasedOn
+0..1			ReasonCode
+0..1			ReasonReference is type ProcedureReasonReference
 0..1			ref(Location)
 0..1			Outcome
 0..*			MaterialUsed
@@ -41,6 +43,16 @@ Description:	"A procedure that has been performed."
     Description:	"The purpose of a treatment."
     Value:          CodeableConcept from TreatmentIntentVS
 
+	Element:		ProcedureBasedOn
+	Based on:		BasedOn
+	Description:	"A request for this procedure."
+	Value:			ref(ProcedureRequest) or ref(ReferralRequest) or ref(ServiceRequest) // or CarePlan (or DiagnosticOrder in DSTU2)
+
+	Element:		ProcedureReasonReference
+	Based on:		ReasonReference
+	Description:	"The justification that the procedure was performed."
+	Value:			ref(Condition) or ref(Observation) or ref(Procedure) or ref(DiagnosticReport) or ref(DocumentReference)
+
 	Element:		FocalDevice
 	Description:	"Device changed in procedure."
 
@@ -49,23 +61,16 @@ EntryElement:	ProcedureRequest
 Based on:		ServiceRequest
 Description:	"A request for a procedure to be performed. May be a proposal or an order."
 				RequestSubjectOfRecord is type ProcedureRequestSubjectOfRecord
-				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
-				// DSTU 2 change (different required value sets in v2 and v3)
-				Status // from http://hl7.org/fhir/ValueSet/request-status  
-				// DSTU 2 change(different required value sets in v2 and v3)
 0..1			Requester is type ProcedureRequester  
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
-0..*			BodyLocation
 0..1			PartOf value is type ref(Procedure)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
-0..*			Annotation
 0..1			ReasonCode  // limit upper card to 1 in DSTU2
-0..1			ReasonReference // limit upper card to 1 in DSTU2
+0..1			ServiceReasonReference is type ProcedureRequestReasonReference // limit upper card to 1 in DSTU2
 0..1			Method
 //0..*			InputFinding  -- covered by Reason
 //0..*			Indication
-0..1			ExpectedPerformer  // inherited, restricted to 0..1
-
+0..1			ExpectedPerformer  // restricted to 0..1 in DSTU2
 
 		Element:		ProcedureRequester
 		Based on:		Requester
@@ -76,6 +81,11 @@ Description:	"A request for a procedure to be performed. May be a proposal or an
 		Based on:		RequestSubjectOfRecord
 		Description:	"A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
 		Value:			ref(Patient) or ref(Group)
+
+		Element:		ProcedureRequestReasonReference
+		Based on:		ServiceReasonReference
+		Description:	"The justification that the procedure was performed"
+		Value:			ref(Condition) or ref(Observation)
 
 
 //---------- Specialized Types of Procedure Topics ----------------
