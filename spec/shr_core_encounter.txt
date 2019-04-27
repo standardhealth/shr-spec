@@ -26,7 +26,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 // from http://hl7.org/fhir/ValueSet/encounter-status  in STU3
 // from http://hl7.org/fhir/ValueSet/encounter-state in DSTU2
 // StatusHistory.Status from // incompatible VS, see above
-0..1			EncounterClass
+1..1			EncounterClass  // required in R4
 0..*			ClassHistory
 				Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..1			PriorityCode could be from http://hl7.org/fhir/ValueSet/v3-ActPriority
@@ -95,10 +95,10 @@ Description:	"An association between a patient and an organization / healthcare 
 
 
 EntryElement:	ReferralRequest
-Based on:		ActionRequested
+Based on:		ServiceRequest
 Description:	"Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
-0..1			ReferralRequester
-				SubjectOfRecord is type ReferralSubjectOfRecord
+0..1			ServiceRequester is type ReferralRequester
+				RequestSubjectOfRecord is type ReferralRequestSubjectOfRecord
 0..*			Replaces
 				Replaces value is type ref(ReferralRequest)
 0..*			ReferralRecipient
@@ -110,9 +110,10 @@ Description:	"Used to record and send details about a request for referral servi
 				PriorityCode from http://hl7.org/fhir/ValueSet/request-priority
 0..*			ServiceType
 0..1			CommentOrDescription
-0..*			RelatedInformation
+// 0..*			SupportingInformation
 
         Element:		ReferralRequester
+		Based on:		ServiceRequester
 		Description:	"The person or organization originating this referral"
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 		
@@ -125,12 +126,13 @@ Description:	"Used to record and send details about a request for referral servi
 		Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/service-type
 
 		Element:	Replaces
-		Description:	"Request(s) replaced by this request"
-		Value:		ref(ActionRequested)
+		Description:"Request(s) replaced by this request"
+		Value:		ref(ActionRequest)
 
-		Element:	RelatedInformation
-		Description:	"Additional information to support referral or transfer of care request"
-		Value:		ref(DomainResource)
+		Element:	ReferralRequestSubjectOfRecord
+		Based on:	RequestSubjectOfRecord
+		Description:"Subject of record types allowed for referrals"
+		Value:		ref(Patient) or ref(Group)
 
 
 EntryElement:	Appointment
@@ -146,7 +148,7 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 0..*	Indication
 0..1	PriorityRankUnsignedInt
 0..1	CommentOrDescription
-0..*	RelatedInformation 
+0..*	SupportingInformation 
 0..*	ref(ReferralRequest)
 1..*	AppointmentParticipation
 0..1	TimePeriod

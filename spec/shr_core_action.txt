@@ -18,7 +18,7 @@ Description:		"Abstract class representing any type of action or event."
 		
 		Element:		ReasonReference
 		Description:	"The justification, as reference to a condition or observation."
-		Value:			ref(Condition) or ref(Observation)
+		Value:			ref(Condition) or ref(Observation) or ref(DiagnosticReport) or ref(DocumentReference)
 
 Abstract Element:	ActionPerformed
 Based on:			ActionStatement
@@ -30,7 +30,7 @@ Description:		"Abstract class representing an event occurrence or performance of
 0..1				RelatedRequest
 
 		Element:		Participation
-				Description:	"Record of someone or something involvement in an activity or event."
+		Description:	"Record of someone or something involvement in an activity or event."
 		0..1			Participant
 		0..1 			ParticipationType  // role
 		0..1			ParticipationPeriod
@@ -42,30 +42,30 @@ Description:		"Abstract class representing an event occurrence or performance of
 			Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/performer-role
 			
 			Element:		ParticipationPeriod
-						Description:	"The point in time or span of time the participant is involved."
+			Description:	"The point in time or span of time the participant is involved."
 			Value:			TimePeriod
 
 
 		Element:		Method
-				Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
+		Description:	"The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
 		Value:			CodeableConcept  // TODO: limit to a procedure code
 		
 		Element:		RelatedRequest
-				Description:	"The proposal, order, or plan that is partly or wholly fulfilled by the performance of this act."
+		Description:	"The proposal, order, or plan that is partly or wholly fulfilled by the performance of this act."
 		Value:			ref(MedicationRequest) or ref(ProcedureRequest) or ref(ReferralRequest)
 	
 	/*	
 		Element:		EnactsPlan
-				Description:	"The plan that is partly or wholly enacted by the performance of this act."
-		Value:			ref(ActionRequested)
+		Description:	"The plan that is partly or wholly enacted by the performance of this act."
+		Value:			ref(ActionRequest)
 */
 
 		Element:		Outcome
-				Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."
+		Description:	"The result of performing an action or behavior, for example, an adverse reaction or new finding."
 		Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/procedure-outcome
 
 
-Abstract Element:	ActionRequested
+Abstract Element:	ActionRequest
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
 0..1			Type  // type of request
@@ -85,18 +85,101 @@ Description:		"Abstract class representing a request for any type of action to b
 		Value:			CodeableConcept should be from http://hl7.org/fhir/ValueSet/request-intent
 
 		Element:		ExpectedPerformanceTime
-				Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+		Description:	"When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
 		Value:			dateTime or TimePeriod or Timing
 
 		Element:		ExpectedPerformerType
-				Description:	"What type of party should carry out the testing."
+		Description:	"What type of party should carry out the testing."
 		Value:			CodeableConcept // what ValueSet??
 
 		Element:		Recipient
-				Description:	"Who this request is being addressed to."
+		Description:	"Who this request is being addressed to."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 		
 		Element:		CommunicationMethod
-				Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
-
+		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
 		Value:			CodeableConcept
+
+
+EntryElement:	ServiceRequest
+Based on:		ActionRequest
+Description:	"A record of a request for service such as diagnostic investigations, treatments, or operations to be performed."
+// 0..*			Identifier // inherited
+// 0..*			InstantiatesCanonical  // not implemented
+// 0..*			InstantiatesUri // not implemented
+// 0..*			BasedOn // not implemented
+// 0..*			Replaces // not implemented
+// 0..1			Requisition // not implemented
+1..1			Status // from http://hl7.org/fhir/ValueSet/request-status  // incompatible VS between DSTU2 and STU3/R4
+1..1			RequestIntent from http://hl7.org/fhir/ValueSet/request-intent  // strengthen to required
+// 0..1			Type  // category (inherited)
+// 0..1 		PriorityCode // (inherited) from http://hl7.org/fhir/ValueSet/request-priority  // required conflicting value sets
+0..1			DoNotPerform  // doNotPerform
+0..1			Code  // code
+0..*			OrderDetails  // orderDetails
+0..1			RequestQuantity  // quantity[x]
+1..1			RequestSubjectOfRecord  // subject
+0..1			CareContext value is type ref(Encounter)  // encounter
+// 0..1			ExpectedPerformanceTime  (inherited no change) // occurrence[x]
+0..1			AsNeeded
+0..1			StatementDateTime // authoredOn
+0..1			ServiceRequester  // requester
+// 0..1			ExpectedPerformerType // inherited (performerType)
+0..*			ExpectedPerformer
+0..*			LocationType
+0..*			ref(Location)
+// 0..*			ReasonCode // inherited
+// 0..*			ReasonReference  // inherited
+0..*			Insurance
+0..*			SupportingInformation
+0..*			ref(Specimen)
+0..*			BodyLocation
+0..*			Annotation
+0..1			PatientInstruction
+//0..1			Recipient
+//0..1			CommunicationMethod (inherited)
+
+		Element:	DoNotPerform
+		Description:"A flag, when set to true, indicates that the service/procedure should NOT be performed."
+		Value:		boolean
+
+		Element:	OrderDetails
+		Description:"Additional details and instructions about the how the services are to be delivered. For example, and order for a urinary catheter may have an order detail for an external or indwelling catheter, or an order for a bandage may require additional instructions specifying how the bandage should be applied."
+		Value:		CodeableConcept
+
+		Element:	RequestQuantity
+		Description:"An amount of service being requested which can be a quantity ( for example $1,500 home modification), a ratio ( for example, 20 half day visits per month), or a range (2.0 to 1.8 Gy per fraction)."
+		Value:		Quantity or Ratio or Range
+
+		Element:	RequestSubjectOfRecord
+		Based on:	SubjectOfRecord
+		Description:"On whom or what the service is to be performed. This is usually a human patient, but can also be requested on animals, groups of humans or animals, devices such as dialysis machines, or even locations (typically for environmental scans)."
+		Value:		ref(Patient) or ref(Group) or ref(Device) or ref(Location)
+
+		Element:	AsNeeded
+		Description:"Preconditions for service, either 'true' indicating to be performed if needed, or a code indicating the pre-condition for performing the service. For example 'pain', 'on flare-up', etc."
+		Value:		boolean or CodeableConcept
+
+        Element:	ServiceRequester
+		Description:"The person or organization originating this referral"
+		Value:		ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)  // missing PractitionerRole
+
+        Element:	ExpectedPerformer
+		Description:"A choice of Person (in any role) or organization as recipient of a request."
+		Value:		ref(Practitioner) or ref(Organization) or ref(Patient) or ref(Device) or ref(RelatedPerson)  // or HealthcareService or CareTeam or PractitionerRole
+
+		Element:	LocationType
+		Description:"The preferred type of location(s) where the service should happen, in coded or free text form, e.g. at home or nursing day care center."
+		Value:		CodeableConcept
+
+		Element:	Insurance
+		Description:"Insurance plans, coverage extensions, pre-authorizations and/or pre-determinations that may be needed for delivering the requested service."
+		Value:		ref(Coverage)  // or ClaimResponse
+
+		Element:	SupportingInformation
+		Description:"Additional information to support this request."
+		Value:		ref(DomainResource)
+
+		Element:	PatientInstruction
+		Description:"Patient or consumer-oriented instructions."
+		Value:		string

@@ -46,14 +46,14 @@ Description:	"A procedure that has been performed."
 
 
 EntryElement:	ProcedureRequest
-Based on:		ActionRequested
+Based on:		ServiceRequest
 Description:	"A request for a procedure to be performed. May be a proposal or an order."
-				SubjectOfRecord is type ReferralSubjectOfRecord
+				RequestSubjectOfRecord is type ProcedureRequestSubjectOfRecord
 				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
 				// DSTU 2 change (different required value sets in v2 and v3)
 				Status // from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU 2 change(different required value sets in v2 and v3)
-0..1			ProcedureRequester  
+0..1			ServiceRequester is type ProcedureRequester  
 1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodyLocation
 0..1			PartOf value is type ref(Procedure)
@@ -66,18 +66,15 @@ Description:	"A request for a procedure to be performed. May be a proposal or an
 //0..*			InputFinding  -- covered by Reason
 //0..*			Indication
 0..1			ref(Location)
-0..1			ExpectedPerformer
-
-        Element:		ExpectedPerformer
-		Description:	"A choice of Person (in any role) or organization as recipient of a request. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // or HealthcareService
+0..1			ExpectedPerformer  // inherited, restricted to 0..1
 
 		Element:		ProcedureRequester
+		Based on:		ServiceRequester
 		Description:	"The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
 		Value:			ref(Practitioner) or ref(Device)
 
-		Element:		ReferralSubjectOfRecord
-		Based on:		SubjectOfRecord
+		Element:		ProcedureRequestSubjectOfRecord
+		Based on:		RequestSubjectOfRecord
 		Description:	"A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
 		Value:			ref(Patient) or ref(Group)
 
@@ -132,7 +129,7 @@ Based on:       Procedure
 Description:    "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
 				Participation.Participant is type PractitionerProcedureParticipant
     	    	Code from RadiationProcedureVS if covered
-				BodyLocation.LocationCode from RadiationTargetBodySiteVS if covered
+				BodyLocation.Code from RadiationTargetBodySiteVS if covered
 0..1    		RadiationDosePerFraction
 0..1    		RadiationFractionsDelivered
 0..1    		TotalRadiationDoseDelivered
