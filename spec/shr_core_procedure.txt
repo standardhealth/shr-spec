@@ -53,23 +53,22 @@ Description:	"A request for a procedure to be performed. May be a proposal or an
 				// DSTU 2 change (different required value sets in v2 and v3)
 				Status // from http://hl7.org/fhir/ValueSet/request-status  
 				// DSTU 2 change(different required value sets in v2 and v3)
-0..1			ServiceRequester is type ProcedureRequester  
-1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
+0..1			Requester is type ProcedureRequester  
+1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodyLocation
 0..1			PartOf value is type ref(Procedure)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
 0..*			Annotation
-0..1			ReasonCode
-0..1			ReasonReference
+0..1			ReasonCode  // limit upper card to 1 in DSTU2
+0..1			ReasonReference // limit upper card to 1 in DSTU2
 0..1			Method
-				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 //0..*			InputFinding  -- covered by Reason
 //0..*			Indication
-0..1			ref(Location)
 0..1			ExpectedPerformer  // inherited, restricted to 0..1
 
+
 		Element:		ProcedureRequester
-		Based on:		ServiceRequester
+		Based on:		Requester
 		Description:	"The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
 		Value:			ref(Practitioner) or ref(Device)
 

@@ -97,37 +97,23 @@ Description:	"An association between a patient and an organization / healthcare 
 EntryElement:	ReferralRequest
 Based on:		ServiceRequest
 Description:	"Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
-0..1			ServiceRequester is type ReferralRequester
+0..1			Requester is type ReferralRequester
 				RequestSubjectOfRecord is type ReferralRequestSubjectOfRecord
-0..*			Replaces
 				Replaces value is type ref(ReferralRequest)
-0..*			ReferralRecipient
+				ExpectedPerformer is type ReferralRecipient
 0..1			ReasonCode // card constraint from DSTU2 (0..* in STU3)
 // Status value sets are not compatible in DSTU2 (http://hl7.org/fhir/ValueSet/referralstatus) and STU3 (http://hl7.org/fhir/ValueSet/request-status)
-1..1			Status // from http://hl7.org/fhir/ValueSet/request-status
-				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
-				Type could be from http://hl7.org/fhir/ValueSet/referral-type
-				PriorityCode from http://hl7.org/fhir/ValueSet/request-priority
-0..*			ServiceType
 0..1			CommentOrDescription
-// 0..*			SupportingInformation
 
         Element:		ReferralRequester
-		Based on:		ServiceRequester
+		Based on:		Requester
 		Description:	"The person or organization originating this referral"
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 		
 		Element:		ReferralRecipient
+		Based on:		ExpectedPerformer
 		Description:	"The practitioner or organization receiving the referral."
 		Value:			ref(Practitioner) or ref(Organization)
-
-		Element:	ServiceType
-		Description:	"A service requested or to be performed during this appointment"
-		Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/service-type
-
-		Element:	Replaces
-		Description:"Request(s) replaced by this request"
-		Value:		ref(ActionRequest)
 
 		Element:	ReferralRequestSubjectOfRecord
 		Based on:	RequestSubjectOfRecord
@@ -140,7 +126,7 @@ Based on:		DomainResource
 Description:	"A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
 1..1	Status from http://hl7.org/fhir/ValueSet/appointmentstatus
 0..1	ServiceCategory
-0..*	ServiceType
+0..*	ServiceDetails
 0..*	Specialty
 0..1	Type should be from http://hl7.org/fhir/ValueSet/v2-0276
 0..1	ReasonCode  // upper card is 1 in DSTU2
