@@ -6,19 +6,19 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 EntryElement:	Procedure
 Based on:		ActionPerformed
-Description:	"A procedure that has been performed."
+Description:	"An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy."
+// not implemented: instantiatesCanonical, instantiatesUri
 				SubjectOfRecord is type PatientSubjectOfRecord
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..*			BodyLocation
-0..1			PartOf value is type ref(Procedure)
-0..1			Category  // this is a constraint on the cardinality of Action.Category
+0..1			PartOf is type ProcedurePartOf 
+0..1			StatusReason
+0..1			Category  // max card constraint
 0..*			Annotation
 0..0			Method	// Procedure doesn't have Method
 0..1			TreatmentIntent
 				Participation.OnBehalfOf value is type ref(Organization)
-				// TODO: StatusReason
-				// Status from http://hl7.org/fhir/ValueSet/event-status
-				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
+// Status from http://hl7.org/fhir/ValueSet/event-status conflicts with V2 http://hl7.org/fhir/ValueSet/procedure-status
 //				Participation.Participant.EntityOrRole is type ref(Practitioner)
 				Participation.Participant is type ProcedureParticipant
 0..1			BasedOn is type ProcedureBasedOn
@@ -26,8 +26,18 @@ Description:	"A procedure that has been performed."
 0..1			ReasonReference is type ProcedureReasonReference
 0..1			ref(Location)
 0..1			Outcome
+0..*			ref(DiagnosticReport)
 0..*			MaterialUsed
 0..*			FocalDevice
+
+	Element:		ProcedurePartOf
+	Based on:		PartOf
+	Description:	"A larger event of which this particular procedure is a component or step."
+	Value:			ref(Procedure) or ref(MedicationAdministration) or ref(Observation)
+
+	Element:		StatusReason
+	Description:	"Captures the reason for the current state of the procedure."
+	Value:			CodeableConcept
 
 	Element:		ProcedureParticipant
 	Based on:		Participant
@@ -54,8 +64,13 @@ Description:	"A procedure that has been performed."
 	Value:			ref(Condition) or ref(Observation) or ref(Procedure) or ref(DiagnosticReport) or ref(DocumentReference)
 
 	Element:		FocalDevice
-	Description:	"Device changed in procedure."
+	Description:	"A device that is implanted, removed or otherwise manipulated (e.g., calibration, battery replacement, fitting a prosthesis, attaching a wound-vac, etc.) as a focal portion of the Procedure."
+	1..1			ref(Device)
+	0..1			FocalDeviceAction
 
+		Element:		FocalDeviceAction
+		Description:	"The kind of change that happened to the device during the procedure."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/device-action
 
 EntryElement:	ProcedureRequest
 Based on:		ServiceRequest
