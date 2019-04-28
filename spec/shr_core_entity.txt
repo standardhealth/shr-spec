@@ -25,15 +25,41 @@ Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient. Sometimes, the patient is not the subject of information in a clinical statement where the Patient is the SubjectOfRecord.
 
-SHR follows Argonaut and makes the value set binding on marital status required.
-MaritalStatus has a required binding in Argonaut, but an extensible binding in US-Core. To be feasible under both DSTU2 Argonaut and STU3 US-Core, the required binding strength is adopted."
+SHR follows Argonaut and makes the value set binding on marital status required. MaritalStatus has a required binding in Argonaut, but an extensible binding in US-Core. To be feasible under both DSTU2 Argonaut and STU3 US-Core, the required binding strength is adopted."
 1..*			Identifier
-1..1			Person
-0..1			Status from ActiveOrInactiveVS
+0..1			Active
+0..0			Status
+1..* 			HumanName
+0..*			ContactPoint
+1..1			AdministrativeGender
+0..1			BirthDate
+0..1			Deceased
+0..*			Address
+0..1		 	MaritalStatus 
+0..1			MultipleBirth
+0..*			PhotographicImage
+0..*			ContactPerson
+0..*			Communication
+0..*			GeneralPractitioner
+0..1			ManagingOrganization
+0..*			SamePersonAs
+// US-Core extensions
+0..1			BirthSex
+0..1		 	Race
+0..1		 	Ethnicity
 
-	Element:		AccessTime
-		Description:	"Point in time when data was accessed."
-	Value:			dateTime
+	Element:	Active
+	Description:"Whether the record is in use (true) or retired (false)."
+	Value:		boolean
+
+	Element:	GeneralPractitioner
+	Description:"Patient's nominated primary care provider."
+	Value:		ref(Organization) or ref(Practitioner)
+
+	Element:	SamePersonAs
+	Description:"Link to another patient resource that concerns the same actual patient."
+	1..1		ref(Patient)
+	1..1		Relationship from http://hl7.org/fhir/ValueSet/link-type
 
 
 EntryElement:	Practitioner
@@ -41,20 +67,20 @@ Based on:		Role
 Concept:		MTH#C2220264
 Description:	"A person who practices a healing art.
 HumanName is limited to one required value by US-Core. Gender is required by US-Core. US-Core required an identifier, either a NPI (preferred) or tax id."
-1..1			Person
-0..1			Status from ActiveOrInactiveVS
-1..1			Person.HumanName   // only one (limitation imposed by us-core)
-// 0..*			Affiliation // handled by ProviderRelationship in FHIR
-1..*			Identifier
-				Identifier
+1..*			Identifier  // at least one
+				Identifier  // US Core preferences
 includes 		0..1 NationalProviderIdentifier
 includes		0..1 TaxIdentificationNumber
+0..1			Active
+0..0			Status
+1..1 			HumanName  // upper card from us-core
+0..*			ContactPoint
+0..*			Address
+0..1			AdministrativeGender
+0..1			BirthDate
+0..*			PhotographicImage
 0..*    		Qualification
-
-	Element:    	Affiliation
-	Concept:        MTH#C0932026
-	Description:    "Membership, association, or connection to an organization."
-	Value:			Organization
+0..*			Communication
 
 	Element: 		NationalProviderIdentifier
 	Based on:		Identifier
@@ -75,27 +101,36 @@ includes		0..1 TaxIdentificationNumber
 	0..1			Issuer
 // or http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 
-
 EntryElement:	RelatedPerson
 Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
-0..1			Person
-0..1			Status from ActiveOrInactiveVS
+0..1			Active
+0..0			Status
+1..1			ref(Patient)
 0..1			Relationship from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype  // required binding in DSTU 2
+0..1			HumanName   // max card by DSTU 2
+0..*			ContactPoint
+0..1			AdministrativeGender
+0..1			BirthDate
+0..*			Address
+0..*			PhotographicImage
 0..1			EffectiveTimePeriod
-1..1			Person.HumanName   // max cardinality imposed by DSTU 2
+0..*			Communication
 
 EntryElement:	Group
 Based on:		Entity
 Concept:		MTH#C0441833
 Description:	"A set of entities (personnel, material, or places) to be considered together. May be a pool of like-type resources, a team, or combination of personnel, material and places."
-0..1			Status from ActiveOrInactiveVS
+0..0			Status
+0..1			Active
 1..1			Type from http://hl7.org/fhir/ValueSet/group-type
-0..1			Title  // name
 1..1			Actual
+0..1			Code
+0..1			Name
+0..1			Count
 0..*			GroupCharacteristic
 0..*			MemberParticipation
-0..1			Count
+0..1			ManagingEntity
 
 	Element:		Actual
 	Description:	"True if the group is an actual group (as opposed to definitional)."
@@ -123,24 +158,26 @@ Description:	"A set of entities (personnel, material, or places) to be considere
 	Description:	"A person or entity in a group."
 	1..1		Member
 	0..1		ParticipationPeriod
-	1..1		InactiveFlag
+	1..1		Inactive
 
-		Element:		Member
-				Description:	"A person or entity in a group."
-		Value:			ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance)
+		Element:	Member
+		Description:"A person or entity in a group."
+		Value:		ref(Patient) or ref(Practitioner) or ref(Device) or ref(Medication) or ref(Substance) // missing PractitionerRole
 
-		Element:		InactiveFlag
-				Description:	"Indicates if the member is inactive in the context of the group."
-		Value:			boolean
+        Element:	Inactive
+		Description:"A flag that indicates whether this item is inactive."
+		Value:		boolean
 
+	Element:	ManagingEntity
+	Description: "Entity responsible for defining and maintaining Group characteristics and/or registered members."
+	Value:		ref(Organization) or ref(RelatedPerson) or ref(Practitioner) // or ref(PractitionerRole)
 
 EntryElement:	Location
 Based on:		Entity
-Concept:		MTH#C1547538
 Description:	"Services and space and equipment provided for a particular purpose; a building or place that provides a particular service or is used for a particular industry. Could be a clinical site, community site, or a mobile facility."
 0..1			Status from http://hl7.org/fhir/ValueSet/location-status
 0..1			OperationalStatus
-1..1			LocationName
+1..1			Name
 0..*			Alias
 0..1			CommentOrDescription
 0..1			Mode from http://hl7.org/fhir/ValueSet/location-mode
@@ -149,9 +186,11 @@ Description:	"Services and space and equipment provided for a particular purpose
 0..1			Address
 0..1			PhysicalType
 0..1			Geoposition
-0..1			MobileFacility
-1..1			ref(ManagingOrganization)
+1..1			ManagingOrganization
 				PartOf value is type ref(Location)
+0..*			HoursOfOperation
+0..1			AvailabilityExceptions
+// endpoint - not implemented
 
 	Element:		OperationalStatus
 	Description:	"The operational status covers operation values most relevant to beds (but can also apply to rooms/units/chairs/etc. such as an isolation unit/dialysis chair). This typically covers concepts such as contamination, housekeeping, and other activities like maintenance."
@@ -165,25 +204,36 @@ Description:	"Services and space and equipment provided for a particular purpose
 	Description:	"Indicates whether a resource instance represents a specific item or a class of items."
 	Value:			CodeableConcept
 
-	Element:		LocationName
-	Concept:		MTH#C3261404
-	Description:	"The DBA (doing business as) or most commonly-used name for a facility."
-	Value:			string
-
 	Element:		PhysicalType
 	Description:	"Physical form of the location, e.g. building, room, vehicle, road."
 	Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/location-physical-type
 
-	Element:		MobileFacility
-	Concept:		MTH#C0231435
-	Description:	"A facility that moves from place to place, such as Meals-On-Wheels."
-	Value:			boolean
-
 	Element:		ManagingOrganization
-	Concept:		MTH#C0677351
-	Description:	"The organization that manages an activity, facility, document, or service provision."
+	Description:	"The organization that manages a patient, activity, facility, document, or service provision."
 	Value:			ref(Organization)
 
+	Element:		HoursOfOperation
+	Description:	"What days/times during a week is this location usually open."
+	0..*		 	DayOfWeek
+	0..1			AllDay
+	0..1			OpeningTime
+	0..1			ClosingTime
+
+		Element:	AllDay
+		Description:"The Location is open all day."
+		Value:		boolean
+
+		Element:	OpeningTime
+		Description:"Time that the Location opens."
+		Value:		time
+
+		Element:	ClosingTime
+		Description:"Time that the Location closes."
+		Value:		time
+
+	Element:	AvailabilityExceptions
+	Description:"A description of when the locations opening ours are different to normal, e.g. public holiday availability. Succinctly describing all possible exceptions to normal site availability as detailed in the opening hours Times."
+	Value:		string
 
 EntryElement:	Substance
 Based on:		Entity
@@ -278,9 +328,7 @@ Element:		Person
 Concept:		MTH#C0027361
 Description:	"A person relevant to the health or social situation of the subject (including the subject him- or herself)."
 1..* 			HumanName
-//0..1			AnonymizedFlag
-//0..1			FictionalPersonFlag
-0..1			DateOfBirth
+0..1			BirthDate
 1..1			AdministrativeGender
 0..*			Address
 0..*			PhotographicImage
@@ -293,13 +341,6 @@ Description:	"A person relevant to the health or social situation of the subject
 0..1		 	Race
 0..1		 	Ethnicity
 0..1			Deceased
-//0..1			PlaceOfBirth
-//0..1			MothersMaidenName
-//0..1			FathersName
-//0..1			SocialSecurityNumber
-//0..1			DriversLicenseNumber
-//0..*			PassportNumber
-
 
 	Element:   		PlaceOfBirth
 	Concept:        MTH#C0032040
@@ -423,7 +464,7 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
 	Value:			CodeableConcept from YesNoVS
 
-	Element:   		DateOfBirth
+	Element:   		BirthDate
 	Concept:        MTH#C2919018, LNC#21112-8
 	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
 	Value: 			date or TimePeriod
@@ -473,21 +514,19 @@ Description:	"A person relevant to the health or social situation of the subject
 	
 EntryElement:	Organization
 Based on:		Entity
-Description:    "A social or legal structure formed by human beings.
+Description:    "A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.
 
-Organization type is restricted to 0..1 in FHIR DSTU2, similarly restricted here."
-// Required attributes come from STU 3 mapping to us-core-organization
-1..1			OrganizationName
+Organization type is restricted to 0..1 in FHIR DSTU2, similarly restricted here. Other required attributes come from STU 3 mapping to us-core-organization."
 1..*			Identifier  // cardinality constraint
+1..1			Active
 0..1			Type could be from http://hl7.org/fhir/ValueSet/organization-type
-1..*			Address
+1..1			Name
+0..*			Alias
 1..*			ContactPoint
-1..1			Status from ActiveOrInactiveVS
+1..*			Address
 0..1			PartOf value is type ref(Organization)
-
-	Element:		OrganizationName
-	Description:	"The name of the organization."
-	Value:			string
+0..*			ContactPerson
+// endpoint -- not implemented
 
 EntryElement:	Device
 Based on:		Entity

@@ -4,88 +4,96 @@ Target:		FHIR_DSTU_2
 
 Patient maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-patient: // dstu 2 change (different mapping target)
 	Identifier maps to identifier
-	constrain active to 0..0
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.AdministrativeGender maps to gender
-	Person.PhotographicImage maps to photo
-	Person.Address maps to address
-	Person.ContactPoint maps to telecom
-	Person.Communication.Language maps to communication.language
-	Person.Communication.Preferred maps to communication.preferred
-//	Person.Communication.SpokenLanguageProficiency maps to communication.extension
-//	Person.Communication.WrittenLanguageProficiency maps to communication.extension
-//	Person.Communication.LanguageQualifier maps to communication.extension
-	Person.DateOfBirth maps to birthDate
-	Person.MaritalStatus maps to maritalStatus
-	Person.MultipleBirth maps to multipleBirth[x]
-	Person.BirthSex maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex
-	Person.Race maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-race
-	Person.Ethnicity maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity
-//	MothersMaidenName maps to http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName
-//	MedicalInterpreterNeeded maps to http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired
-//	PlaceOfBirth maps to http://hl7.org/fhir/StructureDefinition/birthPlace
-	Person.Deceased maps to deceased[x]
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Deceased maps to deceased[x]
+	Address maps to address
+	MaritalStatus maps to maritalStatus
+	MultipleBirth maps to multipleBirth[x]
+	PhotographicImage maps to photo
+	ContactPerson.Relationship maps to contact.relationship
+	ContactPerson.HumanName maps to contact.name
+	ContactPerson.ContactPoint maps to contact.telecom
+	ContactPerson.Address maps to contact.address
+	ContactPerson.AdministrativeGender maps to contact.gender
+	ContactPerson.Organization maps to contact.organization
+	ContactPerson.TimePeriod maps to contact.period
+	constrain animal to 0..0
+	Communication.Language maps to communication.language
+	Communication.Preferred maps to communication.preferred
+	GeneralPractitioner maps to careProvider
+	ManagingOrganization maps to managingOrganization
+	SamePersonAs.Patient maps to link.other 
+	SamePersonAs.Relationship maps to link.type
+	BirthSex maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex
+	Race maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-race
+	Ethnicity maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity
+
 
 Practitioner maps to Practitioner:  // dstu 2 change (different mapping target)
 	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
-	constrain active to 0..0
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.AdministrativeGender maps to gender
-	Person.PhotographicImage maps to photo
-	Person.Address maps to address
-	Person.ContactPoint maps to telecom
-	Person.Communication.Language maps to communication
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	Address maps to address
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	PhotographicImage maps to photo
 	Qualification maps to qualification
 	Qualification.Identifier maps to qualification.identifier
 	Qualification.Type maps to qualification.code
 	Qualification.EffectiveTimePeriod maps to qualification.period
 	Qualification.Issuer maps to qualification.issuer
+	Communication.Language maps to communication
 	
 RelatedPerson maps to RelatedPerson:
 	Identifier maps to identifier
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.DateOfBirth maps to birthDate
-	Person.AdministrativeGender maps to gender
-	Person.Address maps to address
-	Person.PhotographicImage maps to photo
-	Person.ContactPoint maps to telecom
+	Active maps to extension
+	Patient maps to patient
 	Relationship maps to relationship
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Address maps to address
+	PhotographicImage maps to photo
 	EffectiveTimePeriod maps to period
+	Communication maps to extension
 	
 Organization maps to Organization:
 	Identifier maps to identifier
-	constrain active to 0..0
-	Status maps to extension
+	Active maps to active
 	Type maps to type
-	OrganizationName maps to name
+	Name maps to name
 	Address maps to address
 	ContactPoint maps to telecom
 	PartOf maps to partOf
 
 Group maps to Group:
 	Identifier maps to identifier
-	Status maps to extension
+	Active maps to extension
 	Type maps to type
 	Actual maps to actual
-	constrain code to 0..0   // why?
-	Title maps to name
+	Code maps to code
+	Name maps to name
+	Count maps to quantity
 	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]
 	GroupCharacteristic.Code maps to characteristic.code
 	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
 	GroupCharacteristic.TimePeriod maps to characteristic.period
 	MemberParticipation.Member maps to member.entity
 	MemberParticipation.ParticipationPeriod maps to member.period
-	MemberParticipation.InactiveFlag maps to member.inactive
-	Count maps to quantity
+	MemberParticipation.Inactive maps to member.inactive
+	ManagingEntity maps to extension
 	
 Location maps to Location:
 	Identifier maps to identifier
 	Status maps to status
 	OperationalStatus maps to extension
-	LocationName maps to name
+	Name maps to name
 	Alias maps to extension
 	CommentOrDescription maps to description
 	Mode maps to mode
@@ -97,8 +105,8 @@ Location maps to Location:
 	Geoposition.Longitude maps to position.longitude
 	Geoposition.Altitude maps to position.altitude
 	ManagingOrganization maps to managingOrganization
-	MobileFacility maps to extension
 	PartOf maps to partOf
+	HoursOfOperation maps to extension
 
 Substance maps to Substance:
 	Identifier maps to identifier

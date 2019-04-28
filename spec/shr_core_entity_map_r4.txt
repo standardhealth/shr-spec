@@ -2,109 +2,98 @@ Grammar:	Map 5.1
 Namespace:	shr.core
 Target:		FHIR_R4
 
-Patient maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient:
+Patient maps to Patient:
 	Identifier maps to identifier
-	constrain active to 0..0
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.AdministrativeGender maps to gender
-	Person.PhotographicImage maps to photo
-	Person.Address maps to address
-	Person.ContactPoint maps to telecom
-	Person.ContactPerson maps to contact
-	Person.ContactPerson.Relationship maps to contact.relationship
-	Person.ContactPerson.HumanName maps to contact.name
-	Person.ContactPerson.ContactPoint maps to contact.telecom
-	Person.ContactPerson.Address maps to contact.address
-	Person.ContactPerson.AdministrativeGender maps to contact.gender
-	Person.ContactPerson.Organization maps to contact.organization
-	Person.ContactPerson.period maps to contact.period
-	Person.Communication.Language maps to communication.language  // Change binding strength from extensible to preferred
-	Person.Communication.Preferred maps to communication.preferred
-//	Person.Communication.SpokenLanguageProficiency maps to communication.extension
-//	Person.Communication.WrittenLanguageProficiency maps to communication.extension
-//	Person.Communication.LanguageQualifier maps to communication.extension
-	Person.DateOfBirth maps to birthDate
-	Person.MaritalStatus maps to maritalStatus
-//	PlaceOfBirth maps to http://hl7.org/fhir/StructureDefinition/birthPlace
-	Person.MultipleBirth maps to multipleBirth[x]
-	Person.BirthSex maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
-	Person.Race maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-race
-	Person.Ethnicity maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity
-//	MothersMaidenName maps to http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName
-//	MedicalInterpreterNeeded maps to http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired
-	Person.Deceased maps to deceased[x]
-// contact.relationship -- Change value set from http://terminology.hl7.org/ValueSet/v2-0131 to http://hl7.org/fhir/ValueSet/patient-contactrelationship
-// contact.gender -- Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
-// generalPractitioner -- Reference: Added Target Type PractitionerRole
-// link.type -- Change value set from http://hl7.org/fhir/ValueSet/link-type to http://hl7.org/fhir/ValueSet/link-type|4.0.0
-// animal -- deleted
+	Active maps to Active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Deceased maps to deceased[x]
+	Address maps to address	
+	MaritalStatus maps to maritalStatus
+	MultipleBirth maps to multipleBirth[x]
+	PhotographicImage maps to photo
+	ContactPerson.Relationship maps to contact.relationship
+	ContactPerson.HumanName maps to contact.name
+	ContactPerson.ContactPoint maps to contact.telecom
+	ContactPerson.Address maps to contact.address
+	ContactPerson.AdministrativeGender maps to contact.gender
+	ContactPerson.Organization maps to contact.organization
+	ContactPerson.TimePeriod maps to contact.period
+	Communication.Language maps to communication.language
+	Communication.Preferred maps to communication.preferred
+	GeneralPractitioner maps to generalPractitioner 
+	ManagingOrganization maps to managingOrganization
+	SamePersonAs.Patient maps to link.other 
+	SamePersonAs.Relationship maps to link.type
+	BirthSex maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
+	Race maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-race
+	Ethnicity maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity
 
-
-Practitioner maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner:
+Practitioner maps to Practitioner:
 	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
-	constrain active to 0..0
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.AdministrativeGender maps to gender  // Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
-	Person.PhotographicImage maps to photo
-	Person.Address maps to address
-	Person.ContactPoint maps to telecom
-	Person.Communication.Language maps to communication  // Change binding strength from extensible to preferred
+	Active maps to Active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	Address maps to address
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	PhotographicImage maps to photo
 	Qualification maps to qualification
 	Qualification.Identifier maps to qualification.identifier
 	Qualification.Type maps to qualification.code
 	Qualification.EffectiveTimePeriod maps to qualification.period
 	Qualification.Issuer maps to qualification.issuer
-	
+	Communication.Language maps to communication  // R4 change binding strength from extensible to preferred - not implemented
+
 RelatedPerson maps to RelatedPerson:
 	Identifier maps to identifier
-	constrain active to 0..0
-	Status maps to extension
-	Person.HumanName maps to name
-	Person.DateOfBirth maps to birthDate
-	Person.AdministrativeGender maps to gender  // Change value set from http://hl7.org/fhir/ValueSet/administrative-gender to http://hl7.org/fhir/ValueSet/administrative-gender|4.0.0
-	Person.Address maps to address
-	Person.PhotographicImage maps to photo
-	Person.ContactPoint maps to telecom
-	Relationship maps to relationship // Max Cardinality changed from 1 to *
+	Active maps to active
+	Patient maps to patient
+	Relationship maps to relationship
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Address maps to address
+	PhotographicImage maps to photo
 	EffectiveTimePeriod maps to period
-// Added communication, communication.language, communication.preferred
+	Communication maps to communication
 	
-Organization maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization:
+Organization maps to Organization:
 	Identifier maps to identifier
-//	constrain active to 0..0
-	Status maps to extension
-	OrganizationName maps to name
+	Active maps to active
+	Name maps to name
 	Type maps to type
 	Address maps to address
 	ContactPoint maps to telecom
 	PartOf maps to partOf
 // contact.purpose - Change code system for extensibly bound codes from "http://hl7.org/fhir/contactentity-type" to "http://terminology.hl7.org/CodeSystem/contactentity-type"
 
+
 Group maps to Group:
 	Identifier maps to identifier
-	constrain active to 0..0
-	Status maps to extension
-	Type maps to type  // Change value set from http://hl7.org/fhir/ValueSet/group-type to http://hl7.org/fhir/ValueSet/group-type|4.0.0
+	Active maps to active
+	Type maps to type
 	Actual maps to actual
-	constrain code to 0..0
-	Title maps to name
-	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]  // Add Type Reference
+	Code maps to code
+	Name maps to name
+	Count maps to quantity
+	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]  // Add Type Reference -- not implemented
 	GroupCharacteristic.Code maps to characteristic.code
 	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
 	GroupCharacteristic.TimePeriod maps to characteristic.period
-	MemberParticipation.Member maps to member.entity // Type Reference -- Added Target Types PractitionerRole, Group
+	MemberParticipation.Member maps to member.entity // Added Target Types PractitionerRole, Group -- not implemented
 	MemberParticipation.ParticipationPeriod maps to member.period
-	MemberParticipation.InactiveFlag maps to member.inactive
-	Count maps to quantity
-// Added managingEntity
+	MemberParticipation.Inactive maps to member.inactive
+	ManagingEntity maps to managingEntity
 	
-Location maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-location:
+Location maps to Location:
 	Identifier maps to identifier
 	Status maps to status // change value set from http://hl7.org/fhir/ValueSet/location-status to http://hl7.org/fhir/ValueSet/location-status|4.0.0
 	OperationalStatus maps to operationalStatus
-	LocationName maps to name
+	Name maps to name
 	Alias maps to alias
 	CommentOrDescription maps to description
 	Mode maps to mode // Change value set from http://hl7.org/fhir/ValueSet/location-mode to http://hl7.org/fhir/ValueSet/location-mode|4.0.0
@@ -116,21 +105,24 @@ Location maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-locatio
 	Geoposition.Longitude maps to position.longitude
 	Geoposition.Altitude maps to position.altitude
 	ManagingOrganization maps to managingOrganization
-	MobileFacility maps to extension
 	PartOf maps to partOf
-// Added availabilityExceptions, hoursOfOperation (daysOfWeek, allDay, openingTime, closingTime)
+	HoursOfOperation.DayOfWeek maps to hoursOfOperation.daysOfWeek
+	HoursOfOperation.AllDay maps to hoursOfOperation.allDay
+	HoursOfOperation.OpeningTime maps to hoursOfOperation.openingTime
+	HoursOfOperation.ClosingTime maps to hoursOfOperation.closingTime
+	AvailabilityExceptions maps to availabilityExceptions
 
 Substance maps to Substance:
 	Identifier maps to identifier
 	Type maps to code
-	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/substance-status to http://hl7.org/fhir/ValueSet/substance-status|4.0.0
+	Status maps to status
 	Category maps to category // Change code system for extensibly bound codes from "http://hl7.org/fhir/substance-category" to "http://terminology.hl7.org/CodeSystem/substance-category"
 	CommentOrDescription maps to description
 	Ingredient maps to ingredient
 	Ingredient.IngredientAmount maps to ingredient.quantity
 	Ingredient.SubstanceOrCode maps to ingredient.substance[x]
 
-Medication maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication:
+Medication maps to Medication:
 	Identifier maps to extension  // added identifier !
 	Type maps to code
 	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/medication-status to http://hl7.org/fhir/ValueSet/medication-status|4.0.0
@@ -172,7 +164,7 @@ Specimen maps to Specimen:
 	SpecimenContainer.Additive maps to container.additive[x]
 // Added collection.duration, collection.fastingStatus[x], condition
 
-Device maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-device:
+Device maps to Device:
 	Identifier maps to identifier
 	Type maps to type
 	Status maps to status // change value set from http://hl7.org/fhir/ValueSet/device-status to http://hl7.org/fhir/ValueSet/device-status|4.0.0
