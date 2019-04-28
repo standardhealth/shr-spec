@@ -239,7 +239,7 @@ EntryElement:	Substance
 Based on:		Entity
 Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
-1..1			Type could be from http://hl7.org/fhir/ValueSet/substance-code
+1..1			Code could be from http://hl7.org/fhir/ValueSet/substance-code
 0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
 0..1			Status from http://hl7.org/fhir/ValueSet/substance-status
 0..1			CommentOrDescription
@@ -250,20 +250,20 @@ Description:	"Any matter of defined composition that has discrete existence, who
 		Concept:		MTH#C3176062
 		Description:	"Specifies an material component in a non-medication substance."
 		1..1			SubstanceOrCode
-		1..1			IngredientAmount
+		1..1			IngredientStrength
 		0..1			IsActiveIngredient
 
 			Element:		SubstanceOrCode
-						Description:	"A code or substance reference identifying the ingredient."
+			Description:	"A code or substance reference identifying the ingredient."
 			Value:			CodeableConcept or ref(Substance) or ref(Medication)
 
 			Element:		IsActiveIngredient
-						Description:	"True if the ingredient is an active ingredient in the medication."
+			Description:	"True if the ingredient is an active ingredient in the medication."
 			Value:			boolean // forced to use boolean by FHIR mapping 
 		
-			Element:		IngredientAmount
-						Description:	"The amount of an ingredient in a mixture, as a ratio. For example, 250 mg per tablet is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
-			Value:			Ratio
+			Element:	IngredientStrength
+			Description:	"Specifies how many (or how much) of the items there are in this Medication. For example, 250 mg per tablet. This is expressed as a ratio where the numerator is 250mg and the denominator is 1 tablet."
+			Value:		Ratio
 		
 EntryElement:	Medication
 Based on:		Entity
@@ -272,39 +272,23 @@ Description:	"A type of prescription drug or over-the-counter drug that is used 
 In FHIR DSTU2 and STU3, Medication lacks the identifier attribute, which is included in SHR as an extension.
 DSTU2 lacks the status attribute, which is required by US-Core.
 Batch is 0..1 in FHIR R4, and accordingly is restricted here."
+1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
 				Status from http://hl7.org/fhir/ValueSet/medication-status
-1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
-0..1			DoseForm
-0..1			Brand
-0..1			OverTheCounter
-0..*			Ingredient
 0..1			Manufacturer
+0..1			DoseForm
+0..1			PackageAmount
+0..*			Ingredient
 0..1			LotNumber
 0..1			ExpirationDate
-0..1			Package could be from 	http://hl7.org/fhir/ValueSet/medication-package-form
-0..0			PartOf
 
 		Element:		DoseForm
 		Concept:		MTH#C0013058
 		Description:	"The form in which active and/or inert ingredient(s) are physically presented."
 		Value:			CodeableConcept from FHIR/medication-form-codes
 
-		Element:		Brand
-				Description:	"If the product is branded, and if so, the brand name of a product."
-		1..1			IsBrand
-		0..1			BrandName
-
-			Element:		IsBrand
-						Description:	"If the product is branded."
-			Value:			boolean
-
-			Element: 		BrandName
-						Description:	"The marketing name for a brand name product"
-			Value:			string
-
-		Element:		OverTheCounter
-				Description:	"True if the medication is available to consumers without a prescription."
-		Value:			boolean
+		Element:		PackageAmount
+		Description:	"Specific amount of the drug in the packaged product. For example, when specifying a product that has the same strength (For example, Insulin glargine 100 unit per mL solution for injection), this attribute provides additional clarification of the package amount (For example, 3 mL, 10mL, etc.)."
+		Value:			Ratio
 
 		Element:		Manufacturer
 		Concept:		MTH#C1114744
@@ -317,12 +301,9 @@ Batch is 0..1 in FHIR R4, and accordingly is restricted here."
 		Value:			string
 
 		Element:		ExpirationDate
-				Description:	"When the item (medication, device, etc.) will expire."
+		Description:	"When the item (medication, device, etc.) will expire."
 		Value:			dateTime
-		
-		Element:		Package
-				Description:	"The kind of container the medication comes in."
-		Value:			CodeableConcept
+
 
 Element:		Person
 Concept:		MTH#C0027361
