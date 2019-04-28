@@ -52,6 +52,176 @@ SHR follows Argonaut and makes the value set binding on marital status required.
 	Description:"Whether the record is in use (true) or retired (false)."
 	Value:		boolean
 
+	Element:   		PlaceOfBirth
+	Concept:        MTH#C0032040
+	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
+	Value:          Address
+
+	Element:		ContactPerson
+	Description:	"A contact party (e.g. guardian, partner, friend) for the person"
+	0..*			Relationship
+	0..1			HumanName
+	0..*			ContactPoint
+	0..1			Address
+	0..1			AdministrativeGender
+	0..1			ref(Organization)
+	0..1			TimePeriod
+
+	Element:		MultipleBirth
+	Description:	"If the person was part of a multiple birth event, and if so in which order."
+	Value:			boolean or integer
+
+	Element:		BirthSex
+	Concept:		MTH#C4086849
+	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
+	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
+
+	Element:		Race
+	Concept:		MTH#C0034510
+	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
+	0..1			RaceCode
+	0..*			RaceDetail
+
+		Element:		RaceCode
+				Description:	"A code for the person's race"
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-race
+
+		Element:		RaceDetail
+				Description:	"Additional description of race or heritage."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-race
+
+	Element:		Ethnicity
+	Concept:		MTH#C0015031
+	Description:    "Indicator of Hispanic or Latino origin."
+	1..1			EthnicityCode          
+	0..*			EthnicityDetail
+
+		Element:		EthnicityCode
+		Description:	"A code for the person's ethnicity"
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
+
+		Element:		EthnicityDetail
+		Description:	"Additional description of ethnicity."
+		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity
+
+	Element:   		MothersMaidenName
+	Concept:		MTH#C0806887
+	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
+	Value:			HumanName
+
+	Element:		FathersName
+	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
+	Value:			HumanName
+
+	Element: 		SocialSecurityNumber
+	Concept:		MTH#C1301821
+	Description:	"A US social security number (SSN)."
+	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
+
+	Element:		DriversLicenseInformation
+	Description:	"Identifying information from a drivers license."
+	0..1			DriversLicenseNumber
+	0..1			StateOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element:		DriversLicenseNumber
+		Description:	"The drivers license number."
+		Value:			string
+
+		Element: 		StateOfIssue
+		Description:	"A state or country acting as an assuing authority for a document."
+		Value:			State
+	
+	Element:		PassportInformation
+	Concept:		MTH#C1549737
+	Description:	"Credential indicating citizenship."
+	1..1			PassportNumber
+	1..1			CountryOfIssue
+	0..1			EffectiveTimePeriod
+
+		Element:		PassportNumber
+		Description:	"The passport number."
+		Value:			string
+
+		Element: 		CountryOfIssue
+		Description:	"A country acting as an assuing authority for a document."
+		Value:			Country
+	
+
+	Element: 		MedicalInterpreter
+	Concept:		MTH#C1442531
+	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
+	1..1			MedicalInterpreterNeeded
+	1..1			Language
+
+		Element:		MedicalInterpreterNeeded
+		Concept:		MTH#C1442531
+		Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
+		Value:			CodeableConcept from YesNoUnknownVS
+
+	Element:   		MaritalStatus
+	Concept:		MTH#C0024819
+	Description:	"The most recent marital status of a person."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/marital-status // if covered  // DSTU 2 change -- MaritalStatus has a required binding in Argonaut
+
+	Element:		AnonymizedFlag
+	Concept:		MTH#C3858751
+	Description:	"Flag indicating if personally identifiable information has been withheld or disguised."
+	Value:			CodeableConcept from YesNoVS
+
+	Element:		FictionalPersonFlag
+	Concept:		MTH#C0887933
+	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
+	Value:			CodeableConcept from YesNoVS
+
+	Element:   		BirthDate
+	Concept:        MTH#C2919018, LNC#21112-8
+	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
+	Value: 			date or TimePeriod
+
+	Element:		AdministrativeGender
+	Concept:		MTH#C1550327
+	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
+	Value:          CodeableConcept from http://hl7.org/fhir/ValueSet/administrative-gender
+	
+	Element:		Communication  // not the Communication resource
+	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
+	1..1			Language // do not specify value set because argo R2 is different than US-Core in STU3
+	0..1			Preferred
+// removed attributes are not in FHIR
+//	0..1 			SpokenLanguageProficiency
+//	0..1 			WrittenLanguageProficiency
+//	0..*			LanguageQualifier
+
+			Element:		Preferred
+			Description:	"Indicates preference."
+			Value:			boolean
+
+			Element:		SpokenLanguageProficiency
+			Concept:		MTH#C0678997
+			Description:	"Accuracy and fluency in spoken communication in a language."
+			Value:			CodeableConcept from PerformanceGradingScaleVS
+
+			Element:		WrittenLanguageProficiency
+			Concept:		MTH#C0586739
+			Description:	"Accuracy and fluency of reading and writing in a language."
+			Value:			CodeableConcept from PerformanceGradingScaleVS
+
+			Element:		LanguageQualifier
+			Description:	"Additional information about a person's use of language."
+			Value:			CodeableConcept from LanguageQualifierVS
+
+	Element:		Deceased
+	Description:	"An indication that the person is no longer living, given by a date of death, or boolean value. The latter, when true, indicates the person is deceased."
+	Value:			boolean or dateTime
+
+/*
+		Element:		AgeAtDeath
+		Concept:		MTH#C1546180
+		Description:	"The age, age range, or age group when the cessation of life happens."
+		Value:			Age or Range
+*/
+	
 	Element:	GeneralPractitioner
 	Description:"Patient's nominated primary care provider."
 	Value:		ref(Organization) or ref(Practitioner)
@@ -239,9 +409,9 @@ EntryElement:	Substance
 Based on:		Entity
 Concept:		MTH#C0439861
 Description:	"Any matter of defined composition that has discrete existence, whose origin may be biological, mineral or chemical."
-1..1			Code could be from http://hl7.org/fhir/ValueSet/substance-code
-0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
 0..1			Status from http://hl7.org/fhir/ValueSet/substance-status
+0..*			Category from http://hl7.org/fhir/ValueSet/substance-category if covered
+1..1			Code could be from http://hl7.org/fhir/ValueSet/substance-code
 0..1			CommentOrDescription
 0..*			Ingredient
 0..0			PartOf
@@ -304,195 +474,6 @@ Batch is 0..1 in FHIR R4, and accordingly is restricted here."
 		Description:	"When the item (medication, device, etc.) will expire."
 		Value:			dateTime
 
-
-Element:		Person
-Concept:		MTH#C0027361
-Description:	"A person relevant to the health or social situation of the subject (including the subject him- or herself)."
-1..* 			HumanName
-0..1			BirthDate
-1..1			AdministrativeGender
-0..*			Address
-0..*			PhotographicImage
-0..*			ContactPoint
-0..*			ContactPerson
-0..*			Communication
-0..1		 	MaritalStatus 
-0..1			MultipleBirth
-0..1			BirthSex
-0..1		 	Race
-0..1		 	Ethnicity
-0..1			Deceased
-
-	Element:   		PlaceOfBirth
-	Concept:        MTH#C0032040
-	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
-	Value:          Address
-
-	Element:		ContactPerson
-	Description:	"A contact party (e.g. guardian, partner, friend) for the person"
-	0..*			Relationship
-	0..1			HumanName
-	0..*			ContactPoint
-	0..1			Address
-	0..1			AdministrativeGender
-	0..1			ref(Organization)
-	0..1			TimePeriod
-
-	Element:		MultipleBirth
-	Description:	"If the person was part of a multiple birth event, and if so in which order."
-	Value:			boolean or integer
-
-	Element:		BirthSex
-	Concept:		MTH#C4086849
-	Description:	"Administrative sex assigned at birth and recorded on birth certificate."
-	Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/us-core-birthsex
-
-	Element:		Race
-	Concept:		MTH#C0034510
-	Description:	"Subjective association of a person with a named category of humans sharing common history, traits, place of family origin, nationality, tribe, or other inherited background."
-	0..1			RaceCode
-	0..*			RaceDetail
-
-		Element:		RaceCode
-				Description:	"A code for the person's race"
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-race
-
-		Element:		RaceDetail
-				Description:	"Additional description of race or heritage."
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-race
-
-	Element:		Ethnicity
-	Concept:		MTH#C0015031
-	Description:    "Indicator of Hispanic or Latino origin."
-	1..1			EthnicityCode          
-	0..*			EthnicityDetail
-
-		Element:		EthnicityCode
-		Description:	"A code for the person's ethnicity"
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity
-
-		Element:		EthnicityDetail
-		Description:	"Additional description of ethnicity."
-		Value:			CodeableConcept from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity
-
-	Element:   		MothersMaidenName
-	Concept:		MTH#C0806887
-	Description:	"The name of the mother as it was or likely to have been recorded on the birth certificate of the subject. This is most likely the name prior to marriage of the mother (aka the maiden name)."
-	Value:			HumanName
-
-	Element:		FathersName
-	Description:	"The name of the father as it was or likely to have been recorded on the birth certificate of the subject; most likely the name of the father at the time of birth of the subject."
-	Value:			HumanName
-
-	Element: 		SocialSecurityNumber
-	Concept:		MTH#C1301821
-	Description:	"A US social security number (SSN)."
-	Value:			string   // note that missing value reasons include "none" - meaning the subject does not have a SSN
-
-	Element:		DriversLicenseInformation
-	Description:	"Identifying information from a drivers license."
-	0..1			DriversLicenseNumber
-	0..1			StateOfIssue
-	0..1			EffectiveTimePeriod
-
-		Element:		DriversLicenseNumber
-		Description:	"The drivers license number."
-		Value:			string
-
-		Element: 		StateOfIssue
-		Description:	"A state or country acting as an assuing authority for a document."
-		Value:			State
-	
-	Element:		PassportInformation
-	Concept:		MTH#C1549737
-	Description:	"Credential indicating citizenship."
-	1..1			PassportNumber
-	1..1			CountryOfIssue
-	0..1			EffectiveTimePeriod
-
-		Element:		PassportNumber
-		Description:	"The passport number."
-		Value:			string
-
-		Element: 		CountryOfIssue
-		Description:	"A country acting as an assuing authority for a document."
-		Value:			Country
-	
-
-	Element: 		MedicalInterpreter
-	Concept:		MTH#C1442531
-	Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-	1..1			MedicalInterpreterNeeded
-	1..1			Language
-
-		Element:		MedicalInterpreterNeeded
-		Concept:		MTH#C1442531
-		Description:	"Whether the subject requires an interpreter to communicate with an English-speaking provider."
-		Value:			CodeableConcept from YesNoUnknownVS
-
-	Element:   		MaritalStatus
-	Concept:		MTH#C0024819
-	Description:	"The most recent marital status of a person."
-	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/marital-status // if covered  // DSTU 2 change -- MaritalStatus has a required binding in Argonaut
-
-	Element:		AnonymizedFlag
-	Concept:		MTH#C3858751
-	Description:	"Flag indicating if personally identifiable information has been withheld or disguised."
-	Value:			CodeableConcept from YesNoVS
-
-	Element:		FictionalPersonFlag
-	Concept:		MTH#C0887933
-	Description:	"Flag indicating if this record represents a fictional (synthetic, not real) person."
-	Value:			CodeableConcept from YesNoVS
-
-	Element:   		BirthDate
-	Concept:        MTH#C2919018, LNC#21112-8
-	Description:    "A date of birth or approximate year or period (year or date range), if estimated."
-	Value: 			date or TimePeriod
-
-	Element:		AdministrativeGender
-	Concept:		MTH#C1550327
-	Description:    "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
-	Value:          CodeableConcept from http://hl7.org/fhir/ValueSet/administrative-gender
-	
-	Element:		Communication  // not the Communication resource
-	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
-	1..1			Language // do not specify value set because argo R2 is different than US-Core in STU3
-	0..1			Preferred
-// removed attributes are not in FHIR
-//	0..1 			SpokenLanguageProficiency
-//	0..1 			WrittenLanguageProficiency
-//	0..*			LanguageQualifier
-
-			Element:		Preferred
-			Description:	"Indicates preference."
-			Value:			boolean
-
-			Element:		SpokenLanguageProficiency
-			Concept:		MTH#C0678997
-			Description:	"Accuracy and fluency in spoken communication in a language."
-			Value:			CodeableConcept from PerformanceGradingScaleVS
-
-			Element:		WrittenLanguageProficiency
-			Concept:		MTH#C0586739
-			Description:	"Accuracy and fluency of reading and writing in a language."
-			Value:			CodeableConcept from PerformanceGradingScaleVS
-
-			Element:		LanguageQualifier
-			Description:	"Additional information about a person's use of language."
-			Value:			CodeableConcept from LanguageQualifierVS
-
-	Element:		Deceased
-	Description:	"An indication that the person is no longer living, given by a date of death, or boolean value. The latter, when true, indicates the person is deceased."
-	Value:			boolean or dateTime
-
-/*
-		Element:		AgeAtDeath
-		Concept:		MTH#C1546180
-		Description:	"The age, age range, or age group when the cessation of life happens."
-		Value:			Age or Range
-*/
-	
 EntryElement:	Organization
 Based on:		Entity
 Description:    "A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.
@@ -508,44 +489,6 @@ Organization type is restricted to 0..1 in FHIR DSTU2, similarly restricted here
 0..1			PartOf value is type ref(Organization)
 0..*			ContactPerson
 // endpoint -- not implemented
-
-EntryElement:	Device
-Based on:		Entity
-Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients.
-Device status cannot be reconciled between Argonaut and US-Core, each having different required value sets.
-Device type has extensible mappings to different value sets in Argonaut and US-Core, however both value sets have identical SNOMED content (descendants of 49062001 (Device). We adopt the US-Core value set, which is allowable because the binding is extensible."
-				//Status 
-				// from http://hl7.org/fhir/ValueSet/devicestatus in V2 argo
-				// from http://hl7.org/fhir/ValueSet/device-status in V3 us-core
-1..1			Type from http://hl7.org/fhir/ValueSet/device-kind
-1..1			DeviceUdi  // DSTU 2 change -- Argonaut requires 1..1 Udi (see http://build.fhir.org/ig/Healthedata1/Argo-DSTU2/StructureDefinition-argo-device.html)
-0..1 			VendorModelNumber  // called 'model' in CIMI
-0..1 			ManufacturerName // string, not ref(Organization) - only because of mapping to FHIR
-0..1			ManufactureDate
-0..1			ExpirationDate
-0..1 			VersionString
-0..1 			Url
-0..1			PartOf value is type ref(Device)
-
-	Element:		DeviceUdi
-	Description:	"Unique Device Identifier (UDI) Barcode string number for a device, assigned by the organization using the device."
-	Value:			string
-
-	Element:		VendorModelNumber
-	Description:	"The model number of the device, assigned by the manufacturer or vendor."
-	Value:			string
-
-	Element:		ManufacturerName
-	Description:	"The name of the company who produced the item."
-	Value:			string
-	
-	Element:		ManufactureDate
-	Description:	"When the item (medication, device, etc.) was produced."
-	Value:			dateTime
-	
-	Element:		Url
-	Description:	"A unique URL on which the device may be contacted directly."
-	Value:			uri
 
 EntryElement:	Specimen
 Based on:		Entity
@@ -636,6 +579,90 @@ Description:	"Direct container of specimen (slide, etc.)"
 		Value:			CodeableConcept
 		// BALLOT: Why is SpecimenContainer.SequenceNumber a CodeableConcept? It should be an integer or a string. I don't think the sequence number will ever be coded, and CodeableConcept  datatype is specifically designed for code mapping.
 
+EntryElement:	Device
+Based on:		Entity
+Description:	"A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients.
+Device status cannot be reconciled between Argonaut and US-Core, each having different required value sets.
+Device type has extensible mappings to different value sets in Argonaut and US-Core, however both value sets have identical SNOMED content (descendants of 49062001 (Device). We adopt the US-Core value set, which is allowable because the binding is extensible."
+// definition not implemented
+0..*		UdiCarrier
+//			Status from http://hl7.org/fhir/ValueSet/devicestatus in V2 argo, http://hl7.org/fhir/ValueSet/device-status in us-core
+0..*		StatusReason from http://hl7.org/fhir/ValueSet/device-status-reason if covered
+0..1		DistinctIdentifier
+0..1 		ManufacturerName // string, not ref(Organization) - only because of mapping to FHIR
+0..1		ManufactureDate
+0..1		ExpirationDate
+0..1		LotNumber
+0..1		SerialNumber
+0..*		DeviceName
+1..1		Type from http://hl7.org/fhir/ValueSet/device-kind
+// specialization not implemented
+0..1 		ModelNumber  // called 'model' in CIMI
+0..1 		VersionString // not all of the R4 version structure was implemented
+1..1		ref(Patient)  // argo-device set lower card
+0..1		Owner
+0..*		ref(ContactPoint)
+0..1		ref(Location)
+0..1 		Url
+0..*		Annotation
+0..*		Safety
+0..1		PartOf value is type ref(Device)
+
+	Element:		UdiCarrier
+	Description:	"Structure of the Unique Device Identifier (UDI) Barcode string number for a device, assigned by the organization using the device."
+	0..1		DeviceIdentifier
+	0..1		CarrierAIDC
+	0..1		CarrierHRF
+	0..1		Type from http://hl7.org/fhir/ValueSet/udi-entry-type
+	
+		Element:	DeviceIdentifier
+		Description:"Mandatory fixed portion of UDI"
+		Value:		string
+
+		Element:	CarrierAIDC
+		Description:"UDI Machine Readable Barcode String"
+		Value:		base64Binary
+
+		Element:	CarrierHRF
+		Description:"UDI Human Readable Barcode String"
+		Value:		string
+
+	Element:		ModelNumber
+	Description:	"The model number of the device, assigned by the manufacturer or vendor."
+	Value:			string
+
+	Element:		DistinctIdentifier
+	Description:	"The distinct identification string as required by regulation for a human cell, tissue, or cellular and tissue-based product."
+	Value:			string
+
+	Element:		ManufacturerName
+	Description:	"The name of the company who produced the item."
+	Value:			string
+	
+	Element:		ManufactureDate
+	Description:	"When the item (medication, device, etc.) was produced."
+	Value:			dateTime
+
+	Element:		SerialNumber
+	Description:	"Serial number assigned by the manufacturer."
+	Value:			string
+
+	Element:		DeviceName
+	Description:	"The name of the device as given by the manufacturer."
+	1..1			Name
+	1..1			Type from http://hl7.org/fhir/ValueSet/device-nametype
+	
+	Element:		Owner
+	Description:	"An organization that is responsible for the provision and ongoing maintenance of the device."
+	Value:			ref(Organization)
+
+	Element:		Url
+	Description:	"A unique URL on which the device may be contacted directly."
+	Value:			uri
+
+	Element:		Safety
+	Description:	"Provides additional safety characteristics about a medical device, for example, 'contains latex'."
+	Value:			CodeableConcept
 
 EntryElement:   Media
 Based on:		Entity
