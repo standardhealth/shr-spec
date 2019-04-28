@@ -4,15 +4,15 @@ Target:		FHIR_R4
 
 
 Questionnaire maps to Questionnaire:
-// Questionnaire.derivedFrom	Added Element
   Identifier maps to identifier
   Url maps to url
   VersionString maps to version
   NameAsText maps to name
   Title maps to title
-  Status maps to status  // Change value set from http://hl7.org/fhir/ValueSet/publication-status to http://hl7.org/fhir/ValueSet/publication-status|4.0.0
+  DerivedFromCanonical maps to derivedFrom
+  Status maps to status
   IsExperimental maps to experimental
-  SubjectType maps to subjectType  // Change value set from http://hl7.org/fhir/ValueSet/resource-types to http://hl7.org/fhir/ValueSet/resource-types|4.0.0
+  SubjectType maps to subjectType
   LastUpdated maps to date
   PublisherName maps to publisher
   ContactDetail maps to contact
@@ -28,52 +28,45 @@ Questionnaire maps to Questionnaire:
   Code maps to code
   QuestionnaireItem maps to item
   QuestionnaireItem.IdentifierString maps to item.linkId
-  QuestionnaireItem.DetailsLink maps to item.definition
+  QuestionnaireItem.DetailsUri maps to item.definition
   QuestionnaireItem.Code maps to item.code
   QuestionnaireItem.Prefix maps to item.prefix
   QuestionnaireItem.Question maps to item.text
-  QuestionnaireItem.Type maps to item.type  // Change value set from http://hl7.org/fhir/ValueSet/item-type to http://hl7.org/fhir/ValueSet/item-type|4.0.0
+  QuestionnaireItem.Type maps to item.type
   QuestionnaireItem.EnableWhen maps to item.enableWhen
-// Questionnaire.item.enableWhen.operator	Added Mandatory Element
   QuestionnaireItem.EnableWhen.Question maps to item.enableWhen.question
-// deleted in R4
-  QuestionnaireItem.EnableWhen.HasAnswer maps to item.enableWhen.hasAnswer  // Questionnaire.item.enableWhen.hasAnswer deleted
+  QuestionnaireItem.EnableWhen.EnableOperator maps to item.enableWhen.operator  // R4 item.enableWhen.hasAnswer was replaced by item.enableWhen.operator (boolean -> code)
   QuestionnaireItem.EnableWhen.AnswerValue maps to item.enableWhen.answer[x]
+  QuestionnaireItem.EnableBehavior maps to item.enableBehavior
   QuestionnaireItem.IsRequired maps to item.required
   QuestionnaireItem.MayRepeat maps to item.repeats
   QuestionnaireItem.IsReadOnly maps to item.readOnly
   QuestionnaireItem.MaxTextLength maps to item.maxLength
-// Renamed from options to answerValueSet; type changed from Reference(ValueSet) to canonical(ValueSet)
-// Questionnaire.item.answerOption	Renamed from option to answerOption
-// Questionnaire.item.answerOption.value[x]	Moved from Questionnaire.item.option to Questionnaire.item.answerOption; Add Type Reference(Resource)
-// Questionnaire.item.answerOption.initialSelected	Added Element
-  QuestionnaireItem.AnswerOption maps to item.option.value[x]
-// Renamed from initial[x] to initial; Max Cardinality changed from 1 to *; Remove Types boolean, decimal, integer, date, dateTime, time, string, uri, Attachment, Coding, Quantity, Reference(Resource)
-  QuestionnaireItem.PrepopulateValue maps to item.initial[x]
-// Questionnaire.item.initial.value[x] Added Mandatory Element
+  QuestionnaireItem.AnswerValueSet maps to item.answerValueSet  // renamed from options to answerValueSet; type changed from ref(ValueSet) to canonical
+  QuestionnaireItem.AnswerOption.AnswerOptionValue maps to item.answerOption.value[x]
+  QuestionnaireItem.AnswerOption.InitiallySelected maps to item.answerOption.initialSelected
+  QuestionnaireItem.PrepopulateValue maps to item.initial.value[x]
   QuestionnaireItem.QuestionnaireItem maps to item.item
-
 
 QuestionnaireResponse maps to QuestionnaireResponse:
   Identifier maps to identifier
   QuestionnaireResponseBasedOn maps to basedOn  // Type Reference -- Added Ref(ServiceRequest), removed Ref(ReferralRequest) and Ref(ProcedureRequest)
-  Questionnaire maps to questionnaire // Type changed from Reference(Questionnaire) to canonical(Questionnaire)
-  Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/questionnaire-answers-status to http://hl7.org/fhir/ValueSet/questionnaire-answers-status|4.0.0
+  QuestionnaireResponsePartOf maps to partOf
+  QuestionnaireCanonical maps to questionnaire // Type changed from Reference(Questionnaire) to canonical(Questionnaire)
+  Status maps to status
   FocusOfResponse maps to subject
-  CareContext maps to context  // deleted
+  CareContext maps to encounter  // changed from context to encounter
   StatementDateTime maps to authored
   QuestionnaireResponseRecorder maps to author  // Added Target Types Ref(PractitionerRole) and ref(Organization)
   PersonInformationSource maps to source  // Added Target Type PractitionerRole
   QuestionnaireResponseItem maps to item
   QuestionnaireResponseItem.IdentifierString maps to item.linkId
-  QuestionnaireResponseItem.DetailsLink maps to item.definition
+  QuestionnaireResponseItem.DetailsUri maps to item.definition
   QuestionnaireResponseItem.Question maps to item.text
-  QuestionnaireResponseItem.FocusOfResponse maps to item.subject  // deleted
   QuestionnaireResponseItem.Answer maps to item.answer
   QuestionnaireResponseItem.QuestionnaireResponseItem maps to item.item
   QuestionnaireResponseItem.Answer.AnswerValue maps to item.answer.value[x]
   QuestionnaireResponseItem.Answer.QuestionnaireResponseItem maps to item.answer.item
-// QuestionnaireResponse.parent renamed to partOf
-// Added element QuestionnaireResponse.encounter
+  
 
 

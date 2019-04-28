@@ -2,7 +2,7 @@ Grammar:		DataElement 5.0
 Namespace:		shr.core
 
 /*
-Abstract Element:   PublishedArtifact
+Abstract Element:   PublishedArtifact  // might be a useful parent class
 Based on:           DomainResource
 Description:    "Abstract class with common elements for information items that are published."
 0..1 		    Url
@@ -29,6 +29,7 @@ Description:    "A structured set of questions intended to guide the collection 
 0..1            VersionString
 0..1            NameAsText
 0..1            Title
+0..*            DerivedFromCanonical
 1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
 0..1            IsExperimental
 0..*            SubjectType
@@ -40,8 +41,8 @@ Description:    "A structured set of questions intended to guide the collection 
 0..*            Jurisdiction
 0..1            PurposeMarkdown
 0..1            Copyright
-0..1            LastReviewedDate
 0..1            ApprovalDate
+0..1            LastReviewedDate
 0..1            EffectiveTimePeriod
 0..*            Code could be from http://hl7.org/fhir/ValueSet/questionnaire-questions
 0..*            QuestionnaireItem
@@ -57,12 +58,13 @@ Description:    "A structured set of questions intended to guide the collection 
     Element:    QuestionnaireItem
     Description:  "Questions and sections within the Questionnaire."
     1..1        IdentifierString
-    0..1        DetailsLink
+    0..1        DetailsUri
     0..*        Code could be from http://hl7.org/fhir/ValueSet/questionnaire-questions
     0..1        Prefix
     0..1        Question
     1..1        Type from http://hl7.org/fhir/ValueSet/item-type
     0..*        EnableWhen
+    0..1        EnableBehavior
     0..1        IsRequired
     0..1        MayRepeat
     0..1        IsReadOnly
@@ -72,37 +74,50 @@ Description:    "A structured set of questions intended to guide the collection 
     0..*        PrepopulateValue
     0..*        QuestionnaireItem
 
-      Element: 		DetailsLink
-      Description:	"The date on which the item was officiallly deemed acceptable by the publisher."
-      Value:			uri
+        Element: 		DetailsUri
+        Description:	"A URI that refers to an ElementDefinition that provides information about this item, including information that might otherwise be included in the instance of the Questionnaire resource."
+        Value:		uri
 
-      Element:    Question
-      Description:  "The text of the question."
-      Value:      string
+        Element:    Question
+        Description:  "The text of the question."
+        Value:      string
 
-      Element:    IsRequired
-      Description:  "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
-      Value:      boolean
+        Element:    IsRequired
+        Description:  "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
+        Value:      boolean
 
-      Element:    MayRepeat
-      Description:  "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
-      Value:      boolean
+        Element:    EnableBehavior
+        Description:"Controls how multiple enableWhen values are interpreted - whether all or any must be true."
+        Value:      code from http://hl7.org/fhir/ValueSet/questionnaire-enable-behavior
 
-      Element:    IsReadOnly
-      Description:  "An indication, when true, that the value cannot be changed by a human respondent to the Questionnaire."
-      Value:      boolean
+        Element:    MayRepeat
+        Description:  "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
+        Value:      boolean
 
-      Element:  MaxTextLength
-      Description:  "The maximum number of characters that are permitted in a text field."
-      Value: integer
+        Element:    IsReadOnly
+        Description:  "An indication, when true, that the value cannot be changed by a human respondent to the Questionnaire."
+        Value:      boolean
 
-      Element:   AnswerValueSet
-      Description:  "Valueset containing permitted answers."
-      Value:    ref(ValueSet)
+        Element:  MaxTextLength
+        Description:  "The maximum number of characters that are permitted in a text field."
+        Value: integer
 
-      Element:  AnswerOption
-      Description:  "One of the permitted answers for a 'choice' or 'open-choice' question."
-      Value:    integer or date or time or string or Coding or ref(DomainResource)
+        Element:   AnswerValueSet
+        Description:  "Canonical URL of the valueset containing permitted answers."
+        Value:    CanonicalUrl
+
+        Element:  AnswerOption
+        Description:  "One of the permitted answers for a 'choice' or 'open-choice' question, and whether that answer should be initially selected."
+        1..1      AnswerOptionValue
+        0..1      InitiallySelected
+      
+            Element: AnswerOptionValue
+            Description:"A potential answer that's allowed as the answer to this question."
+            Value:    integer or date or time or string or Coding or ref(DomainResource)
+
+            Element: InitiallySelected
+            Description:   "Whether option is selected by default."
+            Value: boolean
 
       Element:  PrepopulateValue
       Description:  "One or more values that should be pre-populated in the answer when initially rendering the questionnaire for user input."
@@ -111,31 +126,40 @@ Description:    "A structured set of questions intended to guide the collection 
       Element:  EnableWhen
       Description:  "A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true."
       1..1      Question
-      0..1      HasAnswer
-      0..1      AnswerValue
+      1..1      EnableOperator
+      1..1      AnswerValue
 
-        Element:    HasAnswer
-        Description:  "An indication that this item should be enabled only if the specified question is answered (hasAnswer=true) or not answered (hasAnswer=false)."
-        Value:      boolean
+        Element:    EnableOperator
+        Description:  "Specifies the criteria by which the question is enabled."
+        Value:  code from http://hl7.org/fhir/ValueSet/questionnaire-enable-operator
 
         Element:  AnswerValue
         Description:  "The answer to a question."
-        Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Attachment or Coding or Quantity or ref(DomainResource)
-
+        Value:    boolean or decimal or integer or date or dateTime or time or string or uri or Coding or Quantity or ref(DomainResource)
 
 EntryElement:   QuestionnaireResponse
 Based on:       DomainResource
 Description:    "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to."
 0..1            Identifier
 0..*            BasedOn is type QuestionnaireResponseBasedOn
-0..1            ref(Questionnaire)
+0..*            QuestionnaireResponsePartOf
+0..1            QuestionnaireCanonical
 1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
 0..1            FocusOfResponse value is type ref(DomainResource)
-0..1            CareContext
+0..1            CareContext value is type ref(Encounter)
 0..1            StatementDateTime
 0..1            QuestionnaireResponseRecorder
 0..1			PersonInformationSource
 0..*            QuestionnaireResponseItem
+
+    Element:    QuestionnaireResponsePartOf
+    Based on:   PartOf
+    Description:"A procedure or observation that this questionnaire was performed as part of the execution of. For example, the surgery a checklist was executed as part of."
+    Value:      ref(Observation) or ref(Procedure)
+
+    Element: QuestionnaireCanonical
+    Description:"The Questionnaire that defines and organizes the questions for which answers are being provided."
+    Value:  CanonicalUrl
 
     Element:    FocusOfResponse
     Description:    "The subject of the questionnaire response. This could be a patient, organization, practitioner, device, etc. This is who/what the answers apply to, but is not necessarily the source of information."
@@ -143,12 +167,12 @@ Description:    "A structured set of questions and their answers. The questions 
 
 	Element:		QuestionnaireResponseRecorder
 	Description:	"The recorder of the information, who received and recorded the answers. For example, the nurse taking a list of medications reported by the patient."
-	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson) or ref(Device) 
+	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson) or ref(Device) // missing PractitionerRole, Organization (not supported in STU3)
 
     Element:    QuestionnaireResponseItem
     Description:  "Questions and sections within the Questionnaire."
     1..1        IdentifierString
-    0..1        DetailsLink
+    0..1        DetailsUri
     0..1        Question
     0..1        FocusOfResponse
     0..*        Answer
@@ -161,4 +185,4 @@ Description:    "A structured set of questions and their answers. The questions 
 
         Element:  QuestionnaireResponseBasedOn
         Based on:   BasedOn
-        Value:  ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
+        Value:  ref(ServiceRequest) or ref(ReferralRequest) or ref(ProcedureRequest)  // CarePlan not yet implemented
