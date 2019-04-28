@@ -25,7 +25,7 @@ Based on:		Role
 Concept: 		MTH#C1299487
 Description:	"A person in the role of a patient. Sometimes, the patient is not the subject of information in a clinical statement where the Patient is the SubjectOfRecord.
 
-SHR follows Argonaut and makes the value set binding on marital status required. SHR also adds optional extensions on communication ability to more fully characterize language skills.
+SHR follows Argonaut and makes the value set binding on marital status required.
 MaritalStatus has a required binding in Argonaut, but an extensible binding in US-Core. To be feasible under both DSTU2 Argonaut and STU3 US-Core, the required binding strength is adopted."
 1..*			Identifier
 1..1			Person
@@ -81,14 +81,9 @@ Based on:		Role
 Description:	"A person in a role defined in relationship to a patient"
 0..1			Person
 0..1			Status from ActiveOrInactiveVS
-0..1			RelationshipToPatient
+0..1			Relationship from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype  // required binding in DSTU 2
 0..1			EffectiveTimePeriod
-1..1			Person.HumanName   // DSTU 2 change (max cardinality of 1 imposed by DSTU 2)
-
-			Element:		RelationshipToPatient
-			Concept:		MTH#C0015608
-			Description: 	"The relationship to the person of record."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype // DSTU 2 change -- change from extensible to required since this value set is required in DSTU 2
+1..1			Person.HumanName   // max cardinality imposed by DSTU 2
 
 EntryElement:	Group
 Based on:		Entity
@@ -290,6 +285,7 @@ Description:	"A person relevant to the health or social situation of the subject
 0..*			Address
 0..*			PhotographicImage
 0..*			ContactPoint
+0..*			ContactPerson
 0..*			Communication
 0..1		 	MaritalStatus 
 0..1			MultipleBirth
@@ -309,6 +305,16 @@ Description:	"A person relevant to the health or social situation of the subject
 	Concept:        MTH#C0032040
 	Description:    "The location of a birth event. There may be multiple entries, but a person has only one place of birth."
 	Value:          Address
+
+	Element:		ContactPerson
+	Description:	"A contact party (e.g. guardian, partner, friend) for the person"
+	0..*			Relationship
+	0..1			HumanName
+	0..*			ContactPoint
+	0..1			Address
+	0..1			AdministrativeGender
+	0..1			ref(Organization)
+	0..1			TimePeriod
 
 	Element:		MultipleBirth
 	Description:	"If the person was part of a multiple birth event, and if so in which order."
@@ -431,9 +437,10 @@ Description:	"A person relevant to the health or social situation of the subject
 	Description:	"Language used for communication by a human, either the subject of record, parent, or other involved person."
 	1..1			Language // do not specify value set because argo R2 is different than US-Core in STU3
 	0..1			Preferred
-	0..1 			SpokenLanguageProficiency
-	0..1 			WrittenLanguageProficiency
-	0..*			LanguageQualifier
+// removed attributes are not in FHIR
+//	0..1 			SpokenLanguageProficiency
+//	0..1 			WrittenLanguageProficiency
+//	0..*			LanguageQualifier
 
 			Element:		Preferred
 			Description:	"Indicates preference."
