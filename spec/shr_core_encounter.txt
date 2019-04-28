@@ -40,7 +40,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 //0..1			Hospitalization
 0..*			EncounterLocation
 0..1			PartOf value is type ref(Encounter)
-				BasedOn is type EncounterBasedOn
+				BasedOn is type BasedOnReferral
 
 		Element:		EncounterParticipant
 		Based on:		Participant
@@ -84,7 +84,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 		Description:"Reason the encounter is taking place."
 		Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)	
 
-		Element:	EncounterBasedOn
+		Element:	BasedOnReferral
 		Based on:	BasedOn
 		Description:"The request that initiated this encounter."
 		Value:		ref(ReferralRequest)
@@ -146,7 +146,7 @@ Based on:		DomainResource
 Description:	"A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
 1..1	Status from http://hl7.org/fhir/ValueSet/appointmentstatus
 0..1	ServiceCategory
-0..*	ServiceDetails
+0..*	ServiceDetails  // ServiceType
 0..*	Specialty
 0..1	Type should be from http://hl7.org/fhir/ValueSet/v2-0276
 0..1	ReasonCode  // upper card is 1 in DSTU2
@@ -156,7 +156,7 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 0..1	CommentOrDescription
 0..1	PatientInstruction
 0..*	SupportingInformation 
-0..*	ref(ReferralRequest)
+0..*	BasedOn is type BasedOnReferral
 1..*	AppointmentParticipation
 0..1	TimePeriod
 0..*	ExpectedPerformanceTime
@@ -194,7 +194,6 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 			Element:	Need
 			Description: "A code expressing the degree or type of need for the person or item."
 			Value:		CodeableConcept
-
 
 /*  CIMI attributes for possible future use
 
