@@ -12,12 +12,12 @@ Description:		"A sub-observation contributing to the parent observation, express
 1..1			Code
 0..1			DataValue
 0..1			DataAbsentReason
+0..1			Interpretation  // R4 upper card * not implemented
 0..1			ReferenceRange
-0..1			Interpretation
 
 		Element:		DataValue
 		Description:	"The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
-		Value:			CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod
+		Value:			CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod or SampledData
 		// exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Attachment because it is not present in FHIR v4
 
 		Element:		DataAbsentReason
@@ -27,10 +27,12 @@ Description:		"A sub-observation contributing to the parent observation, express
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
-		0..1			Range   // TODO: align this with FHIR
-		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			LowerBound
+		0..1			UpperBound
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered  // R4 changes binding  from extensible to preferred -- not implemented
 		0..1			ApplicableSubpopulation
 		0..1			ApplicableAgeRange
+		0..1			Text
 		
 				Element:	ApplicableSubpopulation
 				Concept:	MTH#C0039309 "Target Population"
@@ -63,22 +65,37 @@ Based on:		SituationStatement
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
-0..1			DataValue
-0..1			DataAbsentReason
-0..1			Method
-0..1			RelevantTime
+0..*			ObservationBasedOn
+0..*			PartOf is type ObservationPartOf
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
-0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
-0..*			Performer
-0..1			BodyLocation
-0..1			CommentOrDescription
-0..1			Interpretation
-0..1			Device
-0..1			ReferenceRange
-0..1			Components
-0..1			PanelMembers
+// FHIR-- missing StatusReason
+0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // upper card forced by DSTU 2
 1..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..*			FocalSubject
 				CareContext value is type ref(Encounter)
+0..1			RelevantTime  // R4 add Timing, instant -- not supported
+0..*			Performer
+0..1			DataValue  // added integer -- not supported
+0..1			DataAbsentReason
+0..1			Interpretation // R4 upper card from 1 to * -- not supported
+0..*			Annotation
+0..1			BodyLocation
+0..1			Method
+// Specimen added at LaboratoryObservation
+0..1			ref(Device)
+0..1			ReferenceRange
+0..1			PanelMembers
+0..*			ObservationDerivedFrom
+0..1			Components
+
+		Element:		ObservationBasedOn
+		Description:	"A plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
+		Value: ref(MedicationRequest) or ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)  // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder) 
+
+		Element:		ObservationPartOf
+		Based on:		PartOf
+		Description:	"A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure."
+		Value: ref(MedicationAdministration) or ref(MedicationDispense) or ref(MedicationStatement) or ref(Procedure) // or ref(ImagingStudy) or ref(Immunization)
 
         Element:		ObservationSubjectOfRecord
 		Based on:		SubjectOfRecord
@@ -88,14 +105,13 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Element:		RelevantTime
 		Description:	"The time or time period that the statement addresses.
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
+		Value:			dateTime or TimePeriod // not supporting Timing (dateTime can map to instant)
 
 		Element:		Performer
 		Description: 	"The actor that carried out the observation or action."
 		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
 
 		Element:		Interpretation
-		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 
@@ -105,12 +121,16 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
+		Element:		ObservationDerivedFrom
+		Based on:		DerivedFrom
+		Description:	"The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image."
+		Value:			ref(DocumentReference) or ref(Media) or ref(QuestionnaireResponse) or ref(Observation) // or ref(MolecularSequence) or ref(ImagingStudy)
+
 		Element:		Components
 		Description:	"Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 		0..* 			ref(ObservationComponent)
 
-/* commented out but it might need to come back, so please save
-
+/* commented out but might need to come back, so saving
 		Element:		DeltaFlag
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
@@ -165,10 +185,9 @@ EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen, usually collected from a patient (but possibly from a location)."
 				Code from http://hl7.org/fhir/ValueSet/observation-codes if covered
-1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 0..1			Specimen
 0..0			BodyLocation  // BodyLocation is determined indirectly from Specimen.CollectionSite
-				Category is OBSCAT#laboratory
+1..1			Category is OBSCAT#laboratory
 				Performer is type PractitionerOrOrganizationPerformer
 				Identifier
 	includes 	0..1 AccessionIdentifier
@@ -448,7 +467,7 @@ Based on:		SituationStatement
 	Element:		DiagnosticReportBasedOn
 	Based on:		BasedOn
 	Description:	"The request or order that initiated this report."
-	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)
+	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest) or ref(MedicationRequest)
 	// or CarePlan or ImmunizationRecommendation or NutritionOrder or MedicationRequest 
 
 EntryElement:	ClinicalNote

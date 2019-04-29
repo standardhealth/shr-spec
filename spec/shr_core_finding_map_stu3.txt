@@ -6,44 +6,50 @@ Target:		FHIR_STU_3
 // do not map Observation to US Core Results -- Brett says that's meant for for lab observations
 Observation maps to Observation:
 	Identifier maps to identifier
-	SubjectOfRecord maps to subject
-	Performer maps to performer
-	Code maps to code
-	Method maps to method
-	CommentOrDescription maps to comment
+	ObservationBasedOn maps to basedOn
+	ObservationPartOf maps to extension
+	Status maps to status
 	Category maps to category
+	Code maps to code
+	ObservationSubjectOfRecord maps to subject
+	FocalSubject maps to extension 
+	CareContext maps to context
+	RelevantTime maps to effective[x]
+	StatementDateTime maps to issued
+	Performer maps to performer
+	DataValue maps to value[x]
+	DataAbsentReason maps to dataAbsentReason
+	Interpretation maps to interpretation
+	Annotation maps to extension
 	BodyLocation.Code maps to bodySite
 	BodyLocation.Laterality maps to bodySite.extension
 	BodyLocation.Orientation maps to bodySite.extension
 	BodyLocation.RelationToLandmark maps to bodySite.extension
+	Method maps to method
 	Device maps to device
-	StatementDateTime maps to issued
 	ReferenceRange maps to referenceRange
-	ReferenceRange.Range.LowerBound maps to referenceRange.low
-	ReferenceRange.Range.UpperBound maps to referenceRange.high
+	ReferenceRange.LowerBound maps to referenceRange.low
+	ReferenceRange.UpperBound maps to referenceRange.high
 	ReferenceRange.Type maps to referenceRange.type
 	ReferenceRange.ApplicableSubpopulation maps to referenceRange.appliesTo
 	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
+	ReferenceRange.Text maps to referenceRange.text
+	fix related.type to #has-member
+	PanelMembers maps to related
+	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	ObservationDerivedFrom maps to extension
 	Components.ObservationComponent maps to component (slice on = code.coding.code; slice strategy = includes)
 	Components.ObservationComponent.Code maps to component.code
 	Components.ObservationComponent.DataValue maps to component.value[x]
 	Components.ObservationComponent.DataAbsentReason maps to component.dataAbsentReason
-	//Components.ObservationComponent.Interpretation maps to component.interpretation
+	Components.ObservationComponent.Interpretation maps to component.interpretation
 	Components.ObservationComponent.ReferenceRange maps to component.referenceRange
-	fix related.type to #has-member
-	PanelMembers maps to related
-	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
-	DataValue maps to value[x]
-	DataAbsentReason maps to dataAbsentReason
-	Interpretation maps to interpretation
-//	Issued maps to issued
-	Status maps to status
-	RelevantTime maps to effective[x]
-	CareContext maps to context
-//	DeltaFlag maps to http://hl7.org/fhir/StructureDefinition/observation-delta
-
-NonLaboratoryObservation maps to Observation:
-	constrain specimen to 0..0
+	Components.ObservationComponent.ReferenceRange.LowerBound maps to component.referenceRange.low
+	Components.ObservationComponent.ReferenceRange.UpperBound maps to component.referenceRange.high
+	Components.ObservationComponent.ReferenceRange.Type maps to component.referenceRange.type
+	Components.ObservationComponent.ReferenceRange.ApplicableSubpopulation maps to component.referenceRange.appliesTo
+	Components.ObservationComponent.ReferenceRange.ApplicableAgeRange maps to component.referenceRange.age
+	Components.ObservationComponent.ReferenceRange.Text maps to component.referenceRange.text
 
 LaboratoryObservation maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observationresults:  
 	Specimen maps to specimen
