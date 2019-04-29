@@ -313,32 +313,29 @@ Description:	"The result of social history questions, whose answer is expressed 
 
 EntryElement:	Condition
 Based on:		SituationStatement
-Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
 SHR Condition uses the SHR BodyLocation structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
-				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
-0..1			PersonInformationSource
-1..1			SubjectOfRecord is type PatientSubjectOfRecord   // restricted in DSTU 2 (from Patient or Group)
-1..1			Category should be from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
-0..*			BodyLocation
-1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
-0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
-0..1			StageInformation
+1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
+1..1			Category from ConditionCategoryVS if covered  // category is 1..1 in Argonaut
+0..1			Severity should be from http://hl7.org/fhir/ValueSet/condition-severity
+				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
+0..*			BodyLocation
+1..1			SubjectOfRecord is type PatientSubjectOfRecord   // restricted in DSTU 2 (from Patient or Group)
+0..1			CareContext value is type ref(Encounter)	
 0..1			Onset
 0..1			Abatement
+0..1			Author
+0..1			PersonInformationSource 
+0..1			StageInformation
 0..1			Evidence
+0..*			Annotation
+// SHR extension
 0..1			DateOfDiagnosis
-// Stuff from CIMI eliminated
-//0..1			WhenClinicallyRecognized
-//0..*			ConditionCause
-//0..1			Criticality
 
-		Element:		DateOfDiagnosis
-		Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
-		Value:			date
-
-        Element:		PersonInformationSource
+		Element:		PersonInformationSource
+		Based on:		InformationSource
 		Description:	"The person who provided the information, not necessarily the patient."
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) // may need to add PractitionerRole
 
@@ -351,63 +348,49 @@ SHR Condition uses the SHR BodyLocation structure that includes not only a code,
 			Description: "Clinical symptoms/signs."
 			Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
-		Element:		ConditionCause
-		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
-		Value:			CodeableConcept // or ref(Entity) or ref(SituationStatement)
-			// probably other attributes needed, such as likelihood or type of cause
+		Element:		ClinicalStatus
+		Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+		Value:			CodeableConcept
 
-			Element:		ClinicalStatus
-			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+		Element:		Severity
+		Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
+		Value: 			CodeableConcept
+
+		Element:		StageInformation
+		Description:	"The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
+		0..1			StageSummary
+		0..1			StageDetail
+		0..1			Type could be from http://hl7.org/fhir/ValueSet/condition-stage-type
+			
+			Element:		StageSummary
+			Description:	"A code representing the current stage of a disease."
 			Value:			CodeableConcept
 
-			Element:		WhenClinicallyRecognized
-			Description:	"The time at which a condition or condition was first identified in a healthcare context."
-			Value:			date
+			Element:		StageDetail
+			Description:	"The full staging information"
+			Value:			ref(Observation) or ref(DiagnosticReport) // or ClinicalImpression
 
-			Element:		Severity
-			Concept:		MTH#C0392364
-			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept
-
-			Element:		Criticality
-			Concept:		MTH#C3858539 "Criticality"
-			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-
-			Element:		StageInformation
-			Concept:		MTH#C0699749
-			Description:	"The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
-			0..1			StageSummary
-			0..1			StageDetail
+		Element:		Onset
+		Description:	"The beginning or first appearance of a mental or physical disorder."
+		Value:			dateTime or Age or TimePeriod or Range or string
 			
-					Element:		StageSummary
-					Description:	"A code representing the current stage of a disease."
-					Value:			CodeableConcept
+		Element:		Abatement
+		Description:	"The end, remission or resolution."
+		Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
-					Element:		StageDetail
-					Description:	"The full staging information"
-					Value:			ref(Observation)
+		Element:		DateOfDiagnosis
+		Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
+		Value:			date
 
+/* Hold
 			Element:		AlleviatingFactor
-			Concept:		LNC#55258-8
 			Description:	"Activities that reduce the severity of the pathology"
 			Value:			CodeableConcept
 
 			Element:		ExacerbatingFactor
-			Concept:		LNC#55258-8
 			Description:	"Activities that increase the severity of the pathology"
 			Value:			CodeableConcept
-
-			Element:		Onset
-			Concept:		LNC#85585-8
-			Description:	"The beginning or first appearance of a mental or physical disorder."
-			Value:			dateTime or Age or TimePeriod or Range or string
-			
-			Element:		Abatement
-			Concept:		LNC#88878-4
-			Description:	"The end, remission or resolution."
-			Value:			dateTime or Age or boolean or TimePeriod or Range or string
-
+*/
 
 EntryElement:	ComorbidCondition
 Based on:		Condition
