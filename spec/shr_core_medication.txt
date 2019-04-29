@@ -9,53 +9,62 @@ Description:	"Defines a specific application of over-the-counter and prescribed/
 */ 
 
 Element:		Dosage
-Concept:		MTH#C0178602
 Description:	"The dosage of the medication. The data structure is flexible and can describe a dosage prescribed, administered, or reported."
-0..1			DoseAmount
-0..1			TimingOfDoses
-0..1			AsNeededIndicator
-0..1			DosageInstructionsText
-0..*			AdditionalDosageInstruction from http://hl7.org/fhir/ValueSet/additional-instruction-codes
+0..1			DoseSequenceNumber
+0..1			InstructionText
+0..*			InstructionCode could be from http://hl7.org/fhir/ValueSet/additional-instruction-codes
+0..1			PatientInstruction
+0..1			Timing
+0..1			AsNeeded
+0..1			AdministrationSite
 0..1			RouteIntoBody from http://hl7.org/fhir/ValueSet/route-codes
-0..1			DosageMethod from http://hl7.org/fhir/ValueSet/administration-method-codes
-0..1			DosageBodyLocation
-0..1			MaximumDosePerTimePeriod
+0..1			Method should be from http://hl7.org/fhir/ValueSet/administration-method-codes
+0..1			DoseAndRate  // STU3 allows 0..1 dose[x] and rate[x]
+0..1			MaxDosePerPeriod
+0..1			MaxDosePerAdministration
+0..1			MaxDosePerLifetime
 
-		Element:		DoseAmount
-		Description:	"The amount of medication taken per dose, as a quantity or range. Relative dose (e.g., per kg body weight or surface area) are indicated by specifying appropriate units (e.g., mg/kg or mg/m2 etc)."
-		Value:			SimpleQuantity or Range
+		Element:		DoseSequenceNumber
+		Description:	"Dose number within series."
+		Value:			integer
 
-		Element:		TimingOfDoses
-		Description:	"When doses of medication should be administered."
-		Value:			Timing
-
-		Element:		AsNeededIndicator
-		Concept:		MTH#C1883728
-		Description:	"Indicates the pre-condition under which the drug or intervention should be used."
-		Value:			boolean or CodeableConcept could be from http://hl7.org/fhir/ValueSet/medication-as-needed-reason
-		
-		Element:		DosageInstructionsText
+		Element:		InstructionText
 		Description:	"The directions (signetur) on the drug prescription or dispensing record."
 		Value:			string
 
-		Element:		AdditionalDosageInstruction
-		Concept:		MTH#C1644714
-		Description:	"Supplemental instructions - e.g. 'with meals'."
+		Element:		InstructionCode
+		Description:	"Coded instructions, e.g., 'with meals'."
 		Value:			CodeableConcept
 
-		Element:		DosageMethod
-		Concept:		MTH#C1547585
-		Description:	"Technique for administering medication."
-		Value:			CodeableConcept
+		Element:		AdministrationSite
+		Description:	"The anatomic site at which the medication applied."
+		Value:			CodeableConcept could be from BodyLocationVS
 
-		Element:		DosageBodyLocation
-		Concept:		MTH#C0229986
-		Description:	"The anatomic site at which medical intervention is applied."
-		Value:			CodeableConcept should be from BodyLocationVS
-
-		Element:		MaximumDosePerTimePeriod
+		Element:		MaxDosePerPeriod
 		Description:	"The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
 		Value:			Ratio
+
+		Element:		MaxDosePerAdministration
+		Description:	"Upper limit on medication per administration."
+		Value:			SimpleQuantity
+
+		Element:		MaxDosePerLifetime
+		Description:	"Upper limit on medication per lifetime of the patient."
+		Value:			SimpleQuantity
+
+		Element:		DoseAndRate
+		Description:	"The amount of medication administered."
+		0..1			Type could be from http://hl7.org/fhir/ValueSet/dose-rate-type
+		0..1			DoseAmount
+		0..1			DoseRate
+
+			Element:		DoseAmount
+			Description:	"The amount of medication taken per dose, as a quantity or range. Relative dose (e.g., per kg body weight or surface area) are indicated by specifying appropriate units (e.g., mg/kg or mg/m2 etc)."
+			Value:			SimpleQuantity or Range
+
+			Element:		DoseRate
+			Description:	"The speed with which the medication was or will be introduced into the patient. Typically the rate is used to describe an infusion, e.g,. 100 ml per 1 hour or 100 ml/hr."
+			Value:		Ratio or Range or SimpleQuantity
 
 
 Abstract Element:	MedicationExposure
@@ -80,23 +89,33 @@ FHIR Notes:
 Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). Extensions are provided.
 
 The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
-ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick one type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously.
+ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick a type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously.
 
 Preference is given to using the National Library of Medicine (NLM) RxNorm terminology for medications. RxNorm is a coding standard established by the Office of the National Coordinator (ONC). However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. MedicationStatement allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs."
-//SHR does not allow the MedicationStatement to represent not taking a drug, fixing taken to yes (y), and setting the cardinality for reasonNotTaken to 0..0. Status values can be used to indicated 'stopped' or 'not taken' if those values are available in a given FHIR version.
-0..1			MedicationStatementInformationSource
+				BasedOn is type MedicationStatementBasedOn
+0..*			MedicationStatementPartOf	
+				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
+0..*			StatusReason
+0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
+//1..1 MedicationCodeOrReference (inherited, no change)
 				SubjectOfRecord is type PatientSubjectOfRecord // no Group in DSTU2
 1..1			StatementDateTime // us-core required
-0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
-				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
+0..1			MedicationStatementInformationSource
+0..*			DerivedFromReference
 0..1			ReasonCode // Upper cardinality imposed by DSTU 2
 0..1			ReasonReference is type MedicationReasonReference // value is type ref(Condition)
 0..0			Participation
-				BasedOn is type MedicationStatementBasedOn
-0..1			TreatmentIntent			
+0..*			Annotation
+// SHR extensions
+0..1			TreatmentIntent 			
 0..*			TerminationReason from TreatmentTerminationReasonVS
 
-	Element:		MedicationStatementInformationSource		
+	Element:		MedicationStatementPartOf
+	Based on:		PartOf
+	Description:	"A larger event of which this particular event is a component or step."
+	Value:			ref(MedicationAdministration) or ref(MedicationDispense) or ref(MedicationStatement) or ref(Procedure) or ref(Observation)
+
+	Element:		MedicationStatementInformationSource
 	Description:	"The informant for this medication statement."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
@@ -128,6 +147,15 @@ SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they ar
 0..0		Participation.ParticipationType				
 0..1		BasedOn is type MedicationAdministrationBasedOn  // 0..1 to accomodate STU3
 			ReasonReference is type MedicationReasonReference	
+0..0		Dosage.Timing
+0..0		Dosage.AsNeeded
+0..0		Dosage.DoseAndRate.Type
+0..0		Dosage.MaxDosePerPeriod
+0..0		Dosage.DoseSequenceNumber
+0..0		Dosage.InstructionCode
+0..0		Dosage.PatientInstruction 
+0..0		Dosage.MaxDosePerAdministration 
+0..0		Dosage.MaxDosePerLifetime
 
     	Element:		PersonParticipant
 		Based on:		Participant

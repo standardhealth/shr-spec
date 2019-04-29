@@ -8,34 +8,37 @@ Dosage maps to Dosage:
 
 MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
 	Identifier maps to identifier
-	MedicationStatementInformationSource maps to informationSource
-	StatementDateTime maps to dateAsserted  // slight semantic difference?
 	SubjectOfRecord maps to patient
+	MedicationStatementInformationSource maps to informationSource 
+	MedicationStatementBasedOn maps to extension
+	MedicationStatementPartOf maps to extension
+	StatementDateTime maps to dateAsserted
+	Status maps to status
+	StatusReason maps to extension
 	constrain wasNotTaken to 0..0
 	constrain reasonNotTaken to 0..0
-	constrain dosage to 0..1
-//  DSTU 2 change (mapping target does not exist) 	
-//	Dosage maps to dosage
-	MedicationCodeOrReference maps to medication[x]
-//  DSTU 2 change (no such attribute)	
-//	Category maps to category
-//  DSTU 2 change (no such attribute)   
-//	fix taken to #y
 	ReasonCode maps to reasonForUse[x]
 	MedicationReasonReference maps to reasonForUse[x]
 	OccurrenceTimeOrPeriod maps to effective[x]
-	Status maps to status
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount maps to dosage.quantity[x]  
-	Dosage.TimingOfDoses maps to dosage.timing 
-	Dosage.AsNeededIndicator maps to dosage.asNeeded[x] 
-	Dosage.DosageInstructionsText maps to dosage.text 
-//  DSTU 2 change (no such attribute)
-//	AdditionalDosageInstruction maps to additionalInstruction   
-	Dosage.RouteIntoBody maps to dosage.route 
-	Dosage.DosageMethod maps to dosage.method
-	Dosage.DosageBodyLocation maps to dosage.site[x]
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod 
+	Annotation maps to extension  // no mapping to note (string)
+	DerivedFromReference maps to supportingInformation
+	MedicationCodeOrReference maps to medication[x]
+	constrain dosage to 0..1
+	Dosage.InstructionText maps to dosage.text
+	Dosage.Timing maps to dosage.timing
+	Dosage.AsNeeded maps to dosage.asNeeded[x]
+	Dosage.AdministrationSite maps to dosage.site[x]
+	Dosage.RouteIntoBody maps to dosage.route
+	Dosage.Method maps to dosage.method
+	Dosage.DoseAndRate.DoseAmount maps to dosage.quantity[x]
+	Dosage.DoseAndRate.DoseRate maps to dosage.rate[x]
+	Dosage.DoseAndRate.Type maps to dosage.extension
+	Dosage.MaxDosePerPeriod maps to dosage.maxDosePerPeriod
+	Dosage.DoseSequenceNumber maps to dosage.extension
+	Dosage.InstructionCode maps to dosage.extension 
+	Dosage.PatientInstruction maps to dosage.extension 
+	Dosage.MaxDosePerAdministration maps to dosage.extension 
+	Dosage.MaxDosePerLifetime maps to dosage.extension 
 
 MedicationAdministration maps to MedicationAdministration:
 	Identifier maps to identifier
@@ -59,13 +62,13 @@ MedicationAdministration maps to MedicationAdministration:
 	//  DSTU 2 change (more restrictive type)
 	Participation.Participant maps to practitioner 
 	// DSTU 2 change (no such attribute) 
-//	Participation.OnBehalfOf maps to performer.onBehalfOf  
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount.SimpleQuantity maps to dosage.quantity 
+//	Participation.OnBehalfOf maps to performer.onBehalfOf 
+	Dosage.InstructionText maps to dosage.text 
+	Dosage.AdministrationSite maps to dosage.site[x] 
 	Dosage.RouteIntoBody maps to dosage.route
-	Dosage.DosageMethod maps to dosage.method 
-	Dosage.DosageBodyLocation maps to dosage.site[x] 
-// TODO - represent rate and DosageBodyLocation ref(BodyLocation)
+	Dosage.Method maps to dosage.method 
+	Dosage.DoseAndRate.DoseAmount maps to dosage.quantity 
+	Dosage.DoseAndRate.DoseRate maps to dosage.rate[x]
 
 
 MedicationRequest maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationorder:
@@ -94,19 +97,18 @@ MedicationRequest maps to http://fhir.org/guides/argonaut/StructureDefinition/ar
 	//  DSTU 2 change (mapping target does not exist)
 //	Dosage maps to dosageInstruction   
 // DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount maps to dosageInstruction.dose[x]
-	Dosage.TimingOfDoses maps to dosageInstruction.timing 
-	Dosage.AsNeededIndicator maps to dosageInstruction.asNeeded[x] 
-	Dosage.DosageInstructionsText maps to dosageInstruction.text
-	//  DSTU 2 change (no such attribute)
-//	AdditionalDosageInstruction maps to additionalInstruction   
+	Dosage.InstructionText maps to dosageInstruction.text 
+	Dosage.InstructionCode maps to dosageInstruction.additionalInstructions
+	Dosage.Timing maps to dosageInstruction.timing 
+	Dosage.AsNeeded maps to dosageInstruction.asNeeded[x] 
+	Dosage.AdministrationSite maps to dosageInstruction.site[x]
 	Dosage.RouteIntoBody maps to dosageInstruction.route
-	Dosage.DosageMethod maps to dosageInstruction.method
-	Dosage.DosageBodyLocation maps to dosageInstruction.site[x]
-	Dosage.MaximumDosePerTimePeriod maps to dosageInstruction.maxDosePerPeriod
+	Dosage.Method maps to dosageInstruction.method
+	Dosage.DoseAndRate.DoseAmount maps to dosageInstruction.dose[x]
+	Dosage.DoseAndRate.DoseRate maps to dosageInstruction.rate[x]
+	Dosage.MaxDosePerPeriod maps to dosageInstruction.maxDosePerPeriod
 	SubstitutionAllowed maps to substitution.extension
 	SubstitutionReason maps to substitution.reason
-
 
 
 	

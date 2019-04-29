@@ -3,36 +3,59 @@ Namespace:  shr.core
 Target:		FHIR_R4
 
 Dosage maps to Dosage:
-	DoseAmount maps to dose[x]  // deleted
-	TimingOfDoses maps to timing
-	AsNeededIndicator maps to asNeeded[x]
-	DosageInstructionsText maps to text
-	AdditionalDosageInstruction maps to additionalInstruction
+	DoseSequenceNumber maps to sequence
+	InstructionText maps to text
+	InstructionCode maps to additionalInstruction
+	PatientInstruction maps to patientInstruction
+	Timing maps to timing
+	AsNeeded maps to asNeeded[x]
+	AdministrationSite maps to site
 	RouteIntoBody maps to route
-	DosageMethod maps to method
-	DosageBodyLocation maps to site
-	MaximumDosePerTimePeriod maps to maxDosePerPeriod
-	// deleted rate[x]
-	// Added doseAndRate, doseAndRate.type, doseAndRate.dose[x], doseAndRate.rate[x]
+	Method maps to method
+	MaxDosePerPeriod maps to maxDosePerPeriod
+	MaxDosePerAdministration maps to maxDosePerAdministration
+	MaxDosePerLifetime maps to maxDosePerLifetime
+	DoseAndRate.DoseAmount maps to doseAndRate.dose[x]
+	DoseAndRate.DoseRate maps to doseAndRate.rate[x]
 
 MedicationStatement maps to MedicationStatement:
 	Identifier maps to identifier
-	MedicationStatementInformationSource maps to informationSource  // Added Target Type PractitionerRole
-	StatementDateTime maps to dateAsserted
-	SubjectOfRecord maps to subject
-	constrain reasonNotTaken to 0..0
-	constrain dosage to 0..1
-	Dosage maps to dosage
-	MedicationCodeOrReference maps to medication[x]
+	MedicationStatementBasedOn maps to basedOn 
+	MedicationStatementPartOf maps to partOf
+	Status maps to status
+	StatusReason maps to statusReason
 	Category maps to category
-	fix taken to #y // deleted
-	ReasonCode maps to reasonCode
-	MedicationReasonReference maps to reasonReference  // Added Target Type DiagnosticReport
-	OccurrenceTimeOrPeriod maps to effective[x]
-	Status maps to status  // Change value set from http://hl7.org/fhir/ValueSet/medication-statement-status to http://hl7.org/fhir/ValueSet/medication-statement-status|4.0.0
+	MedicationCodeOrReference maps to medication[x]
+	SubjectOfRecord maps to subject
 	CareContext maps to context
-	MedicationStatementBasedOn maps to basedOn // Added Target Type ServiceRequest, Removed Target Types ProcedureRequest, ReferralRequest
-	// Added MedicationStatement.statusReason
+	OccurrenceTimeOrPeriod maps to effective[x]
+	StatementDateTime maps to dateAsserted	
+	MedicationStatementInformationSource maps to informationSource 
+	DerivedFromReference maps to derivedFrom
+	ReasonCode maps to reasonCode
+	MedicationReasonReference maps to reasonReference 
+	Annotation maps to note
+	Dosage maps to dosage
+
+MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
+	Identifier maps to identifier
+	MedicationStatementBasedOn maps to basedOn
+	MedicationStatementPartOf maps to partOf
+	Status maps to status
+	StatusReason maps to statusReason
+	Category maps to category
+	MedicationCodeOrReference maps to medication[x]
+	SubjectOfRecord maps to patient
+	CareContext maps to context
+	OccurrenceTimeOrPeriod maps to effective[x]
+	StatementDateTime maps to dateAsserted  // slight semantic difference?
+	MedicationStatementInformationSource maps to informationSource
+	DerivedFromReference maps to derivedFrom
+	ReasonCode maps to reasonCode
+	MedicationReasonReference maps to reasonReference
+	Annotation maps to note
+	Dosage maps to dosage
+
 
 MedicationAdministration maps to MedicationAdministration:
 	Identifier maps to identifier
