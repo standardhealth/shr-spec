@@ -8,7 +8,7 @@ DomainResource maps to DomainResource:
 	Narrative maps to text
 	ImplicitRules maps to implicitRules
 	Metadata.VersionId maps to meta.versionId
-//	Metadata.SourceSystem maps to meta.extension 
+	Metadata.SourceSystem maps to meta.extension 
 	// in R4, this will be meta.source
 	// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
     Metadata.Profile maps to meta.profile
@@ -20,9 +20,50 @@ Composition maps to Composition:
 	Identifier maps to identifier
 	Status maps to status
 	Type maps to type
+    Category maps to class
+    FocalSubject maps to subject
+    CareContext maps to encounter // this will probably not work and R4 not be able to have EpisodeOfCare
+    StatementDateTime maps to date
+    Author maps to author
+    Title maps to title
+    ConfidentialityCode maps to confidentiality 
+    Attestation.AttestationMode maps to attester.mode
+    Attestation.CreationDateTime maps to attester.time
+    Attestation.Attester maps to attester.party
+    ManagingOrganization maps to custodian
+    RelatedDocument.Relationship maps to relatesTo.code
+    RelatedDocument.TargetDocument maps to relatesTo.target[x]
+    EventContext.EventCode maps to event.code
+    EventContext.TimePeriod maps to event.period
+    EventContext.SupportingInformation maps to event.detail
+    // section
     Section maps to section
+    Section.Title maps to section.title
+    Section.Code maps to section.code
+    Section.Author maps to section.extension
+    Section.FocalSubject maps to section.extension
+    Section.Narrative maps to section.text
+    Section.Type maps to section.mode
+    Section.SortOrder maps to section.orderedBy // terrible FHIR name!
     Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.EmptyReason maps to section.emptyReason
 	Section.Section maps to section.section
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
@@ -118,18 +159,18 @@ DocumentReference maps to DocumentReference:
     ManagingOrganization maps to custodian
     RelatedDocument maps to relatesTo
     RelatedDocument.Relationship maps to relatesTo.code
-	RelatedDocument.DocumentReference maps to relatesTo.target
+	RelatedDocument.TargetDocument maps to relatesTo.target
     CommentOrDescription maps to description
     SecurityLabel maps to securityLabel
 	DocumentReferenced maps to content
 	DocumentReferenced.Attachment maps to content.attachment
 	DocumentReferenced.Type maps to content.format
-    ClinicalContext maps to context
-    ClinicalContext.Encounter maps to context.encounter
-	ClinicalContext.Event maps to context.event
-	ClinicalContext.TimePeriod maps to context.period
-	ClinicalContext.FacilityType maps to context.facilityType
-	ClinicalContext.Setting maps to context.practiceSetting
-	ClinicalContext.ContemporaneousPatientInformation maps to context.sourcePatientInfo 
-    ClinicalContext.Identifier maps to context.related.identifier
-	ClinicalContext.SupportingInformation maps to context.related.ref
+    EventContext maps to context
+    EventContext.CareContext maps to context.encounter
+	EventContext.EventCode maps to context.event
+	EventContext.TimePeriod maps to context.period
+	EventContext.FacilityType maps to context.facilityType
+	EventContext.Setting maps to context.practiceSetting
+	EventContext.Patient maps to context.sourcePatientInfo 
+    EventContext.Identifier maps to context.related.identifier
+	EventContext.SupportingInformation maps to context.related.ref

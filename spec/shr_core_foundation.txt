@@ -57,7 +57,7 @@ Description:	"Elements that belong to all information items."
 0..1			VersionId
 0..1			LastUpdated
 0..*			Profile
-//0..1			SourceSystem  // R4 only
+0..1			SourceSystem  // added in R4
 0..*			SecurityLabel
 0..*			Tag
 
@@ -71,14 +71,14 @@ Description:	"Elements that belong to all information items."
 
 	Element:		Profile
 	Description:	"The name of the FHIR profile this resource claims to conform to."
-	Value:			uri
+	Value:			uri  // Canonical in R4
 
-/*
+
 	Element:		SourceSystem
 	Description:	"FHIR: This provides a minimal amount of Provenance information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc. 
 	FHIM: Identifies the computer system that created the medical record. This optional field may also be used to indicate that the medical record was originally created by a different organization from the one that is currently storing or utilizing the record in that the assigning authority of the Id could be set to that originating organization. This property is optional, as some systems will assume that all records that it contains originated in that system, however it is anticipated that it will become increasingly commonplace for records from multiple systems and organizations will be comingled in order to provide a complete picture of the patient's health record."
 	Value:			uri
-*/	
+	
 	Element:		SecurityLabel
 	Concept:		MTH#C3858779 "security classification"
 	Description:	"A code that connects the entry to a security policy. Security labels can be updated when the resource changes, or whenever the security sub-system chooses to."
@@ -93,13 +93,16 @@ Description:	"Elements that belong to all information items."
 Abstract Element:	ClinicalStatement
 Based on:		DomainResource
 Description:	"This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
-0..1			SubjectOfRecord
+0..1			SubjectOfRecord  // patient, usually
 0..1			CareContext
-0..1			StatementDateTime
-// The following fields should be part of each clinical statement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension value cannot be overridden. Fundamentally, "is type" (aka substitute) only works when we can map to an existing attribute in a field.
-//0..1			Author
-//0..1			InformationSource
-//0..1			Recorder
+0..1			StatementDateTime  // often called 'authoredOn'
+//
+// The following fields should be part of each clinical statement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension's value cannot be constrained (a new extensin would be required). Fundamentally, the 'is type' constraint (aka 'substitute' in CIMPL 6) only works when there is an existing attribute in the resource to map to.
+//0..1			Author // is AuthoredBy a better name?
+//0..1			InformationSource // InformedBy?
+//0..1			FocalSubject
+//0..1			RecordedBy
+//0..1			Attestation
 
 	Element: 		SubjectOfRecord
 	Description:	"The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. When there is no patient, the SubjectOfRecord can also be a location, group, or other entity that statement pertains to. For example, observations concerning a hospital ward would have a Location as the SubjectOfRecord. 
@@ -111,43 +114,47 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Concept:        MTH#C3669169
 	Description:    "The point in time when the statement was created."
 	Value:          dateTime  // we can map to instant from dateTime
-/*
+
+
+	Element:		FocalSubject
+	Description:	"The person or entity that the information in this resource relates to, if different than the person of record. The subject of information can be a reference or a code, the latter when the subject is described generically, for example, in terms of a relationship to the subject of record (e.g., wife)."
+		//The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The FocalSubject is only required if the person or thing observed is different than the SubjectOfRecord. FocalSubject should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the FocalSubject is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)
+	Value:			CodeableConcept or ref(DomainResource)
+
 	Element:		Author
 	Description:	"The actor who created the item and it responsible for the content (regardless of the information source or who recorded it). If only the author is given, it is assumed the author is the information source and the recorder."
-	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or string
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // missing PractitionerRole and string
 
-	Element: 		InformationSource
-	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
-	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
-*/
+	Element:	Attestation
+	Description:	"A certification or assertion of the accuracy of the content."
+	1..1		AttestationMode
+	0..1		CreationDateTime
+	0..1		Attester
+
+		Element:		AttestationMode
+		Description:	"The type of attestation the authenticator offers."
+		Value:			code from http://hl7.org/fhir/ValueSet/composition-attestation-mode
+
+		Element:		Attester
+		Description:	"The actor who has certified or assented to the accuracy of the composition/document."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // missing PractitionerRole and (perhaps) string
+
 	Element:		Participant
 	Concept:		MTH#C1550369
 	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or ref(Group) or ref(Location)
 
 
-EntryElement:	Composition
-Based on:		DomainResource
-Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
-0..1			Identifier // FHIR inconsistency -- usually 0..*
-1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
-1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
-0..*            Section
-
-    Element:        Section
-    Description:    "Represents a section containing entries in a composition."
-    //0..1            Title
-    0..*            DomainResource
-	0..*			Section
-
-
 /*
+	Element: 		InformationSource
+	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
+	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
+
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
 	Description:    "A unique, persistent, permanent identifier for a health record."
 	Value:          id
 
-	
 	Element:		SignedBy
 	Description:	"Provenance information specific to the signing of the clinical statement."
 	Value:			Participant
@@ -161,6 +168,55 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 	Value:			Participant
 */
 
+
+
+EntryElement:	Composition
+Based on:		DomainResource
+Description:	"A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
+0..1			Identifier // FHIR inconsistency -- usually 0..*
+1..1            Status from http://hl7.org/fhir/ValueSet/composition-status
+1..1            Type should be from http://hl7.org/fhir/ValueSet/doc-typecodes
+0..1			Category  // upper card from STU3 Composition.class
+1..1			FocalSubject value is type ref(DomainResource)  // lower card forced by STU3 Composition.FacilityTypesubject
+0..1			CareContext value is type ref(Encounter)
+1..1			StatementDateTime
+1..*			Author
+1..1			Title
+0..1			ConfidentialityCode 
+0..*			Attestation
+0..1			ManagingOrganization
+0..*			RelatedDocument
+0..*			EventContext
+0..0			EventContext.FacilityType
+0..0			EventContext.Setting
+0..0			EventContext.Patient
+0..0			EventContext.Identifier
+0..*            Section
+
+	Element:		ConfidentialityCode
+	Description:	"The code specifying the level of confidentiality."
+	Value:			CodeableConcept // from http://terminology.hl7.org/ValueSet/v3-ConfidentialityClassification but conflict with DSTU required value set of http://hl7.org/fhir/ValueSet/v3-Confidentiality. The STU3/R4 set is a subset of the DSTU2 set. Can we make this work, somehow?
+
+    Element:        Section
+    Description:    "Represents a section containing entries in a composition."
+    0..1            Title
+	0..1			Code could be from http://hl7.org/fhir/ValueSet/doc-section-codes
+	0..*			Author
+	0..1			FocalSubject value is type ref(DomainResource)
+	0..1			Narrative
+	0..1			Type from http://hl7.org/fhir/ValueSet/list-mode
+	0..1			SortOrder 
+	0..*            DomainResource
+	0..1			EmptyReason
+	0..*			Section
+
+		Element:	SortOrder
+		Description:"Specifies the sorting criterion applied to the items in a list."
+		Value:		CodeableConcept should be from http://hl7.org/fhir/ValueSet/list-order
+
+		Element:	EmptyReason
+		Description:"Why the section is empty."
+		Value:		CodeableConcept should be from http://hl7.org/fhir/ValueSet/list-empty-reason
 
 EntryElement:   ValueSet
 Based on:       DomainResource
@@ -345,9 +401,10 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		ManagingOrganization
 1..*		DocumentReferenced
 0..*		RelatedDocument
+			RelatedDocument.TargetDocument value is type ref(DocumentReference)
 0..1		CommentOrDescription
 0..*		SecurityLabel from http://hl7.org/fhir/ValueSet/security-labels if covered
-0..1		ClinicalContext
+0..1		EventContext
 
 	Element:		PatientSubjectOfRecord
 	Based on:		ObservationSubjectOfRecord
@@ -380,21 +437,24 @@ Description:	"A reference to a document, used to describe a document that is mad
 	Element:  RelatedDocument
 	Description:	"Documents related to this one."
 	1..1	Relationship from http://hl7.org/fhir/ValueSet/document-relationship-type
-	1..1	ref(DocumentReference)
+	1..1	TargetDocument
 
-	
-	Element:	ClinicalContext
-	Description:	"Clinical context of document"
-	0..1	ref(Encounter)  // in 4, changes to CareContext (Encounter or EpisodeOfCare)
-	0..*	Event
+		Element:	TargetDocument
+		Description:"The target document of this relationship."
+		Value:		ref(DocumentReference) or Identifier or ref(Composition)
+
+	Element:	EventContext
+	Description:	"Clinical context or event being documented, for example, a colonoscopy or an appendectomy."
+	0..1	CareContext  // R4 changed from ref(Encounter) to Encounter or EpisodeOfCare
+	0..*	EventCode
 	0..1	TimePeriod
 	0..1	FacilityType
 	0..1	Setting
-	0..1	ContemporaneousPatientInformation
+	0..1	ref(Patient)
 	0..*	SupportingInformation
 	0..*	Identifier
 
-		Element:	Event
+		Element:	EventCode
 		Description:	"Main clinical acts documented"
 		Value:	CodeableConcept could be from http://hl7.org/fhir/ValueSet/v3-ActCode
 
@@ -402,8 +462,5 @@ Description:	"A reference to a document, used to describe a document that is mad
 		Description:	"Kind of facility where patient was seen"
 		Value:	CodeableConcept could be from http://hl7.org/fhir/ValueSet/c80-facilitycodes
 
-		Element:	ContemporaneousPatientInformation
-		Description:	"he Patient Information as known when the document was published. May be a reference to a version specific, or contained."
-		Value:	ref(Patient)
 
 

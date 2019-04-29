@@ -2,39 +2,55 @@ Grammar:	Map 5.1
 Namespace:	shr.core
 Target:		FHIR_R4
 
+/* This is causing a mysterious crash 
 DomainResource maps to DomainResource:
 	Language maps to language
 	Narrative maps to text
 	ImplicitRules maps to implicitRules
 	Metadata.VersionId maps to meta.versionId
 	Metadata.SourceSystem maps to meta.source
-// _Entry.EntryId maps to id
-// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
     Metadata.Profile maps to meta.profile
 	Metadata.LastUpdated maps to meta.lastUpdated
 	Metadata.SecurityLabel maps to meta.security
 	Metadata.Tag maps to meta.tag
+*/
 
 Composition maps to Composition:
 	Identifier maps to identifier
-	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/composition-status to http://hl7.org/fhir/ValueSet/composition-status|4.0.0
+	Status maps to status 
 	Type maps to type
+    Category maps to category
+    FocalSubject maps to subject
+    CareContext maps to encounter
+    StatementDateTime maps to date
+    Author maps to author
+    Title maps to title
+    ConfidentialityCode maps to confidentiality 
+    Attestation.AttestationMode maps to attester.mode
+    Attestation.CreationDateTime maps to attester.time
+    Attestation.Attester maps to attester.party
+    ManagingOrganization maps to custodian
+    RelatedDocument.Relationship maps to relatesTo.code
+    RelatedDocument.TargetDocument maps to relatesTo.target[x]
+    EventContext.EventCode maps to event.code
+    EventContext.TimePeriod maps to event.period
+    EventContext.SupportingInformation maps to event.detail
+    // section
     Section maps to section
+    Section.Title maps to section.title
+    Section.Code maps to section.code
+    Section.Author maps to section.author
+    Section.FocalSubject maps to section.focus
+    Section.Narrative maps to section.text
+    Section.Type maps to section.mode
+    Section.SortOrder maps to section.orderedBy // terrible FHIR name!
     Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.EmptyReason maps to section.emptyReason
 	Section.Section maps to section.section
-// Renamed class to category, Max Cardinality changed from 1 to *
-// subject min Cardinality changed from 1 to 0
-// author -- Added Target Types PractitionerRole, Organization
-// confidentiality -- Change value set from http://terminology.hl7.org/ValueSet/v3-ConfidentialityClassification to http://terminology.hl7.org/ValueSet/v3-ConfidentialityClassification|4.0.0
-// attester.mode - Max Cardinality changed from * to 1; Change value set from http://hl7.org/fhir/ValueSet/composition-attestation-mode to http://hl7.org/fhir/ValueSet/composition-attestation-mode|4.0.0
-// attester.party -- Added Target Types RelatedPerson, PractitionerRole
-// relatesTo.code -- Change value set from http://hl7.org/fhir/ValueSet/document-relationship-type to http://hl7.org/fhir/ValueSet/document-relationship-type|4.0.0
-// Added element section.author, section.focus
-// section.mode - Change value set from http://hl7.org/fhir/ValueSet/list-mode to http://hl7.org/fhir/ValueSet/list-mode|4.0.0
 
 Narrative maps to Narrative:
 	NarrativeText maps to div
-	NarrativeQualifier maps to status // Change value set from http://hl7.org/fhir/ValueSet/narrative-status to http://hl7.org/fhir/ValueSet/narrative-status|4.0.0
+	NarrativeQualifier maps to status
 
 
 ValueSet maps to ValueSet:
@@ -110,14 +126,12 @@ ValueSet maps to ValueSet:
     ValueSetExpansion.ExpansionCoding.ExpansionCoding maps to expansion.contains.contains
     // compose.include.concept.designation.language	-- Change binding strength from extensible to preferred
 
+
 DocumentReference maps to DocumentReference:
-//  http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference:  Not sure why this is not found
-//ERROR shr: Invalid FHIR target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference. ERROR_CODE:13001 (module=shr-fhir-export, shrId=shr.core.DocumentReference) 
-// target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference
     MasterIdentifier maps to masterIdentifier
     Identifier maps to identifier
-    Status maps to status  // Change value set from http://hl7.org/fhir/ValueSet/document-reference-status to http://hl7.org/fhir/ValueSet/document-reference-status|4.0.0
-    DocumentStatus maps to docStatus // Change value set from http://hl7.org/fhir/ValueSet/composition-status to http://hl7.org/fhir/ValueSet/composition-status|4.0.0
+    Status maps to status
+    DocumentStatus maps to docStatus
     Type maps to type // Min Cardinality changed from 1 to 0
     Category maps to class  // renamed class to category; max cardinality changed from 1 to *
     SubjectOfRecord maps to subject
@@ -127,20 +141,20 @@ DocumentReference maps to DocumentReference:
     Authenticator maps to authenticator // Added Target Type PractitionerRole
     ManagingOrganization maps to custodian
     RelatedDocument maps to relatesTo
-    RelatedDocument.Relationship maps to relatesTo.code // changed value set from http://hl7.org/fhir/ValueSet/document-relationship-type to http://hl7.org/fhir/ValueSet/document-relationship-type|4.0.0
-	RelatedDocument.DocumentReference maps to relatesTo.target
+    RelatedDocument.Relationship maps to relatesTo.code
+	RelatedDocument.TargetDocument maps to relatesTo.target
     CommentOrDescription maps to description
     SecurityLabel maps to securityLabel
 	DocumentReferenced maps to content
 	DocumentReferenced.Attachment maps to content.attachment
 	DocumentReferenced.Type maps to content.format
-    ClinicalContext maps to context
-    ClinicalContext.Encounter maps to context.encounter // Max Cardinality changed from 1 to *; Added Target Type EpisodeOfCare
-	ClinicalContext.Event maps to context.event
-	ClinicalContext.TimePeriod maps to context.period
-	ClinicalContext.FacilityType maps to context.facilityType
-	ClinicalContext.Setting maps to context.practiceSetting
-	ClinicalContext.ContemporaneousPatientInformation maps to context.sourcePatientInfo 
-    ClinicalContext.Identifier maps to context.related.identifier // deleted
-	ClinicalContext.SupportingInformation maps to context.related.ref  // deleted
+    EventContext maps to context
+    EventContext.CareContext maps to context.encounter // Max Cardinality changed from 1 to *; Added Target Type EpisodeOfCare
+	EventContext.EventCode maps to context.event
+	EventContext.TimePeriod maps to context.period
+	EventContext.FacilityType maps to context.facilityType
+	EventContext.Setting maps to context.practiceSetting
+	EventContext.Patient maps to context.sourcePatientInfo 
+    EventContext.Identifier maps to context.related.identifier // deleted
+	EventContext.SupportingInformation maps to context.related.ref  // deleted
     // context.related -- Type changed from BackboneElement to Reference(Resource)

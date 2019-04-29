@@ -29,7 +29,7 @@ Description:    "A structured set of questions intended to guide the collection 
 0..1            VersionString
 0..1            Name
 0..1            Title
-0..*            DerivedFromCanonical
+0..*            DerivedFrom value is type CanonicalUrl
 1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
 0..1            IsExperimental
 0..*            SubjectType
@@ -145,7 +145,7 @@ Description:    "A structured set of questions and their answers. The questions 
 0..*            QuestionnaireResponsePartOf
 0..1            QuestionnaireCanonical
 1..1            Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status
-0..1            FocusOfResponse value is type ref(DomainResource)
+0..1            FocalSubject value is type ref(DomainResource)
 0..1            CareContext value is type ref(Encounter)
 0..1            StatementDateTime
 0..1            QuestionnaireResponseRecorder
@@ -161,10 +161,6 @@ Description:    "A structured set of questions and their answers. The questions 
     Description:"The Questionnaire that defines and organizes the questions for which answers are being provided."
     Value:  CanonicalUrl
 
-    Element:    FocusOfResponse
-    Description:    "The subject of the questionnaire response. This could be a patient, organization, practitioner, device, etc. This is who/what the answers apply to, but is not necessarily the source of information."
-    Value:      ref(DomainResource)
-
 	Element:		QuestionnaireResponseRecorder
 	Description:	"The recorder of the information, who received and recorded the answers. For example, the nurse taking a list of medications reported by the patient."
 	Value:			ref(Practitioner) or ref(Patient) or ref(RelatedPerson) or ref(Device) // missing PractitionerRole, Organization (not supported in STU3)
@@ -174,7 +170,7 @@ Description:    "A structured set of questions and their answers. The questions 
     1..1        IdentifierString
     0..1        DetailsUri
     0..1        Question
-    0..1        FocusOfResponse
+    0..1        FocalSubject value is type ref(DomainResource)
     0..*        Answer
     0..*        QuestionnaireResponseItem
 
