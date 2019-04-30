@@ -124,6 +124,12 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Description:	"The actor who created the item and it responsible for the content (regardless of the information source or who recorded it). If only the author is given, it is assumed the author is the information source and the recorder."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // missing PractitionerRole and string
 
+        Element:		HumanAuthor
+		Based on:		Author
+		Description:	"A human author, patient, practitioner, or related person, as opposed to an organization or device."
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
+
+
 	Element: 		InformationSource
 	Description:	"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
@@ -393,7 +399,7 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status
 1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
 0..1		Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
-0..1		SubjectOfRecord is type PatientSubjectOfRecord // us core restriction 
+0..1		SubjectOfRecord value is type ref(Patient) // us core restriction 
 0..1		CreationDateTime
 1..1		StatementDateTime
 0..*		DocumentAuthor
@@ -405,11 +411,6 @@ Description:	"A reference to a document, used to describe a document that is mad
 0..1		CommentOrDescription
 0..*		SecurityLabel from http://hl7.org/fhir/ValueSet/security-labels if covered
 0..1		EventContext
-
-	Element:		PatientSubjectOfRecord
-	Based on:		ObservationSubjectOfRecord
-	Description:	"The SubjectOfRecord when restricted to being a Patient resource."
-	Value:			ref(Patient)
 
 	Element:	MasterIdentifier
 	Description:	"Document identifier as assigned by the source of the document. This identifier is specific to this version of the document. This unique identifier may be used elsewhere to identify this version of the document."
@@ -455,7 +456,7 @@ Description:	"A reference to a document, used to describe a document that is mad
 	0..*	Identifier
 
 		Element:	EventCode
-		Description:	"Main clinical acts documented"
+		Description:	"Code representing an event, for example, a clinical action or adverse event."
 		Value:	CodeableConcept could be from http://hl7.org/fhir/ValueSet/v3-ActCode
 
 		Element:	FacilityType

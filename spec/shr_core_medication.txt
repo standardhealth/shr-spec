@@ -67,8 +67,8 @@ Description:	"The dosage of the medication. The data structure is flexible and c
 			Value:		Ratio or Range or SimpleQuantity
 
 
-Abstract Element:	MedicationExposure
-Based on:			ActionPerformed
+Abstract Element:	MedicationAction
+Based on:			ActionPerformed  // event that happened
 Description:	"Abstract class representing medication exposure, independent of whether reported in a medication statement or medication administration. Does not include medication requests (prescriptions)."
 1..1			MedicationCodeOrReference
 0..1			Dosage
@@ -80,7 +80,7 @@ Description:	"Abstract class representing medication exposure, independent of wh
 
 
 EntryElement:	MedicationStatement
-Based on:		MedicationExposure
+Based on:		MedicationAction
 Concept:		SCT#416608005 "Drug therapy (procedure)"  // TODO: investigate whether we need a new code or use a drug concept.
 Description:	"A record of the use of a medication. The use may be reported by the patient or clinician and adminstration does not have to be directly observed. 
 
@@ -98,7 +98,7 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 0..*			StatusReason
 0..1			Category should be from http://hl7.org/fhir/ValueSet/medication-statement-category
 //1..1 MedicationCodeOrReference (inherited, no change)
-				SubjectOfRecord is type PatientSubjectOfRecord // no Group in DSTU2
+				SubjectOfRecord value is type ref(Patient) // no Group in DSTU2
 1..1			StatementDateTime // us-core required
 0..1			MedicationStatementInformationSource
 0..*			DerivedFrom value is type ref(DomainResource)
@@ -134,12 +134,12 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 
 
 EntryElement:	MedicationAdministration
-Based on:		MedicationExposure
+Based on:		MedicationAction
 Description:	"A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
 Although FHIR MedicationAdministration supports date of administration, information source, performer, it lacks common provenance elements, statement creation date, author, and recorder. These are supported as optional extensions.
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
-			SubjectOfRecord is type PatientSubjectOfRecord  // no Group in DSTU2
+			SubjectOfRecord value is type ref(Patient)  // no Group in DSTU2
 0..1		Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
 			Status from http://hl7.org/fhir/ValueSet/medication-admin-status
 0..1		Participation
@@ -168,7 +168,7 @@ SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they ar
 		Value:			ref(MedicationRequest)
 
 Element:		MedicationDispense
-Based on:		MedicationExposure
+Based on:		MedicationAction
 Description:	"Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
 // TODO: Attributes from FHIR needed
 // TODO: Mapping needed
@@ -180,7 +180,7 @@ Description:	"An order for a medication to be dispensed and instructions for use
 Value sets for status are in direct conflict between DSTU2 Argonaut and STU3 US-Core.
 Category does not exist in DSTU2 and is provided as an extension.
 Intent was added in STU3 and is provided as an extension with required binding."
-				SubjectOfRecord is type PatientSubjectOfRecord
+				SubjectOfRecord value is type ref(Patient)
 1..1		MedicationCodeOrReference
 0..1		Dosage
 1..1		Requester
