@@ -161,7 +161,7 @@ Description:	"An electronic means of contacting an organization or individual."
 		Value:			CodeableConcept
 		
 		Element:		Purpose
-		Description:	"What it should be used for."
+		Description:	"Description of the intent or use of the item."
 		Value:			CodeableConcept
 
 		Element:	PriorityRank
@@ -551,17 +551,14 @@ Description:    "An address for a place in the USA, conforming to US mail postal
 
 	Element:		UnitedStatesState
 	Based on:		State
-	Concept:		MTH#C3148680
 	Description:	"A state or territory in the USA expressed by 2-letter US Postal code."
 	//Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
 
 Element:		DisplayText
-Concept:		MTH#C1548311
 Description:	"A string meant for reading by a person, for example, accompanying a code."
 Value:			string
 
 Element:		VersionString
-Concept:		MTH#C0333052
 Description:	"A string associated with the product that identifies a particular release iteration."
 Value:			string
 
@@ -830,3 +827,21 @@ Description:	"A name used by a human being, written as it would be typically exp
 Element:		Category
 Description:	"The general type or class of this item."
 Value:			CodeableConcept		
+
+Element:		RelatedArtifact
+Description:	"Items such as additional documentation, justification, or bibliographic references, that provide background for the current item."
+1..1			Type from http://hl7.org/fhir/ValueSet/related-artifact-type
+0..1			LabelText
+0..1			DisplayText
+0..1			Citation
+0..1			Url
+0..1			ref(Attachment)
+0..1			CanonicalUrl // should be 0..* in FHIR to enable the citation to be used by multiple resources
+
+	Element:		LabelText
+	Description:	"A short label that can be used to reference the citation from elsewhere in the containing artifact, such as a footnote index."
+	Value:			string
+
+	Element:		Citation
+	Description:	"A bibliographic citation for the related artifact. This text SHOULD be formatted according to an accepted citation format."
+	Value:			markdown
