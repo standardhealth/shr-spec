@@ -11,11 +11,20 @@ Concept:		MTH#C0021682 "HealthInsurance"
 Description:	"Health insurance coverage available (even if not used for payment for a given encounter)."
 0..1			Status from http://hl7.org/fhir/ValueSet/fm-status
 0..1 			CoverageType should be from http://hl7.org/fhir/ValueSet/coverage-type
+0..1			PolicyHolder
 0..1			Subscriber
 0..1			SubscriberId
 0..1			Beneficiary
-0..1			PolicyHolder
+0..1			DependentIdentifier
+0..1			BeneficiaryRelationship
 0..1			EffectiveTimePeriod
+1..*			Payor
+0..*			CoverageClassification
+0..1			PriorityRank
+0..1			InsurerNetwork
+0..*			CostToBeneficiary
+0..1			Subrogation
+// 0..*	  ref(Contract) -- not implemented
 
 	Element:		CoverageType
 	Description:	"Coverage category such as medical or accident."
@@ -36,3 +45,44 @@ Description:	"Health insurance coverage available (even if not used for payment 
 	Element:		PolicyHolder
 	Description:	"Owner of the policy"
 	Value:			ref(Patient) or ref(RelatedPerson) or ref(Organization)
+
+	Element:		DependentIdentifier
+	Description:	"A unique identifier for a dependent under the coverage."
+	Value:			string
+
+	Element:		BeneficiaryRelationship
+	Description:	"The relationship of beneficiary (patient) to the subscriber."
+	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/subscriber-relationship if covered
+
+	Element:		Payor
+	Description:	"The program or plan underwriter or payor including both insurance and non-insurance agreements, such as patient-pay agreements."
+	Value:			ref(Organization) or ref(Patient) or ref(RelatedPerson)
+
+	Element:		CoverageClassification
+	Description:	"A suite of underwriter specific classifiers."
+	1..1			Type from http://hl7.org/fhir/ValueSet/coverage-class if covered
+	1..1			IdentifierString
+	0..1			Name
+
+	Element:		CostToBeneficiary
+	Description:	"A suite of codes indicating the cost category and associated amount which have been detailed in the policy and may have been included on the health card. Alternate names include co-pay, deductible, exceptions."
+	0..1			Type from http://hl7.org/fhir/ValueSet/coverage-copay-type if covered
+	1..1			CostOrPercentage
+	0..*			Exception
+
+		Element:		CostOrPercentage
+		Description:	"The amount due from the patient for the cost category."
+		Value:			Money or SimpleQuantity
+
+		Element:		Exception
+		Description:	"A suite of codes indicating exceptions or reductions to patient costs and their effective periods."
+		1..1			Type could be from http://hl7.org/fhir/ValueSet/coverage-financial-exception
+		0..1			EffectiveTimePeriod
+
+	Element:		InsurerNetwork
+	Description:	"The insurer-specific identifier for the insurer-defined network of providers to which the beneficiary may seek treatment which will be covered at the 'in-network' rate, otherwise 'out of network' terms and conditions apply."
+	Value:			string
+
+	Element:		Subrogation
+	Description:	"Reimbursement to insurer. When 'subrogation=true' this insurance instance has been included not for adjudication but to provide insurers with the details to recover costs."
+	Value:			boolean
