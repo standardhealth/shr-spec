@@ -109,7 +109,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 
 		Element:		Performer
 		Description: 	"The actor that carried out the observation or action."
-		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) // need to add PractitionerRole
 
 		Element:		Interpretation
 		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
@@ -413,45 +413,56 @@ Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birt
 
 EntryElement:	DiagnosticReport
 Based on:		SituationStatement
-0..*			BasedOn is type DiagnosticReportBasedOn  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
+0..*			BasedOn is type DiagnosticReportBasedOn
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-0..1			Category	
-0..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..1			Category
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
-0..1			CareContext
+0..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..1			CareContext value is type ref(Encounter)
 0..1			RelevantTime
 1..1			StatementDateTime  // 'issued' is required in DSTU-2
-0..1			Participation
-1..1			Participation.Participant is type DiagnosticReportParticipant  // performer is required in DSTU-2
-0..0			Participation.ParticipationPeriod
-0..0			Participation.ParticipationType
-0..0			Participation.OnBehalfOf
+0..1			DiagnosticReportPerformer
+0..1			ResultsInterpreter
 0..*			ref(Specimen)
-0..*			ref(Observation)  // Panel members?
-//0..*			ref(ImagingStudy)
-0..*			ref(Media)
-0..1			Conclusion
-0..*			DiagnosisCode
-0..*			OriginalReport
-
-    Element:		DiagnosticReportParticipant
-	Based on:		Participant
-	Description:	"A choice of Practitioner or Organization as participant."
-	Value:			ref(Practitioner) or ref(Organization)
-
-	Element:		Conclusion
-	Description:	"Concise and clinically contextualized impression / summary of the diagnostic report."
-	Value:			string
-
-	Element:		OriginalReport
-	Description:	"Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
-	Value:			ref(Attachment)
+0..*			ref(Observation) 
+//0..*			ref(ImagingStudy) -- not yet implemented
+0..*			MediaIncluded
+0..1			ConclusionText
+0..*			ConclusionCode
+0..*			PresentedForm
 
 	Element:		DiagnosticReportBasedOn
 	Based on:		BasedOn
 	Description:	"The request or order that initiated this report."
-	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest) or ref(MedicationRequest)
-	// or CarePlan or ImmunizationRecommendation or NutritionOrder or MedicationRequest 
+	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest) or ref(MedicationRequest) // or CarePlan or ImmunizationRecommendation or NutritionOrder or MedicationRequest 
+
+    Element:		DiagnosticReportPerformer
+	Based on:		Performer
+	Description:	"The diagnostic service that is responsible for issuing the report."
+	Value:			ref(Practitioner) or ref(Organization)
+
+	Element:		ResultsInterpreter
+	Based on:		Performer
+	Description:	"The practitioner or organization that is responsible for the report's conclusions and interpretations."
+	Value:			ref(Practitioner) or ref(Organization)
+
+	Element:		MediaIncluded
+	Description:	"A list of key images associated with this report. The images are generally created during the diagnostic process, and may be directly of the patient, or of treated specimens (i.e. slides of interest)."
+	0..1			CommentOrDescription
+	1..1			ref(Media)
+
+	Element:		ConclusionText
+	Description:	"Concise and clinically contextualized impression / summary of the diagnostic report."
+	Value:			string
+
+	Element:		ConclusionCode
+	Description:	"One or more codes that represent the summary conclusion (interpretation/impression) of the diagnostic report."
+	Value:			CodeableConcept
+
+	Element:		PresentedForm
+	Description:	"Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
+	Value:			ref(Attachment)
+
 
 EntryElement:	ClinicalNote
 Based on:		DocumentReference
