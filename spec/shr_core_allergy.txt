@@ -10,7 +10,7 @@ Based on:		SituationStatement
 // or SCT#420134006 "Propensity to adverse reactions (disorder)"?
 Description:	"A finding related to the presence of an individual's risk or sensitivity to a substance or class of substances. Per US Core specification, the result includes SNOMED codes representing 'No known allergy'. In AllergyIntolerance, the reactions are included in-line, rather than referencing to conditions (in contrast to AdverseEvent)."
 0..1			PersonInformationSource
-0..1			AllergyRecorder // FHIR only allows Patient or Practitioner as recorder
+0..1			AllergyAuthor // FHIR only allows Patient or Practitioner as recorder
 1..1			SubjectOfRecord value is type ref(Patient)
 1..1			Status // from http://hl7.org/fhir/ValueSet/allergy-verification-status
 				// Conflict between V2 and V3 -- Cannot override value set constraint from http://hl7.org/fhir/ValueSet/allergy-intolerance-status to http://hl7.org/fhir/ValueSet/allergy-verification-status
@@ -24,8 +24,9 @@ Description:	"A finding related to the presence of an individual's risk or sensi
 0..*			AllergyIntoleranceReaction
 0..1			CareContext value is type ref(Encounter)
 
-		Element:		AllergyRecorder
-		Description:	"A choice of Patient or Practitioner as recorder."
+		Element:		AllergyAuthor
+		Based on:		HumanAuthor
+		Description:	"A choice of Patient or Practitioner as author."
 		Value:			ref(Patient) or ref(Practitioner)
 
 		Element:		SubstanceCategory

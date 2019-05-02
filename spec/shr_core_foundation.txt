@@ -96,10 +96,10 @@ Description:	"This abstract class provides properties and behaviors common to en
 0..1			SubjectOfRecord  // patient, usually
 0..1			CareContext
 0..1			StatementDateTime  // often called 'authoredOn'
-//
+
 // The following fields should be part of ClinicalStatement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension's value cannot be constrained (a new extensin would be required). Fundamentally, the 'is type' constraint (aka 'substitute' in CIMPL 6) only works when there is an existing attribute in the resource to map to.
-//0..1			Author // is AuthoredBy a better name?
-//0..1			InformationSource // InformedBy?
+//0..1			Author
+//0..1			InformationSource
 //0..1			FocalSubject
 //0..1			RecordedBy
 //0..1			Attestation
@@ -146,16 +146,9 @@ Description:	"This abstract class provides properties and behaviors common to en
 
 		Element:		Attester
 		Description:	"The actor who has certified or assented to the accuracy of the composition/document."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // missing PractitionerRole and (perhaps) string
-
-	Element:		Participant
-	Concept:		MTH#C1550369
-	Description:	"An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity."
-	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device) or ref(Group) or ref(Location)
-
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // missing types ref(PractitionerRole) and (perhaps) string
 
 /*
-
 	Element:    	HealthRecordId
 	Concept:        MTH#C1549718
 	Description:    "A unique, persistent, permanent identifier for a health record."
@@ -173,8 +166,6 @@ Description:	"This abstract class provides properties and behaviors common to en
 	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
 	Value:			Participant
 */
-
-
 
 EntryElement:	Composition
 Based on:		DomainResource
@@ -417,6 +408,7 @@ Description:	"A reference to a document, used to describe a document that is mad
 	Value:  Identifier
 
 	Element:	DocumentAuthor
+	Based on:	Author
 	Description:	"The author of the document."
 	Value: ref(Practitioner) or ref(Organization) or ref(Device) or ref(Patient) or ref(RelatedPerson)
 
