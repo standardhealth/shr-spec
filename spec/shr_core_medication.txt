@@ -93,7 +93,7 @@ The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, statu
 ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick a type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously.
 
 Preference is given to using the National Library of Medicine (NLM) RxNorm terminology for medications. RxNorm is a coding standard established by the Office of the National Coordinator (ONC). However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. MedicationStatement allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs."
-				BasedOn is type MedicationStatementBasedOn
+				BasedOn is type MedicationBasedOn
 0..*			MedicationStatementPartOf	
 				Status from http://hl7.org/fhir/ValueSet/medication-statement-status	
 0..*			StatusReason
@@ -101,7 +101,7 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 //1..1 MedicationCodeOrReference (inherited, no change)
 				SubjectOfRecord value is type ref(Patient) // no Group in DSTU2
 1..1			StatementDateTime // us-core required
-0..1			MedicationStatementInformationSource
+0..1			MedicationInformationSource
 0..*			DerivedFrom value is type ref(DomainResource)
 0..1			ReasonCode // Upper cardinality imposed by DSTU 2
 0..1			ReasonReference is type MedicationReasonReference // value is type ref(Condition)
@@ -116,7 +116,7 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 	Description:	"A larger event of which this particular event is a component or step."
 	Value:			ref(MedicationAdministration) or ref(MedicationDispense) or ref(MedicationStatement) or ref(Procedure) or ref(Observation)
 
-	Element:		MedicationStatementInformationSource
+	Element:		MedicationInformationSource
 	Description:	"The informant for this medication statement."
 	Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization)
 
@@ -129,7 +129,7 @@ Preference is given to using the National Library of Medicine (NLM) RxNorm termi
 	Description:	"Condition or observation that supports why the medication is being/was taken"
 	Value:			ref(Condition) or ref(Observation) or ref(DiagnosticReport)
 
-	Element:  		MedicationStatementBasedOn
+	Element:  		MedicationBasedOn
     Based on:   	BasedOn
     Value:  		ref(ServiceRequest) or ref(MedicationRequest) or ref(ReferralRequest) or ref(ProcedureRequest) // CarePlan not yet implemented  // 
 
@@ -189,51 +189,95 @@ Description:	"An order for a medication to be dispensed and instructions for use
 Value sets for status are in direct conflict between DSTU2 Argonaut and STU3 US-Core.
 Category does not exist in DSTU2 and is provided as an extension.
 Intent was added in STU3 and is provided as an extension with required binding."
-			SubjectOfRecord value is type ref(Patient)
-1..1		MedicationCodeOrReference
-0..1		Dosage
-1..1		Requester
-			Status //from http://hl7.org/fhir/ValueSet/medication-request-status
-				// incompatible value sets between DSTU2 Argonaut and STU3
-				// Cannot override value set constraint from http://hl7.org/fhir/ValueSet/medication-order-status to http://hl7.org/fhir/ValueSet/medication-request-status
-			PriorityCode from http://hl7.org/fhir/ValueSet/medication-request-priority
-0..1		Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
+// eventHistory, detectedIssue, instantiatesUri, and instantiatesCanonical not implemented yet
+			Status // incompatible between DSTU2 Argonaut and STU3, http://hl7.org/fhir/ValueSet/medication-order-status to http://hl7.org/fhir/ValueSet/medication-request-status
+0..1		StatusReason
 			RequestIntent from http://hl7.org/fhir/ValueSet/medication-request-intent
-1..1		StatementDateTime
-			ExpectedPerformanceTime value is type TimePeriod
-0..0		ExpectedPerformerType
-			ExpectedPerformer value is type ref(Organization)
-0..1		NumberOfRefillsAllowed
-0..1		QuantityPerDispense
-0..1		SupplyDuration
-0..1		SubstitutionAllowed
-0..1		SubstitutionReason from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason
-0..1		ReasonCode could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
-0..1		MedicationReasonReference // value is type ref(Condition)
+0..1		Category should be from http://hl7.org/fhir/ValueSet/medication-admin-category
+			PriorityCode from http://hl7.org/fhir/ValueSet/medication-request-priority
+0..1		DoNotPerform
+0..1		Reported
+			Reported.InformationSource is type MedicationInformationSource
+1..1		MedicationCodeOrReference
+			SubjectOfRecord value is type ref(Patient)
+			CareContext value is type ref(Encounter)
+0..*		SupportingInformation
+0..1		StatementDateTime
+1..1		Requester
+0..1		ExpectedPerformer
+0..1		ExpectedPerformerType
+0..1		Author value is type ref(Practitioner)
+0..*		ReasonCode could be from http://hl7.org/fhir/ValueSet/condition-code  // Upper cardinality of 1 imposed by DSTU 2
+0..*		ReasonReference is type MedicationReasonReference
+0..*		BasedOn is type MedicationBasedOn
+0..1		GroupIdentifier
+0..1		CourseOfTherapyType
+0..*		Insurance
 0..1		Annotation  // upper card restricted by us-core-medicationrequest
+0..*		Dosage
+0..1		DispenseRequest
+0..1		Substitution
+0..1		Replaces value is type ref(MedicationRequest)  // prior Rx
 
-	Element:		NumberOfRefillsAllowed
-	Description:	"The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
-	Value:			unsignedInt
 
-	Element:		QuantityPerDispense
-	Description:	"The amount that is to be dispensed for one fill."
-	Value:			SimpleQuantity
+	Element:		Reported
+	Description:	"Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record. It may also indicate the source of the report."
+	Value:			boolean or ref(InformationSource)
 
-	Element:		SupplyDuration
-	
-	Description:	"Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
-	Value: 			Duration
+	Element:		CourseOfTherapyType
+	Description:	"The description of the overall pattern of the administration of the medication to the patient."
+	Value:			CodeableConcept
 
-	Element:		SubstitutionAllowed
-	Description:	"Whether substitution is allowed or not."
-	Value:			boolean
-	Element:		SubstitutionReason
-	
-	Description:	"Why should (not) substitution be made."
-	Value:			CodeableConcept			
+	Element:		Substitution
+	Description:	"Indicates whether or not substitution can or should be part of the dispense. In some cases, substitution must happen, in other cases substitution must not happen. This block explains the prescriber's intent. If nothing is specified substitution may be done."
+	1..1			SubstitutionAllowed
+	0..1			SubstitutionReason
 
-// Move to behavior?
+		Element:		SubstitutionAllowed
+		Description:	"Whether substitution is allowed or not."
+		Value:			boolean or CodeableConcept
+
+		Element:		SubstitutionReason
+		Description:	"Why should (not) substitution be made."
+		Value:			CodeableConcept could be from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason	
+
+
+	Element:		DispenseRequest
+	Description:	"Indicates the specific details for the dispense or medication supply part of a medication request (also known as a Medication Prescription or Medication Order). Note that this information is not always sent with the order. There may be in some settings (e.g. hospitals) institutional or system support for completing the dispense details in the pharmacy department."
+	0..1			InitialFill
+	0..1			DispenseInterval
+	0..1			ValidityPeriod
+	0..1		 	NumberOfRefillsAllowed
+	0..1			QuantityPerDispense
+	0..1			SupplyDuration
+	0..1			ExpectedPerformer value is type ref(Organization)
+
+			Element:		InitialFill
+			Description:	"Indicates the quantity or duration for the first dispense of the medication."
+			0..1			SimpleQuantity
+			0..1			Duration
+
+			Element:		DispenseInterval
+			Description:	"The minimum period of time that must occur between dispenses of the medication."
+			Value:			Duration
+
+			Element:		ValidityPeriod
+			Description:	"This indicates the validity period of a prescription (stale dating the Prescription)."
+			Value:			TimePeriod
+
+			Element:		NumberOfRefillsAllowed
+			Description:	"The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
+			Value:			unsignedInt
+
+			Element:		QuantityPerDispense
+			Description:	"The amount that is to be dispensed for one fill."
+			Value:			SimpleQuantity
+
+			Element:		SupplyDuration
+			Description:	"Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
+			Value: 			Duration
+
+
 EntryElement:	MedicationNonadherence  
 Based on:		CodedNonLaboratoryObservation  
 // possibly a Condition, with start/stop, severity of nonadherence?

@@ -20,7 +20,7 @@ Dosage maps to Dosage:
 
 MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
 	Identifier maps to identifier
-	MedicationStatementBasedOn maps to basedOn 
+	MedicationBasedOn maps to basedOn 
 	MedicationStatementPartOf maps to partOf
 	CareContext maps to context
 	Status maps to status
@@ -29,7 +29,7 @@ MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-c
 	MedicationCodeOrReference maps to medication[x]
 	OccurrenceTimeOrPeriod maps to effective[x]
 	StatementDateTime maps to dateAsserted
-	MedicationStatementInformationSource maps to informationSource 
+	MedicationInformationSource maps to informationSource 
 	SubjectOfRecord maps to subject
 	DerivedFrom maps to derivedFrom
 	fix taken to #y
@@ -75,28 +75,45 @@ MedicationAdministration maps to MedicationAdministration:
 
 
 MedicationRequest maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	Identifier maps to identifier
+//	maps to definition
+	MedicationBasedOn maps to basedOn
+	GroupIdentifier maps to groupIdentifier
+	Status maps to status
+	StatusReason maps to extension
+	RequestIntent maps to intent
+	Category maps to category
+	PriorityCode maps to priority
+	DoNotPerform maps to modifierExtension
+	Reported maps to extension
+	MedicationCodeOrReference maps to medication[x]
 	SubjectOfRecord maps to subject
 	CareContext maps to context
+	SupportingInformation maps to supportingInformation
 	StatementDateTime maps to authoredOn
-	Identifier maps to identifier
-	Requester maps to requester
-	RequestIntent maps to intent
-	MedicationCodeOrReference maps to medication[x]
-	NumberOfRefillsAllowed maps to dispenseRequest.extension
-	constrain dispenseRequest.numberOfRepeatsAllowed to 0..0 // FHIR can't have zero repeats (wrong datatype)
-	QuantityPerDispense maps to dispenseRequest.quantity
-	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
-	constrain dosageInstruction to 0..1
-	Dosage maps to dosageInstruction
+	Requester maps to requester.agent
+	ExpectedPerformer maps to extension
+	ExpectedPerformerType maps to extension
+	Author maps to recorder
 	ReasonCode maps to reasonCode
 	MedicationReasonReference maps to reasonReference
-	Status maps to status
-	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-	PriorityCode maps to priority
+	MedicationBasedOn maps to extension
+	CourseOfTherapyType maps to extension
+	Insurance maps to extension
 	Annotation maps to note
-	ExpectedPerformer maps to dispenseRequest.performer
-	constrain note to 0..1
-	SubstitutionAllowed maps to substitution.allowed
-	SubstitutionReason maps to substitution.reason
-	Category maps to category
-	
+	Dosage maps to dosageInstruction
+	DispenseRequest maps to dispenseRequest
+	DispenseRequest.InitialFill maps to dispenseRequest.extension
+	DispenseRequest.DispenseInterval maps to dispenseRequest.extension
+	DispenseRequest.ValidityPeriod maps to dispenseRequest.validityPeriod
+	constrain dispenseRequest.numberOfRepeatsAllowed to 0..0  // wrong type in FHIR
+	DispenseRequest.NumberOfRefillsAllowed maps to dispenseRequest.extension
+	DispenseRequest.QuantityPerDispense maps to dispenseRequest.quantity
+	DispenseRequest.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	DispenseRequest.ExpectedPerformer maps to dispenseRequest.performer
+	Substitution maps to substitution
+	Substitution.SubstitutionAllowed maps to substitution.allowed
+	Substitution.SubstitutionReason maps to substitution.reason
+	Replaces maps to priorPrescription
+	// maps to detectedIssue
+	// maps to eventHistory

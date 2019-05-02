@@ -20,7 +20,7 @@ Dosage maps to Dosage:
 
 MedicationStatement maps to MedicationStatement:
 	Identifier maps to identifier
-	MedicationStatementBasedOn maps to basedOn 
+	MedicationBasedOn maps to basedOn 
 	MedicationStatementPartOf maps to partOf
 	Status maps to status
 	StatusReason maps to statusReason
@@ -30,7 +30,7 @@ MedicationStatement maps to MedicationStatement:
 	CareContext maps to context
 	OccurrenceTimeOrPeriod maps to effective[x]
 	StatementDateTime maps to dateAsserted	
-	MedicationStatementInformationSource maps to informationSource 
+	MedicationInformationSource maps to informationSource 
 	DerivedFrom maps to derivedFrom
 	ReasonCode maps to reasonCode
 	MedicationReasonReference maps to reasonReference 
@@ -39,7 +39,7 @@ MedicationStatement maps to MedicationStatement:
 
 MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
 	Identifier maps to identifier
-	MedicationStatementBasedOn maps to basedOn
+	MedicationBasedOn maps to basedOn
 	MedicationStatementPartOf maps to partOf
 	Status maps to status
 	StatusReason maps to statusReason
@@ -49,7 +49,7 @@ MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/
 	CareContext maps to context
 	OccurrenceTimeOrPeriod maps to effective[x]
 	StatementDateTime maps to dateAsserted  // slight semantic difference?
-	MedicationStatementInformationSource maps to informationSource
+	MedicationInformationSource maps to informationSource
 	DerivedFrom maps to derivedFrom
 	ReasonCode maps to reasonCode
 	MedicationReasonReference maps to reasonReference
@@ -90,28 +90,47 @@ MedicationAdministration maps to MedicationAdministration:
 
 
 MedicationRequest maps to MedicationRequest:
-	SubjectOfRecord maps to subject
-	CareContext maps to context
-	StatementDateTime maps to authoredOn
 	Identifier maps to identifier
-	Requester maps to requester  // Type changed from BackboneElement to Reference(Practitioner | PractitionerRole | Organization | Patient | RelatedPerson | Device)
-	RequestIntent maps to intent // Change value set from http://hl7.org/fhir/ValueSet/medication-request-intent to http://hl7.org/fhir/ValueSet/medicationrequest-intent|4.0.0
+	Status maps to status
+	StatusReason maps to statusReason
+	RequestIntent maps to intent
+	Category maps to category
+	PriorityCode maps to priority
+	DoNotPerform maps to doNotPerform
+	Reported maps to reported[x]
 	MedicationCodeOrReference maps to medication[x]
-	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed // Type changed from positiveInt to unsignedInt 
-	QuantityPerDispense maps to dispenseRequest.quantity
-	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
-	constrain dosageInstruction to 0..1
-	Dosage maps to dosageInstruction
+	SubjectOfRecord maps to subject
+	CareContext maps to encounter
+	SupportingInformation maps to supportingInformation
+	StatementDateTime maps to authoredOn
+	Requester maps to requester
+	ExpectedPerformer maps to performer
+	ExpectedPerformerType maps to performerType
+	Author maps to recorder
 	ReasonCode maps to reasonCode
 	MedicationReasonReference maps to reasonReference
-	Status maps to status  // Min Cardinality changed from 0 to 1; Change value set from http://hl7.org/fhir/ValueSet/medication-request-status to http://hl7.org/fhir/ValueSet/medicationrequest-status|4.0.0
-	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-	PriorityCode maps to priority // Change value set from http://hl7.org/fhir/ValueSet/medication-request-priority to http://hl7.org/fhir/ValueSet/request-priority|4.0.0
+	//maps to instantiatesCanonical
+	//maps to instantiatesUri
+	MedicationBasedOn maps to basedOn
+	GroupIdentifier maps to groupIdentifier
+	CourseOfTherapyType maps to courseOfTherapyType
+	Insurance maps to insurance
 	Annotation maps to note
-	ExpectedPerformer maps to dispenseRequest.performer
-	constrain note to 0..1
-	SubstitutionAllowed maps to substitution.allowed // Renamed from allowed to allowed[x], added type CodeableConcept
-	SubstitutionReason maps to substitution.reason
-	Category maps to category  // Max Cardinality changed from 1 to *
-	// Added statusReason, doNotPerform, reported[x], encounter, performer, performerType, instantiatesCanonical, instantiatesUri, courseOfTherapyType, insurance, dispenseRequest.initialFill, dispenseRequest.initialFill.quantity, dispenseRequest.initialFill.duration, dispenseRequest.dispenseInterval
-	// MedicationRequest.recorder -- Added Target Type PractitionerRole
+	Dosage maps to dosageInstruction
+	DispenseRequest maps to dispenseRequest
+	DispenseRequest.InitialFill maps to dispenseRequest.initialFill
+	DispenseRequest.InitialFill.SimpleQuantity maps to dispenseRequest.initialFill.quantity
+	DispenseRequest.InitialFill.Duration maps to dispenseRequest.initialFill.duration
+	DispenseRequest.DispenseInterval maps to dispenseRequest.dispenseInterval
+	DispenseRequest.ValidityPeriod maps to dispenseRequest.validityPeriod
+	DispenseRequest.NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	DispenseRequest.QuantityPerDispense maps to dispenseRequest.quantity
+	DispenseRequest.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	DispenseRequest.ExpectedPerformer maps to dispenseRequest.performer
+	Substitution maps to substitution
+	Substitution.SubstitutionAllowed maps to substitution.allowed[x]
+	Substitution.SubstitutionReason maps to substitution.reason
+	Replaces maps to priorPrescription
+	//maps to detectedIssue
+	//maps to eventHistory
+

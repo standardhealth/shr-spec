@@ -9,8 +9,8 @@ Dosage maps to Dosage:
 MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
 	Identifier maps to identifier
 	SubjectOfRecord maps to patient
-	MedicationStatementInformationSource maps to informationSource 
-	MedicationStatementBasedOn maps to extension
+	MedicationInformationSource maps to informationSource 
+	MedicationBasedOn maps to extension
 	MedicationStatementPartOf maps to extension
 	StatementDateTime maps to dateAsserted
 	Status maps to status
@@ -48,8 +48,6 @@ MedicationAdministration maps to MedicationAdministration:
 	Category maps to extension
 	SubjectOfRecord maps to patient
 	Participation.Participant maps to practitioner
-//	Participation.ParticipationType maps to practitioner.extension
-//	Participation.OnBehalfOf maps to practitioner.extension
 	CareContext maps to encounter 
 	MedicationAdministrationBasedOn maps to prescription 
 	constrain wasNotGiven to 0..0  
@@ -69,44 +67,46 @@ MedicationAdministration maps to MedicationAdministration:
 
 
 MedicationRequest maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationorder:
-	SubjectOfRecord maps to patient
-	CareContext maps to encounter
-	StatementDateTime maps to dateWritten
 	Identifier maps to identifier
-	Requester maps to prescriber
+	StatementDateTime maps to dateWritten
+	Status maps to status
+	StatusReason maps to extension
 	RequestIntent maps to extension
-	MedicationCodeOrReference maps to medication[x]
-	NumberOfRefillsAllowed maps to dispenseRequest.extension
-	constrain dispenseRequest.numberOfRepeatsAllowed to 0..0
-	QuantityPerDispense maps to dispenseRequest.quantity
-	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
-	constrain dosageInstruction to 0..1
-	// DSTU 2 change (name change)
+	Category maps to extension
+	PriorityCode maps to extension
+	DoNotPerform maps to modifierExtension
+	Reported maps to extension
+	SubjectOfRecord maps to patient
+	Requester maps to prescriber  // clash author?
+	CareContext maps to encounter
 	ReasonCode maps to reason[x]
 	MedicationReasonReference maps to reason[x]
-	Status maps to status
-	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-	//  DSTU 2 change (no such attribute)
-//	PriorityCode maps to priority  
-//  DSTU 2 change (different data type)
-	Annotation.Text maps to note  
-	//  DSTU 2 change (no such attribute)  
-	constrain note to 0..1
-	//  DSTU 2 change (mapping target does not exist)
-//	Dosage maps to dosageInstruction   
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.InstructionText maps to dosageInstruction.text 
+	MedicationBasedOn maps to extension
+	CourseOfTherapyType maps to extension
+	Insurance maps to extension
+	Annotation maps to note
+	MedicationCodeOrReference maps to medication[x]
+	Dosage maps to dosageInstruction
+	Dosage.InstructionText maps to dosageInstruction.text
 	Dosage.InstructionCode maps to dosageInstruction.additionalInstructions
-	Dosage.Timing maps to dosageInstruction.timing 
-	Dosage.AsNeeded maps to dosageInstruction.asNeeded[x] 
+	Dosage.Timing maps to dosageInstruction.timing
+	Dosage.AsNeeded maps to dosageInstruction.asNeeded[x]
 	Dosage.AdministrationSite maps to dosageInstruction.site[x]
 	Dosage.RouteIntoBody maps to dosageInstruction.route
 	Dosage.Method maps to dosageInstruction.method
 	Dosage.DoseAndRate.DoseAmount maps to dosageInstruction.dose[x]
 	Dosage.DoseAndRate.DoseRate maps to dosageInstruction.rate[x]
 	Dosage.MaxDosePerPeriod maps to dosageInstruction.maxDosePerPeriod
-	SubstitutionAllowed maps to substitution.extension
-	SubstitutionReason maps to substitution.reason
-
-
-	
+	DispenseRequest maps to dispenseRequest
+	DispenseRequest.InitialFill maps to dispenseRequest.extension
+	DispenseRequest.DispenseInterval maps to dispenseRequest.extension
+	DispenseRequest.ValidityPeriod maps to dispenseRequest.validityPeriod
+	constrain dispenseRequest.numberOfRepeatsAllowed to 0..0
+	DispenseRequest.NumberOfRefillsAllowed maps to dispenseRequest.extension
+	DispenseRequest.QuantityPerDispense maps to dispenseRequest.quantity
+	DispenseRequest.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	DispenseRequest.ExpectedPerformer maps to dispenseRequest.extension
+	Substitution maps to substitution
+	Substitution.SubstitutionAllowed maps to substitution.type
+	Substitution.SubstitutionReason maps to substitution.reason
+	Replaces maps to priorPrescription

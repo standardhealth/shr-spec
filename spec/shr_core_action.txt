@@ -93,7 +93,7 @@ Description:		"Abstract class representing a request for any type of action to b
 
 		Element:		ExpectedPerformer
 		Description:	"Who this request is being addressed to."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // or ref(CareTeam)
 
 /*		
 		Element:		CommunicationMethod
@@ -110,8 +110,8 @@ Description:	"A record of a request for service such as diagnostic investigation
 1..1			Code // card change from 0..1 to accomodate DSTU2 mapping to argo-ProcedureRequest
 0..1			ExpectedPerformer // card change from 0..* to accomodate DSTU2 mapping to argo-ProcedureRequest
 0..1			ReasonCode // card change from 0..*  to accomodate DSTU2 mapping to argo-ProcedureRequest
-0..*			Replaces
-0..1			Requisition
+0..*			Replaces value is type ref(ServiceRequest)
+0..1			GroupIdentifier
 1..1			RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 0..1			DoNotPerform  // doNotPerform
 0..*			ServiceDetails  // orderDetails
@@ -136,9 +136,9 @@ Description:	"A record of a request for service such as diagnostic investigation
 
 		Element:	Replaces
 		Description:"Request(s) replaced by this request"
-		Value:		ref(ServiceRequest)
+		Value:		ref(ActionRequest)
 
-		Element:	Requisition
+		Element:	GroupIdentifier
 		Description:"A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier."
 		Value:		Identifier
 
