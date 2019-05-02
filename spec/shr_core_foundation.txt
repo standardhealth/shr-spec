@@ -187,7 +187,6 @@ Description:	"A composition represents a set of Entries sharing common provenanc
 0..0			EventContext.FacilityType
 0..0			EventContext.Setting
 0..0			EventContext.Patient
-0..0			EventContext.Identifier
 0..*            Section
 
 	Element:		ConfidentialityCode
@@ -391,17 +390,16 @@ Description:	"A reference to a document, used to describe a document that is mad
 1..1		Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes
 0..1		Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes
 0..1		SubjectOfRecord value is type ref(Patient) // us core restriction 
-0..1		CreationDateTime
 1..1		StatementDateTime
 0..*		DocumentAuthor
 0..1		Authenticator
 0..1		ManagingOrganization
-1..*		DocumentReferenced
-0..*		RelatedDocument
+0..*		RelatedDocument  // relatedTo
 			RelatedDocument.TargetDocument value is type ref(DocumentReference)
 0..1		CommentOrDescription
 0..*		SecurityLabel from http://hl7.org/fhir/ValueSet/security-labels if covered
-0..1		EventContext
+1..*		DocumentReferenced  // content
+0..1		EventContext  // context
 
 	Element:	MasterIdentifier
 	Description:	"Document identifier as assigned by the source of the document. This identifier is specific to this version of the document. This unique identifier may be used elsewhere to identify this version of the document."
@@ -420,13 +418,6 @@ Description:	"A reference to a document, used to describe a document that is mad
 	Description:	"Who authenticated the document"
 	Value:	ref(Practitioner) or ref(Organization)
 
-	Element:	DocumentReferenced
-	Description:	"The document referenced."
-	1..1	Attachment
-	1..1	Attachment.ContentType  //  constraint from us-core
-	1..1	Attachment.ResourceLocation   //  constraint from us-core
-	0..1	Type from http://hl7.org/fhir/ValueSet/formatcodes if covered // us-core extensible binding
-
 	Element:  RelatedDocument
 	Description:	"Documents related to this one."
 	1..1	Relationship from http://hl7.org/fhir/ValueSet/document-relationship-type
@@ -436,16 +427,23 @@ Description:	"A reference to a document, used to describe a document that is mad
 		Description:"The target document of this relationship."
 		Value:		ref(DocumentReference) or Identifier or ref(Composition)
 
+	Element:	DocumentReferenced
+	Description:	"The document referenced."
+	1..1	Attachment
+	0..1	Type from http://hl7.org/fhir/ValueSet/formatcodes if covered // us-core extensible binding
+	1..1	Attachment.ContentType  // card constraint from us-core
+	1..1	Attachment.ResourceLocation   //  card constraint from us-core
+
+
 	Element:	EventContext
 	Description:	"Clinical context or event being documented, for example, a colonoscopy or an appendectomy."
 	0..1	CareContext  // R4 changed from ref(Encounter) to Encounter or EpisodeOfCare
-	0..*	Code could be from http://hl7.org/fhir/ValueSet/v3-ActCode
+	0..*	Code could be from http://hl7.org/fhir/ValueSet/v3-ActCode // event
 	0..1	TimePeriod
 	0..1	FacilityType
 	0..1	Setting
-	0..1	ref(Patient)
-	0..*	SupportingInformation
-	0..*	Identifier
+	0..1	ref(Patient)  
+	0..*	SupportingInformation  // related
 
 		Element:	FacilityType
 		Description:	"Kind of facility where patient was seen"
