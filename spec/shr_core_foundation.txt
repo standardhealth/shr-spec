@@ -450,4 +450,62 @@ Description:	"A reference to a document, used to describe a document that is mad
 		Value:	CodeableConcept could be from http://hl7.org/fhir/ValueSet/c80-facilitycodes
 
 
+EntryElement:	Provenance
+Description:	"Describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance tracks information about the activity that created, revised, deleted, or signed a version of a resource, describing the entities and agents involved. This information can be used to form assessments about its quality, reliability, trustworthiness, or to provide pointers for where to go to further investigate the origins of the resource and the information in it."
+1..*	RefersTo
+0..1	OccurrenceTimeOrPeriod
+1..1	StatementDateTime
+0..*	ImplicitRules
+0..1	ref(Location)
+0..*	ReasonCode // no ReasonReference -- maybe there should be
+0..1	ActivityCode from http://hl7.org/fhir/ValueSet/provenance-activity-type if covered
+1..*	ProvenanceParticipation
+0..*	Used
+0..*	Signature
+// Constraints
+0..0	Used.UsedCode
+		Used.UsedType from 	http://hl7.org/fhir/ValueSet/provenance-entity-role
+		Used.UsedParticipation value is type ProvenanceParticipation
 
+		Element:	ProvenanceParticipation
+		Based on:	Participation
+		Description:"An actor taking a role in an activity for which it can be assigned some degree of responsibility for the activity taking place."
+		0..1		ParticipationRole // only example binding in FHIR
+					ParticipationType from http://hl7.org/fhir/ValueSet/provenance-agent-type if covered
+		// missing role -- but how is that different than type?
+		0..0		ParticipationPeriod
+
+			Element:	ParticipationRole
+			Description:"The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity."
+			Value:		CodeableConcept
+
+		Element:	RefersTo
+		Description:"A reference to the related or target object."
+		Value:		ref(DomainResource)
+
+		Element:	ActivityCode
+		Description:"Code representing the action taken."
+		Value:		CodeableConcept
+
+		Element:		Used
+		Description:	"Record of something (information or material) used or consumed in an activity or event."
+		0..1			UsedReference
+		0..1			UsedCode
+		0..1 			UsedType
+		0..1			UsedParticipation
+
+			Element:		UsedReference
+			Description:	"Item used during procedure, as a reference to the item."
+			Value:			ref(DomainResource)
+
+			Element:		UsedCode
+			Description:	"Item used during an activity, represented as a code."
+			Value:			CodeableConcept
+
+			Element:		UsedType
+			Description:	"The type of use, i.e., how the item was used in the activity."
+			Value:			CodeableConcept
+
+			Element:		UsedParticipation
+			Description:	"The participation (participant and role, etc.) who used the item in the activity."
+			Value:			Participation
