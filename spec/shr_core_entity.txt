@@ -594,7 +594,7 @@ Device type has extensible mappings to different value sets in Argonaut and US-C
 0..1		ExpirationDate
 0..1		LotNumber
 0..1		SerialNumber
-0..*		DeviceName
+0..*		DeviceDesignation
 1..1		Type from http://hl7.org/fhir/ValueSet/device-kind
 // specialization not implemented
 0..1 		ModelNumber  // called 'model' in CIMI
@@ -647,11 +647,15 @@ Device type has extensible mappings to different value sets in Argonaut and US-C
 	Description:	"Serial number assigned by the manufacturer."
 	Value:			string
 
-	Element:		DeviceName
-	Description:	"The name of the device as given by the manufacturer."
-	1..1			Name
+	Element:		DeviceDesignation
+	Description:	"A name of the device as given by the manufacturer, along with a type of name."
+	1..1			DeviceName
 	1..1			Type from http://hl7.org/fhir/ValueSet/device-nametype
 	
+			Element:	DeviceName
+			Description:	"The name of the device."
+			Value:		string
+
 	Element:		Owner
 	Description:	"An organization that is responsible for the provision and ongoing maintenance of the device."
 	Value:			ref(Organization)
@@ -668,20 +672,24 @@ EntryElement:   Media
 Based on:		Entity
 Description: "A photo, video, or audio recording acquired or used in healthcare. The actual content may be inline or provided by direct reference."
 0..*	MediaBasedOn
+0..1	PartOf
+1..1	Status from http://hl7.org/fhir/ValueSet/event-status
 1..1	Type from http://hl7.org/fhir/ValueSet/digital-media-type
-0..1	Subtype 
+0..1	Modality
 0..1	View
 0..1	SubjectOfRecord is type MediaSubjectOfRecord
-0..1	CareContext
+0..1	CareContext value is type Encounter
 0..1	RelevantTime  // like observation
-0..1	ref(Practitioner)
+0..1	StatementDateTime
+0..1	Performer
 0..*	ReasonCode could be from http://hl7.org/fhir/ValueSet/procedure-reason
 0..1	BodyLocation
+0..1	DeviceName
 0..1	ref(Device)
 0..1	PixelHeight
 0..1	PixelWidth
 0..1	Frames
-0..1	NumberOfSecondsDuration  // this is not how duration should be captured. See Duration
+0..1	NumberOfSecondsDuration  // horrible! this is not how duration should be captured. See Duration
 1..1	Attachment
 0..*	Annotation
 
@@ -695,8 +703,8 @@ Description: "A photo, video, or audio recording acquired or used in healthcare.
 		Description:	"A choice of Patient, Practitioner, Group, Device or Specimen. These are choices for subject of Media resource."
 		Value:			ref(Patient) or ref(Practitioner) or ref(Group) or ref(Device) or ref(Specimen)
 
-	Element:	Subtype
-	Description:	"A further refinement of type."
+	Element:	Modality
+	Description:"Details of the type of the media - usually, how it was acquired (what type of device). If images sourced from a DICOM system, are wrapped in a Media resource, then this is the modality."
 	Value:		CodeableConcept
 
 	Element:	View
