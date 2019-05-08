@@ -40,7 +40,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 //0..1			Hospitalization
 0..*			EncounterLocation
 0..1			PartOf value is type ref(Encounter)
-				BasedOn is type BasedOnReferral
+				BasedOn is type ReferralBasedOn
 
 		Element:		EncounterParticipant
 		Based on:		Participant
@@ -83,12 +83,6 @@ Description:	"A description of an interaction between a patient and healthcare p
 		Based on:	ReasonReference
 		Description:"Reason the encounter is taking place."
 		Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)	
-
-		Element:	BasedOnReferral
-		Based on:	BasedOn
-		Description:"The request that initiated this encounter."
-		Value:		ref(ReferralRequest)
-
 
 EntryElement:	EpisodeOfCare
 Based on:		EncounterOrEpisode
@@ -157,7 +151,7 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 0..1	CommentOrDescription
 0..1	PatientInstruction
 0..*	SupportingInformation 
-0..*	BasedOn is type BasedOnReferral
+0..*	BasedOn is type ReferralBasedOn
 1..*	AppointmentParticipation
 0..1	TimePeriod
 0..*	ExpectedPerformanceTime
@@ -181,11 +175,14 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 	Value:			ref(Condition) or ref(Procedure)
 
 	Element:	AppointmentParticipation
+	Based on:	Participation
 	Description:	"Participants involved in appointment"
-	1..*		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type
+	1..1		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type
 	0..1		Participant is type AppointmentParticipant  // HealthcareService not implemented yet
 	0..1		Need from http://hl7.org/fhir/ValueSet/participantrequired
 	1..1		Status from http://hl7.org/fhir/ValueSet/participationstatus
+	0..0		ParticipationPeriod
+	0..0		OnBehalfOf
 
 			Element:	AppointmentParticipant
 			Based on:	Participant
