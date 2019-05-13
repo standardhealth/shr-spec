@@ -71,7 +71,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 // FHIR-- missing StatusReason
 0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // upper card forced by DSTU 2
 1..1			SubjectOfRecord is type ObservationSubjectOfRecord
-0..*			FocalSubject
+0..*			FocalSubject value is type ref(DomainResource)  // not a code
 				CareContext value is type ref(Encounter)
 0..1			RelevantTime  // R4 add Timing, instant -- not supported
 0..*			Performer
@@ -119,7 +119,7 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Element:		PanelMembers
 		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations.
 		
-		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the  are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
 
 		Element:		ObservationDerivedFrom
@@ -294,7 +294,8 @@ Element:		SocialHistoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"A simplified observation for social histories."
 1..1			SubjectOfRecord value is type ref(Patient)
-0..1			FocalSubject value is type CodeableConcept
+				ObservationPartOf is type SocialHistoryObservationPartOf
+				ObservationBasedOn is type SocialHistoryObservationBasedOn
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
 0..0			BodyLocation
@@ -302,6 +303,16 @@ Description:	"A simplified observation for social histories."
 0..0			PanelMembers
 0..0			Device
 0..0			DataAbsentReason
+
+		Element:		SocialHistoryObservationBasedOn
+		Based on:		ObservationBasedOn
+		Description:	"A plan, proposal or order that is fulfilled in whole or in part by this observation."
+		Value: 			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)  // or ref(CarePlan) 
+
+		Element:		SocialHistoryObservationPartOf
+		Based on:		ObservationPartOf
+		Description:	"A larger procedure that this particular observation is a component or step."
+		Value: 			ref(Procedure) // or ref(ImagingStudy) or ref(Immunization)
 
 Element:		CodedSocialHistoryObservation
 Based on:		SocialHistoryObservation
@@ -410,7 +421,7 @@ Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birt
 
 EntryElement:	DiagnosticReport
 Based on:		SituationStatement
-0..*			BasedOn is type DiagnosticReportBasedOn
+0..*			BasedOn
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
 0..1			Category
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
@@ -427,11 +438,6 @@ Based on:		SituationStatement
 0..1			ConclusionText
 0..*			ConclusionCode
 0..*			PresentedForm
-
-	Element:		DiagnosticReportBasedOn
-	Based on:		BasedOn
-	Description:	"The request or order that initiated this report."
-	Value:			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest) or ref(MedicationRequest) // or CarePlan or ImmunizationRecommendation or NutritionOrder or MedicationRequest 
 
     Element:		DiagnosticReportPerformer
 	Based on:		Performer
