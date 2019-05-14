@@ -381,7 +381,7 @@ Description:    "A set of codes drawn from one or more code systems"
 		    Value:	boolean
 
 EntryElement:	DocumentReference
-Based on:	DomainResource
+Based on:		DomainResource
 Description:	"A reference to a document, used to describe a document that is made available to a healthcare system. A document is some sequence of bytes that is identifiable, establishes its own context (e.g., what subject, author, etc. can be displayed to the user), and has defined update management. The DocumentReference resource can be used with any document format that has a recognized mime type and that conforms to this definition."
 0..1		MasterIdentifier
 1..1		Status from http://hl7.org/fhir/ValueSet/document-reference-status
@@ -450,11 +450,12 @@ Description:	"A reference to a document, used to describe a document that is mad
 
 
 EntryElement:	Provenance
+Based on:		DomainResource
 Description:	"Describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance tracks information about the activity that created, revised, deleted, or signed a version of a resource, describing the entities and agents involved. This information can be used to form assessments about its quality, reliability, trustworthiness, or to provide pointers for where to go to further investigate the origins of the resource and the information in it."
 1..*	RefersTo
 0..1	OccurrenceTimeOrPeriod
 1..1	StatementDateTime
-0..*	ImplicitRules
+0..1	ImplicitRules // constraint on property defined in DomainResource
 0..1	ref(Location)
 0..*	ReasonCode // no ReasonReference -- maybe there should be
 0..1	ActivityCode from http://hl7.org/fhir/ValueSet/provenance-activity-type if covered
@@ -509,3 +510,37 @@ Description:	"Describes entities and processes involved in producing and deliver
 			Element:		UsedParticipation
 			Description:	"The participation (participant and role, etc.) who used the item in the activity."
 			Value:			Participation
+
+
+EntryElement:	List
+Based on:		DomainResource
+Description:	"A flat, potentially ordered, collection of records. Items may be added or removed over time. An example is a medication list or problem list."
+1..1			Status from http://hl7.org/fhir/ValueSet/list-status
+1..1			Mode from http://hl7.org/fhir/ValueSet/list-mode
+0..1			Title
+0..1			Code
+0..1			ListSubjectOfRecord
+0..1			CareContext value is type ref(Encounter)
+0..1			StatementDateTime
+0..1			ListAuthor  // author is distinct from the information source -- confused in R4 definition
+0..1			SortOrder should be from http://hl7.org/fhir/ValueSet/list-order
+0..*			Annotation
+0..*			ListItem
+0..1			EmptyReason should be from http://hl7.org/fhir/ValueSet/list-empty-reason
+
+	Element:		ListItem
+	Description:	"An item in this list."
+	0..1			Status // flag
+	0..1			Inactive  // deleted
+	0..1			TimePeriod  // date (low time)
+	1..1			DomainResource
+
+		Element:	ListSubjectOfRecord  // same choices as RequestSubjectOfRecord
+		Based on:	SubjectOfRecord
+		Description:"On whom or what the list refers to. This is usually a human patient, but can also be requested on animals, groups, devices such as dialysis machines, or even locations (typically for environmental scans)."
+		Value:		ref(Patient) or ref(Group) or ref(Device) or ref(Location)
+
+		Element: 	ListAuthor
+		Based on:	Author
+		Description:"The originator or source of the information or request: a practitioner, patient, related person, organization, an algorithm, device, etc."
+		Value:		ref(Patient) or ref(Practitioner) or ref(Device)
