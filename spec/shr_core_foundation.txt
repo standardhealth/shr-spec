@@ -233,7 +233,6 @@ Description:    "A set of codes drawn from one or more code systems"
 0..1            IsImmutable
 0..1            PurposeMarkdown
 0..1            Copyright
-0..1            IsExtensible
 0..1            ContentLogicalDefinition
 0..1            ValueSetExpansion
 
@@ -243,10 +242,6 @@ Description:    "A set of codes drawn from one or more code systems"
 
     Element:    IsImmutable
     Description: "Indicates whether or not any change to the content logical definition may occur"  Value:      boolean
-
-    Element:    IsExtensible
-    Description: "Whether this is intended to be used with an extensible binding"
-    Value:      boolean
 
 	Element:		Jurisdiction
 	Description:	"The country, state or other region taking legal responsibility."
@@ -328,7 +323,7 @@ Description:    "A set of codes drawn from one or more code systems"
             Description:    "Select concepts by specify a matching criteria based on the properties (including relationships) defined by the system. If multiple filters are specified, they SHALL all be true."
             1..1    Property
             1..1    Operation
-            1..1    CodeValue
+            1..1    FilterValue
 
                 Element:    Property
                 Description:    "A code that identifies a property or a filter defined in the code system."
@@ -338,9 +333,13 @@ Description:    "A set of codes drawn from one or more code systems"
                 Description:    "The kind of operation to perform as a part of the filter criteria."
                 Value:      CodeableConcept from http://hl7.org/fhir/ValueSet/filter-operator
 
+				Element:	FilterValue
+				Description:	"The match value may be either a code defined by the system, or a string value, which is a regex match on the literal string of the property value (if the filter represents a property defined in CodeSystem) or of the system filter value (if the filter represents a filter defined in CodeSystem) when the operation is 'regex', or one of the values (true and false), when the operation is 'exists'."
+				Value:		string
+
             Element:    ValueSetUri
             Description:    "Selects the concepts found in this value set (based on its value set definition). This is an absolute URI that is a reference to ValueSet.url. If multiple value sets are specified this includes the union of the contents of all of the referenced value sets."
-            Value:     uri
+            Value:     uri   // canonical(ValueSet) in R4 (not a conflict)
 
     Element:    ValueSetExpansion
     Description:    "The value set turned into a simple collection of enumerated codes. This element holds the expansion, if it has been performed."
@@ -495,9 +494,10 @@ Description:	"Describes entities and processes involved in producing and deliver
 		0..1			UsedParticipation
 
 			Element:		UsedReference
-			Description:	"Item used during procedure, as a reference to the item."
+			Description:	"Item used during procedure, represented as a reference to the item."
 			Value:			ref(DomainResource)
 
+// UsedCode is not part of Provenance, but part of the general "used" model
 			Element:		UsedCode
 			Description:	"Item used during an activity, represented as a code."
 			Value:			CodeableConcept
