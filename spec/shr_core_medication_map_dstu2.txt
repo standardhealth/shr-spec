@@ -8,105 +8,105 @@ Dosage maps to Dosage:
 
 MedicationStatement maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationstatement:
 	Identifier maps to identifier
-	MedicationStatementInformationSource maps to informationSource
-	StatementDateTime maps to dateAsserted  // slight semantic difference?
 	SubjectOfRecord maps to patient
+	MedicationInformationSource maps to informationSource 
+	MedicationBasedOn maps to extension
+	MedicationStatementPartOf maps to extension
+	StatementDateTime maps to dateAsserted
+	Status maps to status
+	StatusReason maps to extension
 	constrain wasNotTaken to 0..0
 	constrain reasonNotTaken to 0..0
-	constrain dosage to 0..1
-//  DSTU 2 change (mapping target does not exist) 	
-//	Dosage maps to dosage
-	MedicationCodeOrReference maps to medication[x]
-//  DSTU 2 change (no such attribute)	
-//	Category maps to category
-//  DSTU 2 change (no such attribute)   
-//	fix taken to #y
 	ReasonCode maps to reasonForUse[x]
-	ReasonReference maps to reasonForUse[x]
+	MedicationReasonReference maps to reasonForUse[x]
 	OccurrenceTimeOrPeriod maps to effective[x]
-	Status maps to status
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount maps to dosage.quantity[x]  
-	Dosage.TimingOfDoses maps to dosage.timing 
-	Dosage.AsNeededIndicator maps to dosage.asNeeded[x] 
-	Dosage.DosageInstructionsText maps to dosage.text 
-//  DSTU 2 change (no such attribute)
-//	AdditionalDosageInstruction maps to additionalInstruction   
-	Dosage.RouteIntoBody maps to dosage.route 
-	Dosage.DosageMethod maps to dosage.method
-	Dosage.DosageBodyLocation maps to dosage.site[x]
-	Dosage.MaximumDosePerTimePeriod maps to dosage.maxDosePerPeriod 
+	Annotation maps to extension  // no mapping to note (string)
+	SupportingInformation maps to supportingInformation
+	MedicationCodeOrReference maps to medication[x]
+	constrain dosage to 0..1
+	Dosage.InstructionText maps to dosage.text
+	Dosage.Timing maps to dosage.timing
+	Dosage.AsNeeded maps to dosage.asNeeded[x]
+	Dosage.AdministrationSite maps to dosage.site[x]
+	Dosage.RouteIntoBody maps to dosage.route
+	Dosage.Method maps to dosage.method
+	Dosage.DoseAndRate.DoseAmount maps to dosage.quantity[x]
+	Dosage.DoseAndRate.DoseRate maps to dosage.rate[x]
+	Dosage.DoseAndRate.Type maps to dosage.extension
+	Dosage.MaxDosePerPeriod maps to dosage.maxDosePerPeriod
+	Dosage.DoseSequenceNumber maps to dosage.extension
+	Dosage.InstructionCode maps to dosage.extension 
+	Dosage.PatientInstruction maps to dosage.extension 
+	Dosage.MaxDosePerAdministration maps to dosage.extension 
+	Dosage.MaxDosePerLifetime maps to dosage.extension 
 
 MedicationAdministration maps to MedicationAdministration:
 	Identifier maps to identifier
+	Status maps to status
+	MedicationAdministrationPartOf maps to extension
+	StatusReason maps to extension
+	Category maps to extension
 	SubjectOfRecord maps to patient
-	// DSTU 2 change (name change)
+	Participation.Participant maps to practitioner
 	CareContext maps to encounter 
-	RelatedRequest maps to prescription 
-	// DSTU 2 change (name change) 
+	MedicationAdministrationBasedOn maps to prescription 
 	constrain wasNotGiven to 0..0  
 	constrain reasonNotGiven to 0..0
-	//   DSTU 2 change (mapping target does not exist)
-//	Dosage maps to dosage   
-	MedicationCodeOrReference maps to medication[x]
-	//  DSTU 2 change (no such attribute)
-//	Category maps to category  
-// DSTU 2 change (name change)
 	ReasonCode maps to reasonGiven
-	ReasonReference maps to extension
-	OccurrenceTimeOrPeriod maps to effectiveTime[x]
-	Status maps to status
-	//  DSTU 2 change (more restrictive type)
-	Participation.Participant maps to practitioner 
-	// DSTU 2 change (no such attribute) 
-//	Participation.OnBehalfOf maps to performer.onBehalfOf  
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount.SimpleQuantity maps to dosage.quantity 
+	MedicationReasonReference maps to extension
+	OccurrenceTimeOrPeriod maps to effectiveTime[x]  // different name
+	MedicationCodeOrReference maps to medication[x]
+	Device maps to device
+	Annotation maps to extension
+	Dosage.InstructionText maps to dosage.text 
+	Dosage.AdministrationSite maps to dosage.site[x] 
 	Dosage.RouteIntoBody maps to dosage.route
-	Dosage.DosageMethod maps to dosage.method 
-	Dosage.DosageBodyLocation maps to dosage.site[x] 
-// TODO - represent rate and DosageBodyLocation ref(BodyLocation)
+	Dosage.Method maps to dosage.method 
+	Dosage.DoseAndRate.DoseAmount maps to dosage.quantity 
+	Dosage.DoseAndRate.DoseRate maps to dosage.rate[x]
 
 
 MedicationRequest maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medicationorder:
-	SubjectOfRecord maps to patient
-	CareContext maps to encounter
-	StatementDateTime maps to dateWritten
 	Identifier maps to identifier
-	MedicationRequester maps to prescriber
-	RequestIntent maps to extension
-	MedicationCodeOrReference maps to medication[x]
-	NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
-	QuantityPerDispense maps to dispenseRequest.quantity
-	SupplyDuration maps to dispenseRequest.expectedSupplyDuration
-	constrain dosageInstruction to 0..1
-	// DSTU 2 change (name change)
-	ReasonCode maps to reason[x]
-	ReasonReference maps to reason[x]
+	StatementDateTime maps to dateWritten
 	Status maps to status
-	ExpectedPerformanceTime maps to dispenseRequest.validityPeriod
-	//  DSTU 2 change (no such attribute)
-//	PriorityCode maps to priority  
-//  DSTU 2 change (different data type)
-	Annotation.Text maps to note  
-	//  DSTU 2 change (no such attribute)  
-	constrain note to 0..1
-	//  DSTU 2 change (mapping target does not exist)
-//	Dosage maps to dosageInstruction   
-// DSTU 2 change (added Dosage as in-line element)
-	Dosage.DoseAmount maps to dosageInstruction.dose[x]
-	Dosage.TimingOfDoses maps to dosageInstruction.timing 
-	Dosage.AsNeededIndicator maps to dosageInstruction.asNeeded[x] 
-	Dosage.DosageInstructionsText maps to dosageInstruction.text
-	//  DSTU 2 change (no such attribute)
-//	AdditionalDosageInstruction maps to additionalInstruction   
+	StatusReason maps to extension
+	RequestIntent maps to extension
+	Category maps to extension
+	PriorityCode maps to extension
+	DoNotPerform maps to modifierExtension
+	Reported maps to extension
+	SubjectOfRecord maps to patient
+	Requester maps to prescriber  // clash author?
+	CareContext maps to encounter
+	ReasonCode maps to reason[x]
+	MedicationReasonReference maps to reason[x]
+	MedicationBasedOn maps to extension
+	CourseOfTherapyType maps to extension
+	Insurance maps to extension
+	Annotation maps to extension
+	MedicationCodeOrReference maps to medication[x]
+	Dosage maps to dosageInstruction
+	Dosage.InstructionText maps to dosageInstruction.text
+	Dosage.InstructionCode maps to dosageInstruction.additionalInstructions
+	Dosage.Timing maps to dosageInstruction.timing
+	Dosage.AsNeeded maps to dosageInstruction.asNeeded[x]
+	Dosage.AdministrationSite maps to dosageInstruction.site[x]
 	Dosage.RouteIntoBody maps to dosageInstruction.route
-	Dosage.DosageMethod maps to dosageInstruction.method
-	Dosage.DosageBodyLocation maps to dosageInstruction.site[x]
-	Dosage.MaximumDosePerTimePeriod maps to dosageInstruction.maxDosePerPeriod
-	SubstitutionAllowed maps to substitution.extension
-	SubstitutionReason maps to substitution.reason
-
-
-
-	
+	Dosage.Method maps to dosageInstruction.method
+	Dosage.DoseAndRate.DoseAmount maps to dosageInstruction.dose[x]
+	Dosage.DoseAndRate.DoseRate maps to dosageInstruction.rate[x]
+	Dosage.MaxDosePerPeriod maps to dosageInstruction.maxDosePerPeriod
+	DispenseRequest maps to dispenseRequest
+	DispenseRequest.InitialFill maps to dispenseRequest.extension
+	DispenseRequest.DispenseInterval maps to dispenseRequest.extension
+	DispenseRequest.ValidityPeriod maps to dispenseRequest.validityPeriod
+	constrain dispenseRequest.numberOfRepeatsAllowed to 0..0
+	DispenseRequest.NumberOfRefillsAllowed maps to dispenseRequest.extension
+	DispenseRequest.QuantityPerDispense maps to dispenseRequest.quantity
+	DispenseRequest.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	DispenseRequest.ExpectedPerformer maps to dispenseRequest.extension
+	Substitution maps to substitution
+	Substitution.SubstitutionAllowed maps to substitution.type
+	Substitution.SubstitutionReason maps to substitution.reason
+	Replaces maps to priorPrescription

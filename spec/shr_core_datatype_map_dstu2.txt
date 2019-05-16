@@ -2,7 +2,6 @@ Grammar:	Map 5.1
 Namespace:	shr.core
 Target:		FHIR_DSTU_2
 
-
 // Code types map direction to FHIR
 Coding maps to Coding:
 	CodeValue maps to code
@@ -42,12 +41,12 @@ Address maps to Address:
 	EffectiveTimePeriod maps to period
 
 HumanName maps to HumanName:
-	NameAsText maps to text
-	Prefix maps to prefix
-	GivenName maps to given
-	FamilyName maps to family
-	Suffix maps to suffix
 	Purpose maps to use
+	Name maps to text
+	FamilyName maps to family
+	GivenName maps to given
+	Prefix maps to prefix
+	Suffix maps to suffix
 	EffectiveTimePeriod maps to period
 
 TimePeriod maps to Period:
@@ -63,7 +62,7 @@ ContactPoint maps to ContactPoint:
 
 /*  dstu 2 change (no suitable target)
 ContactDetail maps to ContactDetail:
-	HumanName.NameAsText maps to name
+	HumanName.Name maps to name
 	ContactPoint maps to telecom
 */
 
@@ -78,19 +77,21 @@ Ratio maps to Ratio:
 Timing maps to Timing:
 	OccurrenceTime maps to event
 	TimingCode maps to code
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Number maps to repeat.duration
-	EventDuration.DurationRange.UpperBound.SimpleQuantity.Number maps to repeat.durationMax
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.CodeValue maps to repeat.durationUnits // dstu 2 change (attribute name)
-	RecurrencePattern.RecurrenceInterval.Duration.Number maps to repeat.period
-	// dstu 2 change (attribute name)
-	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.CodeValue maps to repeat.periodUnits 
-	constrain repeat.periodMax to 0..0   // TODO: why?
-//	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek // dstu 2 change (no such attribute)
-//	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay // dstu 2 change (no such attribute)
-	RecurrencePattern.DailyLifeEvent maps to repeat.when
-//	RecurrencePattern.LifeEventOffset maps to repeat.offset  // dstu 2 change (no such attribute)
-	RecurrencePattern.CountPerInterval.MinCount maps to repeat.frequency
-	RecurrencePattern.CountPerInterval.MaxCount maps to repeat.frequencyMax
+	Repeat.RepeatBounds maps to repeat.bounds[x]
+	Repeat.RepeatCount maps to repeat.count
+	Repeat.RepeatCountMax maps to repeat.extension
+	Repeat.RepeatDuration maps to repeat.duration
+	Repeat.RepeatDurationMax maps to repeat.durationMax
+	Repeat.RepeatDurationUnit maps to repeat.durationUnits
+	Repeat.RepeatFrequency maps to repeat.frequency
+	Repeat.RepeatFrequencyMax maps to repeat.frequencyMax
+	Repeat.RepeatPeriod maps to repeat.period
+	Repeat.RepeatPeriodMax maps to repeat.periodMax
+	Repeat.RepeatPeriodUnit maps to repeat.periodUnits
+	Repeat.DayOfWeek maps to repeat.extension
+	Repeat.TimeOfDay maps to repeat.extension
+	Repeat.DailyLifeEvent maps to repeat.when
+	Repeat.DailyLifeEventOffset maps to repeat.extension
 	
 SampledData maps to SampledData:
 	DataAsString maps to data
@@ -113,7 +114,7 @@ Attachment maps to Attachment:
 
 Annotation maps to Annotation:
 	Text maps to text
-	AnnotationAuthor maps to author[x]
+	PersonAuthor maps to author[x]
 	OccurrenceTime maps to time
 	
 Identifier maps to Identifier:
@@ -127,8 +128,9 @@ Identifier maps to Identifier:
 Signature maps to Signature:
 	SignatureType maps to type
 	CreationDateTime maps to when
-	Signatory maps to who[x]
-// dstu 2 change (no such attribute)
-//	OnBehalfOf maps to onBehalfOf[x]    
-	ContentType maps to contentType
+	Signer maps to who[x]
+	OnBehalfOf maps to extension 
+	SignatureFormat maps to contentType
+	TargetFormat maps to extension
 	BinaryData maps to blob		
+	

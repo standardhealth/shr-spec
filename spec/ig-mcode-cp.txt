@@ -13,19 +13,16 @@ http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
 
 Namespace: shr.core
     Patient:  
-        // Required (by US-Core): Identifier, Identifier.System, Identifier.Value, HumanName, HumanName.Family, HumanName.Given, AdministrativeGender
-        Person.DateOfBirth MS
-        Person.AdministrativeGender MS
-        Person.Race MS
-        Person.Ethnicity MS
-        Person.Address.PostalCode MS
-        Person.Deceased MS  // Person.Deceased.dateTime only
+        BirthDate MS
+        AdministrativeGender MS
+        Race MS
+        Ethnicity MS
+        Address.PostalCode MS
+        Deceased MS  // Should be Deceased.dateTime only
     ComorbidCondition:
-        // Required: PatientSubjectOfRecord, Category, Status, ClinicalStatus, Code
         Code MS
         ClinicalStatus MS
     MedicationStatement:
-        // Required: StatementDateTime, Medication, OccurrenceTimeOrPeriod, Status, PatientSubjectOfRecord
         MedicationCodeOrReference  MS  // Code only?  i.e., [CodeableConcept]?
         OccurrenceTimeOrPeriod  MS
         TerminationReason  MS
@@ -35,23 +32,19 @@ Namespace: shr.core
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
         RelevantTime MS  // req if known
     KarnofskyPerformanceStatus:
-        PatientSubjectOfRecord MS
         DataValue MS
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
         RelevantTime MS
     BloodPressure:
-        // Required: PatientSubjectOfRecord, Category, Status and Code
         Components.ObservationComponent MS
 // Uncomment out when we have the ability to put MS on components 
 //        Components.ObservationComponent[SystolicPressure].DataValue
 //        Components.ObservationComponent[DiastolicPressure].DataValue
         RelevantTime MS
     BodyHeight:
-        // Required: PatientSubjectOfRecord, Category, Status and Code
         DataValue MS
         RelevantTime MS
     BodyWeight:
-        // Required: PatientSubjectOfRecord, Category, Status and Code
         DataValue MS
         RelevantTime MS
 
@@ -59,7 +52,7 @@ Namespace: onco.core
     PrimaryCancerCondition:  // req if known
         Code MS    // req
         ClinicalStatus MS  // req
-        BodyLocation.LocationCode MS  //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
+        BodyLocation.Code MS  //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
         HistologyMorphologyBehavior MS  // conditional
         DateOfDiagnosis MS  // req if known (MS)
     SecondaryCancerCondition:  // req if known
@@ -68,8 +61,8 @@ Namespace: onco.core
         HistologyMorphologyBehavior MS
         DateOfDiagnosis MS  // req if known (MS)
         
-//  For all TNM elements, Required: Code, Status, PatientSubjectOfRecord
-//  Issue: The data element code is fixed in the profile. It serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.)
+//  For all TNM elements, Required: Code, Status, SubjectOfRecord
+//  When the data element code is fixed in a profile, it serves as an identifier of the element, which comes across the wire as an anonymous Observation. Therefore, some identification is needed. Should we required that the profile URI goes into meta.profile? Or require the code? Or both? For now, require the code.
     TNMClinicalStageGroup: 
         DataValue MS 
         CancerStagingSystem MS 
@@ -101,7 +94,6 @@ Namespace: onco.core
         TumorMarkerTestDataValue MS
         RelevantTime MS
     CancerDiseaseStatus:
-        // Required: Code, Status, PatientSubjectOfRecord
         DataValue MS
         RelevantTime MS
     CancerRelatedSurgicalProcedure:  // req if known
@@ -109,14 +101,13 @@ Namespace: onco.core
         OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
         TreatmentIntent MS  // req if known
     CancerRelatedRadiationProcedure:
-        // Required: PatientSubjectOfRecord, Status, OccurrenceTimeOrPeriod, Code
         Code MS
-        BodyLocation.LocationCode MS
+        BodyLocation.Code MS
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
     GenomicsReport:
         Code MS  // Test name in Code.Text
-        Participation.Participant MS   // Laboratory name
+        DiagnosticReportPerformer MS   // Laboratory name
         Observation MS
         SpecimenType MS
         RelevantTime MS
@@ -134,11 +125,11 @@ Namespace: onco.core
 
 Namespace: shr.lab
     CBCWAutoDifferentialPanel:
-        // Required: Code, Status, Category, PatientSubjectOfRecord
+        // Required: Code, Status, Category, SubjectOfRecord
         RelevantTime MS
         PanelMembers MS
     ComprehensiveMetabolic2000SerumOrPlasmaPanel:
-        // Required: Code, Status, Category, PatientSubjectOfRecord
+        // Required: Code, Status, Category, SubjectOfRecord
         RelevantTime MS
         PanelMembers MS
 

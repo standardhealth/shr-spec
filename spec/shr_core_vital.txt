@@ -12,7 +12,7 @@ EntryElement:	VitalSignsPanel
 Based on:	NonLaboratoryObservation
 Description: "A summary of vital signs, including weight, height (or length), blood pressure, respiration rate, oxygen saturation, heart rate, and body temperature, BMI, and (optionally) head circumference. Each member of the panel is treated as a separate, independent observation. The panel is a grouping for convenience so all vitals can be retrieved using one LOINC code (85353-1)."
 		Code is LNC#85353-1 "Vital signs, weight, height, head circumference, oxygen saturation and BMI panel"
-1..1    SubjectOfRecord is type PatientSubjectOfRecord
+1..1    SubjectOfRecord value is type ref(Patient)
 0..0	DataValue
 0..0	BodyLocation
 0..0	Method
@@ -37,7 +37,7 @@ Abstract Element:  VitalSign
 Based on:		QuantitativeNonLaboratoryObservation
 Description:	"Abstract class parent for all vital sign profiles."
 1..1			Category is OBSCAT#vital-signs
-1..1			SubjectOfRecord is type PatientSubjectOfRecord
+1..1			SubjectOfRecord value is type ref(Patient)
 0..*			Precondition
 0..0			BodyLocation.Laterality // zeroed out because we are using pre-coordinated body site codes to describe body locations associated with vital signs
 0..0			BodyLocation.Orientation
@@ -99,7 +99,7 @@ Description:	"The force of circulating blood on the walls of the arteries."
 				Code is LNC#55284-4 "Blood pressure systolic and diastolic"
 0..0			DataValue
 0..0			DataAbsentReason
-				BodyLocation.LocationCode from BloodPressureBodyLocationVS if covered
+				BodyLocation.Code from BloodPressureBodyLocationVS if covered
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from BloodPressureMethodVS if covered
 				Components.ObservationComponent
@@ -144,7 +144,7 @@ Description:	"The number of times the heart ventricles contract per unit of time
 				Code is LNC#8867-4 "Heart rate"
 1..1			DataValue
 				DataValue.Quantity.Units is UCUM#/min "/min"
-				BodyLocation.LocationCode from HeartRateBodyLocationVS if covered
+				BodyLocation.Code from HeartRateBodyLocationVS if covered
 				Precondition from CardiopulmonaryPreconditionVS if covered
 				Method from HeartRateMethodVS if covered
 0..0			Components
@@ -156,7 +156,7 @@ Description:	"Oxygen saturation in Arterial blood by Pulse oximetry."
 				Code is LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
 1..1			DataValue
 				DataValue.Quantity.Units is UCUM#% "%"
-				BodyLocation.LocationCode from OxygenSaturationBodyLocationVS
+				BodyLocation.Code from OxygenSaturationBodyLocationVS
 				Precondition from CardiopulmonaryPreconditionVS
 				Method from OxygenSaturationMethodVS
 				Components.ObservationComponent
@@ -180,7 +180,7 @@ Based on:		VitalSign
 Description:	"The measure of the level of heat in the body."
 				Code is LNC#8310-5 "Body temperature"
 				DataValue.Quantity.Units is UCUM#Cel "C"
-				BodyLocation.LocationCode from BodyTemperatureBodyLocationVS
+				BodyLocation.Code from BodyTemperatureBodyLocationVS
 //				Precondition from BodyTemperatureQualifierVS
 				Method from BodyTemperatureMethodVS
 0..0			Components
