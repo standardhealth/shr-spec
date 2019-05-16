@@ -25,20 +25,20 @@ FHIR implementation note: The category for this profile is set to GE (Genetics),
 0..*			RegionStudied
 				Observation
 					includes 0..* GeneticVariantFound
-					includes 0..* GeneticMutationTestResult
+					includes 0..* GeneticVariantTested
 // 0..0			ImagingStudy (not yet defined in SHR)
 
 		Element:	RegionStudied
 		Description:  "A description of the coverage of the genome that was tested for variants."
 		Value:		string
 
-EntryElement:	GeneticMutationTestResult
+EntryElement:	GeneticVariantTested
 Based on:		CodedLaboratoryObservation
 Description:	"A test for a specific mutation on a particular gene."
 				SubjectOfRecord is type PatientSubjectOfRecord
 				Code is LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
 0..1 			GeneStudied
-1..1			MutationTested
+1..1			VariantTested
 				Method from GeneticTestMethodVS if covered
 1..1			DataValue from PositiveNegativeVS
 0..0			DataAbsentReason
@@ -51,7 +51,7 @@ Description:	"A test for a specific mutation on a particular gene."
 		Description: "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HGNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
 		Value:			CodeableConcept from http://www.genenames.org if covered  // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
 
-		Element:	MutationTested
+		Element:	VariantTested
 		Description:  "The specific genetic variant that is targeted by this test."
 		0..1 		VariantIdentifier
 		0..* 		VariantHGVSName
