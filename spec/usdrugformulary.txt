@@ -1,0 +1,147 @@
+Grammar:		DataElement 5.0
+Namespace:	usdrugformulary
+Uses:  			shr.core
+
+CodeSystem:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
+
+
+EntryElement:	CoveragePlan
+Based on:		List
+Description:  "A list of drugs covered by a health plan"
+1..1      PlanIDType
+1..1      PlanID
+1..1      MarketingName
+0..1      MarketingURL
+0..1      FormularyURL
+1..1      CoveragePlanMode
+1..1      CoveragePlanStatus
+0..1      EmailPlanContact
+1..*      Networks
+// 0..*      FormularyDrug
+0..*      DrugTierDefinition
+
+
+  Element: PlanIDType
+  Description: "as per QHP"
+  Value: string
+
+  Element: PlanID
+  Description: "as per QHP"
+  Value: string
+
+  Element: MarketingName
+  Description: "as per QHP."
+  Value: string
+
+  Element: MarketingURL
+  Description: "as per QHP"
+  Value: string 
+
+   Element: FormularyURL
+   Description: "as per QHP"
+   Value: string 
+  
+  Element: EmailPlanContact
+  Description: "as per QHP"
+  Value: string 
+
+  Element: Networks
+  Description: "as per QHP."
+  Value: string
+
+  Element: CoveragePlanMode
+  Description: "required by List"
+  Value: code
+
+  Element: CoveragePlanStatus
+  Description: "Current Status of the Plan."
+  Value: code
+
+  Element: FormularySource
+  Description: "Author of the formulary."
+  Value: string
+
+  Element: FormularyStatus
+  Description: "Current Status of the Formulary."
+  Value: code
+
+  Element: DrugTierDefinition
+  Description: "A description of the drug tiers used by the formulary and how those tiers implement copay and coinsurance amounts. Drug tiers do not have any inherent meaning that is consistent across all formularies. Rather, each tier is defined using this element."
+  1..1  DrugTierID
+  1..1  MailOrder
+  0..* CostSharing
+
+ 
+    Element: DrugTierID
+    Description: "A code that describes the coverage status of a drug in a health plan (e.g., preferred generic, specialty, etc.)"
+    Value: CodeableConcept from DrugTierVS if covered
+
+    Element: DrugTierDescription
+    Description: "A short title describing the drug tier"
+    Value: string
+
+    Element: MailOrder
+    Description: "Boolean: does this tier include a mail order option"
+    Value: boolean
+
+    Element: CostSharing
+      1..1 PharmacyType
+      1..1 CopayAmount
+      1..1 CopayOption
+      1..1 CoInsuranceRate
+      0..1 CoinsuranceOption
+      
+      Element: PharmacyType
+      Description: "A code for the general payment network status."
+      Value: CodeableConcept from PharmacyTypeVS if covered 
+    
+      Element: CopayAmount
+      Description: "A standard, nominal fee charged for each prescription of a drug"
+      Value: Money
+
+      Element: CoInsuranceRate
+      Description: "A fee charged for each prescription of a drug, expressed as a percentage of that drug's overall cost"
+      Value: decimal
+      
+      Element: CopayOption
+      Description: "Copay Description"
+      Value: CodeableConcept from CopayOptionVS 
+      
+      Element: CoinsuranceOption
+      Description: "CoinsuranceDescription"
+      Value: CodeableConcept from CoinsuranceOptionVS 
+
+
+EntryElement: FormularyDrug
+Based on:	  Medication
+Description:  "A drug that is included in a formulary"
+1..1    DrugCode
+1..1    DrugTierID
+0..1    PriorAuthorization
+0..1    StepTherapyLimit
+0..1    QuantityLimit
+0..*    DrugClass
+
+  Element: DrugCode
+  Description: "RxNorm Code for a Formulary Drug from an appropriate type"
+  Value: CodeableConcept from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes
+
+  Element: QuantityLimit
+  Description: "Are there quanitity limitations?"
+  Value: boolean
+
+  Element: StepTherapyLimit
+  Description: "Are there step therapy limitations?"
+  Value: boolean
+
+  Element: PriorAuthorization
+  Description: "is prior authorization required?"
+  Value: boolean
+ 
+  Element:  DrugClass
+  Description: "Classification of drug under available code."
+  Value:   CodeableConcept
+
+
+
+   
