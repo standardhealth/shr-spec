@@ -1,0 +1,68 @@
+Grammar:		DataElement 5.0
+Namespace:		shr.datatype
+Description:	"A minimal bare-bones subset of the SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
+
+Path:			FHIR = http://hl7.org/fhir/ValueSet
+// CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
+CodeSystem:     LNC = http://loinc.org
+CodeSystem:     SCT = http://snomed.info/sct
+CodeSystem:     MTH = http://ncimeta.nci.nih.gov
+CodeSystem:		NCI = https://evs.nci.nih.gov/ftp1/CDISC/SDTM/
+CodeSystem:     UCUM = http://unitsofmeasure.org 
+
+
+
+Element:		Money  // structural changes in R4
+Description:	"Representation of an amount of currency or monetary value."
+0..1			MoneyAmount
+0..1			Currency
+
+			Element:	MoneyAmount
+			Description: "Numerical value (with implicit precision)"
+			Value:		decimal
+
+			Element:	Currency
+			Description: "ISO 4217 Currency Code"
+			Value:      code from http://hl7.org/fhir/ValueSet/currencies
+
+Element:		CodeableConcept
+Description:	"A set of codes drawn from different coding systems, representing the same concept."
+0..*			Coding
+0..1			DisplayText
+
+Element:		Code
+Description:	"The main type identifier for a lab, procedure, condition, etc., usually drawn from a controlled vocabulary."
+Value:			code
+
+Element:		Coding
+Description:	"Coding of a concept, drawn from a controlled vocabulary. Includes the vocabulary and version, if applicable. May include a display text, and a descriptor expressing the intended interpretation of the code."
+0..1			CodeValue
+0..1			CodeSystem
+0..1 			CodeSystemVersion
+0..1			DisplayText
+	
+	Element:		CodeValue
+	Description:	"A coded value, or expression, in syntax defined by the system"
+	Value:			code
+
+/*
+ TODO: Suggest changing FHIR's Coding.userSelected to Coding.qualifier 
+	Element:		CodingQualifier
+		Description:	"A description of the purpose or origin of the code that assists in understanding the code."
+	Value:			CodeableConcept from CodingQualifierVS
+*/
+	Element:		CodeSystem
+	Description:	"A formal terminology system."
+	Value:			uri
+
+	Element:		CodeSystemVersion
+	Description:	"The version of the vocabulary being used, if applicable."
+	Value:			string // Should be id type in FHIR, but it is a string (no issue recorded yet)
+
+Element:		DisplayText
+Description:	"A string meant for reading by a person, for example, accompanying a code."
+Value:			string
+
+Element:		VersionString
+Description:	"A string associated with the product that identifies a particular release iteration."
+Value:			string

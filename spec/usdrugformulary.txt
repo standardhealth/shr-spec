@@ -1,24 +1,23 @@
 Grammar:		DataElement 5.0
 Namespace:	usdrugformulary
-Uses:  			shr.core
+ Uses:  		shr.datatype
 
 CodeSystem:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 
 
 EntryElement:	CoveragePlan
-Based on:		List
+// Based on:		List
 Description:  "A list of drugs covered by a health plan"
 1..1      PlanIDType
 1..1      PlanID
 0..1      MarketingURL
 0..1      FormularyURL
-// 1..1      CoveragePlanStatus
-// 1..1      CoveragePlanMode
+1..1      CoveragePlanStatus
+1..1      CoveragePlanMode
 0..1      EmailPlanContact
 1..*      Networks
 1..*      DrugTierDefinition
-  0..0 ListSubjectOfRecord // value is type ref(Group)  // because this formulary belongs to a payer organization.
-  ListItem.DomainResource is type ref(FormularyDrug)
+0..*      FormularyDrug
 
   Element: PlanIDType
   Description: "as per QHP"
@@ -68,12 +67,12 @@ Description:  "A list of drugs covered by a health plan"
   Description: "A description of the drug tiers used by the formulary and how those tiers implement copay and coinsurance amounts. Drug tiers do not have any inherent meaning that is consistent across all formularies. Rather, each tier is defined using this element."
   1..1  DrugTierID
   1..1  MailOrder
-  0..* CostSharing
+  0..*  CostSharing
 
  
     Element: DrugTierID
     Description: "A code that describes the coverage status of a drug in a health plan (e.g., preferred generic, specialty, etc.)"
-    Value: CodeableConcept from DrugTierVS if covered
+    Value: code from DrugTierVS if covered // CodeableConcept from DrugTierVS if covered
 
     Element: DrugTierDescription
     Description: "A short title describing the drug tier"
@@ -92,11 +91,12 @@ Description:  "A list of drugs covered by a health plan"
       
       Element: PharmacyType
       Description: "A code for the general payment network status."
-      Value: CodeableConcept from PharmacyTypeVS if covered 
+      Value: code from PharmacyTypeVS if covered  // CodeableConcept from PharmacyTypeVS if covered 
     
       Element: CopayAmount
       Description: "A standard, nominal fee charged for each prescription of a drug"
       Value: Money
+// mlt: copy the Money element into 
 
       Element: CoInsuranceRate
       Description: "A fee charged for each prescription of a drug, expressed as a percentage of that drug's overall cost"
@@ -104,28 +104,28 @@ Description:  "A list of drugs covered by a health plan"
       
       Element: CopayOption
       Description: "Copay Description"
-      Value: CodeableConcept from CopayOptionVS 
+      Value: code from CopayOptionVS 
       
       Element: CoinsuranceOption
       Description: "CoinsuranceDescription"
-      Value: CodeableConcept from CoinsuranceOptionVS 
+      Value: code from CoinsuranceOptionVS 
 
 
 EntryElement: FormularyDrug
-Based on:	  Medication
+// Based on:	  Medication
 Description:  "A drug that is included in a formulary"
-1..1    Code    // this is inherited from Medication ObjectiveFHIR Base Class
+// 1..1    DrugCode    // this is inherited from Medication ObjectiveFHIR Base Class
 1..1    DrugTierID
 0..1    PriorAuthorization
 0..1    StepTherapyLimit
 0..1    QuantityLimit
 0..*    DrugClass
-Code from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
 
+/*
   Element: DrugCode
   Description: "RxNorm Code for a Formulary Drug from an appropriate type"
-  Value: CodeableConcept from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes
-
+  Value: CodeableConcept from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
+*/
   Element: QuantityLimit
   Description: "Are there quanitity limitations?"
   Value: boolean
@@ -140,57 +140,30 @@ Code from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if cove
  
   Element:  DrugClass
   Description: "Classification of drug under available code."
-  Value:   CodeableConcept
+  Value:   code
 
 EntryElement:	CoveragePlanMedicationKnowledge
-Based on:		List
+// Based on:		List
 Description:  "A list of drugs covered by a health plan"
 1..1      PlanIDType
 1..1      PlanID
 0..1      MarketingURL
 0..1      FormularyURL
-// 1..1      CoveragePlanStatus
-// 1..1      CoveragePlanMode
+1..1      CoveragePlanStatus
+1..1      CoveragePlanMode
 0..1      EmailPlanContact
 1..*      Networks
 0..*      DrugTierDefinition
-  0..0 ListSubjectOfRecord // value is type ref(Group)  // because this formulary belongs to a payer organization.
-  ListItem.DomainResource is type ref(FormularyDrugMedicationKnowledge)
+0..*      FormularyDrugMedicationKnowledge
+//  ListItem.DomainResource is type ref(FormularyDrugMedicationKnowledge)
 
-/*
-Element:	MedicationKnowledge
-Description:  "Drug information including attributes such as drug classifications, images of medications, drug costs and/or coverages, etc. This resource can be used to return drug information as part of a formulary or a catalogue. (source: FHIR R4 MedicationKnowledge resource)"
-Based on:     Entity
-0..1			    Code
-0..0          Identifier    // zero'd out because the FHIR R4 published MedicationKnowledge erroneously was missing identifier. This has been corrected in the FHIR CI build, but leaving it out here for now since it will generate a bug when mapping.  Reintroduce when the fix is published in the next FHIR R4 release.
-0..*          AssociatedMedication
-0..*          RelatedMedicationKnowledge
-
-  Element:      AssociatedMedication
-  Description:  "A medication resource that is associated with this medication."
-  Value:        ref(Medication)
-
-  Element:      RelatedMedicationKnowledge
-  Description:  "A medication that is associated or related to a given drug."
-  1..1          RelatedMedicationKnowledgeType
-  1..*          RelatedMedicationKnowledgeReference
-
-  Element:      RelatedMedicationKnowledgeType
-  Description:  "Category of medication knowledge."
-  Value:        CodeableConcept
-
-  Element:      RelatedMedicationKnowledgeReference
-  Description:  "Associated documentation about the associated medication knowledge."
-  Value:        ref(MedicationKnowledge)
-*/
 
 EntryElement: FormularyDrugMedicationKnowledge
 Description: "Drug information which is part of a formulary. This is the second version of how to represent FormularyDrug."
-Based on:     MedicationKnowledge
-1..1    Code
+// Based on:     MedicationKnowledge
+// 1..1    DrugCode
 1..1    DrugTierID
 0..1    PriorAuthorization
 0..1    StepTherapyLimit
 0..1    QuantityLimit
 0..*    DrugClass
-Code from http://h7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
