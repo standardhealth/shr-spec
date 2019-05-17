@@ -1,6 +1,6 @@
 Grammar:		DataElement 5.0
 Namespace:	usdrugformulary
- Uses:  		shr.datatype
+ Uses:  		shr.core
 
 CodeSystem:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
 
@@ -72,7 +72,7 @@ Description:  "A list of drugs covered by a health plan"
  
     Element: DrugTierID
     Description: "A code that describes the coverage status of a drug in a health plan (e.g., preferred generic, specialty, etc.)"
-    Value: code from DrugTierVS if covered // CodeableConcept from DrugTierVS if covered
+    Value: CodeableConcept from DrugTierVS if covered // CodeableConcept from DrugTierVS if covered
 
     Element: DrugTierDescription
     Description: "A short title describing the drug tier"
@@ -91,11 +91,11 @@ Description:  "A list of drugs covered by a health plan"
       
       Element: PharmacyType
       Description: "A code for the general payment network status."
-      Value: code from PharmacyTypeVS if covered  // CodeableConcept from PharmacyTypeVS if covered 
+      Value: CodeableConcept from PharmacyTypeVS if covered  // CodeableConcept from PharmacyTypeVS if covered 
     
       Element: CopayAmount
       Description: "A standard, nominal fee charged for each prescription of a drug"
-      Value: Money
+      Value: Money1
 // mlt: copy the Money element into 
 
       Element: CoInsuranceRate
@@ -104,28 +104,27 @@ Description:  "A list of drugs covered by a health plan"
       
       Element: CopayOption
       Description: "Copay Description"
-      Value: code from CopayOptionVS 
+      Value: CodeableConcept from CopayOptionVS 
       
       Element: CoinsuranceOption
       Description: "CoinsuranceDescription"
-      Value: code from CoinsuranceOptionVS 
+      Value: CodeableConcept from CoinsuranceOptionVS 
 
 
 EntryElement: FormularyDrug
 // Based on:	  Medication
 Description:  "A drug that is included in a formulary"
-// 1..1    DrugCode    // this is inherited from Medication ObjectiveFHIR Base Class
+1..1    DrugCode    // this is inherited from Medication ObjectiveFHIR Base Class
 1..1    DrugTierID
 0..1    PriorAuthorization
 0..1    StepTherapyLimit
 0..1    QuantityLimit
 0..*    DrugClass
 
-/*
   Element: DrugCode
   Description: "RxNorm Code for a Formulary Drug from an appropriate type"
   Value: CodeableConcept from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
-*/
+
   Element: QuantityLimit
   Description: "Are there quanitity limitations?"
   Value: boolean
@@ -140,7 +139,7 @@ Description:  "A drug that is included in a formulary"
  
   Element:  DrugClass
   Description: "Classification of drug under available code."
-  Value:   code
+  Value:   CodeableConcept
 
 EntryElement:	CoveragePlanMedicationKnowledge
 // Based on:		List
@@ -155,15 +154,27 @@ Description:  "A list of drugs covered by a health plan"
 1..*      Networks
 0..*      DrugTierDefinition
 0..*      FormularyDrugMedicationKnowledge
-//  ListItem.DomainResource is type ref(FormularyDrugMedicationKnowledge)
 
 
 EntryElement: FormularyDrugMedicationKnowledge
 Description: "Drug information which is part of a formulary. This is the second version of how to represent FormularyDrug."
-// Based on:     MedicationKnowledge
-// 1..1    DrugCode
+1..1    DrugCode
 1..1    DrugTierID
 0..1    PriorAuthorization
 0..1    StepTherapyLimit
 0..1    QuantityLimit
 0..*    DrugClass
+
+
+Element:		Money1  // added given a the current design of the Money element which brings in Quantity attributes not referenced in FHIR R4 Money datatype.
+Description:	"Representation of an amount of currency or monetary value."
+0..1			MoneyAmount1
+0..1			Currency1
+
+			Element:	MoneyAmount1
+			Description: "Numerical value (with implicit precision)"
+			Value:		decimal
+
+			Element:	Currency1
+			Description: "ISO 4217 Currency Code"
+			Value:      CodeableConcept from http://hl7.org/fhir/ValueSet/currencies
