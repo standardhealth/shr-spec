@@ -10,16 +10,15 @@ Based on:		List
 Description:  "A list of drugs covered by a health plan"
 1..1      PlanIDType
 1..1      PlanID
-1..1      MarketingName
 0..1      MarketingURL
 0..1      FormularyURL
-1..1      CoveragePlanMode
-1..1      CoveragePlanStatus
+// 1..1      CoveragePlanStatus
+// 1..1      CoveragePlanMode
 0..1      EmailPlanContact
 1..*      Networks
-// 0..*      FormularyDrug
 0..*      DrugTierDefinition
-
+  0..0 ListSubjectOfRecord // value is type ref(Group)  // because this formulary belongs to a payer organization.
+  ListItem.DomainResource is type ref(FormularyDrug)
 
   Element: PlanIDType
   Description: "as per QHP"
@@ -37,10 +36,10 @@ Description:  "A list of drugs covered by a health plan"
   Description: "as per QHP"
   Value: string 
 
-   Element: FormularyURL
-   Description: "as per QHP"
-   Value: string 
-  
+  Element: FormularyURL
+  Description: "as per QHP"
+  Value: string
+
   Element: EmailPlanContact
   Description: "as per QHP"
   Value: string 
@@ -115,12 +114,13 @@ Description:  "A list of drugs covered by a health plan"
 EntryElement: FormularyDrug
 Based on:	  Medication
 Description:  "A drug that is included in a formulary"
-1..1    DrugCode
+1..1    Code    // this is inherited from Medication ObjectiveFHIR Base Class
 1..1    DrugTierID
 0..1    PriorAuthorization
 0..1    StepTherapyLimit
 0..1    QuantityLimit
 0..*    DrugClass
+Code from  http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered
 
   Element: DrugCode
   Description: "RxNorm Code for a Formulary Drug from an appropriate type"
@@ -142,6 +142,55 @@ Description:  "A drug that is included in a formulary"
   Description: "Classification of drug under available code."
   Value:   CodeableConcept
 
+EntryElement:	CoveragePlanMedicationKnowledge
+Based on:		List
+Description:  "A list of drugs covered by a health plan"
+1..1      PlanIDType
+1..1      PlanID
+0..1      MarketingURL
+0..1      FormularyURL
+// 1..1      CoveragePlanStatus
+// 1..1      CoveragePlanMode
+0..1      EmailPlanContact
+1..*      Networks
+0..*      DrugTierDefinition
+  0..0 ListSubjectOfRecord // value is type ref(Group)  // because this formulary belongs to a payer organization.
+  ListItem.DomainResource is type ref(FormularyDrugMedicationKnowledge)
 
+/*
+Element:	MedicationKnowledge
+Description:  "Drug information including attributes such as drug classifications, images of medications, drug costs and/or coverages, etc. This resource can be used to return drug information as part of a formulary or a catalogue. (source: FHIR R4 MedicationKnowledge resource)"
+Based on:     Entity
+0..1			    Code
+0..0          Identifier    // zero'd out because the FHIR R4 published MedicationKnowledge erroneously was missing identifier. This has been corrected in the FHIR CI build, but leaving it out here for now since it will generate a bug when mapping.  Reintroduce when the fix is published in the next FHIR R4 release.
+0..*          AssociatedMedication
+0..*          RelatedMedicationKnowledge
 
-   
+  Element:      AssociatedMedication
+  Description:  "A medication resource that is associated with this medication."
+  Value:        ref(Medication)
+
+  Element:      RelatedMedicationKnowledge
+  Description:  "A medication that is associated or related to a given drug."
+  1..1          RelatedMedicationKnowledgeType
+  1..*          RelatedMedicationKnowledgeReference
+
+  Element:      RelatedMedicationKnowledgeType
+  Description:  "Category of medication knowledge."
+  Value:        CodeableConcept
+
+  Element:      RelatedMedicationKnowledgeReference
+  Description:  "Associated documentation about the associated medication knowledge."
+  Value:        ref(MedicationKnowledge)
+*/
+
+EntryElement: FormularyDrugMedicationKnowledge
+Description: "Drug information which is part of a formulary. This is the second version of how to represent FormularyDrug."
+Based on:     MedicationKnowledge
+1..1    Code
+1..1    DrugTierID
+0..1    PriorAuthorization
+0..1    StepTherapyLimit
+0..1    QuantityLimit
+0..*    DrugClass
+Code from http://h7.org/fhir/us/core/ValueSet/us-core-medication-codes if covered

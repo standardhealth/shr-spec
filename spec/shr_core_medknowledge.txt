@@ -1,0 +1,30 @@
+Grammar:		DataElement 5.0
+Namespace:	shr.core
+
+CodeSystem:  	RXN = http://www.nlm.nih.gov/research/umls/rxnorm
+
+EntryElement:	MedicationKnowledge
+Description:  "Drug information including attributes such as drug classifications, images of medications, drug costs and/or coverages, etc. This resource can be used to return drug information as part of a formulary or a catalogue. (source: FHIR R4 MedicationKnowledge resource)"
+Based on:     Entity
+0..1			    Code
+0..0          Identifier    // zero'd out because the FHIR R4 published MedicationKnowledge erroneously was missing identifier. This has been corrected in the FHIR CI build, but leaving it out here for now since it will generate a bug when mapping.  Reintroduce when the fix is published in the next FHIR R4 release.
+0..*          AssociatedMedication
+0..*          RelatedMedicationKnowledge
+
+  Element:      AssociatedMedication
+  Description:  "A medication resource that is associated with this medication."
+  Value:        ref(Medication)
+
+  Element:      RelatedMedicationKnowledge
+  Description:  "A medication that is associated or related to a given drug."
+  1..1          RelatedMedicationKnowledgeType
+  1..*          RelatedMedicationKnowledgeReference
+
+  Element:      RelatedMedicationKnowledgeType
+  Description:  "Category of medication knowledge."
+  Value:        CodeableConcept
+
+  Element:      RelatedMedicationKnowledgeReference
+  Description:  "Associated documentation about the associated medication knowledge."
+  Value:        ref(MedicationKnowledge)
+
