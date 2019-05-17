@@ -1,127 +1,101 @@
 <p style="background-color: #ffdddd; border:1px solid maroon; padding: 5px;">
-May 1, 2019 - V0.1.1
-
-This is an initial draft version of the US Drug Formularies Health Level 7 (HL7) Fast Healthcare Interoperability Resources (FHIR) profiles, extensions, value sets, and code systems. It is incomplete and subject to change without notice.
-</p>
-
-<h1 id="drug-formulary">US Drug Formularies</h1>
-<p>This project is a proof-of-concept for a FHIR interface to a payer's drug formulary information. A formulary is a list of prescribable drugs/products published by a health plan, pharmacy benefit manager, payer, or provider.
- The primary use cases for this FHIR interface are support for applications targeting consumers/patients that will allow them to understand the costs and alternatives for drugs that have been prescribed, and to compare their drug
-costs across different insurance plans.</p>
-
-<h2 id="formulary-structure">Formulary Structure</h2>
-<p>Formularies in the United States are normally published by health insurers on an annual basis, with minor annual updates. There are occasional emergency releases of formularies when a new drug is released to the public or an existing drug is removed from coverage.</p>
-<p>Insurers regularly administer multiple health plans and each of those plans may have its own formulary.</p>
-<p>Each formulary contains a list of drugs, together with limitations on their prescription, alternative drugs, and copay costs.
-Drugs are placed into <strong>tiers</strong> that largely determine the cost to the consumer/patient. The number and purpose of drug tiers varies across payers.  Tiers are numbered, with low numbered tiers corresponding to low cost to the consumer.
-
-<p>In addition to the drug tier, drugs may also list requirements or limitations (e.g., <a href="https://www.patientadvocate.org/explore-our-resources/understanding-health-insurance/drug-formulary-lists/know-your-drug-formulary-restrictions-quantity-limits/">quantity limits</a>, <a href="https://www.patientadvocate.org/explore-our-resources/understanding-health-insurance/drug-formulary-lists/know-your-drug-formulary-restrictions-step-therapy/">step therapy requirements</a>, <a href="https://www.patientadvocate.org/explore-our-resources/understanding-health-insurance/drug-formulary-lists/know-your-drug-formulary-restrictions-prior-authorization/">prior authorization requirements</a>, etc.) that patients covered under the health plan should be aware of.</p>
-<img src="formularymodel.jpg" />
-
-
-<h2 id="expected-users">Expected Users</h2>
-<p>This Implementation Guide is intended for insurers within the United States. Currently, many insurers make their formularies available to patients using PDFs or drug search forms on their websites. 
-  Providing formularies using FHIR may allow patients to more easily comparison-shop between plans and could help insurers educate consumers about the differences between various drug tiers/classes.</p>
-
-<p>&nbsp;</p>
-
-<h2 id="use-cases">Use Cases</h2>
-
-<img src="Slide1.jpg" />
-
-<img src="Slide2.jpg" />
-
-<p>&nbsp;</p>
-
-<h2 id="use-cases">Thoughts about Operations</h2>
-<p>The FHIR resources in the formulary provide a partial view into the full formulary information model.   For the intended use cases
-including the full complexity of the formulary data model (as expressed in the NCPDP Information Model) would add significant complexity
-to the FHIR interface, and push business logic into the clients of the interface.   A better design keeps the client free of the
-business logic, and provides operations that resolve the business logic for the client.   For example, a drug may have age
-and gender restrictions that can be resolved once the age and gender of the patient are known.  Similarly, cost to the insured
-may only be known if the insured's benefit status is known, and the identity of the pharmacy filling the prescription is known.
-</p>
-<p>
-Operations would be required that allow a client to get answers to patient-specific queries.   Perhaps two types of operations
-would be useful.   The first would pass the key parameters that drive the formulary business logic as arguments.  The second
-would pass the identity of the patient as a parameter, and the parameters could be determined from patient demographic information 
-that is available to the payer.
-</p>
-<ul>
-<li>FormularyDrug.getFormularyStatusByParameters( Age, Gender, BenefitStatus, Pharmacy)</li>
-<ul>
-<li>returns a status (covered, notCovered, stepTherapy, Pre-Auth)</li>
-<li>returns a cost to patient</li>
-</ul>
-<li>FormularyDrug.getFormularyStatusByPatient( PatientIdentifier)</li>
-<ul>
-<li>same as above but gets Patient info via the Patient’s ID</li>
-</ul>
-</ul>
-<br>
-
-<h1 id="open-issues">Open Issues</h1>
-<p>This section tracks open issues/questions/concerns about the draft implementation guide and its components. It should
-  be deleted if/when the IG is released.</p>
-
-<h2 id="representing-drug-tiers">Representing Drug Tiers</h2>
-In the absence of standardization, each drug is labeled with a numeric drug tier, and that tier is characterized using a controlled vocabulary as well as a description.
-
-<h2 id="provision-of-formulary-ids">Provision of Formulary IDs</h2>
-<p>There is no single, authoritative indentifier that can be associated with a formulary (e.g., like NPI numbers identify providers in the United States). 
-  How can unique formulary IDs be provisioned such that they can be implemented consistently by all payers and referenced by other entities (e.g., health plans)?
-  The NCPDP F&amp;B eRx implementation guide requires an identifier for each formulary.  Perhaps that can be leveraged.
-
-Similarly, how can a client application find the endpoint for a particular formulary? Is a directory of formularies needed?</p>
-
-<h2 id="need-for-new-codes">Need for New Codes</h2>
-<p>There aren't many good LOINC or SNOMED codes for administrative health items. This IG may require some new ones:</p>
-<ul>
-  <li>The current <code>Formulary</code> profile uses <code>LOINC 82215-5</code> (Medical equipment or product list) as the <code>Formulary.code</code></li>
-  <li>Custom code sets have been developed to characterize formulary tiers, prescription limitations (e.g., age, gender, step therapy), and copay type.
-</ul>
-
-<h2 id="consistency-in-rxnorm-code-selection">Consistency in RxNorm Code Selection</h2>
-<p>While the IG specifies RxNorm as the preferred code system for drugs, there are many ways to represent drug
-  components, drug packs, etc. (see <a href="https://mor.nlm.nih.gov/RxNav/">RxNav</a>). This may lead different
-  insurers to map similar drugs to different RxNorm codes. Further guidance may be required on this subject.</p>
-
-<h3 id="rxnorm-codes-to-use">RxNorm Codes to Use</h3>
-<p>Based on brief research, this may be an appropriate way to assign RxNorm codes for drugs in formularies:</p>
-<table class="grid">
-  <thead>
-    <tr>
-      <th>Drugs Distinguished By</th>
-      <th>Generic</th>
-      <th>Brand</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Ingredient Only</td>
-      <td>Ingredient [IN/MIN]</td>
-      <td>Brand Name [BN]</td>
-    </tr>
-    <tr>
-      <td>Ingredient <em>and</em> Components/Packaging</td>
-      <td>Clinical or Drug Pack [SCD/GPCK]</td>
-      <td>Branded Drug or Pack [SBD/BPCK]</td>
-    </tr>
-  </tbody>
-</table>
-<p>Practically, the <a href="https://github.com/CMSgov/QHP-provider-formulary-APIs">QHP formulary for healthcare.gov</a> 
-  asks for every possible SBD/BPCK and SCD/GPCK RxNorm code that could be associated with each covered drug to 
-  make sure that users searching for a specific packaging of a drug are able to find it. This may be a more 
-  reasonable approach.</p>
-
-<h2 id="consistency-in-drug-classification-representation">Consistency in Drug Classification Representation</h2>
-<p>Many formularies visually segment their lists of covered drugs using classification categories based on their expected use in patient care (e.g., 'Inflammatory Conditions', 'Sexual Dysfunction', 'Musculoskeletal', etc.).</p>
-<p>The WHO maintains the <a href="https://www.whocc.no/atc/structure_and_principles/">ATC classification code set</a>, which may be useful here. 
-  ATC classes may be derived from RxNorm codes (since there is a classification hierarchy included with each RxNorm code), but it will be useful to have these classification codes explicit in the payload.  The current draft makes this optional.</p>
+  May 19, 2019 - V0.2.0
+  
+  This is an initial draft version of the US Drug Formularies Health Level 7 (HL7) Fast Healthcare Interoperability Resources 
+  (FHIR) profiles, extensions, value sets, and code systems. It is incomplete and subject to change without notice.
+  </p>
+  
+  <h1 id="drug-formulary">US Drug Formularies</h1>
+  <p>This project is a proof-of-concept for a FHIR interface to a payer's drug formulary information. A formulary is a list of 
+    prescribable drugs/products published by a health plan, pharmacy benefit manager, payer, or provider.
+   The primary use cases for this FHIR interface are support for applications targeting consumers/patients that will allow them to 
+   understand the costs and alternatives for drugs that have been prescribed, and to compare their drug
+  costs across different insurance plans.</p>
+  
+  <h2 id="formulary-structure">Formulary Structure</h2>
+  <p>Formularies in the United States are normally published by health insurers on an annual basis, with minor annual updates. 
+    There are occasional emergency releases of formularies when a new drug is released to the public or an existing drug is removed from coverage.</p>
+  <p>Insurers regularly administer multiple health plans and each of those plans may have its own formulary.</p>
+  <p>Each formulary contains a list of drugs.
+  Drugs are placed into <strong>tiers</strong> that largely determine the cost to the consumer/patient. 
+  The number and purpose of drug tiers varies across payers.  
+  Each tier has an associated cost-sharing model that includes deductibles and/or coinsurance components for drugs in the tier
+  when purchased through various pharmacy types.</p>
+  <p>In addition to the drug tier, drugs may also list requirements on the patient (e.g., or gender) or limitations on 
+      prescription (e.g., prior authorization). </p>
+  <p>
+  The initial draft has been designed to closely follow the formulary information model of the 
+  <a href="https://github.com/CMSgov/QHP-provider-formulary-APIs">formularies for Qualified Health Plans (QHPs) on the federal health insurance marketplace for healthcare.gov</a>.
+  Publishing formularies in the QHP format is familiar to many payers.  Drugs are specified by RxNorm codes of prescribable drugs, as 
+  constrained by the <a href="https://build.fhir.org/ig/HL7/US-Core-R4/ValueSet-us-core-medication-codes.html">US Core Medication Codes value set</a>.
+  The QHP data model mandates specific value sets for some data types (e.g., types of copayments), but leaves value sets for other 
+  data types at the discretion of the payer (e.g., drug tier identifiers, pharmacy types). and does not include data that is fairly standard across formularies (drug classifications, alternative drugs).
+  These decisions may need to be reconsidered in order to maximize the value of FHIR-published formulary data to consumers/patients.
+  </p>
+  The following object model shows the relationships between the resources in the current IG.
+  
+    <img src="formularyQHP.jpg" />
+  
+  
+  <h2 id="expected-users">Expected Users</h2>
+  <p>This Implementation Guide is intended for insurers within the United States. 
+    Currently, many insurers make their formularies available to patients using PDFs or drug search forms on their websites. 
+    Providing formularies using FHIR may allow patients to more easily comparison-shop between plans and could help insurers educate 
+    consumers about the differences between various drug tiers/classes.</p>
+  
+  <p>&nbsp;</p>
+  
+  <h2 id="use-cases">Use Cases</h2>
+  
+  <img src="Slide1.jpg" />
+  
+  <img src="Slide2.jpg" />
+  
+  <p>&nbsp;</p>
+  
+  <h1 id="open-issues">Additional Background and Open Issues</h1>
+  <p>This section tracks open issues/questions/concerns about the draft implementation guide and its components. It should
+    be deleted if/when the IG is released.</p>
+  
+  <h2 id="selecting-fhir-resources">Selecting FHIR Resources</h2>
+  <p>
+  Consideration was given to using Medication or MedicationKnowledge resources as the basis for FormularyDrug.  MedicationKnowledge was used based on the 
+  direction of the HL7 Pharmacy Working Group. Although the current IG makes minimal
+  use of the defined fields of MedicationKnowledge, the expectation is that 
+  additional fields would be used over time as the FormularyDrug and MedicationKNowledge resources mature.
   <h2 id="presenting-alternative-medications">Presenting alternative medications</h2>
-<p>There may be alternatives to a particular drug in the formulary.   These alternatives could be presented using the drug's classification, but absent a consistent approach in the industry this draft provides alternatives
-  simply as a list of RxNorm codes.   These RxNorm codes *must* be also represented in the formulary.   Enforcing referential integrity may be tricky. </p>
-
-<h2 id="resolving-costs">Resolving Drug availability and costs </h2>
-Conditional logic based on consumer/patient demographics/metadata (e.g., age, gender) and pharmacy channel (e.g., in network, mail order) is required to resolve the availability of a drug and its cost to a particular patient.
-This IG assumes that the query interface to the formulary will enable the client application to pass in these parameters to enable resolution of drug availability and cost to the consumer.
+  <p>There may be alternatives to a particular drug in the formulary.  The current IG, based on the QHP model, does not include them. 
+    These alternatives could be presented using the drug's classification, or by enumerating alternative RxNorm codes.
+   </p>
+  <h2 id="representing-drug-tiers">Representing Drug Tiers</h2>
+  <p>
+  Drug tiers are not standardized.   The current IG provides a defined value set for tier identifiers based on the example list in the QHP formulary
+  specification.   A move towards standardization might make this data more useful for clients of the interface.
+  </p>
+  <h2 id="representing-drug-classifications">Representing Drug Classifications</h2>
+  <p>
+  There are several different drug classification schemes in use (e.g., ATC0-4).   
+  A move towards standardization of drug classifications in consumer-facing formularies might make this data more useful for 
+  clients of the interface.
+  </p>
+  <h2 id="representing-pharmacy-types">Representing Pharmacy Types</h2>
+  <p>
+  Pharmacy types are not standardized.   The current IG provides a defined value set for tier identifiers based on the example list in the QHP formulary
+  specification which mixes channels (retail and mail order) with quantity prescribed (1 month, 3 month, etc).   
+  A move towards standardization might make this data more useful for clients of the interface.
+    </p>
+  <h2 id="need-for-new-codes">Need for New Code</h2>
+  <p>
+  The current <code>CoveragePlan</code> profile uses <code>LOINC 82215-5</code> (Medical equipment or product list) as the <code>Formulary.code</code>
+  </p>
+  <h2 id="provision-of-formulary-ids">Provision of Formulary IDs</h2>
+  <p>There is no single, authoritative indentifier that can be associated with a formulary (e.g., like NPI numbers identify providers in the United States). 
+    How can unique formulary IDs be provisioned such that they can be implemented consistently by all payers and referenced by other entities (e.g., health plans)?
+    The NCPDP F&amp;B eRx implementation guide requires an identifier for each formulary.  Perhaps that can be leveraged.   Similarly, how can a client application find the 
+    endpoint for a particular formulary? Is a directory of formularies needed?</p>
+  </p>
+  <h2 id="need-for-new-codes">Need for New Codes</h2>
+  <p>There aren't many good LOINC or SNOMED codes for administrative health items. This IG may require some new ones:
+  The current <code>Formulary</code> profile uses <code>LOINC 82215-5</code> (Medical equipment or product list) as the 
+  <code>Formulary.code</code></p>
+    
