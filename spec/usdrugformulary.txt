@@ -18,7 +18,7 @@ Description:  "A health plan which contains a list of formulary drugs covered un
 0..1      EmailPlanContact
 1..*      Network
 1..*      DrugTierDefinition
-0..*      FormularyDrug
+0..*      FormularyDrugEntry
 0..1      LastUpdatedOn
 
   Element: PlanIDType
@@ -69,6 +69,10 @@ Description:  "A health plan which contains a list of formulary drugs covered un
   Description:  "The date that the health plan was last updated."
   Value: dateTime
 
+  Element: FormularyDrugEntry
+  Description:  "A reference to a drug product which is included in the coverage plan."
+  Value:  ref(FormularyDrug) or ref(FormularyDrugOption2)
+
   Element: DrugTierDefinition
   Description: "A description of the drug tiers used by the formulary and how those tiers implement copay and coinsurance amounts. Drug tiers do not have any inherent meaning that is consistent across all formularies. Rather, each tier is defined using this element."
   1..1  DrugTierID
@@ -117,8 +121,18 @@ Description:  "A health plan which contains a list of formulary drugs covered un
 
 
 EntryElement: FormularyDrug
+Description: "Drug information which is part of a formulary."
+1..1    DrugCode
+1..1    DrugTierID
+0..1    PriorAuthorization
+0..1    StepTherapyLimit
+0..1    QuantityLimit
+0..*    DrugClass
+
+
+EntryElement: FormularyDrugOption2
 // Based on:	  Medication
-Description:  "A drug that is included in a formulary."
+Description:  "A drug that is included in a formulary. This profile is an alternate representation using the FHIR Medication resource."
 1..1    DrugCode    // this is inherited from Medication ObjectiveFHIR Base Class
 1..1    DrugTierID
 0..1    PriorAuthorization
@@ -146,8 +160,9 @@ Description:  "A drug that is included in a formulary."
   Description: "Classification of drug under available code."
   Value:   CodeableConcept
 
-EntryElement:	CoveragePlanMedicationKnowledge
+Element:	CoveragePlanMedicationKnowledge
 // Based on:		List
+// *** MLT20190519 - this will be deprecated after we verify testing CoveragePlan entry reference to both Medication and MedicationKnowledge.
 Description:  "A health plan which contains a list of formulary drugs covered under that plan. This profile is identical to CoveragePlan but except that the reference is to the formulary drug based on the FHIR profile MedicationKnowledge instead of FormularyDrug based on the FHIR Medication resource."
 1..1      PlanIDType
 1..1      PlanID
@@ -159,18 +174,8 @@ Description:  "A health plan which contains a list of formulary drugs covered un
 0..1      EmailPlanContact
 1..*      Network
 0..*      DrugTierDefinition
-0..*      FormularyDrugMedicationKnowledge
+0..*      FormularyDrugEntry
 0..1      LastUpdatedOn
-
-
-EntryElement: FormularyDrugMedicationKnowledge
-Description: "Drug information which is part of a formulary. This is the second version of how to represent FormularyDrug."
-1..1    DrugCode
-1..1    DrugTierID
-0..1    PriorAuthorization
-0..1    StepTherapyLimit
-0..1    QuantityLimit
-0..*    DrugClass
 
 
 Element:		Money1  // added given a the current design of the Money element which brings in Quantity attributes not referenced in FHIR R4 Money datatype.

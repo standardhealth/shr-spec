@@ -12,6 +12,24 @@
    understand the costs and alternatives for drugs that have been prescribed, and to compare their drug
   costs across different insurance plans.</p>
   
+  <h2 id="formulary-readme">How to Read this Guide</h2>
+  <p>This implementation guide (IG) consists of 3 FHIR profiles:</p>
+
+  <ul>
+    <li><b>CoveragePlan</b>: Based on the FHIR R4 <a href="http://hl7.org/fhir/R4/list.html">List</a> resource</li>    
+    <li><b>FormularyDrug</b>: Based on the FHIR R4 <a href="http://hl7.org/fhir/medicationknowledge.html">MedicationKnowledge</a> resource</li>
+    <li><b>FormularyDrugOption2</b>: Based on the FHIR R4 <a href="https://build.fhir.org/ig/HL7/US-Core-R4/StructureDefinition-us-core-medication.html">US Core Medication</a> resource</li>
+  </ul>
+
+  <p>The implementer will choose one of two profile combinations:</p>
+  <ul>
+    <li><b>Option 1:</b> CoveragePlan + FormularyDrug</li>
+    <li><b>Option 2:</b> CoveragePlan + FormularyDrugOption2</li>
+  </ul>
+  <p>The CoveragePlan profile contains an List.item.entry which references both FormularyDrug and FormularyDrugOption2 to allow for reuse of development code.</p>
+  <p>There was some deliberation on whether Medication or MedicationKnowledge was the better option. For example, MedicationKnowledge by definition and structure seems more appropriate for representation of a drug formulary as a knowledge artifact however, at the time of this writing, the resource is currently FHIR Maturity Level 1 and could be more resilient to iterative change as part of the base FHIR release. Alternately, the FHIR Medication resource is more mature, has been adopted by a greater number of implementers, but might be too limiting for our needs, resulting in an increased number of extensions over time. Given these trade-offs, we encourage implementers to provide feedback on the preference of these options.</p>
+  <p>Once the preferred formulary drug option is determined, we will re-release another version of the IG which further constrains the CoveragePlan List.item.entry so that it only references the chosen formulary drug profile.</p>
+
   <h2 id="formulary-structure">Formulary Structure</h2>
   <p>Formularies in the United States are normally published by health insurers on an annual basis, with minor annual updates. 
     There are occasional emergency releases of formularies when a new drug is released to the public or an existing drug is removed from coverage.</p>
