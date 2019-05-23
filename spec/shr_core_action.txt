@@ -61,6 +61,36 @@ Description:		"Abstract class representing an event occurrence or performance of
 		Description:	"The result of an event or performance of an action or behavior, for example, an adverse reaction or procedure."
 		Value:			CodeableConcept
 
+/* See http://build.fhir.org/request-analysis.html
+These are the "standard Request elements" defined in FHIR patterns (as of 5/21/2019):
+1. Request.identifier : Identifier [0..*]  >>> DomainResource 
+2. Request.instantiatesCanonical : canonical(Definition) [0..*] >> not implemented
+3. Request.instantiatesUri : uri [0..*]  >> not implemented
+4. Request.basedOn : Reference(Request) [0..*] >> ActionStatement
+5. Request.replaces : Reference(Request) [0..*] >> Not introduced until ServiceRequest
+6. Request.groupIdentifier : Identifier [0..1]  >> Not introduced until ServiceRequest
+7. Request.status : code [1..1] >> DomainResource
+8. Request.statusReason : CodeableConcept [0..1] >> ?? Not introduced until MedicationRequest
+9. Request.intent : code [1..1]  >> ok (RequestIntent)
+10. Request.priority : code [0..1] >> ok (PriorityCode)
+11. Request.doNotPerform : boolean [0..1] >> Not introduced until ServiceRequest
+12. Request.code : CodeableConcept [0..1] >> ok (Code)
+13. Request.subject : Reference(Patient|Group) [1..1] >> SubjectOfRecord defined in ClinicalStatement
+14. Request.encounter : Reference(Encounter) [0..1]  >> CareContext defined in ClinicalStatement
+15. Request.occurrence[x] : dateTime|Period|Timing [0..1] >> ok (ExpectedPerformanceTime)
+16. Request.authoredOn : dateTime [0..1] >> StatmentDateTime (ClinicalStatement)
+17. Request.requester : Reference(Practitioner|PractitionerRole|Organization|Patient|RelatedPerson|Device) [0..1] >> ok (Requester)
+18. Request.reported[x] : boolean|Reference(Patient|RelatedPerson|Practitioner|PractitionerRole|Organization) [0..1] >> Only in MedicationRequest
+19. Request.performerType : CodeableConcept [0..1] >> ok (ExpectedPerformerType)
+20. Request.performer : Reference(Practitioner|PractitionerRole|Organization|CareTeam|HealthcareService|Patient|Device|RelatedPerson) [0..1] >> ok (ExpectedPerformer)
+21. Request.reasonCode : CodeableConcept [0..*]  >> Defined in ActionStatement
+22. Request.reasonReference : Reference(Condition|Observation|DiagnosticReport|DocumentReference) [0..*] >> Defined in ActionStatement
+23. Request.insurance : Reference(Coverage|ClaimResponse) [0..*]  >> Defined in ServiceRequest
+24. Request.supportingInfo : Reference(Any) [0..*]   >> Defined in ServiceRequest, MedicationRequest
+25. Request.note : Annotation [0..*] >> ok (Annotation)
+26. Request.relevantHistory : Reference(Provenance) [0..*] >> not yet implemented
+*/
+
 Abstract Element:	ActionRequest
 Based on:			ActionStatement
 Description:		"Abstract class representing a request for any type of action to be performed."
