@@ -8,16 +8,15 @@ Description:		"Abstract element representing a group of services delivered to a 
 0..*			StatusHistory
 0..1			TimePeriod
 0..*			EncounterDiagnosis
-1..1			SubjectOfRecord is type PatientSubjectOfRecord  // EpisodeOfCare restricted in v2 (otherwise could be Patient or Group)
+1..1			SubjectOfRecord value is type ref(Patient)  // EpisodeOfCare restricted in v2 (otherwise could be Patient or Group)
 0..*			Type
 0..1			ref(Organization)
 //0..*			ref(Account)
-0..*			ref(ReferralRequest)
+0..*			BasedOn 
 
 Element:		CareContext
 Description:	"The encounter or episode of care"
 Value:			ref(Encounter) or ref(EpisodeOfCare)
-
 
 EntryElement:	Encounter
 Based on:		EncounterOrEpisode
@@ -26,7 +25,7 @@ Description:	"A description of an interaction between a patient and healthcare p
 // from http://hl7.org/fhir/ValueSet/encounter-status  in STU3
 // from http://hl7.org/fhir/ValueSet/encounter-state in DSTU2
 // StatusHistory.Status from // incompatible VS, see above
-0..1			EncounterClass
+1..1			EncounterClass  // required in R4
 0..*			ClassHistory
 				Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
 0..1			PriorityCode could be from http://hl7.org/fhir/ValueSet/v3-ActPriority
@@ -37,9 +36,11 @@ Description:	"A description of an interaction between a patient and healthcare p
 0..1			ref(Appointment)
 0..1			Duration
 0..*			ReasonCode should be from http://hl7.org/fhir/ValueSet/encounter-reason
+0..*			EncounterReasonReference
 //0..1			Hospitalization
 0..*			EncounterLocation
 0..1			PartOf value is type ref(Encounter)
+				BasedOn is type ReferralBasedOn
 
 		Element:		EncounterParticipant
 		Based on:		Participant
@@ -78,6 +79,10 @@ Description:	"A description of an interaction between a patient and healthcare p
 		0..1		Status from http://hl7.org/fhir/ValueSet/encounter-location-status
 		0..1		TimePeriod
 
+		Element:	EncounterReasonReference
+		Based on:	ReasonReference
+		Description:"Reason the encounter is taking place."
+		Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)	
 
 EntryElement:	EpisodeOfCare
 Based on:		EncounterOrEpisode
@@ -86,68 +91,67 @@ Description:	"An association between a patient and an organization / healthcare 
 				StatusHistory.Status from http://hl7.org/fhir/ValueSet/episode-of-care-status
 				Type could be from http://hl7.org/fhir/ValueSet/episodeofcare-type
 0..1			CareManager
+				BasedOn is type ReferralBasedOn
 //0..*			ref(CareTeam)
 
 	Element:	CareManager
 	Description:	"Care manager/care co-ordinator for the patient"
 	Value:		ref(Practitioner)
 
-
-
 EntryElement:	ReferralRequest
-Based on:		ActionRequested
+Based on:			ServiceRequest
 Description:	"Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
-0..1			ReferralRequester
-				SubjectOfRecord is type ReferralSubjectOfRecord
-0..*			Replaces
-				Replaces value is type ref(ReferralRequest)
-0..*			ReferralRecipient
-0..1			ReasonCode // card constraint from DSTU2 (0..* in STU3)
-// Status value sets are not compatible in DSTU2 (http://hl7.org/fhir/ValueSet/referralstatus) and STU3 (http://hl7.org/fhir/ValueSet/request-status)
-1..1			Status // from http://hl7.org/fhir/ValueSet/request-status
-				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
-				Type could be from http://hl7.org/fhir/ValueSet/referral-type
-				PriorityCode from http://hl7.org/fhir/ValueSet/request-priority
-0..*			ServiceType
-0..1			CommentOrDescription
-0..*			RelatedInformation
+0..1		Requester is type ReferralRequester
+			RequestSubjectOfRecord is type ReferralRequestSubjectOfRecord
+			Replaces value is type ref(ReferralRequest)
+			BasedOn is type ServiceBasedOn
+			ExpectedPerformer is type ReferralRecipient
+0..1		ReasonCode // card constraint from DSTU2 (0..* in STU3)
+0..1		CommentOrDescription
+			ReasonReference is type ReferralReasonReference
 
-        Element:		ReferralRequester
+    	Element:		ReferralRequester
+		Based on:		Requester
 		Description:	"The person or organization originating this referral"
 		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
 		
 		Element:		ReferralRecipient
-		Description:	"The practitioner or organization receiving the referral."
+		Based on:		ExpectedPerformer
+		
+		Description:"The practitioner or organization receiving the referral."
 		Value:			ref(Practitioner) or ref(Organization)
 
-		Element:	ServiceType
-		Description:	"A service requested or to be performed during this appointment"
-		Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/service-type
+		Element:	ReferralRequestSubjectOfRecord
+		Based on:	RequestSubjectOfRecord
+		Description:"Subject of record types allowed for referrals"
+		Value:		ref(Patient) or ref(Group)
 
-		Element:	Replaces
-		Description:	"Request(s) replaced by this request"
-		Value:		ref(ActionRequested)
+		Element:	ReferralBasedOn
+		Based on:	ServiceBasedOn
+		Description:"Indicates any plans, proposals or orders that this request is intended to satisfy - in whole or in part."
+		Value: 		ref(ReferralRequest)
 
-		Element:	RelatedInformation
-		Description:	"Additional information to support referral or transfer of care request"
-		Value:		ref(DomainResource)
-
+		Element:	ReferralReasonReference
+		Based on:	ServiceReasonReference
+		Description:"Indicates another resource whose existence justifies this request."
+		Value:	    ref(Condition) or ref(Observation)
 
 EntryElement:	Appointment
 Based on:		DomainResource
 Description:	"A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
 1..1	Status from http://hl7.org/fhir/ValueSet/appointmentstatus
 0..1	ServiceCategory
-0..*	ServiceType
+0..*	ServiceDetails  // ServiceType
 0..*	Specialty
 0..1	Type should be from http://hl7.org/fhir/ValueSet/v2-0276
 0..1	ReasonCode  // upper card is 1 in DSTU2
-0..*	ReasonReference
+0..*	AppointmentReasonReference
 0..*	Indication
-0..1	PriorityRankUnsignedInt
+0..1	PriorityRank
 0..1	CommentOrDescription
-0..*	RelatedInformation 
-0..*	ref(ReferralRequest)
+0..1	PatientInstruction
+0..*	SupportingInformation 
+0..*	BasedOn is type ReferralBasedOn
 1..*	AppointmentParticipation
 0..1	TimePeriod
 0..*	ExpectedPerformanceTime
@@ -161,16 +165,24 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 	Description:	"The specialty of a practitioner who (should, will, or did) perform a service."
 	Value:		CodeableConcept should be from http://hl7.org/fhir/ValueSet/c80-practice-codes
 
+	Element:	AppointmentReasonReference
+	Based on:	ReasonReference
+	Description:"Reason the appointment is to take place (resource)"
+	Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)
+
 	Element:		Indication
 	Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
 	Value:			ref(Condition) or ref(Procedure)
 
 	Element:	AppointmentParticipation
+	Based on:	Participation
 	Description:	"Participants involved in appointment"
-	1..*		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type
+	1..1		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type
 	0..1		Participant is type AppointmentParticipant  // HealthcareService not implemented yet
 	0..1		Need from http://hl7.org/fhir/ValueSet/participantrequired
 	1..1		Status from http://hl7.org/fhir/ValueSet/participationstatus
+	0..0		ParticipationPeriod
+	0..0		OnBehalfOf
 
 			Element:	AppointmentParticipant
 			Based on:	Participant
@@ -180,7 +192,6 @@ Description:	"A booking of a healthcare event among patient(s), practitioner(s),
 			Element:	Need
 			Description: "A code expressing the degree or type of need for the person or item."
 			Value:		CodeableConcept
-
 
 /*  CIMI attributes for possible future use
 

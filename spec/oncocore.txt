@@ -14,7 +14,7 @@ Description:	"Abstract class for describing a primary or secondary metastatic ne
 				PersonInformationSource is type PractitionerInformationSource
 0..1            HistologyMorphologyBehavior
 				Category is SCT#64572001 "Disease"
-				BodyLocation.LocationCode should be from CancerBodyLocationVS
+				BodyLocation.Code should be from CancerBodyLocationVS
 0..0            Severity
 
 	Element:		HistologyMorphologyBehavior
@@ -47,7 +47,6 @@ Description:    "Classification of the cancer by the type of tissue in which the
 // MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
                 DataValue from CancerHistologicTypeVS
-				Performer is type PractitionerPerformer
 0..1			ref(PrimaryCancerCondition)
 0..0	        BodyLocation
 0..0            Device
@@ -60,7 +59,6 @@ Based on:       CodedLaboratoryObservation
 Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
                 DataValue from CancerHistologicGradeVS if covered //The LOINC answer list specifies "code - not defined in code system". Instead of adding an "other" term, loosening binding to to allow for codes missing from value set.
                 Code is LNC#21858-6 "Grade Cancer"
-				Performer is type PractitionerPerformer
 0..1			ref(PrimaryCancerCondition)
 0..0		    BodyLocation
 0..0            Device
@@ -98,8 +96,8 @@ Based on:       CodedNonLaboratoryObservation
 Description:    "A clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based a single type or multiple kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
                 Code is LNC#88040-1 "Response to cancer treatment"	
                 DataValue from ConditionStatusTrendVS
-				Performer is type PractitionerPerformer
-				SubjectOfRecord is type PatientSubjectOfRecord
+				Performer value is type ref(Practitioner)
+				SubjectOfRecord value is type ref(Patient)
 0..1			RelatedCancerCondition
 0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
 0..0		    BodyLocation
@@ -128,7 +126,7 @@ Conclusion: Having a place for the onset date of mets, which is an mCODE require
 
 
 EntryElement:   Tumor
-Based on:		BodyStructure
+Based on:		AbnormalBodyStructure
 Concept:        SCT#395557000 "Tumor finding (finding)"
 Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
                 Code from HistologyMorphologyBehaviorVS if covered
@@ -138,7 +136,7 @@ Description:    "The presence of an abnormal mass of tissue (neoplasm) that resu
 0..1            IsPrimaryTumor
 
         Element:        IsPrimaryTumor
-                Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
+        Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
         Value:          CodeableConcept from YesNoUnknownVS
 
 
@@ -201,12 +199,11 @@ Based on:		SurgicalProcedure
 Description:	"A surgical action addressing a cancer condition."
 // It is cancer-related only if the reason is a cancer condition
 				Code from CancerRelatedSurgicalProcedureVS if covered
-0..1			ReasonReference is type CancerReasonReference
+0..1			ProcedureReasonReference is type CancerSurgicalProcedureReasonReference
 0..1			ReasonCode from CancerDisorderVS if covered
 
-
-		Element:	CancerReasonReference
-		Based on:	ReasonReference
+		Element:	CancerSurgicalProcedureReasonReference
+		Based on:	ProcedureReasonReference
 		Description: "Reference to a primary or secondary cancer condition."
 		Value:		ref(PrimaryCancerCondition) or ref(SecondaryCancerCondition)
 
@@ -214,7 +211,7 @@ EntryElement:	CancerRelatedRadiationProcedure
 Based on:		RadiationProcedure
 Description:	"A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions."
 // It is cancer-related only if the reason is a cancer condition
-0..1			ReasonReference is type CancerReasonReference
+0..1			ReasonReference is type CancerSurgicalProcedureReasonReference
 0..1			ReasonCode from CancerDisorderVS if covered
 
 /*

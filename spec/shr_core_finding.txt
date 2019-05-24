@@ -12,12 +12,12 @@ Description:		"A sub-observation contributing to the parent observation, express
 1..1			Code
 0..1			DataValue
 0..1			DataAbsentReason
+0..1			Interpretation  // R4 upper card * not implemented
 0..1			ReferenceRange
-0..1			Interpretation
 
 		Element:		DataValue
 		Description:	"The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
-		Value:			CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod
+		Value:			CodeableConcept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod or SampledData
 		// exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Attachment because it is not present in FHIR v4
 
 		Element:		DataAbsentReason
@@ -27,10 +27,12 @@ Description:		"A sub-observation contributing to the parent observation, express
 		Element:		ReferenceRange
 		Concept:		MTH#C0883335
 		Description:	"The usual or acceptable range for a test result."
-		0..1			Range   // TODO: align this with FHIR
-		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered
+		0..1			LowerBound
+		0..1			UpperBound
+		0..1			Type from http://hl7.org/fhir/ValueSet/referencerange-meaning if covered  // R4 changes binding  from extensible to preferred -- not implemented
 		0..1			ApplicableSubpopulation
 		0..1			ApplicableAgeRange
+		0..1			Text
 		
 				Element:	ApplicableSubpopulation
 				Concept:	MTH#C0039309 "Target Population"
@@ -63,22 +65,38 @@ Based on:		SituationStatement
 Description:	"Represents the result of evaluations (measurements, tests, or questions) that have been performed.
 Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
 For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
-0..1			DataValue
-0..1			DataAbsentReason
-0..1			Method
-0..1			RelevantTime
+0..*			ObservationBasedOn
+0..*			PartOf is type ObservationPartOf
 1..1			Status from http://hl7.org/fhir/ValueSet/observation-status
-0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // MK Category cardinality from 0..* to 0..1 to be compatible with DSTU 2
-0..*			Performer
-0..1			BodyLocation
-0..1			CommentOrDescription
-0..1			Interpretation
-0..1			Device
-0..1			ReferenceRange
-0..1			Components
-0..1			PanelMembers
+// FHIR-- missing StatusReason
+0..1			Category from http://hl7.org/fhir/ValueSet/observation-category if covered  // upper card forced by DSTU 2
 1..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..*			FocalSubject value is type ref(DomainResource)  // not a code
 				CareContext value is type ref(Encounter)
+0..1			RelevantTime  // R4 add Timing, instant -- not supported
+0..*			Performer
+0..1			DataValue  // added integer -- not supported
+0..1			DataAbsentReason
+0..1			Interpretation // R4 upper card from 1 to * -- not supported
+0..*			Annotation
+0..1			BodyLocation
+0..1			Method
+// Specimen added at LaboratoryObservation
+0..1			ref(Device)
+0..1			ReferenceRange
+0..1			PanelMembers
+0..*			ObservationDerivedFrom
+0..1			Components
+
+		Element:		ObservationBasedOn
+		Based on:		BasedOn
+		Description:	"A plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
+		Value: ref(MedicationRequest) or ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)  // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder) 
+
+		Element:		ObservationPartOf
+		Based on:		PartOf
+		Description:	"A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure."
+		Value: ref(MedicationAdministration) or ref(MedicationDispense) or ref(MedicationStatement) or ref(Procedure) // or ref(ImagingStudy) or ref(Immunization)
 
         Element:		ObservationSubjectOfRecord
 		Based on:		SubjectOfRecord
@@ -88,29 +106,32 @@ For an Observation, the Code describes the aspect or property of the subject bei
 		Element:		RelevantTime
 		Description:	"The time or time period that the statement addresses.
 		The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
-		Value:			dateTime or TimePeriod 
+		Value:			dateTime or TimePeriod // not supporting Timing (dateTime can map to instant)
 
 		Element:		Performer
 		Description: 	"The actor that carried out the observation or action."
-		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson)
+		Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) // need to add PractitionerRole
 
 		Element:		Interpretation
-		Concept:		MTH#C0420833
 		Description:	"A clinical interpretation of a finding (applies to both assertions and observation)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/observation-interpretation if covered
 
 		Element:		PanelMembers
 		Description:	"PanelMembers represent the elements of a group of a related but independent evaluations.
 		
-		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the Category and ReasonCode are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+		Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the  are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
 		0..* 			ref(Observation)
+
+		Element:		ObservationDerivedFrom
+		Based on:		DerivedFrom
+		Description:	"The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image."
+		Value:			ref(DocumentReference) or ref(Media) or ref(QuestionnaireResponse) or ref(Observation) // or ref(MolecularSequence) or ref(ImagingStudy)
 
 		Element:		Components
 		Description:	"Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 		0..* 			ref(ObservationComponent)
 
-/* commented out but it might need to come back, so please save
-
+/* commented out but might need to come back, so saving
 		Element:		DeltaFlag
 		Concept:		MTH#C1705241
 		Description:	"Indicator of significant change (delta) from the last or previous measurement."
@@ -165,11 +186,10 @@ EntryElement:	LaboratoryObservation
 Based on:		Observation
 Description:	"A coded finding based on a specimen, usually collected from a patient (but possibly from a location)."
 				Code from http://hl7.org/fhir/ValueSet/observation-codes if covered
-1..1			Category   // MK changed from 1..* to 1..1 to be compatible with DSTU 2
 0..1			Specimen
 0..0			BodyLocation  // BodyLocation is determined indirectly from Specimen.CollectionSite
-				Category is OBSCAT#laboratory
-				Performer is type PractitionerOrOrganizationPerformer
+1..1			Category is OBSCAT#laboratory
+				Performer is type LaboratoryObservationPerformer
 				Identifier
 	includes 	0..1 AccessionIdentifier
 	includes	0..1 FillerOrderNumber
@@ -205,12 +225,8 @@ Description:	"A coded finding based on a specimen, usually collected from a pati
 		Description:	"Director of the laboratory performing the test."
 		Value:			ref(Practitioner)
 */
-		Element:		PractitionerPerformer
-		Based on:		PractitionerOrOrganizationPerformer
-		Description: 	"The practitioner that carried out the observation or action."
-		Value:			ref(Practitioner)
 
-		Element:		PractitionerOrOrganizationPerformer
+		Element:		LaboratoryObservationPerformer
 		Based on:		Performer
 		Description: 	"The practitioner that carried out the observation or action."
 		Value:			ref(Practitioner) or ref(Organization)
@@ -277,8 +293,9 @@ Description:	"A panel that does not have an overall value that summarizes the en
 Element:		SocialHistoryObservation
 Based on:		NonLaboratoryObservation
 Description:	"A simplified observation for social histories."
-1..1			SubjectOfRecord is type PatientSubjectOfRecord
-0..1			SubjectOfInformationCode
+1..1			SubjectOfRecord value is type ref(Patient)
+				ObservationPartOf is type SocialHistoryObservationPartOf
+				ObservationBasedOn is type SocialHistoryObservationBasedOn
 				Category is OBSCAT#social-history "Social History"
 0..0			Method
 0..0			BodyLocation
@@ -287,10 +304,15 @@ Description:	"A simplified observation for social histories."
 0..0			Device
 0..0			DataAbsentReason
 
-	Element:		SubjectOfInformationCode
-	Description:	"The person that the information in this resource relates to, if different than the person of record. The subject of information is described not by name but in terms of their relationship to the subject of record (e.g., wife)."
-		//The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The SubjectOfInformation is only required if the person or thing observed is different than the SubjectOfRecord. SubjectOfInformation should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the SubjectOfInformation is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)
-	Value:			CodeableConcept
+		Element:		SocialHistoryObservationBasedOn
+		Based on:		ObservationBasedOn
+		Description:	"A plan, proposal or order that is fulfilled in whole or in part by this observation."
+		Value: 			ref(ServiceRequest) or ref(ProcedureRequest) or ref(ReferralRequest)  // or ref(CarePlan) 
+
+		Element:		SocialHistoryObservationPartOf
+		Based on:		ObservationPartOf
+		Description:	"A larger procedure that this particular observation is a component or step."
+		Value: 			ref(Procedure) // or ref(ImagingStudy) or ref(Immunization)
 
 Element:		CodedSocialHistoryObservation
 Based on:		SocialHistoryObservation
@@ -299,102 +321,84 @@ Description:	"The result of social history questions, whose answer is expressed 
 
 EntryElement:	Condition
 Based on:		SituationStatement
-Description:		"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+Description:	"A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
 SHR Condition uses the SHR BodyLocation structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
-				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
-0..1			PersonInformationSource
-1..1			SubjectOfRecord is type PatientSubjectOfRecord   // restricted in DSTU 2 (from Patient or Group)
-1..1			Category should be from ConditionCategoryVS   // DSTU 2 change - category is 1..1 in Argonaut
-0..*			BodyLocation
-1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
 1..1			ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical
-0..1			Severity from http://hl7.org/fhir/ValueSet/condition-severity
-0..1			StageInformation
+1..1			Status from http://hl7.org/fhir/ValueSet/condition-ver-status
+1..1			Category from ConditionCategoryVS if covered  // category is 1..1 in Argonaut
+0..1			Severity should be from http://hl7.org/fhir/ValueSet/condition-severity
+				Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem if covered  // cannot make the binding weaker because US Core requires an extensible binding
+0..*			BodyLocation
+1..1			SubjectOfRecord value is type ref(Patient)   // restricted in DSTU 2 (from Patient or Group)
+0..1			CareContext value is type ref(Encounter)	
 0..1			Onset
 0..1			Abatement
+0..1			Author
+0..1			PersonInformationSource 
+0..1			StageInformation
 0..1			Evidence
+0..*			Annotation
+// SHR extension
 0..1			DateOfDiagnosis
-// Stuff from CIMI eliminated
-//0..1			WhenClinicallyRecognized
-//0..*			ConditionCause
-//0..1			Criticality
 
-		Element:		DateOfDiagnosis
-		Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
-		Value:			date
-
-        Element:		PersonInformationSource
+		Element:		PersonInformationSource
+		Based on:		InformationSource
 		Description:	"The person who provided the information, not necessarily the patient."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson)
-
+		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) // may need to add PractitionerRole
 
 		Element:		Evidence
 		Description:	"Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
-		0..*		Manifestation
-		0..*		DomainResource
+		0..*			Manifestation
+		0..*			DomainResource
 
 			Element:	Manifestation
 			Description: "Clinical symptoms/signs."
 			Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/clinical-findings
 
-		Element:		ConditionCause
-		Description: "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives"
-		Value:			CodeableConcept // or ref(Entity) or ref(SituationStatement)
-			// probably other attributes needed, such as likelihood or type of cause
+		Element:		ClinicalStatus
+		Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+		Value:			CodeableConcept
 
-			Element:		ClinicalStatus
-			Description:	"A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+		Element:		Severity
+		Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
+		Value: 			CodeableConcept
+
+		Element:		StageInformation
+		Description:	"The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
+		0..1			StageSummary
+		0..1			StageDetail
+		0..1			Type could be from http://hl7.org/fhir/ValueSet/condition-stage-type
+			
+			Element:		StageSummary
+			Description:	"A code representing the current stage of a disease."
 			Value:			CodeableConcept
 
-			Element:		WhenClinicallyRecognized
-			Description:	"The time at which a condition or condition was first identified in a healthcare context."
-			Value:			date
+			Element:		StageDetail
+			Description:	"The full staging information"
+			Value:			ref(Observation) or ref(DiagnosticReport) // or ClinicalImpression
 
-			Element:		Severity
-			Concept:		MTH#C0392364
-			Description:	"Degree of harshness or extent of a symptom, disorder, or condition."
-			Value: 			CodeableConcept
-
-			Element:		Criticality
-			Concept:		MTH#C3858539 "Criticality"
-			Description:	"The potential clinical harm associated with a condition. When the worst case result is assessed to have a life-threatening or organ system threatening potential, it is considered to be of high criticality."
-			Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality
-
-			Element:		StageInformation
-			Concept:		MTH#C0699749
-			Description:	"The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
-			0..1			StageSummary
-			0..1			StageDetail
+		Element:		Onset
+		Description:	"The beginning or first appearance of a mental or physical disorder."
+		Value:			dateTime or Age or TimePeriod or Range or string
 			
-					Element:		StageSummary
-					Description:	"A code representing the current stage of a disease."
-					Value:			CodeableConcept
+		Element:		Abatement
+		Description:	"The end, remission or resolution."
+		Value:			dateTime or Age or boolean or TimePeriod or Range or string
 
-					Element:		StageDetail
-					Description:	"The full staging information"
-					Value:			ref(Observation)
+		Element:		DateOfDiagnosis
+		Description:	"The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
+		Value:			date
 
+/* Hold
 			Element:		AlleviatingFactor
-			Concept:		LNC#55258-8
 			Description:	"Activities that reduce the severity of the pathology"
 			Value:			CodeableConcept
 
 			Element:		ExacerbatingFactor
-			Concept:		LNC#55258-8
 			Description:	"Activities that increase the severity of the pathology"
 			Value:			CodeableConcept
-
-			Element:		Onset
-			Concept:		LNC#85585-8
-			Description:	"The beginning or first appearance of a mental or physical disorder."
-			Value:			dateTime or Age or TimePeriod or Range or string
-			
-			Element:		Abatement
-			Concept:		LNC#88878-4
-			Description:	"The end, remission or resolution."
-			Value:			dateTime or Age or boolean or TimePeriod or Range or string
-
+*/
 
 EntryElement:	ComorbidCondition
 Based on:		Condition
@@ -403,10 +407,10 @@ Description:	"A comorbidity refers to one or more diseases or conditions that oc
 			Category is SCT#398192003 "Co-morbid conditions (finding)"
 0..0		DateOfDiagnosis
 
-EntryElement:	BodyStructure
+EntryElement:	AbnormalBodyStructure
 Based on:		Condition
 Description:	"A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodyLocation is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and a location. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
-				Code from BodyStructureVS if covered
+				Code from AbnormalBodyStructureVS if covered
 0..0			ReferenceRange
 
 EntryElement:	CongenitalAbnormality
@@ -417,44 +421,50 @@ Description:	"Any abnormality, genetic, anatomical, biochemical, evident at birt
 
 EntryElement:	DiagnosticReport
 Based on:		SituationStatement
-0..*			RelatedRequest is type MedicationStatementRelatedRequest  // CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest
+0..*			BasedOn
 1..1			Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status
-0..1			Category	
-0..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..1			Category
 1..1			Code should be from http://hl7.org/fhir/ValueSet/report-codes
-0..1			CareContext
+0..1			SubjectOfRecord is type ObservationSubjectOfRecord
+0..1			CareContext value is type ref(Encounter)
 0..1			RelevantTime
 1..1			StatementDateTime  // 'issued' is required in DSTU-2
-0..1			Participation
-1..1			Participation.Participant is type DiagnosticReportParticipant  // performer is required in DSTU-2
-0..0			Participation.ParticipationPeriod
-0..0			Participation.ParticipationType
-0..0			Participation.OnBehalfOf
+0..1			DiagnosticReportPerformer
+0..1			ResultsInterpreter
 0..*			ref(Specimen)
-0..*			ref(Observation)  // Panel members?
-//0..*			ref(ImagingStudy)
-0..*			ref(Media)
-0..1			Conclusion
-0..*			DiagnosisCode
-0..*			OriginalReport
+0..*			ref(Observation) 
+//0..*			ref(ImagingStudy) -- not yet implemented
+0..*			MediaIncluded
+0..1			ConclusionText
+0..*			ConclusionCode
+0..*			PresentedForm
 
-    Element:		DiagnosticReportParticipant
-	Based on:		Participant
-	Description:	"A choice of Practitioner or Organization as participant."
+    Element:		DiagnosticReportPerformer
+	Based on:		Performer
+	Description:	"The diagnostic service that is responsible for issuing the report."
 	Value:			ref(Practitioner) or ref(Organization)
 
-    Element:  MedicationStatementRelatedRequest
-    Based on:   RelatedRequest
-    Value:  ref(ReferralRequest) or ref(ProcedureRequest) or ref(MedicationRequest) // CarePlan not yet implemented
+	Element:		ResultsInterpreter
+	Based on:		Performer
+	Description:	"The practitioner or organization that is responsible for the report's conclusions and interpretations."
+	Value:			ref(Practitioner) or ref(Organization)
 
-	Element:		Conclusion
+	Element:		MediaIncluded
+	Description:	"A list of key images associated with this report. The images are generally created during the diagnostic process, and may be directly of the patient, or of treated specimens (i.e. slides of interest)."
+	0..1			CommentOrDescription
+	1..1			ref(Media)
+
+	Element:		ConclusionText
 	Description:	"Concise and clinically contextualized impression / summary of the diagnostic report."
 	Value:			string
 
-	Element:		OriginalReport
+	Element:		ConclusionCode
+	Description:	"One or more codes that represent the summary conclusion (interpretation/impression) of the diagnostic report."
+	Value:			CodeableConcept
+
+	Element:		PresentedForm
 	Description:	"Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
 	Value:			ref(Attachment)
-
 
 
 EntryElement:	ClinicalNote
