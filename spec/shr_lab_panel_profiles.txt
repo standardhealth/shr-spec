@@ -1,99 +1,95 @@
-Grammar:	      DataElement 5.0
-Namespace:	    shr.lab
-Uses:           shr.core
+Grammar:           DataElement 6.0
+Namespace:         shr.lab
+Description:       "Profiles of laboratory tests and panels."
+Uses:              shr.core
+CodeSystem:        LNC = http://loinc.org
 
-CodeSystem:     UCUM = http://unitsofmeasure.org
-CodeSystem:     SCT = http://snomed.info/sct
-
-EntryElement:   CBCWAutoDifferentialPanel
-Based on:       HeadlessLaboratoryPanel
-Description:    "Complete blood count (CBC) with auto differential panel. Includes various measures of red blood cells, platelets, and various types of white blood cells and other related measures, such as hemoglobin. The components of this panel are not entirely standardized, so the definition of the CBC includes tests that are optional, or performed by certain laboratories but not others. Instances typically will include a subset of the listed panel members. While recognizing scalability limitations, in this case, panel member is described by its own FHIR profile. 
+Entry:             CBCWAutoDifferentialPanel
+Parent:            HeadlessLaboratoryPanel
+Description:       "Complete blood count (CBC) with auto differential panel. Includes various measures of red blood cells, platelets, and various types of white blood cells and other related measures, such as hemoglobin. The components of this panel are not entirely standardized, so the definition of the CBC includes tests that are optional, or performed by certain laboratories but not others. Instances typically will include a subset of the listed panel members. While recognizing scalability limitations, in this case, panel member is described by its own FHIR profile.
 
 Note to FHIR implementers: The Argonaut and US Core IGs both state that panels (related groups of observations) should be represented by the DiagnosticReport resource. This specification deviates from this approach by using Observation for panels. This is because panels can contain other panels, but a DiagnosticReport cannot contain other DiagnosticReports. Nested panels are, in fact, quite common in LOINC (see 39135-9 Wound assessment panel for an example of a deeply nested panel). To represent nested panels, the each sub-panel _must be_ an Observation. Of course, any sub-panel can also be a stand-alone panel, as well. Following the Argonaut/US Core recommended approach of using DiagnosticReport would imply that many or perhaps all panels would have to be represented twice: once as an Observation to permit the panel to be used as a sub-panel, and once as a DiagnosticReport to permit it to be used as a top-level panel. The specification authors believe there is little added value in representing panels as DiagnosticReports when Observation provides additional opportunity for nesting, and equivalent expressive power."
-                SubjectOfRecord value is type ref(Patient)
-                Code is LNC#57021-8 "CBC W Auto Differential panel - Blood"
-                PanelMembers.Observation
-includes 0..1 LeukocytesNCncPtBldQnAutoCntLabObs    //  "Leukocytes [#/​volume] in Blood by Automated count"
-includes 0..1 ErythrocytesNCncPtBldQnAutoCntLabObs     //  "Erythrocytes [#/​volume] in Blood by Automated count"
-includes 0..1 HemoglobinMCncPtBldQnLabObs     //  "Hemoglobin [Mass/​volume] in Blood"
-includes 0..1 HematocritVFrPtBldQnAutoCntLabObs    //  "Hematocrit [Volume Fraction] of Blood by Automated count"
-includes 0..1 MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs     //  "MCV [Entitic volume] by Automated count"
-includes 0..1 ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs     //  "MCH [Entitic mass] by Automated count"
-includes 0..1 ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs     //  "MCHC [Mass/​volume] by Automated count"
-includes 0..1 PlateletsNCncPtBldQnAutoCntLabObs     //  "Platelets [#/​volume] in Blood by Automated count"
-includes 0..1 Neutrophils100WBCNFrPtBldQnAutoCntLabObs     //  "Neutrophils/​100 leukocytes in Blood by Automated count"
-includes 0..1 NeutrophilsNCncPtBldQnAutoCntLabObs     //  "Neutrophils [#/​volume] in Blood by Automated count"
-includes 0..1 ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs     //  "Erythrocyte distribution width [Ratio] by Automated count"
-includes 0..1 Lymphocytes100WBCNFrPtBldQnAutoCntLabObs     //  "Lymphocytes/​100 leukocytes in Blood by Automated count"
-includes 0..1 Monocytes100WBCNFrPtBldQnAutoCntLabObs    //  "Monocytes/​100 leukocytes in Blood by Automated count"
-includes 0..1 Eosinophils100WBCNFrPtBldQnAutoCntLabObs     //  "Eosinophils/​100 leukocytes in Blood by Automated count"
-includes 0..1 Basophils100WBCNFrPtBldQnAutoCntLabObs     //  "Basophils/​100 leukocytes in Blood by Automated count"
-includes 0..1 LymphocytesNCncPtBldQnAutoCntLabObs     //  "Lymphocytes [#/​volume] in Blood by Automated count"
-includes 0..1 MonocytesNCncPtBldQnAutoCntLabObs     //  "Monocytes [#/​volume] in Blood by Automated count"
-includes 0..1 EosinophilsNCncPtBldQnAutoCntLabObs     //  "Eosinophils [#/​volume] in Blood by Automated count"
-includes 0..1 BasophilsNCncPtBldQnAutoCntLabObs     //  "Basophils [#/​volume] in Blood by Automated count"
-includes 0..1 NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs     //  "Band form neutrophils/100 leukocytes in Blood by Manual count"
-includes 0..1 Metamyelocytes100WBCNFrPtBldQnManCntLabObs     //  "Metamyelocytes/100 leukocytes in Blood by Manual count"
-includes 0..1 Myelocytes100WBCNFrPtBldQnManCntLabObs     //  "Myelocytes/100 leukocytes in Blood by Manual count"
-includes 0..1 Promyelocytes100WBCNFrPtBldQnManCntLabObs     //  "Promyelocytes/100 leukocytes in Blood by Manual count"
-includes 0..1 PromyelocytesNCncPtBldQnLabObs   //  "Promyelocytes [#/volume] in Blood"
-includes 0..1 LymphocytesVariant100WBCNFrPtBldQnLabObs   //  "Variant lymphocytes/100 leukocytes in Blood"
-includes 0..1 Blasts100WBCNFrPtBldQnManCntLabObs     //  "Blasts/100 leukocytes in Blood by Manual count"
-includes 0..1 BlastsNCncPtBldQnLabObs   //  "Blasts [#/volume] in Blood"
-includes 0..1 ErythrocytesNucleated100WBCRatioPtBldQnLabObs   //  "Nucleated erythrocytes/100 leukocytes [Ratio] in Blood"
-includes 0..1 ErythrocytesNucleatedNCncPtBldQnLabObs   //  "Nucleated erythrocytes [#/volume] in Blood"
-includes 0..1 PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs     //  "Platelet mean volume [Entitic volume] in Blood by Rees-Ecker"
-includes 0..1 MyelocytesNCncPtBldQnLabObs   //  "Myelocytes [#/volume] in Blood"
-includes 0..1 MetamyelocytesNCncPtBldQnLabObs   //  "Metamyelocytes [#/volume] in Blood"
-includes 0..1 NeutrophilsBandFormNCncPtBldQnLabObs   //  "Band form neutrophils [#/volume] in Blood"
-includes 0..1 GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs   //  "Immature granulocytes/100 leukocytes in Blood by Automated count"
-includes 0..1 GranulocytesImmatureNCncPtBldQnAutoCntLabObs   //  "Immature granulocytes [#/volume] in Blood by Automated count"
-includes 0..1 ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs   //  "Nucleated erythrocytes/100 leukocytes [Ratio] in Blood by Automated count"
-includes 0..1 MorphologyImpPtBldNarLabObs   //  "Morphology [Interpretation] in Blood Narrative"
-includes 0..1 ErythrocyteDistributionWidthEntVolPtRBCQnLabObs   //  "Erythrocyte distribution width [Entitic volume] by Automated count"
-includes 0..1 PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs   //  "Platelet distribution width [Entitic volume] in Blood by Automated count"
-includes 0..1 PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs   //  "Platelet mean volume [Entitic volume] in Blood by Automated count"
-includes 0..1 NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs   //  "Band form neutrophils/​100 leukocytes in Blood by Automated count"
-includes 0..1 Granulocytes100WBCNFrPtBldQnAutoCntLabObs   //  "Granulocytes/​100 leukocytes in Blood by Automated count"
-includes 0..1 LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs   //  "Variant lymphocytes/​100 leukocytes in Blood by Automated count"
-includes 0..1 OtherCells100WBCNFrPtBldQnAutoCntLabObs   //  "Other cells/​100 leukocytes in Blood by Automated count"
-includes 0..1 NeutrophilsBandFormNCncPtBldQnAutoCntLabObs   //  "Band form neutrophils [#/​volume] in Blood by Automated count"
-includes 0..1 LymphocytesVariantNCncPtBldQnAutoCntLabObs   //  "Variant lymphocytes [#/​volume] in Blood by Automated count"
-includes 0..1 LeukocytesOtherNCncPtBldQnAutoCntLabObs   //  "Leukocytes other [#/​volume] in Blood by Automated count"
-includes 0..1 OtherCellsNCncPtBldQnAutoCntLabObs   //  "Other cells [#/​volume] in Blood by Automated count"
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#57021-8 "CBC W Auto Differential panel - Blood"
+                   PanelMembers.Observation
+                   includes LeukocytesNCncPtBldQnAutoCntLabObs 0..1
+                   includes ErythrocytesNCncPtBldQnAutoCntLabObs 0..1
+                   includes HemoglobinMCncPtBldQnLabObs 0..1
+                   includes HematocritVFrPtBldQnAutoCntLabObs 0..1
+                   includes MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs 0..1
+                   includes ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs 0..1
+                   includes ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs 0..1
+                   includes PlateletsNCncPtBldQnAutoCntLabObs 0..1
+                   includes Neutrophils100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes NeutrophilsNCncPtBldQnAutoCntLabObs 0..1
+                   includes ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs 0..1
+                   includes Lymphocytes100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes Monocytes100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes Eosinophils100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes Basophils100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes LymphocytesNCncPtBldQnAutoCntLabObs 0..1
+                   includes MonocytesNCncPtBldQnAutoCntLabObs 0..1
+                   includes EosinophilsNCncPtBldQnAutoCntLabObs 0..1
+                   includes BasophilsNCncPtBldQnAutoCntLabObs 0..1
+                   includes NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs 0..1
+                   includes Metamyelocytes100WBCNFrPtBldQnManCntLabObs 0..1
+                   includes Myelocytes100WBCNFrPtBldQnManCntLabObs 0..1
+                   includes Promyelocytes100WBCNFrPtBldQnManCntLabObs 0..1
+                   includes PromyelocytesNCncPtBldQnLabObs 0..1
+                   includes LymphocytesVariant100WBCNFrPtBldQnLabObs 0..1
+                   includes Blasts100WBCNFrPtBldQnManCntLabObs 0..1
+                   includes BlastsNCncPtBldQnLabObs 0..1
+                   includes ErythrocytesNucleated100WBCRatioPtBldQnLabObs 0..1
+                   includes ErythrocytesNucleatedNCncPtBldQnLabObs 0..1
+                   includes PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs 0..1
+                   includes MyelocytesNCncPtBldQnLabObs 0..1
+                   includes MetamyelocytesNCncPtBldQnLabObs 0..1
+                   includes NeutrophilsBandFormNCncPtBldQnLabObs 0..1
+                   includes GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes GranulocytesImmatureNCncPtBldQnAutoCntLabObs 0..1
+                   includes ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs 0..1
+                   includes MorphologyImpPtBldNarLabObs 0..1
+                   includes ErythrocyteDistributionWidthEntVolPtRBCQnLabObs 0..1
+                   includes PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs 0..1
+                   includes PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs 0..1
+                   includes NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes Granulocytes100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes OtherCells100WBCNFrPtBldQnAutoCntLabObs 0..1
+                   includes NeutrophilsBandFormNCncPtBldQnAutoCntLabObs 0..1
+                   includes LymphocytesVariantNCncPtBldQnAutoCntLabObs 0..1
+                   includes LeukocytesOtherNCncPtBldQnAutoCntLabObs 0..1
+                   includes OtherCellsNCncPtBldQnAutoCntLabObs 0..1
 
-
-
-EntryElement:   ComprehensiveMetabolic2000SerumOrPlasmaPanel
-Based on:       HeadlessLaboratoryPanel
-Description:    "Represents a comprehensive metabolic 2000 panel (CMP) from serum or plasma, which measures various components such as glucose, electrolytes, kidney function, and liver function. The components of this panel are not entirely standardized, so the definition of the CMP includes tests that are optional, or performed by certain laboratories but not others. Therefore, instances typically will include a subset of the listed panel members. While recognizing scalability limitations, in this case, panel member is described by its own FHIR profile.
+Entry:             ComprehensiveMetabolic2000SerumOrPlasmaPanel
+Parent:            HeadlessLaboratoryPanel
+Description:       "Represents a comprehensive metabolic 2000 panel (CMP) from serum or plasma, which measures various components such as glucose, electrolytes, kidney function, and liver function. The components of this panel are not entirely standardized, so the definition of the CMP includes tests that are optional, or performed by certain laboratories but not others. Therefore, instances typically will include a subset of the listed panel members. While recognizing scalability limitations, in this case, panel member is described by its own FHIR profile.
 
 Note to FHIR implementers: The Argonaut and US Core IGs both state that panels (related groups of observations) should be represented by the DiagnosticReport resource. This specification deviates from this approach by using Observation for panels. This is because panels can contain other panels, but a DiagnosticReport cannot contain other DiagnosticReports. Nested panels are, in fact, quite common in LOINC (see 39135-9 Wound assessment panel for an example of a deeply nested panel). To represent nested panels, each sub-panel _must_ be an Observation. Of course, any sub-panel can also be a stand-alone panel, as well. Following the Argonaut/US Core recommended approach of using DiagnosticReport would imply that many or perhaps all panels would have to be represented twice: once as an Observation to permit the panel to be used as a sub-panel, and once as a DiagnosticReport to permit it to be used as a top-level panel. The authors of this specification believe there is little added value in representing panels as DiagnosticReports when Observation provides additional opportunity for nesting, and equivalent expressive power."
-1..1            SubjectOfRecord value is type ref(Patient)
-                Code is LNC#24323-8 "Comprehensive metabolic 2000 panel - Serum or Plasma"
-                PanelMembers.Observation
-includes 0..1 GlobulinMCncPtSerQnCalculatedLabObs   //  "Globulin [Mass/​volume] in Serum by calculation"
-includes 0..1 AlanineAminotransferaseCCncPtSerPlasQnLabObs   //  "Alanine aminotransferase [Enzymatic activity/​volume] in Serum or Plasma"
-includes 0..1 AlbuminMCncPtSerPlasQnLabObs   //  "Albumin [Mass/​volume] in Serum or Plasma"
-includes 0..1 AlbuminGlobulinMRtoPtSerPlasQnLabObs   //  "Albumin/​Globulin [Mass Ratio] in Serum or Plasma"
-includes 0..1 CalciumMCncPtSerPlasQnLabObs   //  "Calcium [Mass/​volume] in Serum or Plasma"
-includes 0..1 AspartateAminotransferaseCCncPtSerPlasQnLabObs   //  "Aspartate aminotransferase [Enzymatic activity/​volume] in Serum or Plasma"
-includes 0..1 BilirubinMCncPtSerPlasQnLabObs   //  "Bilirubin.total [Mass/​volume] in Serum or Plasma"
-includes 0..1 CarbonDioxideSCncPtSerPlasQnLabObs   //  "Carbon dioxide, total [Moles/​volume] in Serum or Plasma"
-includes 0..1 ChlorideSCncPtSerPlasQnLabObs   //  "Chloride [Moles/​volume] in Serum or Plasma"
-includes 0..1 CreatinineMCncPtSerPlasQnLabObs   //  "Creatinine [Mass/​volume] in Serum or Plasma"
-includes 0..1 GlucoseMCncPtSerPlasQnLabObs   //  "Glucose [Mass/​volume] in Serum or Plasma"
-includes 0..1 PotassiumSCncPtSerPlasQnLabObs   //  "Potassium [Moles/​volume] in Serum or Plasma"
-includes 0..1 ProteinMCncPtSerPlasQnLabObs   //  "Protein [Mass/​volume] in Serum or Plasma"
-includes 0..1 SodiumSCncPtSerPlasQnLabObs   //  "Sodium [Moles/​volume] in Serum or Plasma"
-includes 0..1 UreaNitrogenMCncPtSerPlasQnLabObs   //  "Urea nitrogen [Mass/​volume] in Serum or Plasma"
-includes 0..1 UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs   //  "Urea nitrogen/​Creatinine [Mass Ratio] in Serum or Plasma"
-includes 0..1 AlkalinePhosphataseCCncPtSerPlasQnLabObs   //  "Alkaline phosphatase [Enzymatic activity/​volume] in Serum or Plasma"
-includes 0..1 GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs   //  "Glomerular filtration rate/​1.73 sq M.predicted [Volume Rate/​Area] in Serum or Plasma by Creatinine-based formula (MDRD)"
-includes 0..1 GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs   //  "Glomerular filtration rate/​1.73 sq M predicted among females [Volume Rate/​Area] in Serum, Plasma or Blood by Creatinine-based formula (MDRD)"
-includes 0..1 GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs   //  "Glomerular filtration rate/​1.73 sq M predicted among non-blacks [Volume Rate/​Area] in Serum, Plasma or Blood by Creatinine-based formula (MDRD)"
-includes 0..1 GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs   //  "Glomerular filtration rate/​1.73 sq M predicted among blacks [Volume Rate/​Area] in Serum, Plasma or Blood by Creatinine-based formula (MDRD)"
-includes 0..1 BilirubinDirectMCncPtSerPlasQnLabObs   //  "Bilirubin.direct [Mass/​volume] in Serum or Plasma"
-includes 0..1 BicarbonateSCncPtSerPlasQnLabObs   //  "Bicarbonate [Moles/​volume] in Serum or Plasma"
-includes 0..1 AniongapSCncPtSerPlasQnLabObs   //  "Anion gap in Serum or Plasma"
-   
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#24323-8 "Comprehensive metabolic 2000 panel - Serum or Plasma"
+                   PanelMembers.Observation
+                   includes GlobulinMCncPtSerQnCalculatedLabObs 0..1
+                   includes AlanineAminotransferaseCCncPtSerPlasQnLabObs 0..1
+                   includes AlbuminMCncPtSerPlasQnLabObs 0..1
+                   includes AlbuminGlobulinMRtoPtSerPlasQnLabObs 0..1
+                   includes CalciumMCncPtSerPlasQnLabObs 0..1
+                   includes AspartateAminotransferaseCCncPtSerPlasQnLabObs 0..1
+                   includes BilirubinMCncPtSerPlasQnLabObs 0..1
+                   includes CarbonDioxideSCncPtSerPlasQnLabObs 0..1
+                   includes ChlorideSCncPtSerPlasQnLabObs 0..1
+                   includes CreatinineMCncPtSerPlasQnLabObs 0..1
+                   includes GlucoseMCncPtSerPlasQnLabObs 0..1
+                   includes PotassiumSCncPtSerPlasQnLabObs 0..1
+                   includes ProteinMCncPtSerPlasQnLabObs 0..1
+                   includes SodiumSCncPtSerPlasQnLabObs 0..1
+                   includes UreaNitrogenMCncPtSerPlasQnLabObs 0..1
+                   includes UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs 0..1
+                   includes AlkalinePhosphataseCCncPtSerPlasQnLabObs 0..1
+                   includes GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs 0..1
+                   includes GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs 0..1
+                   includes GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs 0..1
+                   includes GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs 0..1
+                   includes BilirubinDirectMCncPtSerPlasQnLabObs 0..1
+                   includes BicarbonateSCncPtSerPlasQnLabObs 0..1
+                   includes AniongapSCncPtSerPlasQnLabObs 0..1

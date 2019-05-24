@@ -1,263 +1,196 @@
-Grammar:		DataElement 5.0
-Namespace:		shr.core
+Grammar:           DataElement 6.0
+Namespace:         shr.core
+Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
 
-Abstract Element:	EncounterOrEpisode
-Based on:			DomainResource
-Description:		"Abstract element representing a group of services delivered to a patient."
-1..1			Status 
-0..*			StatusHistory
-0..1			TimePeriod
-0..*			EncounterDiagnosis
-1..1			SubjectOfRecord value is type ref(Patient)  // EpisodeOfCare restricted in v2 (otherwise could be Patient or Group)
-0..*			Type
-0..1			ref(Organization)
-//0..*			ref(Account)
-0..*			BasedOn 
+Element:           CareContext
+Description:       "The encounter or episode of care"
+Value:             Encounter or EpisodeOfCare
 
-Element:		CareContext
-Description:	"The encounter or episode of care"
-Value:			ref(Encounter) or ref(EpisodeOfCare)
+Abstract:          EncounterOrEpisode
+Parent:            DomainResource
+Description:       "Abstract element representing a group of services delivered to a patient."
+Property:          StatusHistory 0..*
+Property:          TimePeriod 0..1
+Property:          EncounterDiagnosis 0..*
+Property:          SubjectOfRecord 1..1
+Property:          Type 0..*
+Property:          Organization 0..1
+Property:          BasedOn 0..*
+                   Status 1..1
+                   SubjectOfRecord only Patient
 
-EntryElement:	Encounter
-Based on:		EncounterOrEpisode
-Description:	"A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
-// Required value sets for Status are incompatible between DSTU 2 and STU3
-// from http://hl7.org/fhir/ValueSet/encounter-status  in STU3
-// from http://hl7.org/fhir/ValueSet/encounter-state in DSTU2
-// StatusHistory.Status from // incompatible VS, see above
-1..1			EncounterClass  // required in R4
-0..*			ClassHistory
-				Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode if covered
-0..1			PriorityCode could be from http://hl7.org/fhir/ValueSet/v3-ActPriority
-0..*			ref(EpisodeOfCare)
-0..*			Participation
-				Participation.Participant is type EncounterParticipant
-				Participation.ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type if covered
-0..1			ref(Appointment)
-0..1			Duration
-0..*			ReasonCode should be from http://hl7.org/fhir/ValueSet/encounter-reason
-0..*			EncounterReasonReference
-//0..1			Hospitalization
-0..*			EncounterLocation
-0..1			PartOf value is type ref(Encounter)
-				BasedOn is type ReferralBasedOn
+Entry:             Encounter
+Parent:            EncounterOrEpisode
+Description:       "A description of an interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
+Property:          EncounterClass 1..1
+Property:          ClassHistory 0..*
+Property:          PriorityCode 0..1
+Property:          EpisodeOfCare 0..*
+Property:          Participation 0..*
+Property:          Appointment 0..1
+Property:          Duration 0..1
+Property:          ReasonCode 0..*
+Property:          EncounterReasonReference 0..*
+Property:          EncounterLocation 0..*
+Property:          PartOf 0..1
+                   Participation.Participant substitute EncounterParticipant
+                   PartOf[DomainResource] substitute Encounter
+                   Type from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode (extensible)
+                   BasedOn substitute ReferralBasedOn
+                   PriorityCode from http://hl7.org/fhir/ValueSet/v3-ActPriority (example)
+                   Participation.ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type (extensible)
+                   ReasonCode from http://hl7.org/fhir/ValueSet/encounter-reason (preferred)
 
-		Element:		EncounterParticipant
-		Based on:		Participant
-		Description:	"A choice of Practitioner and RelatedPerson as participant"
-		Value:			ref(Practitioner) or ref(RelatedPerson)
+Element:           EncounterParticipant
+Parent:            Participant
+Description:       "A choice of Practitioner and RelatedPerson as participant"
+                   Value only Practitioner or RelatedPerson
 
-		Element:		StatusHistory
-		Description:	"List of past encounter statuses"
-		1..1			Status
-		1..1			TimePeriod
+Group:             StatusHistory
+Description:       "List of past encounter statuses"
+Property:          Status 1..1
+Property:          TimePeriod 1..1
 
-		Element:		EncounterClass
-		Description:	"Concepts representing classification of patient encounter such as ambulatory (outpatient), inpatient, emergency, home health or others due to local variations."
-		// DSTU2 and STU3 are not compatible in terms of EncounterClass http://hl7.org/fhir/ValueSet/encounter-class to http://hl7.org/fhir/ValueSet/v3-ActEncounterCode.
-		Value:			CodeableConcept //from http://hl7.org/fhir/ValueSet/v3-ActEncounterCode
+Element:           EncounterClass
+Description:       "Concepts representing classification of patient encounter such as ambulatory (outpatient), inpatient, emergency, home health or others due to local variations."
+Value:             concept
 
-		Element:		ClassHistory
-		Description:	"List of past encounter statuses"
-		1..1			EncounterClass
-		1..1			TimePeriod
-			
-		Element:		EncounterDiagnosis
-		Description:	"A diagnosis, which is a disease or injury determined to be present through evaluation of patient history, examination, and/or review of laboratory data. This element is not a stand-alone representation of the condition that was diagnosed, but is meant to be used as an sub-structure in a resource, such as Encounter."
-		0..1			DiagnosisCode
-		1..1			ref(Condition)
-		0..1			PriorityRank
-		0..1			Type should be from http://hl7.org/fhir/ValueSet/diagnosis-role
+Group:             ClassHistory
+Description:       "List of past encounter statuses"
+Property:          EncounterClass 1..1
+Property:          TimePeriod 1..1
 
-			Element:	DiagnosisCode
-			Description:	"Codes for a diagnosis."
-			Value:		CodeableConcept
+Group:             EncounterDiagnosis
+Description:       "A diagnosis, which is a disease or injury determined to be present through evaluation of patient history, examination, and/or review of laboratory data. This element is not a stand-alone representation of the condition that was diagnosed, but is meant to be used as an sub-structure in a resource, such as Encounter."
+Property:          DiagnosisCode 0..1
+Property:          Condition 1..1
+Property:          PriorityRank 0..1
+Property:          Type 0..1
+                   Type from http://hl7.org/fhir/ValueSet/diagnosis-role (preferred)
 
-		Element:	EncounterLocation
-		Description:	"Locations where the patient has been."
-		1..1		ref(Location)
-		0..1		Status from http://hl7.org/fhir/ValueSet/encounter-location-status
-		0..1		TimePeriod
+Element:           DiagnosisCode
+Description:       "Codes for a diagnosis."
+Value:             concept
 
-		Element:	EncounterReasonReference
-		Based on:	ReasonReference
-		Description:"Reason the encounter is taking place."
-		Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)	
+Group:             EncounterLocation
+Description:       "Locations where the patient has been."
+Property:          Location 1..1
+Property:          Status 0..1
+Property:          TimePeriod 0..1
+                   Status from http://hl7.org/fhir/ValueSet/encounter-location-status (required)
 
-EntryElement:	EpisodeOfCare
-Based on:		EncounterOrEpisode
-Description:	"An association between a patient and an organization / healthcare provider(s) during which time encounters may occur. The managing organization assumes a level of responsibility for the patient during this time."
-				Status from http://hl7.org/fhir/ValueSet/episode-of-care-status
-				StatusHistory.Status from http://hl7.org/fhir/ValueSet/episode-of-care-status
-				Type could be from http://hl7.org/fhir/ValueSet/episodeofcare-type
-0..1			CareManager
-				BasedOn is type ReferralBasedOn
-//0..*			ref(CareTeam)
+Element:           EncounterReasonReference
+Parent:            ReasonReference
+Description:       "Reason the encounter is taking place."
+                   Value only Condition or Procedure or Observation
 
-	Element:	CareManager
-	Description:	"Care manager/care co-ordinator for the patient"
-	Value:		ref(Practitioner)
+Entry:             EpisodeOfCare
+Parent:            EncounterOrEpisode
+Description:       "An association between a patient and an organization / healthcare provider(s) during which time encounters may occur. The managing organization assumes a level of responsibility for the patient during this time."
+Property:          CareManager 0..1
+                   Status from http://hl7.org/fhir/ValueSet/episode-of-care-status (required)
+                   StatusHistory.Status from http://hl7.org/fhir/ValueSet/episode-of-care-status (required)
+                   Type from http://hl7.org/fhir/ValueSet/episodeofcare-type (example)
+                   BasedOn substitute ReferralBasedOn
 
-EntryElement:	ReferralRequest
-Based on:			ServiceRequest
-Description:	"Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
-0..1		Requester is type ReferralRequester
-			RequestSubjectOfRecord is type ReferralRequestSubjectOfRecord
-			Replaces value is type ref(ReferralRequest)
-			BasedOn is type ServiceBasedOn
-			ExpectedPerformer is type ReferralRecipient
-0..1		ReasonCode // card constraint from DSTU2 (0..* in STU3)
-0..1		CommentOrDescription
-			ReasonReference is type ReferralReasonReference
+Element:           CareManager
+Description:       "Care manager/care co-ordinator for the patient"
+Value:             Practitioner
 
-    	Element:		ReferralRequester
-		Based on:		Requester
-		Description:	"The person or organization originating this referral"
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)
-		
-		Element:		ReferralRecipient
-		Based on:		ExpectedPerformer
-		
-		Description:"The practitioner or organization receiving the referral."
-		Value:			ref(Practitioner) or ref(Organization)
+Entry:             ReferralRequest
+Parent:            ServiceRequest
+Description:       "Used to record and send details about a request for referral service or transfer of a patient to the care of another provider or provider organization."
+Property:          CommentOrDescription 0..1
+                   ReasonReference substitute ReferralReasonReference
+                   Requester substitute ReferralRequester
+                   ExpectedPerformer substitute ReferralRecipient
+                   Replaces[ActionRequest] substitute ReferralRequest
+                   RequestSubjectOfRecord substitute ReferralRequestSubjectOfRecord
 
-		Element:	ReferralRequestSubjectOfRecord
-		Based on:	RequestSubjectOfRecord
-		Description:"Subject of record types allowed for referrals"
-		Value:		ref(Patient) or ref(Group)
+Element:           ReferralRequester
+Parent:            Requester
+Description:       "The person or organization originating this referral"
+                   Value only Patient or Practitioner or RelatedPerson or Organization or Device
 
-		Element:	ReferralBasedOn
-		Based on:	ServiceBasedOn
-		Description:"Indicates any plans, proposals or orders that this request is intended to satisfy - in whole or in part."
-		Value: 		ref(ReferralRequest)
+Element:           ReferralRecipient
+Parent:            ExpectedPerformer
+Description:       "The practitioner or organization receiving the referral."
+                   Value only Practitioner or Organization
 
-		Element:	ReferralReasonReference
-		Based on:	ServiceReasonReference
-		Description:"Indicates another resource whose existence justifies this request."
-		Value:	    ref(Condition) or ref(Observation)
+Element:           ReferralRequestSubjectOfRecord
+Parent:            RequestSubjectOfRecord
+Description:       "Subject of record types allowed for referrals"
+                   Value only Patient or Group
 
-EntryElement:	Appointment
-Based on:		DomainResource
-Description:	"A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
-1..1	Status from http://hl7.org/fhir/ValueSet/appointmentstatus
-0..1	ServiceCategory
-0..*	ServiceDetails  // ServiceType
-0..*	Specialty
-0..1	Type should be from http://hl7.org/fhir/ValueSet/v2-0276
-0..1	ReasonCode  // upper card is 1 in DSTU2
-0..*	AppointmentReasonReference
-0..*	Indication
-0..1	PriorityRank
-0..1	CommentOrDescription
-0..1	PatientInstruction
-0..*	SupportingInformation 
-0..*	BasedOn is type ReferralBasedOn
-1..*	AppointmentParticipation
-0..1	TimePeriod
-0..*	ExpectedPerformanceTime
-0..1	StatementDateTime
+Element:           ReferralBasedOn
+Parent:            ServiceBasedOn
+Description:       "Indicates any plans, proposals or orders that this request is intended to satisfy - in whole or in part."
+                   Value only ReferralRequest
 
-	Element:	ServiceCategory
-	Description:	"A broad categorization of the service (ordered, planned, or performed)."
-	Value:		CodeableConcept could be from http://hl7.org/fhir/ValueSet/service-category
+Element:           ReferralReasonReference
+Parent:            ServiceReasonReference
+Description:       "Indicates another resource whose existence justifies this request."
+                   Value only Condition or Observation
 
-	Element:	Specialty
-	Description:	"The specialty of a practitioner who (should, will, or did) perform a service."
-	Value:		CodeableConcept should be from http://hl7.org/fhir/ValueSet/c80-practice-codes
+Entry:             Appointment
+Parent:            DomainResource
+Description:       "A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time."
+Property:          ServiceCategory 0..1
+Property:          ServiceDetails 0..*
+Property:          Specialty 0..*
+Property:          Type 0..1
+Property:          ReasonCode 0..1
+Property:          AppointmentReasonReference 0..*
+Property:          Indication 0..*
+Property:          PriorityRank 0..1
+Property:          CommentOrDescription 0..1
+Property:          PatientInstruction 0..1
+Property:          SupportingInformation 0..*
+Property:          BasedOn 0..*
+Property:          AppointmentParticipation 1..*
+Property:          TimePeriod 0..1
+Property:          ExpectedPerformanceTime 0..*
+Property:          StatementDateTime 0..1
+                   BasedOn substitute ReferralBasedOn
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/appointmentstatus (required)
+                   Type from http://hl7.org/fhir/ValueSet/v2-0276 (preferred)
 
-	Element:	AppointmentReasonReference
-	Based on:	ReasonReference
-	Description:"Reason the appointment is to take place (resource)"
-	Value:		ref(Condition) or ref(Procedure) or ref(Observation) // or ref(ImmunizationRecommendation)
+Element:           ServiceCategory
+Description:       "A broad categorization of the service (ordered, planned, or performed)."
+Value:             concept from http://hl7.org/fhir/ValueSet/service-category (example)
 
-	Element:		Indication
-	Description:	"Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
-	Value:			ref(Condition) or ref(Procedure)
+Element:           Specialty
+Description:       "The specialty of a practitioner who (should, will, or did) perform a service."
+Value:             concept from http://hl7.org/fhir/ValueSet/c80-practice-codes (preferred)
 
-	Element:	AppointmentParticipation
-	Based on:	Participation
-	Description:	"Participants involved in appointment"
-	1..1		ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type
-	0..1		Participant is type AppointmentParticipant  // HealthcareService not implemented yet
-	0..1		Need from http://hl7.org/fhir/ValueSet/participantrequired
-	1..1		Status from http://hl7.org/fhir/ValueSet/participationstatus
-	0..0		ParticipationPeriod
-	0..0		OnBehalfOf
+Element:           AppointmentReasonReference
+Parent:            ReasonReference
+Description:       "Reason the appointment is to take place (resource)"
+                   Value only Condition or Procedure or Observation
 
-			Element:	AppointmentParticipant
-			Based on:	Participant
-			Description:	"A choice of Person (in any role) or Organization, Device or Location as participants."
-			Value:		ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Device) or ref(Location)
+Element:           Indication
+Description:       "Conditions or situations where the procedure is recommended. In the Performed context, the actual indication should be reported."
+Value:             Condition or Procedure
 
-			Element:	Need
-			Description: "A code expressing the degree or type of need for the person or item."
-			Value:		CodeableConcept
+Element:           Need
+Description:       "A code expressing the degree or type of need for the person or item."
+Value:             concept
 
-/*  CIMI attributes for possible future use
+Group:             AppointmentParticipation
+Parent:            Participation
+Description:       "Participants involved in appointment"
+Property:          Need 0..1
+Property:          Status 1..1
+                   Participant substitute AppointmentParticipant
+                   ParticipationType 1..1
+                   ParticipationType from http://hl7.org/fhir/ValueSet/encounter-participant-type (required)
+                   ParticipationPeriod 0..0
+                   OnBehalfOf 0..0
+                   Need from http://hl7.org/fhir/ValueSet/participantrequired (required)
+                   Status from http://hl7.org/fhir/ValueSet/participationstatus (required)
 
-0..1			AccountId
-0..1			AccountStatus
-0..*			AlternateVisitId
-0..1			AmbulatoryStatus
-0..1			ChargePriceIndicator
-0..1 			ChiefComplaint
-0..1 			EncounterBillingType
-0..1 			FinancialClass
-0..1 			HospitalService
-0..1			IsEmploymentRelated
-0..1 			ModeOfArrival
-0..1 			PatientType
-0..1 			PreviousServiceDate
-0..1 			PublicityCode
-0..*			ReasonForVisit should be from http://hl7.org/fhir/ValueSet/encounter-reason
-0..1 			ReferralSource
-0..1 			ServicingFacility
-0..*			SpecialArrangements
-0..*			SpecialCourtesy
-0..*			TriageNotes
-0..1	 		AssignedPatientLocation
-0..1 			PendingLocation
-0..1 			ServiceDeliveryLocation
-0..1 			TemporaryLocation
-0..* 			PriorTemporaryLocation
-0..1 			Origin
-0..1			ServiceProvider
-0..1			ConfidentialityCode
-0..1 			Duration
-0..1			TreatmentCooperation
-0..1			PaymentSource
-0..1			TBD "HealthConcern"
-0..*			TBD "PertinentFindings"
-0..1			TBD "FullClinicalNote"
-1..1			TBD "ClinicalSummary"
-1..*			TBD "TreatmentServiceRendered"
-0..1			TBD "CompletionStatus"
-
-	Element:		ReferralDate
-	Concept:		MTH#C2735614
-	Description:	"The date when the provider received a referral for service. A referral includes an oral, written, faxed or electronic request for services made by the client or on the client's behalf."
-	Value:			dateTime
-
-	Element:		ReferralSourceType
-	Description:	"The type of person or entity that instigated the encounter."
-	Value:			CodeableConcept from ReferralSourceTypeVS
-
-	Element:		TreatmentCooperation
-	Description:	"Whether the patient is undergoing treatment voluntarily, or under a legal order."
-	Value:			CodeableConcept from TreatmentCooperationVS
-
-	Element:		TreatmentServiceRendered
-	Description:	""
-	Value:			CodeableConcept from TreatmentServiceVS
-	1..1			TBD "UnitsOfService"
-
-	Element:		PaymentSource
-	Concept:		MTH#C0680269
-	Description:	"The source of payment for the current encounter."
-	Value:			TBD "PaymentSourceVS"
-
-	Element:		EpisodeOfCareCompletion
-	Description:	"Denotes how and why an episode of care ended."
-	Value:			CodeableConcept from EpisodeOfCareCompletionVS
-
-*/
+Element:           AppointmentParticipant
+Parent:            Participant
+Description:       "A choice of Person (in any role) or Organization, Device or Location as participants."
+                   Value only Patient or Practitioner or RelatedPerson or Device or Location
