@@ -6,83 +6,125 @@ CodeSystem:		OBSCAT = http://hl7.org/fhir/observation-category
 
 EntryElement:	Procedure
 Based on:		ActionPerformed
-Description:	"A procedure that has been performed."
-				SubjectOfRecord is type PatientSubjectOfRecord
+Description:	"An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy."
+// not implemented: instantiatesCanonical, instantiatesUri
+0..1			BasedOn is type ProcedureBasedOn
+0..1			PartOf is type ProcedurePartOf 
+// Status from http://hl7.org/fhir/ValueSet/event-status conflicts with V2 http://hl7.org/fhir/ValueSet/procedure-status
+0..1			StatusReason
+0..1			Category  // max card constraint
 1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
-0..*			BodyLocation
-0..1			PartOf value is type ref(Procedure)
-0..1			Category  // this is a constraint on the cardinality of Action.Category
-0..*			Annotation
-0..0			Method	// Procedure doesn't have Method		
-0..1			TreatmentIntent
-				Participation.OnBehalfOf value is type ref(Organization)
-				// TODO: StatusReason
-				// Status from http://hl7.org/fhir/ValueSet/event-status
-				// Conflict V2 V3: Cannot override value set constraint from http://hl7.org/fhir/ValueSet/procedure-status to http://hl7.org/fhir/ValueSet/event-status
-//				Participation.Participant.EntityOrRole is type ref(Practitioner)
+				SubjectOfRecord value is type ref(Patient)
+				CareContext value is type ref(Encounter)
+0..1			Author is type PersonAuthor
+0..1			InformationSource is type PersonInformationSource
 				Participation.Participant is type ProcedureParticipant
-				RelatedRequest value is type ref(ProcedureRequest)
-0..1			ref(Location)
-0..1			Outcome
-0..*			MaterialUsed
+				Participation.OnBehalfOf value is type ref(Organization)
+0..1 			ref(Location)
+0..1			ReasonCode
+0..1			ReasonReference is type ProcedureReasonReference
+0..*			BodyLocation
+0..1			Outcome  could be from http://hl7.org/fhir/ValueSet/procedure-outcome
+0..*			ref(DiagnosticReport)
+0..*			ComplicationCode
+0..*			ComplicationReference
+0..*			FollowUp
+0..*			Annotation
 0..*			FocalDevice
+0..0			Method	// Procedure doesn't have Method
+// SHR Extension
+0..1			TreatmentIntent
+0..*			MaterialUsedReference
+0..*			UsedCode
+
+	Element:		MaterialUsedReference
+	Based on:		UsedReference
+	Description:	"Identifies medications, devices and any other substance used as part of the procedure."
+	Value:			ref(Device) or ref(Medication) or ref(Substance)
+
+	Element:		ComplicationCode
+	Description:	"Complication following the procedure, as a code."
+	Value:			CodeableConcept
+
+	Element:		ComplicationReference
+	Description:	"Complication following the procedure, as a reference to a Condition."
+	Value:			ref(Condition)
+
+	Element:		FollowUp
+	Description:	"Instructions for follow up."
+	Value:			CodeableConcept
+
+	Element:		ProcedurePartOf
+	Based on:		PartOf
+	Description:	"A larger event of which this particular procedure is a component or step."
+	Value:			ref(Procedure) or ref(MedicationAdministration) or ref(Observation)
+
+	Element:		StatusReason
+	Description:	"Captures the reason for the current state of the procedure."
+	Value:			CodeableConcept
 
 	Element:		ProcedureParticipant
 	Based on:		Participant
 	Description:	"Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
 	Value:			ref(Practitioner) or ref(Organization) or ref(Patient) or ref(RelatedPerson) or ref(Device)
 
-	Element:		MaterialUsed
-	Description:	"Items used during procedure"
-	Value:			ref(Device) or ref(Medication) or ref(Substance)
-
     Element:        TreatmentIntent
     Concept:        SCT#395077000 "Treatment intent (situation)"  // TODO: Needs a new LOINC number"
     Description:	"The purpose of a treatment."
     Value:          CodeableConcept from TreatmentIntentVS
 
+	Element:		ProcedureBasedOn
+	Based on:		BasedOn
+	Description:	"A request for this procedure."
+	Value:			ref(ProcedureRequest) or ref(ReferralRequest) or ref(ServiceRequest) // or CarePlan (or DiagnosticOrder in DSTU2)
+
+	Element:		ProcedureReasonReference
+	Based on:		ReasonReference
+	Description:	"The justification that the procedure was performed."
+	Value:			ref(Condition) or ref(Observation) or ref(Procedure) or ref(DiagnosticReport) or ref(DocumentReference)
+
 	Element:		FocalDevice
-	Description:	"Device changed in procedure."
+	Description:	"Activity involving a device that is implanted, removed or otherwise manipulated (e.g., calibration, battery replacement, fitting a prosthesis, attaching a wound-vac, etc.) as a focal portion of the Procedure."
+	1..1			ref(Device)
+	0..1			FocalDeviceAction
+
+		Element:		FocalDeviceAction
+		Description:	"The kind of change that happened to the device during the procedure."
+		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/device-action
 
 
 EntryElement:	ProcedureRequest
-Based on:		ActionRequested
+Based on:		ServiceRequest
 Description:	"A request for a procedure to be performed. May be a proposal or an order."
-				SubjectOfRecord is type ReferralSubjectOfRecord
-				PriorityCode // must be from http://hl7.org/fhir/ValueSet/request-priority 
-				// DSTU 2 change (different required value sets in v2 and v3)
-				Status // from http://hl7.org/fhir/ValueSet/request-status  
-				// DSTU 2 change(different required value sets in v2 and v3)
-0..1			ProcedureRequester  
-1..1			Type from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
-0..*			BodyLocation
+				RequestSubjectOfRecord is type ProcedureRequestSubjectOfRecord
+0..1			Requester is type ProcedureRequester  
+1..1			Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code if covered
 0..1			PartOf value is type ref(Procedure)
 0..1			Category  // this is a constraint on the cardinality of Action.Category
-0..*			Annotation
-0..1			ReasonCode
-0..1			ReasonReference
+0..1			ReasonCode  // limit upper card to 1 in DSTU2
+0..1			ServiceReasonReference is type ProcedureRequestReasonReference // limit upper card to 1 in DSTU2
 0..1			Method
-				RequestIntent from http://hl7.org/fhir/ValueSet/request-intent
 //0..*			InputFinding  -- covered by Reason
 //0..*			Indication
-0..1			ref(Location)
-0..1			ExpectedPerformer
-
-        Element:		ExpectedPerformer
-		Description:	"A choice of Person (in any role) or organization as recipient of a request. Needed for mapping to FHIR."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or ref(Organization) or ref(Device)  // or HealthcareService
+0..1			ExpectedPerformer  // restricted to 0..1 in DSTU2
 
 		Element:		ProcedureRequester
+		Based on:		Requester
 		Description:	"The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
 		Value:			ref(Practitioner) or ref(Device)
 
-		Element:		ReferralSubjectOfRecord
-		Based on:		SubjectOfRecord
+		Element:		ProcedureRequestSubjectOfRecord
+		Based on:		RequestSubjectOfRecord
 		Description:	"A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
 		Value:			ref(Patient) or ref(Group)
 
+		Element:		ProcedureRequestReasonReference
+		Based on:		ServiceReasonReference
+		Description:	"The justification that the procedure was performed"
+		Value:			ref(Condition) or ref(Observation)
 
-//---------- Specialized Types of Procedure Topics ----------------
+
+//---------- Specialized Types of Procedures ----------------
 
 EntryElement:	ImagingProcedure
 Based on:		Procedure
@@ -132,7 +174,7 @@ Based on:       Procedure
 Description:    "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
 				Participation.Participant is type PractitionerProcedureParticipant
     	    	Code from RadiationProcedureVS if covered
-				BodyLocation.LocationCode from RadiationTargetBodySiteVS if covered
+				BodyLocation.Code from RadiationTargetBodySiteVS if covered
 0..1    		RadiationDosePerFraction
 0..1    		RadiationFractionsDelivered
 0..1    		TotalRadiationDoseDelivered

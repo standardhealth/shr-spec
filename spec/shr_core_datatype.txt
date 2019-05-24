@@ -33,7 +33,7 @@ Description:	"A quantity with units, whose value may be bounded from above or be
 
 		Element:		Units
 		Description:	"The unit of measure of the quantity."
-		Value:			Coding should be from AllUnitsVS
+		Value:			Coding
 
 Element:		SimpleQuantity
 Based on:		Quantity
@@ -49,24 +49,38 @@ Element:		Age
 Based on:		Quantity
 Concept:		MTH#C0001779
 Description:	"How long someone has been alive, or something has existed."
-				Units from http://hl7.org/fhir/ValueSet/units-of-time
+				Units from http://hl7.org/fhir/ValueSet/age-units if covered
 
 Element:		Distance
 Based on:		Quantity
 Concept:		MTH#C0012751
 Description:	"The measure of space separating two objects or points."
-				Units from UnitsOfLengthVS
+				Units from http://hl7.org/fhir/ValueSet/distance-units if covered
 
 Element:		Duration
 Based on:		SimpleQuantity
 Concept:		MTH#C0449238
 Description:	"The length of time that something continues."
-				Units from TimeUnitOfMeasureVS
+				Units from http://hl7.org/fhir/ValueSet/duration-units if covered
 
-Element:		Money
+Element:		MoneyQuantity  // structural changes in R4
 Based on:		Quantity
 Description:	"Representation of an amount of currency or monetary value."
-				Units from CurrencyVS
+
+
+Element:		Money  // new in R4
+Based on:		Quantity
+Description:	"Representation of an amount of currency or monetary value."
+0..1			MoneyAmount
+0..1			Currency
+
+			Element:	MoneyAmount
+			Description: "Numerical value (with implicit precision)"
+			Value:		decimal
+
+			Element:	Currency
+			Description: "ISO 4217 Currency Code"
+			Value:      code from http://hl7.org/fhir/ValueSet/currencies
 
 Element:		Coding
 Concept:		MTH#C0805701
@@ -118,23 +132,19 @@ Description:	"An interval defined by a quantitative upper and/or lower bound. On
 
 	
 Element:		Ratio
-Concept:		MTH#C0456603
 Description:	"A unit of measurement for the quotient of the amount of one entity to another."
 0..1			Numerator
 0..1			Denominator
 
 	Element:		Numerator
-	Concept:		MTH#C2825219
 	Description:	"The dividend of a fraction."
 	Value:			Quantity
 
 	Element:		Denominator
-	Concept:		MTH#C2825218
 	Description:	"The divisor of a fraction."
 	Value:			Quantity
 
 Element:   		ContactPoint
-Concept:		MTH#C2986441
 Description:	"An electronic means of contacting an organization or individual."		
 0..1			TelecomNumberOrAddress
 0..1			Type from http://hl7.org/fhir/ValueSet/contact-point-system
@@ -152,17 +162,18 @@ Description:	"An electronic means of contacting an organization or individual."
 		Value:			CodeableConcept
 		
 		Element:		Purpose
-		Description:	"What it should be used for."
+		Description:	"Description of the intent or use of the item."
 		Value:			CodeableConcept
 
 		Element:	PriorityRank
 		Description:	"The priority of the procedure, as a number (1 being the highest priority)"
 		Value:		positiveInt 
 
+/* should be unnecessary as of 5.17.3
 		Element:	PriorityRankUnsignedInt
 		Description:	"The priority of the procedure, as a number (1 being the highest priority)"
 		Value:		unsignedInt 
-
+*/
 
 Element:		ContactDetail
 Description:	"Describes an individual and how to reach them."
@@ -170,19 +181,16 @@ Description:	"Describes an individual and how to reach them."
 0..*			ContactPoint
 
 Element:		TimePeriod
-Concept:		MTH#C1948053
 Description:	"A period of time defined by a start and end time, date, or year. 
 If the start date/time is missing, the start of the period is not known. If the end date/time is missing, it means that the period is ongoing."
 0..1			BeginDateTime
 0..1			EndDateTime  // lack of end time indicates the period was continuing at the time the entry was created
 
 	Element: 		BeginDateTime    // synonym "EffectiveDate"
-	Concept: 		MTH#C1301880
 	Description: 	"The time at which something is to take effect, start, or did start. Boundary is considered inclusive."
 	Value:			dateTime   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 
 	Element:		EndDateTime
-	Concept:		MTH#C1522314
 	Description:	"The time at which something is to end or did end. Boundary is considered inclusive."
 	Value:			dateTime   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 
@@ -192,70 +200,89 @@ Description: "A timing schedule that specifies an event that may occur multiple 
 Timing offers a choice of multiple OccurrenceTime (used is used to specify specific times), or recurrence patterns."
 0..*		OccurrenceTime
 0..1		TimingCode
-0..1		EventDuration
-0..1		RecurrencePattern
-0..1		RecurrenceRange
+0..1		Repeat
 
 	Element:		TimingCode
-	Description: 	"A code for the timing schedule. 
-	Some codes such as BID are ubiquitous, but many institutions define their own additional codes. If a code is provided, the code is understood to be a complete statement of whatever is specified in the structured timing data, and either the code or the data may be used to interpret the Timing, with the exception that .repeat.bounds still applies over the code (and is not contained in the code)."
+	Description: 	"A code for the timing schedule (or just text in code.text). Some codes such as BID are ubiquitous, but many institutions define their own additional codes. If a code is provided, the code is understood to be a complete statement of whatever is specified in the structured timing data, and either the code or the data may be used to interpret the Timing, with the exception that .repeat.bounds still applies over the code (and is not contained in the code)."
 	Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/timing-abbreviation if covered
 	
-	Element:		EventDuration
-	Description:	"The length of the recurring event."
-	Value:			DurationRange
-	
-	Element:	RecurrencePattern
+	Element:	Repeat
 	Description: "A set of rules that describe when a recurring event is scheduled."
-	0..1		RecurrenceInterval
+	0..1		RepeatBounds
+	0..1		RepeatCount
+	0..1		RepeatCountMax
+	0..1		RepeatDuration
+	0..1		RepeatDurationMax
+	0..1		RepeatDurationUnit
+	0..1		RepeatFrequency
+	0..1		RepeatFrequencyMax
+	0..1		RepeatPeriod
+	0..1		RepeatPeriodMax
+	0..1		RepeatPeriodUnit
 	0..*		DayOfWeek
 	0..*		TimeOfDay
 	0..*		DailyLifeEvent
-	0..1		LifeEventOffset
-	0..1		CountPerInterval
+	0..1		DailyLifeEventOffset
 
-		Element:		RecurrenceInterval
-		Description:	"The period of time after which the pattern repeats, for example, each day. 
-		To specify an event should take place every other Monday, the recurrence interval should be two weeks, and DayOfWeek should be Monday."
-		Value:			Duration
-		
+		Element:		RepeatBounds
+		Description:	"Either a duration for the length of the timing schedule, a range of possible length, or outer bounds for start and/or end limits of the timing schedule."
+		Value:			Duration or Range or TimePeriod
+
+		Element:		RepeatCount
+		Description:	"A total count of the desired number of repetitions across the duration of the entire timing specification. If countMax is present, this element indicates the lower bound of the allowed range of count values."
+		Value:	   		positiveInt // integer in STU3
+
+		Element: 		RepeatCountMax
+		Description:	"If present, indicates that the count is a range - so to perform the action between [count] and [countMax] times."
+		Value:	   		positiveInt // integer in STU3
+
+		Element:		RepeatDuration
+		Description:	"How long this thing happens for when it happens. If durationMax is present, this element indicates the lower bound of the allowed range of the duration."
+		Value:			decimal
+
+		Element:		RepeatDurationMax
+		Description:	"If present, indicates that the duration is a range - so to perform the action between [duration] and [durationMax] time length."
+		Value:			decimal
+
+		Element:		RepeatDurationUnit
+		Description:	"The units of time for the duration, in UCUM units."
+		Value:			code from http://hl7.org/fhir/ValueSet/units-of-time
+
+		Element:		RepeatFrequency
+		Description:	"The number of times to repeat the action within the specified period. If frequencyMax is present, this element indicates the lower bound of the allowed range of the frequency."
+		Value:	   		positiveInt // integer in STU3
+
+		Element:		RepeatFrequencyMax
+		Description:	"If present, indicates that the frequency is a range - so to repeat between [frequency] and [frequencyMax] times within the period or period range."
+		Value:	   		positiveInt // integer in STU3
+
+		Element:		RepeatPeriod
+		Description:	"Indicates the duration of time over which repetitions are to occur; e.g. to express '3 times per day', 3 would be the frequency and '1 day' would be the period. If periodMax is present, this element indicates the lower bound of the allowed range of the period length."
+		Value:			decimal
+
+		Element:		RepeatPeriodMax
+		Description:	"If present, indicates that the period is a range from [period] to [periodMax], allowing expressing concepts such as 'do this once every 3-5 days.' "
+		Value:			decimal
+
+		Element:		RepeatPeriodUnit
+		Description:	"The units of time for the period in UCUM units."
+		Value:			code from http://hl7.org/fhir/ValueSet/units-of-time
+
 		Element:		DayOfWeek
-		Description:	"A day of the week that the pattern should take place."
+		Description:	"If one or more days of week is provided, then the action happens only on the specified day(s)."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/days-of-week
 		
 		Element:		TimeOfDay
-		Description:	"Time of day the event should take place on the designated day(s). 
-		TimeOfDay should only be specified if the RecurrenceInterval and/or DayOfWeek establishes the day when the event should take place."
+		Description:	"Time of day the event should take place on the designated day(s)."
 		Value:			time
 		
 		Element:		DailyLifeEvent
-		Description:	"A quotidian landmark, such as rising, mealtime, or bedtime, when an event should take place."
+		Description:	"An approximate time period during the day, potentially linked to an event of daily living that indicates when the action should occur."
 		Value:			CodeableConcept from http://hl7.org/fhir/ValueSet/event-timing
 
-		Element:		LifeEventOffset
-		Description:	"A time in minutes before or after a given life event, for example, 30 minutes before a meal. Whether this means before or after is carried by the life event code."
+		Element:		DailyLifeEventOffset
+		Description:	"The number of minutes from the event. If the event code does not indicate whether the minutes is before or after the event, then the offset is assumed to be after the event."
 		Value:			unsignedInt
-		
-		Element:		CountPerInterval
-		Description:	"How many times the event should take place during one recurrence interval, for example, to specify 3-4 times per day, the CountPerInterval should be 3 to 4."
-		0..1			MinCount
-		0..1			MaxCount
-		
-				Element:	MinCount
-				Description: "Lower bound on a count."
-				Value:		integer   // FHIR - should be unsignedInt	
-				
-				Element:	MaxCount
-				Description: "Upper bound on a count."
-				Value:		integer // FHIR - should be unsignedInt		
-		
-	Element: 		RecurrenceRange
-	Description:	"The start and end of the overall recurrence pattern in terms of dates/times or in terms of number of repeats. Could also be an event, such as when all doses are taken."
-	Value:			TimePeriod or NumberOfRepeats
-			
-		Element:		NumberOfRepeats
-		Description:	"How many times the action should be repeated."
-		Value:			positiveInt
 
 
 Element:	SampledData
@@ -297,7 +324,6 @@ Description:	"Data that comes from a series of measurements taken by a device, w
 	Value:		positiveInt
 	
 Element:   		Address
-Concept:		MTH#C0682130
 Description:    "An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations and which might not be valid for mail delivery. There are a variety of postal address formats defined around the world. (Source: HL7 FHIR)."
 0..1			Purpose from http://hl7.org/fhir/ValueSet/address-use
 0..1			Type from http://hl7.org/fhir/ValueSet/address-type
@@ -315,39 +341,32 @@ Description:    "An address expressed using postal conventions (as opposed to GP
 	Value:         	string
 
 	Element:    	City
-	Concept:		MTH#C1555315
 	Description:    "The name of a municipality, city, town, village or other community or delivery center. (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	District
-	Concept:		MTH#C0079170
 	Description:    "The name of the administrative area at a level below that of a state but above that of a city or town. In the US, a county. Outside the US, a district or the equivalent. (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	State
-	Concept:		MTH#C1552743
 	Description:    "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes). (Source: HL7 FHIR)."
 	Value:         	string
 
 	Element:    	PostalCode
-	Concept:		MTH#C1514254
 	Description:    "A sequence of letters and digits used as part of a postal address, often designating a geographic region"
 	Value:         	string
 
 	Element:    	Country
-	Concept:		MTH#C0454664
 	Description:    "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes."
 	Value:         	string
 
 //------------ Complex Data Types not in FHIR ----------------
 
 Element:		Count
-Concept:		MTH#C0750480
 Description:	"The number of items (0 or more), as an integer."
 Value:			unsignedInt
 
 Element:		CommentOrDescription
-Concept: 		MTH#C0947611
 Description:	"A text note containing additional details, explanation, description, comment, or summarization."
 Value:			string
 
@@ -356,28 +375,36 @@ Based on:		Range
 Description:	"A range of durations."
 				LowerBound value is type Duration
 				UpperBound value is type Duration
-	
+/*	not currently used
 Element:		Statistic
 Based on: 		Quantity
-Concept:		MTH#C2828391
 Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
 1..1			StatisticType
 
 		Element:		StatisticType
 		Description:	"The type of statistic that is represented by the value."
 		Value:			CodeableConcept from StatisticTypeVS
-
+*/
 Element: 		PriorityCode
-Concept:		MTH#C0549179
 Description:	"An indication of the importance of an action relative to other actions."
 Value:			positiveInt or CodeableConcept
 
 Element:		Percentage
 Based on:		SimpleQuantity
-Concept:		MTH#C0439165
 Description:	"A percentage value where 100.0 represents 100%."
 				Units is UCUM#%
 
+Element:        CanonicalUrl
+Description:    "A URI that refers to a resource by its canonical URL (resources with a url property). The canonical type differs from a uri in that it has special meaning in this specification, and in that it may have a version appended, separated by a vertical bar (|)."
+Value:          uri
+
+Element:		DerivedFrom
+Description:	"Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
+Value:			ref(DocumentReference) or ref(Media) or ref(QuestionnaireResponse) or ref(Observation) or CanonicalUrl
+
+Element:  Relationship
+Description:  "A description of the association between people or items."
+Value:	CodeableConcept
 
 
 /* not used -- keep for future use
@@ -484,17 +511,14 @@ Description:	"The location on the surface of the Earth, described by a latitude 
 0..1			Altitude
 
 		Element:		Latitude
-		Concept:		MTH#C1627936
 		Description:	"The angular distance north or south between an imaginary line around a heavenly body parallel to its equator and the equator itself. Measured with with WGS84 datum."
 		Value:			decimal
 
 		Element:		Longitude
-		Concept:		MTH#C1657623
 		Description:	"An imaginary great circle on the surface of a heavenly body passing through the poles at right angles to the equator. Measured with with WGS84 datum."
 		Value:			decimal
 
 		Element:		Altitude
-		Concept:		MTH#C0002349
 		Description:	"Height above sea level or above the earth's surface. Measured with with WGS84 datum."
 		Value:			decimal
 
@@ -512,17 +536,14 @@ Description:    "An address for a place in the USA, conforming to US mail postal
 
 	Element:		UnitedStatesState
 	Based on:		State
-	Concept:		MTH#C3148680
 	Description:	"A state or territory in the USA expressed by 2-letter US Postal code."
 	//Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
 
 Element:		DisplayText
-Concept:		MTH#C1548311
 Description:	"A string meant for reading by a person, for example, accompanying a code."
 Value:			string
 
 Element:		VersionString
-Concept:		MTH#C0333052
 Description:	"A string associated with the product that identifies a particular release iteration."
 Value:			string
 
@@ -564,8 +585,8 @@ Description:	"A file that contains audio, video, image, or similar content."
 	Value:			CodeableConcept
 
 	Element:		ResourceLocation
-	Description:	"URI where data can be found."
-	Value:			uri
+	Description:	"URL where data can be found."
+	Value:			Url  // changed from uri for R4 compatibility
 
 	Element:		ResourceSize
 	Description:	"Number of bytes of content in the resource (if url provided)"
@@ -589,34 +610,38 @@ Description:	"An attachment of a photographic type. The mime type should be eith
 Element:		Annotation
 Description:	"An added or follow-up note, often after the fact, that contains metadata about who made the statement and when."
 1..1			Text
-1..1			AnnotationAuthor
+1..1			PersonAuthor
 0..1			OccurrenceTime
 
-        Element:		AnnotationAuthor
-		Description:	"The author of an annotation note."
-		Value:			ref(Patient) or ref(Practitioner) or ref(RelatedPerson) or string
-
 Element:	Signature
-Description: "A digital Signature - XML DigSig, JWT, Graphical image of signature, etc."
+Description: "A Signature holds an electronic representation of a signature and its supporting context in a FHIR accessible form. The signature may either be a cryptographic type (XML DigSig or a JWS), which is able to provide non-repudiation proof, or it may be a graphical image that represents a signature or a signature process."
 1..*		SignatureType from http://hl7.org/fhir/ValueSet/signature-type if covered
 1..1		CreationDateTime
-1..1		Signatory
+1..1		Signer
 0..1		OnBehalfOf
-1..1		ContentType
+1..1		SignatureFormat
+0..1		TargetFormat
 1..1		BinaryData   // DSTU 2 change (required attribute in DSTU 2)
 
 	Element:   	 	SignatureType
-	Concept:        MTH#C0332307
 	Description:    "Type of signature"
 	Value:          CodeableConcept
 
-	Element:		Signatory
+	Element:		Signer
 	Description:	"The party signing."
-	Value:			uri or ref(Entity)
+	Value:			ref(Practitioner) or ref(RelatedPerson) or ref(Patient) or ref(Device) or ref(Organization)
 
 	Element:		OnBehalfOf
 	Description:	"The party represented by the actual participant."
-	Value:			uri or ref(Organization)
+	Value:			ref(Practitioner) or ref(RelatedPerson) or ref(Patient) or ref(Device) or ref(Organization)
+
+	Element:		SignatureFormat
+	Description:	"The technical format of the signature."
+	Value:			code  // can't bind because of conflict of required VS between FHIR versions
+
+	Element:		TargetFormat
+	Description:	"The technical format of the signed resources."
+	Value:			code from http://hl7.org/fhir/ValueSet/mimetypes
 
 Element:		RouteIntoBody
 Concept:		MTH#C0013153
@@ -631,15 +656,10 @@ Description:	"A location or structure in the body, including tissues, regions, c
     - Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
 	- Specifying the direction and distance from the landmark to the body location. 
 Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
-1..1			LocationCode
+1..1			Code  should be from BodyLocationVS
 0..1 			Laterality
 0..1			Orientation
 0..*			RelationToLandmark
-
-
-	Element:		LocationCode
-	Description:	"Code for the body location, optionally pre-coordinating laterality or direction."
-	Value:			CodeableConcept should be from BodyLocationVS
 
 	Element:		Laterality
 	Description:	"Body side of the body location, if needed to distinguish from a similar location on the other side of the body. 
@@ -694,7 +714,7 @@ Note that BodyLocation is a data type, a reusable structure, not a stand-alone e
 
 		Element:		LandmarkLocation
 		Description:	"The body location of the landmark, specified by a location code and optional laterality and orientation."
-		0..1			LocationCode
+		0..1			Code
 		0..1			Laterality
 		0..1			Orientation
 
@@ -726,7 +746,7 @@ Description:	"Business identifier or external id for this resource."
 //0..1			Issuer -- commented out to prevent generating a profile on identifier caused by having profile on Organization (which is unavoidable in DSTU 2, because US Core changes some cardinalities to 1..)
 
 		Element:		IdentifierString
-		Description:	"An id for the item expresse as a string."
+		Description:	"An id for the item expressed as a string."
 		Value:			string
 		
 		Element:		Issuer
@@ -745,29 +765,24 @@ Value:			CodeableConcept
 		Value:			CodeableConcept
 */
 
-Element:		Name
-Description:	"Abstract supertype for the name of an entity."
-0..1			NameAsText
-0..* 			Purpose
-0..1 			EffectiveTimePeriod	
-
-		Element:		NameAsText
-		Description:	"The name as plain unstructured or semi-structured text."
-		Value:			string // TODO: should be PlainText
 		
-Element:   		HumanName
-Based on:		Name
-Concept: 		MTH#C1547383
+Element:   	HumanName
 Description:	"A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)."
-0..*    		Prefix
-0..*    		GivenName
-0..1    		FamilyName
-0..*    		Suffix
-0..1 			Purpose from http://hl7.org/fhir/ValueSet/name-use
+0..1 		Purpose from http://hl7.org/fhir/ValueSet/name-use
+0..1		Name
+0..1    	FamilyName
+0..*    	GivenName
+0..*    	Prefix
+0..*    	Suffix
+0..1 		EffectiveTimePeriod	
+
+		Element:		Name
+		Description:	"The name as plain unstructured or semi-structured text."
+		Value:			string
 
 		Element:    	Prefix
 		Description:    "A string that should precede the item; for example, an honorific before a person's name, or a question number before a question."
-		Value:          string  // punting on value set - there is little value in standardizing this element
+		Value:          string 
 		
 		Element:    	GivenName
 		Concept:		LNC#45392-8, SCT#408677003
@@ -790,5 +805,23 @@ Description:	"A name used by a human being, written as it would be typically exp
 		Value:          string
 
 Element:		Category
-Description:	"The type, kind, or class of this item."
+Description:	"The general type or class of this item."
 Value:			CodeableConcept		
+
+Element:		RelatedArtifact
+Description:	"Items such as additional documentation, justification, or bibliographic references, that provide background for the current item."
+1..1			Type from http://hl7.org/fhir/ValueSet/related-artifact-type
+0..1			LabelText
+0..1			DisplayText
+0..1			Citation
+0..1			Url
+0..1			ref(Attachment)
+0..1			CanonicalUrl // should be 0..* in FHIR to enable the citation to be used by multiple resources
+
+	Element:		LabelText
+	Description:	"A short label that can be used to reference the citation from elsewhere in the containing artifact, such as a footnote index."
+	Value:			string
+
+	Element:		Citation
+	Description:	"A bibliographic citation for the related artifact. This text SHOULD be formatted according to an accepted citation format."
+	Value:			markdown

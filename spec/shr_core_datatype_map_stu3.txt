@@ -28,7 +28,7 @@ Age maps to Age:
 IntegerQuantity maps to Count:
 Distance maps to Distance:
 Duration maps to Duration:
-Money maps to Money:
+MoneyQuantity maps to Money:
 
 Address maps to Address:
 	Purpose maps to use
@@ -43,12 +43,12 @@ Address maps to Address:
 	EffectiveTimePeriod maps to period
 
 HumanName maps to HumanName:
-	NameAsText maps to text
-	Prefix maps to prefix
-	GivenName maps to given
-	FamilyName maps to family
-	Suffix maps to suffix
 	Purpose maps to use
+	Name maps to text
+	FamilyName maps to family
+	GivenName maps to given
+	Prefix maps to prefix
+	Suffix maps to suffix
 	EffectiveTimePeriod maps to period
 
 TimePeriod maps to Period:
@@ -63,7 +63,7 @@ ContactPoint maps to ContactPoint:
 	EffectiveTimePeriod maps to period	
 	
 ContactDetail maps to ContactDetail:
-	HumanName.NameAsText maps to name
+	HumanName.Name maps to name
 	ContactPoint maps to telecom
 
 Range maps to Range:
@@ -77,18 +77,21 @@ Ratio maps to Ratio:
 Timing maps to Timing:
 	OccurrenceTime maps to event
 	TimingCode maps to code
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Number maps to repeat.duration
-	EventDuration.DurationRange.UpperBound.SimpleQuantity.Number maps to repeat.durationMax
-	EventDuration.DurationRange.LowerBound.SimpleQuantity.Units.Coding.CodeValue maps to repeat.durationUnit
-	RecurrencePattern.RecurrenceInterval.Duration.Number maps to repeat.period
-	RecurrencePattern.RecurrenceInterval.Duration.Units.Coding.CodeValue maps to repeat.periodUnit
-	constrain repeat.periodMax to 0..0
-	RecurrencePattern.DayOfWeek maps to repeat.dayOfWeek
-	RecurrencePattern.TimeOfDay maps to repeat.timeOfDay
-	RecurrencePattern.DailyLifeEvent maps to repeat.when
-	RecurrencePattern.LifeEventOffset maps to repeat.offset
-	RecurrencePattern.CountPerInterval.MinCount maps to repeat.frequency
-	RecurrencePattern.CountPerInterval.MaxCount maps to repeat.frequencyMax
+	Repeat.RepeatBounds maps to repeat.bounds[x]
+	Repeat.RepeatCount maps to repeat.count
+	Repeat.RepeatCountMax maps to repeat.countMax
+	Repeat.RepeatDuration maps to repeat.duration
+	Repeat.RepeatDurationMax maps to repeat.durationMax
+	Repeat.RepeatDurationUnit maps to repeat.durationUnit
+	Repeat.RepeatFrequency maps to repeat.frequency
+	Repeat.RepeatFrequencyMax maps to repeat.frequencyMax
+	Repeat.RepeatPeriod maps to repeat.period
+	Repeat.RepeatPeriodMax maps to repeat.periodMax
+	Repeat.RepeatPeriodUnit maps to repeat.periodUnit
+	Repeat.DayOfWeek maps to repeat.dayOfWeek
+	Repeat.TimeOfDay maps to repeat.timeOfDay
+	Repeat.DailyLifeEvent maps to repeat.when
+	Repeat.DailyLifeEventOffset maps to repeat.offset
 	
 SampledData maps to SampledData:
 	DataAsString maps to data
@@ -109,10 +112,9 @@ Attachment maps to Attachment:
 	Title maps to title
 	CreationDateTime maps to creation
 
-
 Annotation maps to Annotation:
 	Text maps to text
-	AnnotationAuthor maps to author[x]
+	PersonAuthor maps to author[x]
 	OccurrenceTime maps to time
 	
 Identifier maps to Identifier:
@@ -126,7 +128,18 @@ Identifier maps to Identifier:
 Signature maps to Signature:
 	SignatureType maps to type
 	CreationDateTime maps to when
-	Signatory maps to who[x]
+	Signer maps to who[x]
 	OnBehalfOf maps to onBehalfOf[x]
-	ContentType maps to contentType
-	BinaryData maps to blob		
+	SignatureFormat maps to contentType
+	TargetFormat maps to extension
+	BinaryData maps to blob
+
+RelatedArtifact maps to RelatedArtifact:
+	Type maps to type
+	LabelText maps to extension
+	DisplayText maps to display
+// Awaiting CLI fix TODO
+//	Citation maps to citation  // string in R3, markdown in R4
+	Url maps to url
+	Attachment maps to document
+	CanonicalUrl maps to extension  // resource is Ref(Any) in R3, but CanonicalUrl in R4
