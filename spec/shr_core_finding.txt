@@ -35,14 +35,18 @@ Property:          PersonInformationSource 0..1
 Property:          StageInformation 0..1
 Property:          Evidence 0..1
 Property:          Annotation 0..*
+                   // SHR extension
 Property:          DateOfDiagnosis 0..1
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/condition-ver-status (required)
                    SubjectOfRecord 1..1
+                   // restricted in DSTU 2 (from Patient or Group)
                    SubjectOfRecord only Patient
                    CareContext only Encounter
+                   // cannot make the binding weaker because US Core requires an extensible binding
                    Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem (extensible)
                    ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical (required)
+                   // category is 1..1 in Argonaut
                    Category from ConditionCategoryVS (extensible)
                    Severity from http://hl7.org/fhir/ValueSet/condition-severity (preferred)
 
@@ -55,6 +59,7 @@ Property:          Type 0..1
 
 Element:           StageDetail
 Description:       "The full staging information"
+                   // or ClinicalImpression
 Value:             Observation or DiagnosticReport
 
 Group:             Evidence
@@ -75,14 +80,18 @@ Property:          ObservationBasedOn 0..*
 Property:          PartOf 0..*
 Property:          Category 0..1
 Property:          FocalSubject 0..*
+                   // R4 add Timing, instant -- not supported
 Property:          RelevantTime 0..1
 Property:          Performer 0..*
+                   // added integer -- not supported
 Property:          DataValue 0..1
 Property:          DataAbsentReason 0..1
+                   // R4 upper card from 1 to * -- not supported
 Property:          Interpretation 0..1
 Property:          Annotation 0..*
 Property:          BodyLocation 0..1
 Property:          Method 0..1
+                   // Specimen added at LaboratoryObservation
 Property:          Device 0..1
 Property:          ReferenceRange 0..1
 Property:          PanelMembers 0..1
@@ -94,7 +103,10 @@ Property:          Components 0..1
                    SubjectOfRecord substitute ObservationSubjectOfRecord
                    ObservationSubjectOfRecord 1..1
                    CareContext only Encounter
+                   // FHIR-- missing StatusReason
+                   // upper card forced by DSTU 2
                    Category from http://hl7.org/fhir/ValueSet/observation-category (extensible)
+                   // not a code
                    FocalSubject only DomainResource
 
 Entry:             NonLaboratoryObservation
@@ -105,6 +117,7 @@ Element:           DataValue
 Description:       "The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
 Value:             concept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod or SampledData
 
+                   // exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Attachment because it is not present in FHIR v4
 Entry:             CodedNonLaboratoryObservation
 Parent:            NonLaboratoryObservation
 Description:       "The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
@@ -118,6 +131,7 @@ Description:       "A choice of Patient, Group, Device, or Location. These are t
 
 Element:           Performer
 Description:       "The actor that carried out the observation or action."
+                   // need to add PractitionerRole
 Value:             Practitioner or Organization or Patient or RelatedPerson
 
 Group:             PanelMembers
@@ -134,15 +148,31 @@ Description:       "An observation with components, but without a result value o
                    ReferenceRange 0..0
                    PanelMembers 0..0
 
+                   // Laboratory Measurements and Results
 Group:             Components
 Description:       "Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
 Property:          ObservationComponent 0..*
 
+/* commented out but might need to come back, so saving
+		Element:		DeltaFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			concept from DeltaFlagVS
+				
+		Element:		Issued
+		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+		Value:			instant
+*/
+                   //  Non-Laboratory Results
 Abstract:          ObservationComponent
 Description:       "A sub-observation contributing to the parent observation, expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations. Component observations share the same attributes in the Observation resource as the primary observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
+                   // should an observation component have additional properties, such as protocol, circumstance, or interpretation?
+                   // how do we handle a normal? (physical exam normal)
+                   // exclusions? (diabetes excluded)
 Property:          Code 1..1
 Property:          DataValue 0..1
 Property:          DataAbsentReason 0..1
+                   // R4 upper card * not implemented
 Property:          Interpretation 0..1
 Property:          ReferenceRange 0..1
 
@@ -169,8 +199,15 @@ Property:          Specimen 0..1
                    Category 1..1
                    Category = OBSCAT#laboratory
                    Performer substitute LaboratoryObservationPerformer
+                   // BodyLocation is determined indirectly from Specimen.CollectionSite
                    BodyLocation 0..0
 
+/*  Performer cannot be sliced because there is no way to identify which slice a practitioner performer is associated with
+				Performer
+	includes 	0..1 ResponsibleObserver
+	includes	0..1 PerformingLaboratory
+	includes 	0..1 PerformingOrganizationMedicalDirector
+*/
 Element:           Interpretation
 Description:       "A clinical interpretation of a finding (applies to both assertions and observation)."
 Value:             concept from http://hl7.org/fhir/ValueSet/observation-interpretation (extensible)
@@ -215,6 +252,7 @@ Description:       "The result of social history questions, whose answer is expr
 Element:           RelevantTime
 Description:       "The time or time period that the statement addresses.
 The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+                   // not supporting Timing (dateTime can map to instant)
 Value:             dateTime or TimePeriod
 
 Element:           PersonInformationSource
@@ -222,6 +260,7 @@ Parent:            InformationSource
 Description:       "The person who provided the information, not necessarily the patient."
                    Value only Patient or Practitioner or RelatedPerson
 
+                   // may need to add PractitionerRole
 Entry:             AbnormalBodyStructure
 Parent:            Condition
 Description:       "A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodyLocation is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and a location. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
@@ -237,10 +276,12 @@ Property:          DiagnosticReportPerformer 0..1
 Property:          ResultsInterpreter 0..1
 Property:          Specimen 0..*
 Property:          Observation 0..*
+                   //0..*			ref(ImagingStudy) -- not yet implemented
 Property:          MediaIncluded 0..*
 Property:          ConclusionText 0..1
 Property:          ConclusionCode 0..*
 Property:          PresentedForm 0..*
+                   // 'issued' is required in DSTU-2
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status (required)
                    SubjectOfRecord substitute ObservationSubjectOfRecord
@@ -267,6 +308,7 @@ Property:          Type 0..1
 Property:          ApplicableSubpopulation 0..1
 Property:          ApplicableAgeRange 0..1
 Property:          Text 0..1
+                   // R4 changes binding  from extensible to preferred -- not implemented
                    Type from http://hl7.org/fhir/ValueSet/referencerange-meaning (extensible)
 
 Element:           ApplicableSubpopulation
@@ -275,6 +317,7 @@ Description:       "Codes to indicate the target population this reference range
 Value:             concept from http://hl7.org/fhir/ValueSet/referencerange-appliesto (extensible)
 
 Element:           ApplicableAgeRange
+                   // FHIR: how exactly does one indicate a neonatal or prenatal age?
 Description:       "The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."
 Value:             Range
 
@@ -283,16 +326,19 @@ Parent:            BasedOn
 Description:       "A plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
                    Value only MedicationRequest or ServiceRequest or ProcedureRequest or ReferralRequest
 
+                   // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder) 
 Element:           ObservationPartOf
 Parent:            PartOf
 Description:       "A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure."
                    Value only MedicationAdministration or MedicationDispense or MedicationStatement or Procedure
 
+                   // or ref(ImagingStudy) or ref(Immunization)
 Element:           ObservationDerivedFrom
 Parent:            DerivedFrom
 Description:       "The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image."
                    Value only DocumentReference or Media or QuestionnaireResponse or Observation
 
+                   // or ref(MolecularSequence) or ref(ImagingStudy)
 Entry:             SimpleNonLaboratoryObservation
 Parent:            NonLaboratoryObservation
 Description:       "An observation having no components or panel members"
@@ -317,6 +363,22 @@ Description:       "Identifier assigned by the lab carrying out the test."
                    Type 1..1
                    Type = UNK0#FILL
 
+/*
+		Element:		ResponsibleObserver
+		Based on:		Performer
+		Description:	"Person directly responsible for carrying out the test."
+		Value:			ref(Patient) or ref(RelatedPerson) or ref(Practitioner) 
+
+		Element:		PerformingLaboratory
+		Based on:		Performer
+		Description:	"Organization responsible for carrying out the test."
+		Value:			ref(Organization)
+		
+		Element:		PerformingOrganizationMedicalDirector
+		Based on:		Performer
+		Description:	"Director of the laboratory performing the test."
+		Value:			ref(Practitioner)
+*/
 Element:           LaboratoryObservationPerformer
 Parent:            Performer
 Description:       "The practitioner that carried out the observation or action."
@@ -366,11 +428,13 @@ Parent:            ObservationBasedOn
 Description:       "A plan, proposal or order that is fulfilled in whole or in part by this observation."
                    Value only ServiceRequest or ProcedureRequest or ReferralRequest
 
+                   // or ref(CarePlan) 
 Element:           SocialHistoryObservationPartOf
 Parent:            ObservationPartOf
 Description:       "A larger procedure that this particular observation is a component or step."
                    Value only Procedure
 
+                   // or ref(ImagingStudy) or ref(Immunization)
 Element:           StageSummary
 Description:       "A code representing the current stage of a disease."
 Value:             concept
@@ -387,6 +451,15 @@ Element:           DateOfDiagnosis
 Description:       "The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
 Value:             date
 
+/* Hold
+			Element:		AlleviatingFactor
+			Description:	"Activities that reduce the severity of the pathology"
+			Value:			concept
+
+			Element:		ExacerbatingFactor
+			Description:	"Activities that increase the severity of the pathology"
+			Value:			concept
+*/
 Entry:             ComorbidCondition
 Parent:            Condition
 Description:       "A comorbidity refers to one or more diseases or conditions that occur along with another condition in the same person at the same time. Conditions considered comorbidities are often long-term or chronic conditions. Comorbidities are defined relative to an index disease and may be categorical, rather than described in full detail. The comorbid condition class provides comorbidity codes corresponding the Elixhauser Comorbidity Index."

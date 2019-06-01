@@ -2,6 +2,26 @@ Grammar:           DataElement 6.0
 Namespace:         shr.core
 Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
 
+/*
+Abstract Element:   PublishedArtifact  // might be a useful parent class
+Based on:           DomainResource
+Description:    "Abstract class with common elements for information items that are published."
+0..1 		    Url
+0..1            VersionString
+0..1            Name
+0..1            Title
+1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
+0..1            IsExperimental
+0..*            SubjectType
+0..1            LastUpdated
+0..1            PublisherName
+0..*            ContactDetail
+0..1            DescriptionMarkdown
+0..*            UseContext
+0..*            Jurisdiction
+0..1            PurposeMarkdown
+0..1            Copyright
+*/
 Entry:             Questionnaire
 Parent:            DomainResource
 Description:       "A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection."
@@ -25,6 +45,7 @@ Property:          LastReviewedDate 0..1
 Property:          EffectiveTimePeriod 0..1
 Property:          Code 0..*
 Property:          QuestionnaireItem 0..*
+                   // from http://hl7.org/fhir/ValueSet/publication-status conflict with DSTU2
                    Status 1..1
                    DerivedFrom only CanonicalUrl
                    Code from http://hl7.org/fhir/ValueSet/questionnaire-questions (example)
@@ -44,6 +65,7 @@ Property:          DetailsUri 0..1
 Property:          Code 0..*
 Property:          Prefix 0..1
 Property:          Question 0..1
+                   // from http://hl7.org/fhir/ValueSet/item-type  conflict with DSTU2
 Property:          Type 1..1
 Property:          EnableWhen 0..*
 Property:          EnableBehavior 0..1
@@ -150,6 +172,7 @@ Value:             CanonicalUrl
 
 Element:           QuestionnaireResponseRecorder
 Description:       "The recorder of the information, who received and recorded the answers. For example, the nurse taking a list of medications reported by the patient."
+                   // missing PractitionerRole, Organization (not supported in STU3)
 Value:             Practitioner or Patient or RelatedPerson or Device
 
 Group:             QuestionnaireResponseItem

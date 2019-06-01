@@ -5,6 +5,7 @@ CodeSystem:        LNC = http://loinc.org
 CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:        UCUM = http://unitsofmeasure.org
 
+                   //----------------Vital Sign Panel----------------
 Entry:             VitalSignsPanel
 Parent:            NonLaboratoryObservation
 Description:       "A summary of vital signs, including weight, height (or length), blood pressure, respiration rate, oxygen saturation, heart rate, and body temperature, BMI, and (optionally) head circumference. Each member of the panel is treated as a separate, independent observation. The panel is a grouping for convenience so all vitals can be retrieved using one LOINC code (85353-1)."
@@ -28,6 +29,7 @@ Description:       "A summary of vital signs, including weight, height (or lengt
                    includes BodyMassIndex 0..1
                    Components 0..0
 
+                   //------------------ Vital Sign ---------------------------
 Abstract:          VitalSign
 Parent:            QuantitativeNonLaboratoryObservation
 Description:       "Abstract class parent for all vital sign profiles."
@@ -35,6 +37,7 @@ Property:          Precondition 0..*
                    ObservationSubjectOfRecord only Patient
                    Category 1..1
                    Category = OBSCAT#vital-signs
+                   // zeroed out because we are using pre-coordinated body site codes to describe body locations associated with vital signs
                    BodyLocation.Laterality 0..0
                    BodyLocation.Orientation 0..0
                    BodyLocation.RelationToLandmark 0..0
@@ -45,9 +48,14 @@ Element:           Precondition
 Description:       "A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 Value:             concept
 
+/*		Element:		DeviceType
+		Description:	"The type of device used to make the measurement, expressed as a code. If a specific device is to be recorded, use Device."
+		Value:			concept
+*/
 Entry:             BodyWeight
 Parent:            VitalSign
 Description:       "Data structure for recording the body weight, defined as the mass or quantity of heaviness of the individual."
+                   // CIMI uses 3141-9 "Body weight Measured" but Argonaut, US-Core, and FHIR R4 all use 29462-7
                    Code = LNC#29463-7 "Body weight"
                    DataValue 1..1
                    DataValue[Quantity].Units from BodyWeightUnitsVS (required)
@@ -84,6 +92,7 @@ Property:          BodyPosition 0..1
                    Components 0..0
                    Precondition 0..0
 
+                   // Implemented with components
 Entry:             BloodPressure
 Parent:            VitalSign
 Description:       "The force of circulating blood on the walls of the arteries."
@@ -142,6 +151,7 @@ Description:       "The number of times the heart ventricles contract per unit o
 Entry:             OxygenSaturation
 Parent:            VitalSign
 Description:       "Oxygen saturation in Arterial blood by Pulse oximetry."
+                   // Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (latter code doesn't presume a method).
                    Code = LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
                    DataValue 1..1
                    DataValue[Quantity].Units = UCUM#% "%"
@@ -170,6 +180,7 @@ Description:       "The measure of the level of heat in the body."
                    Code = LNC#8310-5 "Body temperature"
                    DataValue[Quantity].Units = UCUM#Cel "C"
                    BodyLocation.Code from BodyTemperatureBodyLocationVS (required)
+                   //				Precondition from BodyTemperatureQualifierVS
                    Method from BodyTemperatureMethodVS (required)
                    Components 0..0
 
@@ -193,4 +204,9 @@ Description:       "A general indicator of the body fat an individual is carryin
                    BodyLocation 0..0
                    Method 0..0
                    Components 0..0
-                   Precondition 0..0
+                   Precondition 0..0/*
+	Element: 		HeadTiltAngle // This is only used during a tilt table test.
+	Concept: 		LNC#8360-0
+	Description:	"The angle at which the head is tilted relative to a level position while physiologic tests are taken."
+	Value:			Quantity with units UCUM#deg "deg"
+*/

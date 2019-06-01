@@ -98,6 +98,7 @@ Description:       "The number of people living together with mutual financial d
                    DataValue[Quantity].Units = UCUM#1
 
 Entry:             Coinhabitant
+                   // Related person?
 Parent:            CodedSocialHistoryObservation
 Description:       "A person living with the subject."
                    Code = SCT#224085006 "Family details / household composition (observable entity)"
@@ -159,6 +160,7 @@ Description:       "A travel history of the countries that the patient has visit
                    Code = LNC#82764-2 "Country of travel outside the U.S. [Location] 2 years"
                    DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.828 (required)
 
+                   //------------- Exposures ---------------------
 Entry:             UnprescribedExposure
 Parent:            NonLaboratoryObservation
 Description:       "Record of an exposure to a risk agent, whether intentional, environmental, or accidental. Non-prescribed substances include recreational marijuana, disease vector, mutagens, excessive heat or cold, blood products, farm animals or pets, recreational drugs, second hand smoke, sexually-transmitted diseases, suspect foods, toxins, pathogens, noise, radiation, pollutants, and prenatal exposures to teratogens, etc. The exposure time period is given in the RelevantTime."
@@ -185,6 +187,7 @@ Group:             ExposureAmount
 Parent:            ObservationComponent
 Description:       "The amount of substance used or exposed to in a given period of time (e.g., 10 cigarettes per day). Can also be used to record total lifetime exposure (e.g., 80 REMS/lifetime)."
                    Code = SCT#118555000 "Substance Amount"
+                   // Data value can be a code or a quantity, even a text
                    DataValue only Ratio
 
 Group:             ExposureReason
@@ -193,6 +196,7 @@ Description:       "Why the exposure occurred."
                    Code = TBD#TBD
                    DataValue from ExposureReasonVS (required)
 
+                   // Redundant with RouteIntoBody, but that isn't an ObservationComponent
 Group:             ExposureRoute
 Parent:            CodedObservationComponent
 Description:       "The way a substance enters an organism after contact, particularly, the route of drug administration."
@@ -203,11 +207,13 @@ Entry:             AnimalExposure
 Parent:            UnprescribedExposure
 Description:       "The type of animals or pets the subject is exposed to."
                    Code = MTH#C0238646 "Animal Exposure"
+                   // TODO: and if not, use SNOMED...
                    SubstanceOrAgent from CommonAnimalVS (extensible)
 
 Entry:             PrenatalExposure
 Parent:            UnprescribedExposure
 Description:       "Fetal contact with a dangerous substance via the mother."
+                   // brings the temporal context into the picture
 Property:          GestationalTimePeriod 0..1
                    Code = MTH#C0871747 "fetal exposure"
                    SubstanceOrAgent from TeratogenVS (extensible)
@@ -230,6 +236,7 @@ Parent:            SubstanceUse
 Description:       "The subject's current or past use of nicotine."
                    Code = MTH#C0240502 "Nicotine exposure"
                    Components.ObservationComponent.ExposureRoute.DataValue from TBD "NicotineRouteVS" (required)
+                   // e.g. smoked, second hand smoke, vaped, chewed
                    Components.ObservationComponent.ExposureMode.DataValue from TBD "NicotineExposureModeVS" (required)
                    SubstanceOrAgent = SCT#68540007 "Nicotine (substance)"
 
@@ -248,6 +255,7 @@ Entry:             AlcoholUse
 Parent:            SubstanceUse
 Description:       "The subject's current or past use of alcohol."
                    Code = MTH#C0552479 "Alcohol use history"
+                   // could be coded, also
                    DataValue only Ratio
                    Method from AlcoholUseScreeningToolVS (extensible)
                    SubstanceOrAgent = SCT#419442005 "Ethyl Alcohol (substance)"
@@ -257,4 +265,8 @@ Parent:            SubstanceUse
 Description:       "Alcohol binge episodes per month (define as 6 or more Units if female, or 8 or more if male)."
                    Code = LNC#11286-2 "Alcohol binge episodes per month - Reported"
                    DataValue only Ratio
-                   SubstanceOrAgent = SCT#419442005 "Ethyl Alcohol (substance)"
+                   SubstanceOrAgent = SCT#419442005 "Ethyl Alcohol (substance)"/* TO DO 
+EntryElement:	Depression
+EntryElement:	Anxiety
+EntryElement:	JusticeInvolvement
+*/

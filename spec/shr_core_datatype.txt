@@ -3,9 +3,11 @@ Namespace:         shr.core
 Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 CodeSystem:        UCUM = http://unitsofmeasure.org
+                   // CodeSystem:     CC = http://www.nationsonline.org/oneworld/country_code_list
 CodeSystem:        LNC = http://loinc.org
 CodeSystem:        SCT = http://snomed.info/sct
 
+                   //------------ Data Types aligned to FHIR ---------------
 Element:           Code
 Description:       "The main type identifier for a lab, procedure, condition, etc., usually drawn from a controlled vocabulary."
 Value:             concept
@@ -47,6 +49,36 @@ Element:           Relationship
 Description:       "A description of the association between people or items."
 Value:             concept
 
+/* not used -- keep for future use
+Element:		QualitativeLikelihood
+Description:	"A qualitative (subjective) likelihood."
+Value:			concept from QualitativeLikelihood
+
+Element:		Length
+Concept:		MTH#C1444754
+Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
+Value:			Quantity with Coding from UnitsOfLengthVS
+
+Element:		Depth
+Concept:		SCT#131197000 "Depth"
+Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
+Value:			Quantity with units UCUM#cm
+
+Element:		Area
+Concept:		SCT#42798000 "Area"
+Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
+Value:			Quantity with units UCUM#cm2
+
+Element:		Volume
+Concept:		MTH#C0449468
+Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Circumference
+Concept:		MTH#C0332520
+Description:	"The length of such a boundary line of a figure, area, or object."
+*/
+                   // -----------  Age --------------------------
 Element:           OnBehalfOf
 Description:       "The party represented by the actual participant."
 Value:             Practitioner or RelatedPerson or Patient or Device or Organization
@@ -91,10 +123,12 @@ Concept:           MTH#C0449238
 Description:       "The length of time that something continues."
                    Units from http://hl7.org/fhir/ValueSet/duration-units (extensible)
 
+                   // structural changes in R4
 Group:             MoneyQuantity
 Parent:            Quantity
 Description:       "Representation of an amount of currency or monetary value."
 
+                   // new in R4
 Group:             Money
 Parent:            Quantity
 Description:       "Representation of an amount of currency or monetary value."
@@ -109,29 +143,9 @@ Element:           Currency
 Description:       "ISO 4217 Currency Code"
 Value:             concept from http://hl7.org/fhir/ValueSet/currencies (required)
 
-/*Group:             Coding
-Concept:           MTH#C0805701
-Description:       "Coding of a concept, drawn from a controlled vocabulary. Includes the vocabulary and version, if applicable. May include a display text, and a descriptor expressing the intended interpretation of the code."
-Property:          Code 0..1
-Property:          CodeSystem 0..1
-Property:          VersionString 0..1
-Property:          DisplayText 0..1
-
-Element:           Code
-Description:       "A coded value, or expression, in syntax defined by the system"
-Value:             concept
-
 Element:           CodeSystem
 Description:       "A formal terminology system."
 Value:             uri
-
-Element:           CodeSystemVersion
-Description:       "The version of the vocabulary being used, if applicable."
-Value:             string
-
-Group:             CodeableConcept
-Description:       "A set of codes drawn from different coding systems, representing the same concept."
-Property:          DisplayText 0..1 */
 
 Group:             Range
 Description:       "An interval defined by a quantitative upper and/or lower bound. One of the two bounds must be specified, and the lower bound must be less than the upper bound. When Quantities are specified, the units of measure must be the same."
@@ -140,10 +154,12 @@ Property:          UpperBound 0..1
 
 Element:           LowerBound
 Description:       "The lower limit on a range"
+                   // or decimal or unsignedInt or integer 
 Value:             SimpleQuantity
 
 Element:           UpperBound
 Description:       "The upper limit on a quantitative value."
+                   // or decimal or unsignedInt or integer 
 Value:             SimpleQuantity
 
 Group:             Ratio
@@ -181,6 +197,11 @@ Element:           PriorityRank
 Description:       "The priority of the procedure, as a number (1 being the highest priority)"
 Value:             positiveInt
 
+/* should be unnecessary as of 5.17.3
+		Element:	PriorityRankUnsignedInt
+		Description:	"The priority of the procedure, as a number (1 being the highest priority)"
+		Value:		unsignedInt 
+*/
 Group:             ContactDetail
 Description:       "Describes an individual and how to reach them."
 Property:          HumanName 0..1
@@ -190,14 +211,18 @@ Group:             TimePeriod
 Description:       "A period of time defined by a start and end time, date, or year.
 If the start date/time is missing, the start of the period is not known. If the end date/time is missing, it means that the period is ongoing."
 Property:          BeginDateTime 0..1
+                   // lack of end time indicates the period was continuing at the time the entry was created
 Property:          EndDateTime 0..1
 
+                   // synonym "EffectiveDate"
 Element:           BeginDateTime
 Description:       "The time at which something is to take effect, start, or did start. Boundary is considered inclusive."
+                   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 Value:             dateTime
 
 Element:           EndDateTime
 Description:       "The time at which something is to end or did end. Boundary is considered inclusive."
+                   // TODO: would like to have date or dateTime but that wouldn't be FHIR-compatible
 Value:             dateTime
 
 Group:             Timing
@@ -235,10 +260,12 @@ Value:             Duration or Range or TimePeriod
 
 Element:           RepeatCount
 Description:       "A total count of the desired number of repetitions across the duration of the entire timing specification. If countMax is present, this element indicates the lower bound of the allowed range of count values."
+                   // integer in STU3
 Value:             positiveInt
 
 Element:           RepeatCountMax
 Description:       "If present, indicates that the count is a range - so to perform the action between [count] and [countMax] times."
+                   // integer in STU3
 Value:             positiveInt
 
 Element:           RepeatDuration
@@ -255,10 +282,12 @@ Value:             concept from http://hl7.org/fhir/ValueSet/units-of-time (requ
 
 Element:           RepeatFrequency
 Description:       "The number of times to repeat the action within the specified period. If frequencyMax is present, this element indicates the lower bound of the allowed range of the frequency."
+                   // integer in STU3
 Value:             positiveInt
 
 Element:           RepeatFrequencyMax
 Description:       "If present, indicates that the frequency is a range - so to repeat between [frequency] and [frequencyMax] times within the period or period range."
+                   // integer in STU3
 Value:             positiveInt
 
 Element:           RepeatPeriod
@@ -366,6 +395,7 @@ Element:           Country
 Description:       "Country - a nation as commonly understood or generally accepted, expressed in ISO 3166 Alpha-2 (2-letter) codes."
 Value:             string
 
+                   //------------ Complex Data Types not in FHIR ----------------
 Element:           Count
 Description:       "The number of items (0 or more), as an integer."
 Value:             unsignedInt
@@ -380,6 +410,16 @@ Description:       "A range of durations."
                    LowerBound[SimpleQuantity] substitute Duration
                    UpperBound[SimpleQuantity] substitute Duration
 
+/*	not currently used
+Element:		Statistic
+Based on: 		Quantity
+Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
+1..1			StatisticType
+
+		Element:		StatisticType
+		Description:	"The type of statistic that is represented by the value."
+		Value:			CodeableConcept from StatisticTypeVS
+*/
 Element:           PriorityCode
 Description:       "An indication of the importance of an action relative to other actions."
 Value:             positiveInt or concept
@@ -402,6 +442,7 @@ Concept:           MTH#C0027362
 Description:       "Subgroups of populations based on age."
 Value:             concept from AgeGroupVS (required)
 
+                   // TODO: this may be an observation - there are different methods (at least 10 LOINC codes) for estimating gestational age.
 Group:             GestationalAge
 Parent:            Age
 Concept:           MTH#C0017504
@@ -409,8 +450,11 @@ Description:       "The age of the embryo or fetus. This may be assessed by medi
 
 Element:           GestationalTimePeriod
 Description:       "A time relative to a pregnancy or childbirth event."
+                   // e.g., entire pregnancy, trimester, pre-conception, neonatal period, etc.
 Value:             concept from GestationalTimePeriodVS (required)
 
+                   //-------------- Duration and Frequency  -----------------
+                   // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
 Group:             Frequency
 Parent:            Ratio
 Concept:           MTH#C0376249
@@ -418,6 +462,7 @@ Description:       "How many occurrences of an event per unit of time."
                    Numerator[Quantity].Units = UCUM#1
                    Denominator[Quantity].Units from http://hl7.org/fhir/ValueSet/units-of-time (required)
 
+                   //------------- Interpretations of Time -------------------
 Group:             EffectiveTimePeriod
 Parent:            TimePeriod
 Concept:           MTH#C2985763
@@ -450,6 +495,7 @@ Element:           OccurrenceDuration
 Description:       "The length of time in which something happens."
 Value:             Duration
 
+                   //---------------  Positions and Addresses -----------------
 Group:             Geoposition
 Description:       "The location on the surface of the Earth, described by a latitude and longitude (and optional altitude)."
 Property:          Latitude 1..1
@@ -476,6 +522,7 @@ Group:             UnitedStatesAddress
 Parent:            Address
 Description:       "An address for a place in the USA, conforming to US mail postal conventions. (Source: HL7 FHIR)."
                    State substitute UnitedStatesState
+                   // is "US"   // fixed -- string constraints not yet supported
                    UnitedStatesState 1..1
                    Country 1..1
 
@@ -483,6 +530,7 @@ Element:           UnitedStatesState
 Parent:            State
 Description:       "A state or territory in the USA expressed by 2-letter US Postal code."
 
+                   //Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
 Element:           DisplayText
 Description:       "A string meant for reading by a person, for example, accompanying a code."
 Value:             string
@@ -512,6 +560,7 @@ Group:             Attachment
 Parent:            EmbeddedContent
 Description:       "A file that contains audio, video, image, or similar content."
 Property:          BinaryData 0..1
+                   //http://hl7.org/fhir/ValueSet/mimetypes in R4, http://www.rfc-editor.org/bcp/bcp13.txt in DSTU2 and STU3
 Property:          ContentType 0..1
 Property:          Language 0..1
 Property:          ResourceLocation 0..1
@@ -530,6 +579,7 @@ Value:             concept
 
 Element:           ResourceLocation
 Description:       "URL where data can be found."
+                   // changed from uri for R4 compatibility
 Value:             Url
 
 Element:           ResourceSize
@@ -543,6 +593,7 @@ Value:             base64Binary
 Element:           CreationDateTime
 Concept:           MTH#C3669169
 Description:       "The point in time when the item was created."
+                   // we can map to instant from dateTime
 Value:             dateTime
 
 Group:             PhotographicImage
@@ -550,6 +601,7 @@ Parent:            Attachment
 Concept:           LNC#72170-4 "Photographic image	[Attachment]"
 Description:       "An attachment of a photographic type. The mime type should be either bmp, gif, jpeg, png, svg, or tiff."
 
+                   //				ContentType from ImageMimeTypeVS if covered
 Group:             Annotation
 Description:       "An added or follow-up note, often after the fact, that contains metadata about who made the statement and when."
 Property:          Text 1..1
@@ -568,6 +620,7 @@ Property:          Signer 1..1
 Property:          OnBehalfOf 0..1
 Property:          SignatureFormat 1..1
 Property:          TargetFormat 0..1
+                   // DSTU 2 change (required attribute in DSTU 2)
 Property:          BinaryData 1..1
                    SignatureType from http://hl7.org/fhir/ValueSet/signature-type (extensible)
 
@@ -577,6 +630,7 @@ Value:             Practitioner or RelatedPerson or Patient or Device or Organiz
 
 Element:           SignatureFormat
 Description:       "The technical format of the signature."
+                   // can't bind because of conflict of required VS between FHIR versions
 Value:             concept
 
 Element:           TargetFormat
@@ -653,8 +707,10 @@ Element:           ClockFaceDirection
 Description:       "A direction indicated by an angle relative to 12 o'clock."
 Value:             concept from ClockFaceDirectionVS (required)
 
+                   // underlaying/over
 Element:           AnatomicalDirection
 Description:       "A direction based on planes, surfaces, and orientations of the body."
+                   //TO DO: isolate values that are directions
 Value:             concept from AnatomicalDirectionVS (preferred)
 
 Element:           LandmarkToBodyLocationDistance
@@ -665,6 +721,7 @@ Value:             Quantity
 
 Group:             Identifier
 Description:       "Business identifier or external id for this resource."
+                   // cardinality aligns with FHIR STU3
 Property:          IdentifierString 0..1
 Property:          Purpose 0..1
 Property:          Type 0..1
@@ -673,6 +730,7 @@ Property:          EffectiveTimePeriod 0..1
                    Purpose from http://hl7.org/fhir/ValueSet/identifier-use (required)
                    Type from http://hl7.org/fhir/ValueSet/identifier-type (extensible)
 
+                   //0..1			Issuer -- commented out to prevent generating a profile on identifier caused by having profile on Organization (which is unavoidable in DSTU 2, because US Core changes some cardinalities to 1..)
 Element:           IdentifierString
 Description:       "An id for the item expressed as a string."
 Value:             string
@@ -681,6 +739,17 @@ Element:           Issuer
 Description:       "An organization who issues a qualification, identifier, or license."
 Value:             Organization
 
+/*
+Element:		TermMapping
+Description:	"Represents an alternative (mapped) Concept associated with a source concept (i.e., CodedText.concept or the textual value of the CodedText when no equivalent concept has been defined), and the relative match of the mapped Concept with respect to the source Concept. Mappings may be used to add classification terms (e.g. adding ICD classifiers to SNOMED descriptive terms), for computational convenience, or to provide equivalents in other terminologies (e.g. across nursing vocabularies)."
+Value:			CodeableConcept
+1..1			Match
+0..1			Purpose
+
+		Element:		Match
+		Description:	"The relative match of the mapped concept to the original (target) concept. Examples include broader (i.e., the mapped term is more general than the original), equivalent, narrower (e.g. mapped concept is 'atypical diabetes mellitus' and the original term is 'diabetes mellitus'), or unknown."
+		Value:			concept
+*/
 Group:             HumanName
 Description:       "A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)."
 Property:          Purpose 0..1
@@ -728,6 +797,7 @@ Property:          DisplayText 0..1
 Property:          Citation 0..1
 Property:          Url 0..1
 Property:          Attachment 0..1
+                   // should be 0..* in FHIR to enable the citation to be used by multiple resources
 Property:          CanonicalUrl 0..1
                    Type from http://hl7.org/fhir/ValueSet/related-artifact-type (required)
 

@@ -58,6 +58,7 @@ Description:       "A person in a role defined in relationship to a patient"
 Property:          Active 0..1
 Property:          Patient 1..1
 Property:          Relationship 0..1
+                   // max card by DSTU 2
 Property:          HumanName 0..1
 Property:          ContactPoint 0..*
 Property:          AdministrativeGender 0..1
@@ -67,6 +68,7 @@ Property:          PhotographicImage 0..*
 Property:          EffectiveTimePeriod 0..1
 Property:          Communication 0..*
                    Status 0..0
+                   // required binding in DSTU 2
                    Relationship from http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype (required)
 
 Element:           Mode
@@ -94,6 +96,7 @@ Property:          Communication 0..*
 Property:          GeneralPractitioner 0..*
 Property:          ManagingOrganization 0..1
 Property:          SamePersonAs 0..*
+                   // US-Core extensions
 Property:          BirthSex 0..1
 Property:          Race 0..1
 Property:          Ethnicity 0..1
@@ -168,6 +171,7 @@ Value:             HumanName
 Element:           SocialSecurityNumber
 Concept:           MTH#C1301821
 Description:       "A US social security number (SSN)."
+                   // note that missing value reasons include "none" - meaning the subject does not have a SSN
 Value:             string
 
 Group:             DriversLicenseInformation
@@ -213,6 +217,7 @@ Value:             concept from YesNoUnknownVS (required)
 Element:           MaritalStatus
 Concept:           MTH#C0024819
 Description:       "The most recent marital status of a person."
+                   // if covered  // DSTU 2 change -- MaritalStatus has a required binding in Argonaut
 Value:             concept from http://hl7.org/fhir/ValueSet/marital-status (required)
 
 Element:           AnonymizedFlag
@@ -235,11 +240,17 @@ Concept:           MTH#C1550327
 Description:       "A gender classification used for administrative purposes. Administrative gender is not necessarily the same as a biological description or a gender identity. This attribute does not include terms related to clinical gender."
 Value:             concept from http://hl7.org/fhir/ValueSet/administrative-gender (required)
 
+                   // not the Communication resource
 Group:             Communication
 Description:       "Language used for communication by a human, either the subject of record, parent, or other involved person."
+                   // do not specify value set because argo R2 is different than US-Core in STU3
 Property:          Language 1..1
 Property:          Preferred 0..1
 
+                   // removed attributes are not in FHIR
+                   //	0..1 			SpokenLanguageProficiency
+                   //	0..1 			WrittenLanguageProficiency
+                   //	0..*			LanguageQualifier
 Element:           Preferred
 Description:       "Indicates preference."
 Value:             boolean
@@ -262,6 +273,12 @@ Element:           Deceased
 Description:       "An indication that the person is no longer living, given by a date of death, or boolean value. The latter, when true, indicates the person is deceased."
 Value:             boolean or dateTime
 
+/*
+		Element:		AgeAtDeath
+		Concept:		MTH#C1546180
+		Description:	"The age, age range, or age group when the cessation of life happens."
+		Value:			Age or Range
+*/
 Element:           GeneralPractitioner
 Description:       "Patient's nominated primary care provider."
 Value:             Organization or Practitioner
@@ -278,6 +295,7 @@ Concept:           MTH#C2220264
 Description:       "A person who practices a healing art.
 HumanName is limited to one required value by US-Core. Gender is required by US-Core. US-Core required an identifier, either a NPI (preferred) or tax id."
 Property:          Active 0..1
+                   // upper card from us-core
 Property:          HumanName 1..1
 Property:          ContactPoint 0..*
 Property:          Address 0..*
@@ -287,6 +305,8 @@ Property:          PhotographicImage 0..*
 Property:          Qualification 0..*
 Property:          Communication 0..*
                    Status 0..0
+                   // at least one
+                   // US Core preferences
                    Identifier 1..*
                    Identifier
                    includes NationalProviderIdentifier 0..1
@@ -313,6 +333,7 @@ Property:          EffectiveTimePeriod 0..1
 Property:          Issuer 0..1
                    Type from http://hl7.org/fhir/ValueSet/v2-2.7-0360 (example)
 
+                   // or http://www.wpc-edi.com/reference/codelists/healthcare/health-care-provider-taxonomy-code-set/
 Entry:             Group
 Parent:            Entity
 Concept:           MTH#C0441833
@@ -353,6 +374,7 @@ Value:             boolean
 Group:             GroupParticipation
 Parent:            Participation
 Description:       "A person or entity in a group."
+                   // Member
 Property:          GroupParticipant 1..1
 Property:          Inactive 1..1
                    ParticipationType 0..0
@@ -360,6 +382,7 @@ Property:          Inactive 1..1
 
 Element:           GroupParticipant
 Description:       "A person or entity in a group."
+                   // or ref(Medication) or ref(Substance) // missing PractitionerRole
 Value:             Patient or Practitioner or Device
 
 Element:           Inactive
@@ -368,6 +391,7 @@ Value:             boolean
 
 Element:           ManagingEntity
 Description:       "Entity responsible for defining and maintaining Group characteristics and/or registered members."
+                   // or ref(PractitionerRole)
 Value:             Organization or RelatedPerson or Practitioner
 
 Entry:             Location
@@ -391,6 +415,7 @@ Property:          AvailabilityExceptions 0..1
                    Mode from http://hl7.org/fhir/ValueSet/location-mode (required)
                    Type from http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType (extensible)
 
+                   // endpoint - not implemented
 Element:           OperationalStatus
 Description:       "The operational status covers operation values most relevant to beds (but can also apply to rooms/units/chairs/etc. such as an isolation unit/dialysis chair). This typically covers concepts such as contamination, housekeeping, and other activities like maintenance."
 Value:             concept from http://terminology.hl7.org/ValueSet/v2-0116 (preferred)
@@ -456,6 +481,7 @@ Value:             concept or Substance or Medication
 
 Element:           IsActiveIngredient
 Description:       "True if the ingredient is an active ingredient in the medication."
+                   // forced to use boolean by FHIR mapping 
 Value:             boolean
 
 Element:           IngredientStrength
@@ -491,6 +517,7 @@ Value:             Ratio
 Element:           Manufacturer
 Concept:           MTH#C1114744
 Description:       "The organization producing the product or test."
+                   // Following FHIR; could alternatively be a code from urn:oid:2.16.840.1.114222.4.11.826 (vaccine manufacturer value set in phin-vads)
 Value:             Organization
 
 Element:           LotNumber
@@ -514,10 +541,12 @@ Property:          Alias 0..*
 Property:          ContactPoint 1..*
 Property:          Address 1..*
 Property:          ContactPerson 0..*
+                   // cardinality constraint
                    Identifier 1..*
                    PartOf[DomainResource] substitute Organization
                    Type from http://hl7.org/fhir/ValueSet/organization-type (example)
 
+                   // endpoint -- not implemented
 Element:           CollectionSource
 Description:       "The person or thing the sample was obtained from."
 Value:             Patient or Group or Device or Substance
@@ -551,6 +580,7 @@ Value:             SimpleQuantity
 Group:             SpecimenContainer
 Description:       "Direct container of specimen (slide, etc.)"
 Property:          Identifier 0..*
+                   //"Kind of container holding the specimen - e.g. a vial or well."
 Property:          Type 0..1
 Property:          CommentOrDescription 0..1
 Property:          Capacity 0..1
@@ -558,6 +588,8 @@ Property:          SpecimenQuantity 0..1
 Property:          Additive 0..*
 Property:          SequenceNumber 0..1
 
+                   // BALLOT: SpecimenContainer.AdditiveCode should be 0..* to match Additive (0..* Substance). I think the idea is that there can be multiple additives. 
+                   // BALLOT: In SpecimenContainer, SpecimenQuantity (datatype Quantity) describes the amount of specimen. SpecimenCollectionAction breaks out amount of specimen in a number of individual attributes: amount, volume, dimension, and size. Which is the best way to do this? Shouldn't we be consistent about how we refer to the size or amount of a specimen?
 Element:           Capacity
 Description:       "Container volume or size."
 Value:             SimpleQuantity
@@ -574,14 +606,17 @@ Element:           SequenceNumber
 Description:       "The sequence number for this specimen in a collection of specimens."
 Value:             concept
 
+                   // BALLOT: Why is SpecimenContainer.SequenceNumber a concept? It should be an integer or a string. I don't think the sequence number will ever be coded, and concept is specifically designed for code mapping.
 Entry:             Device
 Parent:            Entity
 Description:       "A specific durable physical device used in diagnosis or treatment. The value is the coding for a type of device, for example, a CPAP machine. The same device might be used on multiple patients.
 Device status cannot be reconciled between Argonaut and US-Core, each having different required value sets.
 Device type has extensible mappings to different value sets in Argonaut and US-Core, however both value sets have identical SNOMED content (descendants of 49062001 (Device). We adopt the US-Core value set, which is allowable because the binding is extensible."
+                   // definition not implemented
 Property:          UdiCarrier 0..*
 Property:          StatusReason 0..*
 Property:          DistinctIdentifier 0..1
+                   // string, not ref(Organization) - only because of mapping to FHIR
 Property:          ManufacturerName 0..1
 Property:          ManufactureDate 0..1
 Property:          ExpirationDate 0..1
@@ -589,8 +624,12 @@ Property:          LotNumber 0..1
 Property:          SerialNumber 0..1
 Property:          DeviceDesignation 0..*
 Property:          Type 1..1
+                   // specialization not implemented
+                   // called 'model' in CIMI
 Property:          ModelNumber 0..1
+                   // not all of the R4 version structure was implemented
 Property:          VersionString 0..1
+                   // argo-device set lower card
 Property:          Patient 1..1
 Property:          Owner 0..1
 Property:          ContactPoint 0..*
@@ -599,6 +638,7 @@ Property:          Url 0..1
 Property:          Annotation 0..*
 Property:          Safety 0..*
                    PartOf[DomainResource] substitute Device
+                   //			Status from http://hl7.org/fhir/ValueSet/devicestatus in V2 argo, http://hl7.org/fhir/ValueSet/device-status in us-core
                    StatusReason from http://hl7.org/fhir/ValueSet/device-status-reason (extensible)
                    Type from http://hl7.org/fhir/ValueSet/device-kind (required)
 
@@ -673,6 +713,7 @@ Property:          Modality 0..1
 Property:          View 0..1
 Property:          SubjectOfRecord 0..1
 Property:          CareContext 0..1
+                   // like observation
 Property:          RelevantTime 0..1
 Property:          StatementDateTime 0..1
 Property:          Performer 0..1
@@ -683,6 +724,7 @@ Property:          Device 0..1
 Property:          PixelHeight 0..1
 Property:          PixelWidth 0..1
 Property:          Frames 0..1
+                   // horrible! this is not how duration should be captured. See Duration
 Property:          NumberOfSecondsDuration 0..1
 Property:          Attachment 1..1
 Property:          Annotation 0..*

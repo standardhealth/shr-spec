@@ -4,6 +4,12 @@ Description:       "The SHR Core domain contains definitions for a variety of ge
 CodeSystem:        SCT = http://snomed.info/sct
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 
+/* Taking out for now since Plan has not been defined
+EntryElement:	MedicationRegimen   // Definitional 
+Concept:		MTH#C0237125
+Description:	"Defines a specific application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
+1..*			MedicationUsePlanned
+*/ 
 Element:           TerminationReason
 Description:       "A code explaining unplanned or premature termination of a plan of treatment, course of medication, or research study."
 Value:             concept
@@ -23,6 +29,7 @@ Property:          AsNeeded 0..1
 Property:          AdministrationSite 0..1
 Property:          RouteIntoBody 0..1
 Property:          Method 0..1
+                   // STU3 allows 0..1 dose[x] and rate[x]
 Property:          DoseAndRate 0..1
 Property:          MaxDosePerPeriod 0..1
 Property:          MaxDosePerAdministration 0..1
@@ -71,10 +78,12 @@ Description:       "The speed with which the medication was or will be introduce
 Value:             Ratio or Range or SimpleQuantity
 
 Abstract:          MedicationAction
+                   // event that happened
 Parent:            ActionPerformed
 Description:       "Abstract class representing medication exposure, independent of whether reported in a medication statement or medication administration. Does not include medication requests (prescriptions)."
 Property:          MedicationCodeOrReference 1..1
 Property:          Dosage 0..1
+                   // because of Dosage.Method
                    Method 0..0
 
 Element:           MedicationCodeOrReference
@@ -83,6 +92,7 @@ Value:             concept from http://h7.org/fhir/us/core/ValueSet/us-core-medi
 
 Entry:             MedicationStatement
 Parent:            MedicationAction
+                   // TODO: investigate whether we need a new code or use a drug concept.
 Concept:           SCT#416608005 "Drug therapy (procedure)"
 Description:       "A record of the use of a medication. The use may be reported by the patient or clinician and adminstration does not have to be directly observed.
 
@@ -100,12 +110,18 @@ Property:          Category 0..1
 Property:          MedicationInformationSource 0..1
 Property:          SupportingInformation 0..*
 Property:          Annotation 0..*
+                   // SHR extensions
 Property:          TreatmentIntent 0..1
 Property:          TerminationReason 0..*
                    Status from http://hl7.org/fhir/ValueSet/medication-statement-status (required)
+                   //1..1 MedicationCodeOrReference (inherited, no change)
+                   // no Group in DSTU2
                    SubjectOfRecord only Patient
+                   // us-core required
                    StatementDateTime 1..1
+                   // Upper cardinality imposed by DSTU 2
                    ReasonCode 0..1
+                   // value is type ref(Condition)
                    ReasonReference substitute MedicationReasonReference
                    MedicationReasonReference 0..1
                    BasedOn substitute MedicationBasedOn
@@ -132,12 +148,14 @@ Element:           MedicationBasedOn
 Parent:            BasedOn
                    Value only ServiceRequest or MedicationRequest or ReferralRequest or ProcedureRequest
 
+                   // CarePlan not yet implemented  // 
 Entry:             MedicationAdministration
 Parent:            MedicationAction
 Description:       "A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
 Although FHIR MedicationAdministration supports date of administration, information source, performer, it lacks common provenance elements, statement creation date, author, and recorder. These are supported as optional extensions.
 FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
 SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
+                   // not implemented: instantiates (instantiatesUri) and eventHistory (provenance)
 Property:          MedicationAdministrationPartOf 0..*
 Property:          StatusReason 0..*
 Property:          Category 0..1
@@ -145,11 +163,14 @@ Property:          SupportingInformation 0..*
 Property:          Device 0..*
 Property:          Annotation 0..*
                    Status from http://hl7.org/fhir/ValueSet/medication-admin-status (required)
+                   // no Group in DSTU2
                    SubjectOfRecord only Patient
                    ReasonReference substitute MedicationReasonReference
+                   // max card STU3
                    BasedOn substitute MedicationAdministrationBasedOn
                    MedicationAdministrationBasedOn 0..1
                    Participation 0..1
+                   // DSTU 2 has max card of 1, participant excludes Device
                    Participation.Participant substitute PersonParticipant
                    Dosage.InstructionCode 0..0
                    Dosage.PatientInstruction 0..0
@@ -179,6 +200,8 @@ Entry:             MedicationDispense
 Parent:            MedicationAction
 Description:       "Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
 
+                   // TODO: Attributes from FHIR needed
+                   // TODO: Mapping needed
 Element:           Reported
 Description:       "Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record. It may also indicate the source of the report."
 Value:             boolean or InformationSource
@@ -207,8 +230,11 @@ Property:          Replaces 0..1
                    SubjectOfRecord only Patient
                    CareContext only Encounter
                    StatementDateTime 1..1
+                   // upper card restricted by us-core-medicationrequest
                    ReasonCode 0..1
+                   // Upper cardinality of 1 imposed by DSTU 2
                    ReasonCode from http://hl7.org/fhir/ValueSet/condition-code (example)
+                   // Upper cardinality of 1 imposed by DSTU 2
                    ReasonReference substitute MedicationReasonReference
                    MedicationReasonReference 0..1
                    BasedOn substitute MedicationBasedOn
@@ -219,6 +245,11 @@ Property:          Replaces 0..1
                    Annotation 0..1
                    Author only Practitioner
 
+                   // eventHistory, detectedIssue, instantiatesUri, and instantiatesCanonical not implemented yet
+                   // incompatible between DSTU2 Argonaut and STU3, http://hl7.org/fhir/ValueSet/medication-order-status to http://hl7.org/fhir/ValueSet/medication-request-status
+                   //			RequestIntent from http://hl7.org/fhir/ValueSet/medicationrequest-intent  // required VS conflict STU3 and R4
+                   // from http://hl7.org/fhir/ValueSet/request-priority   // required VS conflict STU3 and R4
+                   // prior Rx
 Element:           CourseOfTherapyType
 Description:       "The description of the overall pattern of the administration of the medication to the patient."
 Value:             concept
@@ -274,11 +305,13 @@ Value:             Duration
 
 Entry:             MedicationNonadherence
 Parent:            CodedNonLaboratoryObservation
+                   // possibly a Condition, with start/stop, severity of nonadherence?
 Description:       "Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The FocalSubject can reference a specific medication.
 
 Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time, independent of any specific medication."
 Property:          MedicationNonAdherenceReason 0..*
                    Code = MTH#C0746935 "Medication Nonadherence"
+                   // which medication(s) weren't adhered to	
                    FocalSubject only Medication
                    DataValue from GradedFrequencyVS (required)
 

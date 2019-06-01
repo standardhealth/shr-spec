@@ -6,8 +6,10 @@ CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
 CodeSystem:        LNC = http://loinc.org
 CodeSystem:        UCUM = http://unitsofmeasure.org
 
+                   // Condition cause could be hoisted to Condition itself, but the only use so far is here in skin & wound
 Element:           ConditionCause
 Description:       "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives."
+                   // or ref(Entity) or ref(SituationStatement) // probably other attributes needed, such as likelihood or type of cause
 Value:             concept
 
 Entry:             WoundCondition
@@ -20,8 +22,11 @@ Property:          PresentOnAdmission 0..1
 Property:          Recurrence 0..1
                    Code from WoundTypeVS (extensible)
                    Category = OBSCAT#exam
+                   // not sure if zeroing it out is wise, but severity is not part of LOINC panel
                    Severity 0..0
                    BodyLocation 1..1
+                   // nowhere to put code LOINC 85585-8  Date of Onset {mm/dd/yyyy} 
+                   // nowhere to put code 88878-4 Date of abatement {mm/dd/yyyy}
                    Onset only dateTime
                    Abatement only dateTime
                    ConditionCause from WoundTypeEtiologyVS (required)
@@ -39,14 +44,17 @@ Element:           Recurrence
 Description:       "A code that describes the number of recurrences of an event."
 Value:             concept from RecurrenceVS (required)
 
+                   //--------------- Wound Assessment -------------------------
 Entry:             WoundAssessmentPanel
 Parent:            NonLaboratoryObservation
 Description:       "Group of observations regarding the properties and severity of a wound."
 Property:          WoundIdentifier 1..1
 Property:          Attachment 0..*
+                   // 72170-4  	Photographic image	[Attachment]
                    Attachment substitute PhotographicImage
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#39135-9 "Wound assessment panel"
+                   // carried by wound assertion
                    DataValue 0..0
                    DataAbsentReason 0..0
                    Interpretation from WoundAssessmentInterpretationVS (extensible)
@@ -54,6 +62,8 @@ Property:          Attachment 0..*
                    Device 0..0
                    ReferenceRange 0..0
                    PanelMembers.Observation
+                   // moved from wound assert
+                   // moved from wound assert
                    includes WoundBedAssessment 0..1
                    includes WoundEdgeAssessment 0..1
                    includes WoundTunnelingAssessment 0..*
@@ -126,6 +136,7 @@ Description:       "The appearance and color of the base (bed) of the wound, tog
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#89254-7 "Wound Bed Panel"
+                   // body site is given in the wound assertion	
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent
@@ -166,12 +177,14 @@ Description:       "The state of the tissue at the edge of the wound."
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#89256-2 "Wound edge panel"
+                   // location is given by the wound assertion	
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent
                    includes WoundEdgeDescription 0..1
                    includes WoundEdgeColor 0..1
 
+                   // Is the entire edge of the wound described by one color? Or should it be by percentage, similar to the wound bed?
 Group:             WoundEdgeDescription
 Parent:            CodedObservationComponent
 Description:       "Edge of wound description."
@@ -192,12 +205,15 @@ Description:       "Observation of one or more tunnels on a single wound. The le
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#239158009 "Tunneling wound"
+                   // location is given by the wound assertion
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent
                    includes WoundTunnelLength 0..*
                    includes WoundTunnelClockFaceDirection 0..*
 
+                   // LOINC: why precoordinate length + tunneling?
+                   // LOINC: why precoordinate clock position + tunneling?
 Group:             WoundTunnelLength
 Parent:            QuantitativeObservationComponent
 Description:       "Length of wound tunneling."
@@ -205,6 +221,7 @@ Description:       "Length of wound tunneling."
                    DataValue[Quantity].Units = UCUM#cm
                    ReferenceRange 0..0
 
+                   // LOINC: should require use the full clock position value set
 Group:             WoundTunnelClockFaceDirection
 Parent:            CodedObservationComponent
 Description:       "Clock position of wound tunnel"
@@ -219,6 +236,7 @@ Description:       "Assessment of deep tissue (subcutaneous fat and muscle) dama
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#449752001 "Wound tissue undermining"
+                   // location is given by the wound assertion	
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent
@@ -232,6 +250,7 @@ Description:       "Length of wound undermining."
                    DataValue[Quantity].Units = UCUM#cm
                    ReferenceRange 0..0
 
+                   // LOINC: should require use the full clock position value set
 Group:             WoundUnderminingClockFaceDirection
 Parent:            CodedObservationComponent
 Description:       "Clock position of wound undermining"
@@ -244,6 +263,7 @@ Description:       "Description of the fluid produced by a wound."
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#239164002 "Wound discharge"
+                   // location is given by the wound assertion	
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent
@@ -253,6 +273,7 @@ Property:          WoundIdentifier 1..1
                    includes WoundExudateOdor 0..1
                    includes WoundExudateVolume 0..1
 
+                   //  LOINC: Wound area should be in wound size panel, not wound exudate panel
 Group:             WoundExudateAmountDescription
 Parent:            CodedObservationComponent
 Description:       "Drainage amount of wound"
@@ -280,15 +301,18 @@ Description:       "Odor of exudate from wound"
 Group:             WoundExudateVolume
 Parent:            QuantitativeObservationComponent
 Description:       "Odor of exudate from wound"
+                   // no LOINC given
                    Code = TBD#TBD
                    DataValue[Quantity].Units = UCUM#mL
 
+                   // what period of time?
 Entry:             WoundSize
 Parent:            ComponentOnlyNonLaboratoryObservation
 Description:       "The estimated or measured dimensions of a wound."
 Property:          WoundIdentifier 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#72287-6 "Wound size panel"
+                   // location is given by the wound assertion	
                    BodyLocation 0..0
                    Device 0..0
                    Components.ObservationComponent

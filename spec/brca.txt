@@ -33,13 +33,26 @@ Concept:           SCT#126926005 "Neoplasm of breast (disorder)"
 Description:       "Diagnosis of cancer originating in the tissues of the breast, and potentially spread to other organs of the body."
                    Code from BreastCancerDisorderVS (required)
                    BodyLocation substitute BreastSite
+                   // can't change to 'could be' (example) because us-core uses 'should be' (preferred) binding
                    Evidence.Manifestation from BreastCancerDetectionVS (preferred)
                    HistologyMorphologyBehavior from BreastCarcinomaHistologicTypeVS (required)
 
+/*
+EntryElement:	BreastCancerHistologicType
+Based on:		CancerHistologicType
+Description:	"Classification of breast cancer according to histopathologic subtypes, as determined by microscopic observation of breast tissue samples."
+				Code is LNC#44638-5 "Histologic type in Breast tumor"
+				DataValue from BreastCarcinomaHistologicTypeVS
+*/
 Entry:             BreastTNMPrognosticClinicalStageGroup
 Parent:            TNMClinicalStageGroup
 Description:       "The stage group breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The group includes supporting information including T, N, and M categories, as well as prognostic factors (HER2, estrogen, progesterone receptor status, etc.), as related observations. The panel can include one but not both DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
+                   // was MTH#C2216702 "Malignant Neoplasm of Breast Staging" //Not LNC#21908-9 since that is AJCC-specific and also not breast cancer specific. We do however, give the LOINC list of stage values as the preferred codes.
                    Code = TBD#TBD
+                   // 				Currently it is not possible to substitute the type of a slice, so the following three statements are commented out.
+                   //				PanelMembers.Observation.TNMClinicalPrimaryTumorCategory is type BreastTNMClinicalPrimaryTumorCategory
+                   //				PanelMembers.Observation.TNMClinicalRegionalNodesCategory is type BreastTNMClinicalRegionalNodesCategory
+                   //				PanelMembers.Observation.TNMClinicalDistantMetastasesCategory is type BreastTNMClinicalDistantMetastasesCategory
                    PanelMembers.Observation
                    includes HER2ReceptorStatus 0..1
                    includes EstrogenReceptorStatus 0..1
@@ -49,7 +62,11 @@ Description:       "The stage group breast cancer staging information that is pe
 
 Entry:             BreastTNMPathologicStageGroup
 Parent:            TNMPathologicStageGroup
+                   // Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
 Description:       "A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel includes biomarkers and histologic grade scales used specifically for breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
+                   //				PanelMembers.Observation.TNMPathologicPrimaryTumorCategory is type BreastTNMPathologicPrimaryTumorCategory
+                   //				PanelMembers.Observation.TNMPathologicRegionalNodesCategory is type BreastTNMPathologicRegionalNodesCategory
+                   //				PanelMembers.Observation.TNMPathologicDistantMetastasesCategory is type BreastTNMPathologicDistantMetastasesCategory
                    PanelMembers.Observation
                    includes HER2ReceptorStatus 0..1
                    includes EstrogenReceptorStatus 0..1
@@ -75,6 +92,7 @@ Description:       "A body site specific to the breast lymph node structure."
 
 Group:             LymphNodeMobility
 Parent:            CodedObservationComponent
+                   //was MTH#C1112395 "Lymph node palpable", but that is a finding, not an observable
 Concept:           TBD#TBD
 Description:       "The degree of mobility of a lymph node or lymph node group upon palpation."
                    Code = TBD#TBD
@@ -157,6 +175,7 @@ Group:             ExtraCapsularExtensionOfNodalTumorStatus
 Parent:            CodedObservationComponent
 Description:       "Status for presence of extranodal extension of carcinoma where extranodal extension is the perforation of a cancer through the capsule of a lymph node into the tissue surrounding the node."
                    Code = LNC#85350-7 "Extranodal extension of carcinoma [Presence] in Cancer specimen by Light microscopy"
+                   // mlt: LL748-5 missing one term from original VS (indeterminate)
                    DataValue from http://loinc.org/vs/LL748-5 (preferred)
 
 Entry:             HER2ReceptorStatus
@@ -165,6 +184,7 @@ Description:       "HER2 receptor status. HER2 is a member of the human epiderma
                    Code from HER2byIHCScoreVS (required)
                    TumorMarkerTestDataValue only concept
                    TumorMarkerTestDataValue from PositiveNegativeVS (required)
+                   // pre-coordinated in the Code
                    Method 0..0
                    PanelMembers.Observation
                    includes HER2byIHC 0..*
@@ -179,6 +199,7 @@ Description:       "HER2 presence in Breast cancer specimen by Immunohistochemis
                    TumorMarkerTestDataValue only concept
                    TumorMarkerTestDataValue from HER2byIHCScoreVS (required)
                    Interpretation from PositiveNegativeVS (required)
+                   // pre-coordinated in the Code
                    Method 0..0
                    PanelMembers 0..0
                    Components.ObservationComponent
@@ -192,6 +213,7 @@ Description:       "Percentage of cells with uniform intense complete membrane s
                    DataValue[Quantity].Units = UCUM#%
                    ReferenceRange 0..0
 
+                   //		0..0			Interpretation //This is zeroed out in the Sep 2018 BrCa IG spec.
 Entry:             HER2byFISH
 Parent:            TumorMarkerTest
 Description:       "HER2 receptor status as determined by single-probe or dual-probe Fluorescence In Situ Hybridization (FISH)."
@@ -199,6 +221,7 @@ Description:       "HER2 receptor status as determined by single-probe or dual-p
                    TumorMarkerTestDataValue 0..0
                    DataAbsentReason 0..0
                    Interpretation from PositiveNegativeVS (required)
+                   // single or double probe
                    Method from HER2FISHMethodVS (required)
                    PanelMembers 0..0
                    Components.ObservationComponent
@@ -240,6 +263,7 @@ The current approach is that positive/negative designation is a value, even thou
 
 Group:             EstrogenReceptorNuclearPositivity
 Parent:            ObservationComponent
+                   // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85329-1 "Cells.estrogen receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
 Concept:           LNC#14228-1 "Cells.estrogen receptor/​100 cells in Tissue by Immune stain"
 Description:       "The percentage of cells that test (stain) positive for the presence of estrogen receptors. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
                    Code = LNC#14228-1 "Cells.estrogen receptor/​100 cells in Tissue by Immune stain"
@@ -248,6 +272,7 @@ Description:       "The percentage of cells that test (stain) positive for the p
 
 Group:             EstrogenReceptorAverageStainingIntensity
 Parent:            CodedObservationComponent
+                   //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
 Concept:           LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"
 Description:       "The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
                    Code = LNC#85310-1 "Estrogen receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"
@@ -268,6 +293,7 @@ Description:       "Progesterone receptor status is a factor in determining prog
 Group:             ProgesteroneReceptorNuclearPositivity
 Parent:            ObservationComponent
 Description:       "The percentage of cells that test (stain) positive for the presence of progesterone receptors. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number. We are seeking feedback on whether nuclear positivity should be an exact percentage or a range of percentages. As currently defined, an exact nuclear positivity could be represented by a zero-width range, where the lower and upper bounds would be the same number."
+                   // LOINC codes for nuclear positivity are specific to the receptor. TODO: Confirm this code is more appropriate than LNC#85325-9 "Cells.progesterone receptor/​100 cells in Breast cancer specimen by Immune stain", which specifies the specimen as a breast specimen.
                    Code = LNC#14230-7 "Cells.progesterone receptor/​100 cells in Tissue by Immune stain"
                    DataValue only Range
                    ReferenceRange 0..0
@@ -275,6 +301,7 @@ Description:       "The percentage of cells that test (stain) positive for the p
 Group:             ProgesteroneReceptorAverageStainingIntensity
 Parent:            CodedObservationComponent
 Description:       "The degree or magnitude of staining across positively stained tumor cells on the entire tissue section relative to the intensity of positive controls run with the same batch."
+                   //TODO: request LOINC codes that are not specimen-specific. Also, request answer list is specified in SNOMEDCT.
                    Code = LNC#85331-7 "Progesterone receptor fluorescence intensity [Type] in Breast cancer specimen by Immune stain"
                    DataValue from StainingIntensityVS (required)
 
@@ -355,4 +382,194 @@ The is currently no LOINC code for Mammaprint test."
                    DataValue only IntegerQuantity
                    Interpretation from RecurrenceRiskScoreInterpretationVS (required)
                    Device 0..0
-                   Specimen substitute BreastSpecimen
+                   Specimen substitute BreastSpecimen/************* Temporarily cut out by MK 3/20/2019 -Just to de-clutter unused elements ************
+
+EntryElement: 	BreastTNMClinicalPrimaryTumorCategory
+Based on:		TNMClinicalPrimaryTumorCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
+				PanelMembers.Observation
+					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
+
+EntryElement:	BreastTNMClinicalRegionalNodesCategory
+Based on:		TNMClinicalRegionalNodesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
+				PanelMembers.Observation
+					includes 0..*	BreastClinicalLymphNodeInvolvement
+
+// TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
+EntryElement:	BreastTNMClinicalDistantMetastasesCategory
+Based on:		TNMClinicalDistantMetastasesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot either.
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
+
+EntryElement:	BreastTNMPathologicPrimaryTumorCategory
+Based on:		TNMPathologicPrimaryTumorCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
+				PanelMembers.Observation
+					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
+
+EntryElement:	BreastTNMPathologicRegionalNodesCategory
+Based on:		TNMPathologicRegionalNodesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
+				PanelMembers.Observation
+					includes 0..*	BreastPathologicalLymphNodeInvolvement
+
+// TODO: add in relationships to Met location and Method since both evaluate M category values.
+EntryElement:	BreastTNMPathologicDistantMetastasesCategory
+Based on:		TNMPathologicDistantMetastasesCategory
+// Concept inherited from parent class, was not breast-specific in BrCa ballot.
+Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
+
+*/
+/************* LEGACY BEGIN ************		 
+
+EntryElement:	BreastTumor
+Based on:		FindingSiteConditionPresenceStatement
+Concept:		SCT#395557000 "Tumor finding (finding)"
+Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
+1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
+1..1			Category is OBSCAT#exam
+0..1			FindingSiteConditionTopic.AnatomicalLocation is type BreastSite
+0..0			FindingSiteConditionTopic.AlleviatingFactor
+0..0			FindingSiteConditionTopic.ExacerbatingFactor
+				FindingSiteConditionTopic.FindingSiteIdentifier is type TumorIdentifier
+0..0			ConditionPresenceContext.Severity
+				FindingSiteConditionTopic.FindingMethod should be from BreastCancerDetectionVS
+0..0			ConditionPresenceContext.Stage  // already covered under BreastCancerPrimaryTumorCategory
+
+********** LEGACY END ************/
+/*	
+
+ additional components from CAP form
+includes	StainingControl  0..1
+includes 0..1	PrimaryAntibody //from EstrogenAntibodyVS if covered
+includes 0..1	AllredProportionScore
+includes 0..1	AllredIntensityScore
+includes 0..1	AllredTotalScore
+includes 0..1	OtherReceptorScoringSystem
+
+
+		Element:		Aneusomy
+		Based on:		ObservationComponent
+		Concept:		CAP#30478
+		Description:	"Aneusomy (as defined by vendor kit used)"
+		Value:			concept from YesNoVS
+	
+		Element:		HeterogeneousSignals
+		Based on:		ObservationComponent
+		Concept:		CAP#30482 
+		Description:	"Whether In Situ Hybridization signals were heterogeneous."
+		Value:			concept from YesNoVS
+		
+		Element:		PercentageAmplified
+		Based on:		ObservationComponent
+		Concept:		CAP#31073
+		Description:	"Percentage of cells with amplified HER2 signals"
+		Value:			Quantity with units UCUM#%
+
+		Element:		NuclearPositivity
+		Based on:		ObservationComponent
+				Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
+		Value:			Range
+	
+		Element:		PrimaryAntibody
+		Based on:		ObservationComponent
+		Concept:		CAP#31092
+		Description:	""
+		Value:			concept
+		
+		Element:		StainingControl
+		Based on:		ObservationComponent
+		Concept:		CAP#25895
+		Description:	"Whether control cells were present."
+		Value:			concept from StainingControlVS if covered
+		
+		Element:		AllredProportionScore
+		Concept:		CAP#31054
+		Based on:		ObservationComponent
+		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
+		Value:			IntegerQuantity
+
+		Element:		AllredIntensityScore
+		Concept:		CAP#29749
+		Based on:		ObservationComponent
+		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
+		Value:			IntegerQuantity
+							
+		Element:		AllredTotalScore
+		Concept:		CAP#31056
+		Based on:		ObservationComponent
+		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
+		Value:			IntegerQuantity  // unsignedInt -  limit to max of 8				
+
+		Element:		OtherReceptorScoringSystem
+		Concept:		CAP#31062
+		Based on:		ObservationComponent
+		Description:	"A scoring system other than Allred."
+
+	Element: 		Ki-67LabelingIndex
+	Based on:		SimpleCodedObservation		
+	Concept:		MTH#C4049944
+	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
+	Value:		 	Quantity with units UCUM#%
+					Code is LNC#29593-1
+					Components.ObservationComponent
+	includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
+
+	Element:		S-PhaseFraction
+	Based on:		SimpleCodedObservation
+	Concept:		MTH#C0812425
+	Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
+	Value:			Quantity with units UCUM#%
+					Code is LNC#29593-1
+
+EntryElement:	GeneticVariant
+Based on:		Observation
+Concept:		MTH#C0678941
+Description:	"Whether a subject carries a mutation in a particular gene."
+Value:			concept from PositiveNegativeVS
+//				GeneName from GeneIdentifierVS
+0..0			ReferenceRange
+//0..0			DeltaFlag
+0..0			BodyLocation
+				Components.ObservationComponent
+includes 0..1	Refseq
+
+			Element:		Refseq
+			Based on:		ObservationComponent
+						Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
+			Value: 			concept from RefseqVS
+
+EntryElement:	BreastCancerGeneticAnalysisObservation
+Based on:		Observation
+Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
+				Observation.Code is TBD#TBD
+0..0			Components
+				PanelMembers.Observation
+includes 1..1	BRCA1Variant
+includes 1..1	BRCA2Variant
+
+	Element:		BRCA1Variant
+		Based on:		GeneticVariant
+	Description:	"Whether the patient has a mutation in the BRCA1 gene."
+	Value:			concept from PositiveNegativeVS
+//					GeneName is HGNC#BRCA1Gene
+					
+
+	Element:		BRCA2Variant
+		Based on:		GeneticVariant
+	Description:	"Whether the patient has a mutation in the BRCA2 gene."
+	Value:			concept from PositiveNegativeVS
+//					GeneName is HGNC#BRCA2Gene
+
+
+FHIR Genomics:
+https://www.hl7.org/FHIR/2016Jan/obs-genetics-example3-bcr1%20and%20bcr2%20sequencing%20with%20FamilyHistory%20-1.json.html
+https://www.hl7.org/FHIR/2016Jan/observation-genetics-cg-prf-1a.html
+https://www.hl7.org/FHIR/2016Jan/observation-genetics.html
+https://www.hl7.org/FHIR/2016Jan/obs-genetics-example2-germline.html
+*/

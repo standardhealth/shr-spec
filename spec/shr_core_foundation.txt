@@ -6,7 +6,9 @@ CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 Abstract:          Resource
 Description:       "Parent class for any item in clinical or administrative health-related system. Contains metadata attributes that apply to any item represented in the standard health record. An DomainResource can belong to a single person's health record, or represent an entity that surfaces in multiple records, such as organizations, providers, payments, decision support artifacts, etc."
 Property:          Metadata 0..1
+                   // from http://hl7.org/fhir/ValueSet/languages  
 Property:          Language 0..1
+                   // language has required binding in Argonaut in DSTU 2 that is different than the extensible binding in us-core-patient. Not able to resolve this.
 Property:          ImplicitRules 0..1
 
 Abstract:          DomainResource
@@ -20,15 +22,25 @@ Property:          Identifier 0..*
 
 Element:           Status
 Description:       "A state that relates to the workflow or interpretation of this resource. Certain status values can modify the meaning of the resource, for example, entered-in-error. When a boolean value is used, Status of true indicates the record is active, false means inactive."
+                   // should be from http://hl7.org/fhir/ValueSet/resource-status
 Value:             concept
 
+                   // cannot specify the preferred value set here because there are conflicting required value sets in some status attributes, particularly Encounter. It will generate an error to map preferred to required. 
 Abstract:          ClinicalStatement
 Parent:            DomainResource
 Description:       "This abstract class provides properties and behaviors common to entries in a medical record. Patient and Encounter are ubiquitous in clinical statements. This class also allows for common representation of simple data provenance elements asserter, recorder, and creation date."
+                   // patient, usually
 Property:          SubjectOfRecord 0..1
 Property:          CareContext 0..1
+                   // often called 'authoredOn'
 Property:          StatementDateTime 0..1
 
+                   // The following fields should be part of ClinicalStatement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension's value cannot be constrained (a new extensin would be required). Fundamentally, the 'is type' constraint (aka 'substitute' in CIMPL 6) only works when there is an existing attribute in the resource to map to.
+                   //0..1			Author
+                   //0..1			InformationSource
+                   //0..1			FocalSubject
+                   //0..1			RecordedBy
+                   //0..1			Attestation
 Element:           SubjectOfRecord
 Description:       "The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. When there is no patient, the SubjectOfRecord can also be a location, group, or other entity that statement pertains to. For example, observations concerning a hospital ward would have a Location as the SubjectOfRecord.
 
@@ -37,23 +49,29 @@ Value:             Patient or Practitioner or Group or Device or Specimen or Loc
 
 Element:           FocalSubject
 Description:       "The person or entity that the information in this resource relates to, if different than the person of record. The subject of information can be a reference or a code, the latter when the subject is described generically, for example, in terms of a relationship to the subject of record (e.g., wife)."
+                   //The entity this condition or observation relates to, for example, a person related to the SubjectOfRecord. The FocalSubject is only required if the person or thing observed is different than the SubjectOfRecord. FocalSubject should not be an anatomical location.  Examples: The focus for cancer progression would be the cancer condition; for wound length, an instance of a wound (a condition). In the case where the FocalSubject is a related person, the value may be a RelatedPerson resource or a concept code with the relationship to the SubjectOfRecord (e.g., wife)
+                   // or CanonicalUrl?
 Value:             DomainResource or concept
 
 Group:             EventContext
 Description:       "Clinical context or event being documented, for example, a colonoscopy or an appendectomy."
+                   // R4 changed from ref(Encounter) to Encounter or EpisodeOfCare
 Property:          CareContext 0..1
 Property:          Code 0..*
 Property:          TimePeriod 0..1
 Property:          FacilityType 0..1
 Property:          Setting 0..1
 Property:          Patient 0..1
+                   // related
 Property:          SupportingInformation 0..*
+                   // event
                    Code from http://hl7.org/fhir/ValueSet/v3-ActCode (example)
 
 Entry:             Composition
 Parent:            DomainResource
 Description:       "A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 Property:          Type 1..1
+                   // upper card from STU3 Composition.class
 Property:          Category 0..1
 Property:          FocalSubject 1..1
 Property:          CareContext 0..1
@@ -68,8 +86,10 @@ Property:          EventContext 0..*
 Property:          Section 0..*
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/composition-status (required)
+                   // FHIR inconsistency -- usually 0..*
                    Identifier 0..1
                    Type from http://hl7.org/fhir/ValueSet/doc-typecodes (preferred)
+                   // lower card forced by STU3 Composition.FacilityTypesubject
                    FocalSubject only DomainResource
                    CareContext only Encounter
                    EventContext.FacilityType 0..0
@@ -97,6 +117,7 @@ Value:             Patient or Practitioner or RelatedPerson or Organization or D
 
 Element:           Author
 Description:       "The actor who created the item and it responsible for the content (regardless of the information source or who recorded it). If only the author is given, it is assumed the author is the information source and the recorder."
+                   // missing PractitionerRole and string
 Value:             Patient or Practitioner or RelatedPerson or Organization or Device
 
 Element:           PersonAuthor
@@ -135,16 +156,20 @@ Property:          StatementDateTime 1..1
 Property:          DocumentAuthor 0..*
 Property:          Authenticator 0..1
 Property:          ManagingOrganization 0..1
+                   // relatedTo
 Property:          RelatedDocument 0..*
 Property:          CommentOrDescription 0..1
 Property:          SecurityLabel 0..*
+                   // content
 Property:          DocumentReferenced 1..*
+                   // context
 Property:          EventContext 0..1
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/document-reference-status (required)
                    DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status (required)
                    Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes (required)
                    Category from http://hl7.org/fhir/ValueSet/c80-doc-classcodes (required)
+                   // us core restriction 
                    SubjectOfRecord only Patient
                    RelatedDocument.TargetDocument only DocumentReference
                    SecurityLabel from http://hl7.org/fhir/ValueSet/security-labels (extensible)
@@ -171,10 +196,11 @@ Description:       "Additional information on how the narrative was generated, a
 Value:             concept from http://hl7.org/fhir/ValueSet/narrative-status (required)
 
 Group:             Metadata
-Description:       "Elements that belong to all DomainResources."
+Description:       "Elements that belong to all information items."
 Property:          VersionId 0..1
 Property:          LastUpdated 0..1
 Property:          Profile 0..*
+                   // added in R4
 Property:          SourceSystem 0..1
 Property:          SecurityLabel 0..*
 Property:          Tag 0..*
@@ -189,6 +215,7 @@ Value:             dateTime
 
 Element:           Profile
 Description:       "The name of the FHIR profile this resource claims to conform to."
+                   // Canonical in R4
 Value:             uri
 
 Element:           SourceSystem
@@ -204,6 +231,7 @@ Value:             concept
 Element:           StatementDateTime
 Concept:           MTH#C3669169
 Description:       "The point in time when the statement was created."
+                   // we can map to instant from dateTime
 Value:             dateTime
 
 Group:             Attestation
@@ -218,10 +246,30 @@ Value:             concept from http://hl7.org/fhir/ValueSet/composition-attesta
 
 Element:           Attester
 Description:       "The actor who has certified or assented to the accuracy of the composition/document."
+                   // missing types ref(PractitionerRole) and (perhaps) string
 Value:             Patient or Practitioner or RelatedPerson or Organization or Device
 
+/*
+	Element:    	HealthRecordId
+	Concept:        MTH#C1549718
+	Description:    "A unique, persistent, permanent identifier for a health record."
+	Value:          id
+
+	Element:		SignedBy
+	Description:	"Provenance information specific to the signing of the clinical statement."
+	Value:			Participant
+
+	Element:		CosignedBy
+	Description:	"Provenance information specific to the cosigning of the clinical statement."
+	Value:			Participant
+
+	Element:		VerifiedBy
+	Description:	"Provenance information specific to the verification process associated with this statement (e.g., verifier, when verified, etc.)"
+	Value:			Participant
+*/
 Element:           ConfidentialityCode
 Description:       "The code specifying the level of confidentiality."
+                   // from http://terminology.hl7.org/ValueSet/v3-ConfidentialityClassification but conflict with DSTU required value set of http://hl7.org/fhir/ValueSet/v3-Confidentiality. The STU3/R4 set is a subset of the DSTU2 set. Can we make this work, somehow?
 Value:             concept
 
 Element:           SortOrder
@@ -265,6 +313,7 @@ Value:             boolean
 
 Element:           Jurisdiction
 Description:       "The country, state or other region taking legal responsibility."
+                   //<-- THIS VALUE SET CRASHES THE IG PUBLISHER
 Value:             concept from http://hl7.org/fhir/ValueSet/jurisdiction (extensible)
 
 Group:             UseContext
@@ -274,6 +323,7 @@ Property:          ContextValue 1..1
 
 Element:           ContextValue
 Description:       "A value that defines the context specified in this context of use. The interpretation of the value is defined by the code."
+                   // or PlanDefinition, InsurancePlan, HealthcareSerice
 Value:             concept or Quantity or Range or Group or Location or Organization or ResearchStudy
 
 Element:           SubjectType
@@ -360,6 +410,7 @@ Value:             string
 
 Element:           ValueSetUri
 Description:       "Selects the concepts found in this value set (based on its value set definition). This is an absolute URI that is a reference to ValueSet.url. If multiple value sets are specified this includes the union of the contents of all of the referenced value sets."
+                   // canonical(ValueSet) in R4 (not a conflict)
 Value:             uri
 
 Group:             ValueSetExpansion
@@ -399,10 +450,6 @@ Property:          NonSelectable 0..1
 Property:          Designation 0..*
 Property:          ExpansionCoding 0..*
 
-Element:           CodeSystem
-Description:       "A formal terminology system."
-Value:             uri
-
 Element:           NonSelectable
 Description:       "A flag that indicates whether the use cannot select this item."
 Value:             boolean
@@ -424,8 +471,11 @@ Group:             DocumentReferenced
 Description:       "The document referenced."
 Property:          Attachment 1..1
 Property:          Type 0..1
+                   // card constraint from us-core
+                   //  card constraint from us-core
                    Attachment.ContentType 1..1
                    Attachment.ResourceLocation 1..1
+                   // us-core extensible binding
                    Type from http://hl7.org/fhir/ValueSet/formatcodes (extensible)
 
 Element:           FacilityType
@@ -458,6 +508,7 @@ Property:          RefersTo 1..*
 Property:          OccurrenceTimeOrPeriod 0..1
 Property:          StatementDateTime 1..1
 Property:          Location 0..1
+                   // no ReasonReference -- maybe there should be
 Property:          ReasonCode 0..*
 Property:          ActivityCode 0..1
 Property:          ProvenanceParticipation 1..*
@@ -465,14 +516,18 @@ Property:          Used 0..*
 Property:          Signature 0..*
                    Used.UsedParticipation[Participation] substitute ProvenanceParticipation
                    ActivityCode from http://hl7.org/fhir/ValueSet/provenance-activity-type (extensible)
+                   // Constraints
                    Used.UsedCode 0..0
                    Used.UsedType from http://hl7.org/fhir/ValueSet/provenance-entity-role (required)
 
+                   // constraint on property defined in DomainResource
 Group:             ProvenanceParticipation
 Parent:            Participation
 Description:       "An actor taking a role in an activity for which it can be assigned some degree of responsibility for the activity taking place."
+                   // only example binding in FHIR
 Property:          ParticipationRole 0..1
                    ParticipationType from http://hl7.org/fhir/ValueSet/provenance-agent-type (extensible)
+                   // missing role -- but how is that different than type?
                    ParticipationPeriod 0..0
 
 Element:           ParticipationRole
@@ -487,6 +542,7 @@ Element:           UsedReference
 Description:       "Item used during procedure, represented as a reference to the item."
 Value:             DomainResource
 
+                   // UsedCode is not part of Provenance, but part of the general "used" model
 Element:           UsedCode
 Description:       "Item used during an activity, represented as a code."
 Value:             concept
@@ -500,6 +556,7 @@ Property:          Code 0..1
 Property:          ListSubjectOfRecord 0..1
 Property:          CareContext 0..1
 Property:          StatementDateTime 0..1
+                   // author is distinct from the information source -- confused in R4 definition
 Property:          ListAuthor 0..1
 Property:          SortOrder 0..1
 Property:          Annotation 0..*
@@ -514,11 +571,15 @@ Property:          EmptyReason 0..1
 
 Group:             ListItem
 Description:       "An item in this list."
+                   // flag
 Property:          Status 0..1
+                   // deleted
 Property:          Inactive 0..1
+                   // date (low time)
 Property:          TimePeriod 0..1
 Property:          DomainResource 1..1
 
+                   // same choices as RequestSubjectOfRecord
 Element:           ListSubjectOfRecord
 Parent:            SubjectOfRecord
 Description:       "On whom or what the list refers to. This is usually a human patient, but can also be requested on animals, groups, devices such as dialysis machines, or even locations (typically for environmental scans)."
