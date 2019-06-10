@@ -24,7 +24,7 @@ Description:    "Abstract class with common elements for information items that 
 0..1            Copyright
 */
 Entry:             Questionnaire
-Parent:            DomainResource
+Parent:            InformationItem
 Description:       "A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection."
 Property:          Url 0..1
 Property:          VersionString 0..1
@@ -144,13 +144,11 @@ Description:       "The answer to a question."
 Value:             boolean or decimal or integer or date or dateTime or time or string or uri or concept or Quantity or DomainResource
 
 Entry:             QuestionnaireResponse
-Parent:            DomainResource
-Description:       "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to."
+Parent:            ClinicalStatement
+Description:       "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to. As in Structured Data Capture (SDC), the questionnaire subject is restricted to be a Patient."
 Property:          BasedOn 0..*
 Property:          QuestionnaireResponsePartOf 0..*
 Property:          QuestionnaireCanonical 0..1
-Property:          FocalSubject 0..1
-Property:          CareContext 0..1
 Property:          StatementDateTime 0..1
 Property:          QuestionnaireResponseRecorder 0..1
 Property:          PersonInformationSource 0..1
@@ -159,8 +157,8 @@ Property:          QuestionnaireResponseItem 0..*
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status (required)
                    Identifier 0..1
-                   FocalSubject only DomainResource
                    CareContext only Encounter
+                   SubjectOfRecord only Patient
 
 Element:           QuestionnaireResponsePartOf
 Parent:            PartOf

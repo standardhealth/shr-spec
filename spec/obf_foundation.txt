@@ -26,6 +26,10 @@ Description:       "A state that relates to the workflow or interpretation of th
                    // should be from http://hl7.org/fhir/ValueSet/resource-status
 Value:             concept
 
+Abstract:          InformationItem
+Parent:            DomainResource
+Description:       "An abstract class representing items such as administrative records, knowledge artifacts, definitional items, and entities such as organizations and entities. These items are often independent of a single patient, and do not represent clinical judgements or observations about a patient."
+
                    // cannot specify the preferred value set here because there are conflicting required value sets in some status attributes, particularly Encounter. It will generate an error to map preferred to required. 
 Abstract:          ClinicalStatement
 Parent:            DomainResource
@@ -35,13 +39,13 @@ Property:          SubjectOfRecord 0..1
 Property:          CareContext 0..1
                    // often called 'authoredOn'
 Property:          StatementDateTime 0..1
+        // The following fields should be part of ClinicalStatement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension's value cannot be constrained (a new extensin would be required). Fundamentally, the 'is type' constraint (aka 'substitute' in CIMPL 6) only works when there is an existing attribute in the resource to map to.           
+        //0..1			Author
+        //0..1			InformationSource
+        //0..1			FocalSubject
+        //0..1			RecordedBy
+        //0..1			Attestation
 
-                   // The following fields should be part of ClinicalStatement, but supporting them is not possible until we have the capability to override choices with choices. This is complicated by the fact that we need to generate an extension when the resource we're mapping to lacks a corresponding field. Then the extension's value cannot be constrained (a new extensin would be required). Fundamentally, the 'is type' constraint (aka 'substitute' in CIMPL 6) only works when there is an existing attribute in the resource to map to.
-                   //0..1			Author
-                   //0..1			InformationSource
-                   //0..1			FocalSubject
-                   //0..1			RecordedBy
-                   //0..1			Attestation
 Element:           SubjectOfRecord
 Description:       "The subject of a clinical statement, often called the Patient or the Subject. The SubjectOfRecord typically identifies the clinical record in which this statement is contained. If the statement should be in John Doe's patient record, then John Doe is the subject of record. When there is no patient, the SubjectOfRecord can also be a location, group, or other entity that statement pertains to. For example, observations concerning a hospital ward would have a Location as the SubjectOfRecord.
 
@@ -69,7 +73,7 @@ Property:          SupportingInformation 0..*
                    Code from http://hl7.org/fhir/ValueSet/v3-ActCode (example)
 
 Entry:             Composition
-Parent:            DomainResource
+Parent:            InformationItem
 Description:       "A composition represents a set of Entries sharing common provenance, a document such as an extract from a patient record, a knowledge artifact, or a catalog definition."
 Property:          Type 1..1
                    // upper card from STU3 Composition.class
@@ -146,14 +150,14 @@ Description:       "A code that connects the entry to a security policy. Securit
 Value:             concept
 
 Entry:             DocumentReference
-Parent:            DomainResource
-Description:       "A reference to a document, used to describe a document that is made available to a healthcare system. A document is some sequence of bytes that is identifiable, establishes its own context (e.g., what subject, author, etc. can be displayed to the user), and has defined update management. The DocumentReference resource can be used with any document format that has a recognized mime type and that conforms to this definition."
+Parent:            ClinicalStatement
+Description:       "A reference to a document, used to describe a document that is made available to a healthcare system. A document is some sequence of bytes that is identifiable, establishes its own context (e.g., what subject, author, etc. can be displayed to the user), and has defined update management. The DocumentReference resource can be used with any document format that has a recognized mime type and that conforms to this definition.
+
+Compatibility: US Core"
 Property:          MasterIdentifier 0..1
 Property:          DocumentStatus 0..1
 Property:          Type 1..1
 Property:          Category 0..1
-Property:          SubjectOfRecord 0..1
-Property:          StatementDateTime 1..1
 Property:          DocumentAuthor 0..*
 Property:          Authenticator 0..1
 Property:          ManagingOrganization 0..1
@@ -166,6 +170,7 @@ Property:          DocumentReferenced 1..*
                    // context
 Property:          EventContext 0..1
                    Status 1..1
+                   StatementDateTime 1..1
                    Status from http://hl7.org/fhir/ValueSet/document-reference-status (required)
                    DocumentStatus from http://hl7.org/fhir/ValueSet/composition-status (required)
                    Type from http://hl7.org/fhir/ValueSet/c80-doc-typecodes (required)
@@ -278,7 +283,7 @@ Description:       "Why the section is empty."
 Value:             concept from http://hl7.org/fhir/ValueSet/list-empty-reason (preferred)
 
 Entry:             ValueSet
-Parent:            DomainResource
+Parent:            InformationItem
 Description:       "A set of codes drawn from one or more code systems"
 Property:          Url 0..1
 Property:          VersionString 0..1
@@ -499,7 +504,7 @@ Description:       "The participation (participant and role, etc.) who used the 
 Value:             Participation
 
 Entry:             Provenance
-Parent:            DomainResource
+Parent:            InformationItem
 Description:       "Describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance tracks information about the activity that created, revised, deleted, or signed a version of a resource, describing the entities and agents involved. This information can be used to form assessments about its quality, reliability, trustworthiness, or to provide pointers for where to go to further investigate the origins of the resource and the information in it."
 Property:          RefersTo 1..*
 Property:          OccurrenceTimeOrPeriod 0..1
@@ -545,7 +550,7 @@ Description:       "Item used during an activity, represented as a code."
 Value:             concept
 
 Entry:             List
-Parent:            DomainResource
+Parent:            InformationItem
 Description:       "A flat, potentially ordered, collection of records. Items may be added or removed over time. An example is a medication list or problem list."
 Property:          Mode 1..1
 Property:          Title 0..1
