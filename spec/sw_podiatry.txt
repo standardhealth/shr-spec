@@ -1,21 +1,18 @@
-Grammar:	DataElement 5.0
-Namespace:	sw
-Uses:  		shr.core
+Grammar:           DataElement 6.0
+Namespace:         sw
+Description:       "SHR implementation of wound assessment."
+Uses:              shr.core, obf
 
-
-EntryElement:	PodiatryWoundCondition
-Based on:		WoundCondition 
-Description:	"Statement of presence of wound on or near the foot.
+Entry:             PodiatryWoundCondition
+Parent:            WoundCondition
+Description:       "Statement of presence of wound on or near the foot.
 The WoundIdentifier serves as a link between this assertion and assessments of the wound that might occur at later times. Multiple wound assessments can be associated with a single wound."
-1..1			BodyLocation is type PodiatryBodyLocation
+                   BodyLocation substitute PodiatryBodyLocation
 
-
-Element:        PodiatryBodyLocation
-Based on:       BodyLocation
-Description:    "Locations of the foot."
-    			Code from PodiatryBodyLocationVS if covered
-//    			AnatomicalDirection from PodiatrySurfaceOrientationVS if covered
-                RelationToLandmark.LandmarkLocation.Code from PodiatryBodyLocationVS if covered
-//                RelationToLandmark.LandmarkLocation.AnatomicalDirection from PodiatrySurfaceOrientationVS if covered
-// Not restricting the anatomical direction to the surface orientations because "above" a needed direction.
-
+Group:             PodiatryBodyLocation
+Parent:            BodyLocation
+Description:       "Locations of the foot."
+                   //    			AnatomicalDirection from PodiatrySurfaceOrientationVS if covered
+                   Code from PodiatryBodyLocationVS (extensible)
+                   RelationToLandmark.LandmarkLocation.Code from PodiatryBodyLocationVS (extensible)                   //                RelationToLandmark.LandmarkLocation.AnatomicalDirection from PodiatrySurfaceOrientationVS if covered
+                   // Not restricting the anatomical direction to the surface orientations because "above" a needed direction.

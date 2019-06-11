@@ -1,0 +1,219 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_R4
+
+Patient maps to Patient:
+	Identifier maps to identifier
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Deceased maps to deceased[x]
+	Address maps to address	
+	MaritalStatus maps to maritalStatus
+	MultipleBirth maps to multipleBirth[x]
+	PhotographicImage maps to photo
+	ContactPerson.Relationship maps to contact.relationship
+	ContactPerson.HumanName maps to contact.name
+	ContactPerson.ContactPoint maps to contact.telecom
+	ContactPerson.Address maps to contact.address
+	ContactPerson.AdministrativeGender maps to contact.gender
+	ContactPerson.Organization maps to contact.organization
+	ContactPerson.TimePeriod maps to contact.period
+	Communication.Language maps to communication.language
+	Communication.Preferred maps to communication.preferred
+	GeneralPractitioner maps to generalPractitioner
+	ManagingOrganization maps to managingOrganization
+	SamePersonAs.Patient maps to link.other
+	SamePersonAs.Relationship maps to link.type
+	BirthSex maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
+	Race maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-race
+	Ethnicity maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity
+
+Practitioner maps to Practitioner:
+	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	Address maps to address
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	PhotographicImage maps to photo
+	Qualification maps to qualification
+	Qualification.Identifier maps to qualification.identifier
+	Qualification.Type maps to qualification.code
+	Qualification.EffectiveTimePeriod maps to qualification.period
+	Qualification.Issuer maps to qualification.issuer
+	Communication.Language maps to communication  // R4 change binding strength from extensible to preferred - not implemented
+
+RelatedPerson maps to RelatedPerson:
+	Identifier maps to identifier
+	Active maps to active
+	Patient maps to patient
+	Relationship maps to relationship
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Address maps to address
+	PhotographicImage maps to photo
+	EffectiveTimePeriod maps to period
+	Communication maps to communication
+	
+Organization maps to Organization:
+	Identifier maps to identifier
+	Active maps to active
+	Name maps to name
+	Type maps to type
+	Address maps to address
+	ContactPoint maps to telecom
+	PartOf maps to partOf
+// contact.purpose - Change code system for extensibly bound codes from "http://hl7.org/fhir/contactentity-type" to "http://terminology.hl7.org/CodeSystem/contactentity-type"
+
+
+Group maps to Group:
+	Identifier maps to identifier
+	Active maps to active
+	Type maps to type
+	Actual maps to actual
+	Code maps to code
+	Name maps to name
+	Count maps to quantity
+	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]  // Add Type Reference -- not implemented
+	GroupCharacteristic.Code maps to characteristic.code
+	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
+	GroupCharacteristic.TimePeriod maps to characteristic.period
+	GroupParticipation.GroupParticipant maps to member.entity // Added Target Types PractitionerRole, Group -- not implemented
+	GroupParticipation.ParticipationPeriod maps to member.period
+	GroupParticipation.Inactive maps to member.inactive
+	ManagingEntity maps to managingEntity
+	
+Location maps to Location:
+	Identifier maps to identifier
+	Status maps to status 
+	OperationalStatus maps to operationalStatus
+	Name maps to name
+	Alias maps to alias
+	CommentOrDescription maps to description
+	Mode maps to mode
+	Type maps to type // Max Cardinality changed from 1 to * - not implemented
+	ContactPoint maps to telecom
+	Address maps to address
+	PhysicalType maps to physicalType
+	Geoposition.Latitude maps to position.latitude
+	Geoposition.Longitude maps to position.longitude
+	Geoposition.Altitude maps to position.altitude
+	ManagingOrganization maps to managingOrganization
+	PartOf maps to partOf
+	HoursOfOperation.DayOfWeek maps to hoursOfOperation.daysOfWeek
+	HoursOfOperation.AllDay maps to hoursOfOperation.allDay
+	HoursOfOperation.OpeningTime maps to hoursOfOperation.openingTime
+	HoursOfOperation.ClosingTime maps to hoursOfOperation.closingTime
+	AvailabilityExceptions maps to availabilityExceptions
+
+Substance maps to Substance:
+	Identifier maps to identifier
+	Code maps to code
+	Status maps to status
+	Category maps to category // Change code system for extensibly bound codes from "http://hl7.org/fhir/substance-category" to "http://terminology.hl7.org/CodeSystem/substance-category"
+	CommentOrDescription maps to description
+	Ingredient maps to ingredient
+	Ingredient.IngredientStrength maps to ingredient.quantity
+	Ingredient.SubstanceOrCode maps to ingredient.substance[x]
+
+Medication maps to Medication:
+	Identifier maps to identifier  // added identifier
+	Code maps to code
+	Status maps to status
+	DoseForm maps to form
+	PackageAmount maps to amount
+	Ingredient.SubstanceOrCode maps to ingredient.item[x]
+	Ingredient.IngredientStrength maps to ingredient.strength
+	Ingredient.IsActiveIngredient maps to ingredient.isActive
+	Manufacturer maps to manufacturer
+	LotNumber maps to batch.lotNumber // deleted package, added lotNumber
+	ExpirationDate maps to batch.expirationDate // deleted package, added expirationDate
+
+Specimen maps to Specimen:
+	Identifier maps to identifier
+	SpecimenType maps to type
+	AccessionIdentifier maps to accessionIdentifier
+	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/specimen-status to http://hl7.org/fhir/ValueSet/specimen-status|4.0.0
+	CollectionSource maps to subject // Min Cardinality changed from 1 to 0; Added Target Type Location
+	PartOf maps to parent
+	ReceivedTime maps to receivedTime
+	AmountOrSize maps to collection.quantity
+	CollectionSite.BodyLocation.Code maps to collection.bodySite
+	CollectionSite.BodyLocation.Laterality maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.Orientation maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.RelationToLandmark maps to collection.bodySite.extension
+	CollectionTime maps to collection.collected[x]
+//	SpecimenCollection.Participation.Participant maps to collection.collector, added Target Type PractitionerRole
+	CollectionMethod maps to collection.method
+//	SpecimenCollection.BasedOn.Value maps to request  // Added Target Type ServiceRequest, removed ProcedureRequest
+	SpecimenContainer.Identifier maps to container.identifier
+	SpecimenContainer.CommentOrDescription maps to container.description
+	SpecimenContainer.Type maps to container.type
+	SpecimenContainer.Capacity maps to container.capacity
+	SpecimenContainer.SpecimenQuantity maps to container.specimenQuantity
+	SpecimenContainer.Additive maps to container.additive[x]
+// Added collection.duration, collection.fastingStatus[x], condition
+
+Device maps to Device:
+	Identifier maps to identifier
+	UdiCarrier.DeviceIdentifier maps to udiCarrier.deviceIdentifier
+	UdiCarrier.CarrierAIDC maps to udiCarrier.carrierAIDC
+	UdiCarrier.CarrierHRF maps to udiCarrier.carrierHRF
+	UdiCarrier.Type maps to udiCarrier.entryType
+	Status maps to status
+	StatusReason maps to statusReason
+	DistinctIdentifier maps to distinctIdentifier
+	ManufacturerName maps to manufacturer
+	ManufactureDate maps to manufactureDate
+	ExpirationDate maps to expirationDate
+	LotNumber maps to lotNumber
+	SerialNumber maps to serialNumber
+	DeviceDesignation.DeviceName maps to deviceName.name
+	DeviceDesignation.Type maps to deviceName.type
+	ModelNumber maps to modelNumber // changed from model
+	Type maps to type
+// Specialization not implemented
+	constrain version to 0..1
+	VersionString maps to version.value
+	Patient maps to patient
+	Owner maps to owner
+	ContactPoint maps to contact
+	Location maps to location
+	Url maps to url
+	Annotation maps to note
+	Safety maps to safety
+	PartOf maps to parent
+
+Media maps to Media:
+	Identifier maps to identifier
+	MediaBasedOn maps to basedOn // Added Target Types ServiceRequest, CarePlan, removed ProcedureRequest
+	PartOf maps to partOf
+	Status maps to status
+	Type maps to type  // Min Cardinality changed from 1 to 0, Type changed from code to CodeableConcept, Change binding strength from required to extensible, Change value set from http://hl7.org/fhir/ValueSet/digital-media-type to http://hl7.org/fhir/ValueSet/media-type
+	Modality  maps to modality
+	View maps to view
+	SubjectOfRecord maps to subject // added Target Types PractitionerRole, Location
+	CareContext maps to encounter
+	RelevantTime maps to created[x]
+	StatementDateTime maps to issued
+	Performer maps to operator // Added Target Types PractitionerRole, Organization, CareTeam, Patient, Device, RelatedPerson
+    ReasonCode maps to reasonCode
+	BodyLocation.Code maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.Orientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	DeviceName maps to deviceName
+	Device maps to device
+	PixelHeight maps to height
+	PixelWidth maps to width
+	Frames maps to frames
+	NumberOfSecondsDuration maps to duration // Type changed from unsignedInt to decimal
+    Attachment maps to content
+    Annotation maps to note
+

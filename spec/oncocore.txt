@@ -1,69 +1,41 @@
-Grammar:	DataElement 5.0
-Namespace:	onco.core
-Description:	"Oncology data elements that broadly apply to most cancer cases."
-Uses:  		shr.core
+Grammar:           DataElement 6.0
+Namespace:         onco.core
+Description:       "Oncology data elements that broadly apply to most cancer cases."
+Uses:              shr.core, obf
+CodeSystem:        SCT = http://snomed.info/sct
+CodeSystem:        LNC = http://loinc.org
+CodeSystem:        UCUM = http://unitsofmeasure.org
 
-CodeSystem:     SCT = http://snomed.info/sct
-CodeSystem:     LNC = http://loinc.org
-CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
-CodeSystem:     UCUM = http://unitsofmeasure.org
+Abstract:          CancerCondition
+Parent:            Condition
+Description:       "Abstract class for describing a primary or secondary metastatic neoplastic diseases."
+Property:          HistologyMorphologyBehavior 0..1
+                   Category = SCT#64572001 "Disease"
+                   Severity 0..0
+                   BodyLocation.Code from CancerBodyLocationVS (preferred)
+                   PersonInformationSource substitute PractitionerInformationSource
 
-Abstract Element:	CancerCondition
-Based on:		Condition
-Description:	"Abstract class for describing a primary or secondary metastatic neoplastic diseases."
-				PersonInformationSource is type PractitionerInformationSource
-0..1            HistologyMorphologyBehavior
-				Category is SCT#64572001 "Disease"
-				BodyLocation.Code should be from CancerBodyLocationVS
-0..0            Severity
+Entry:             PrimaryCancerCondition
+Parent:            CancerCondition
+Description:       "Records the history of the primary cancer condition, the original or first tumor in the body, abnormal cells that divide without control and can invade nearby tissues."
+                   Code from PrimaryCancerDisorderVS (extensible)
+                   StageInformation.StageDetail only CancerStageGroup
 
-	Element:		HistologyMorphologyBehavior
-	Description:	"A description of the morphologic and behavioral characteristics of the cancer."
-	Value:			CodeableConcept should be from HistologyMorphologyBehaviorVS
+Element:           HistologyMorphologyBehavior
+Description:       "A description of the morphologic and behavioral characteristics of the cancer."
+Value:             concept from HistologyMorphologyBehaviorVS (preferred)
 
-	Element:	PractitionerInformationSource
-	Based on:	PersonInformationSource
-	Description:	"The information comes from a practitioner who asserts the condition."
-	Value:		ref(Practitioner)
-
-EntryElement:   PrimaryCancerCondition
-Based on:	    CancerCondition
-Description:    "Records the history of the primary cancer condition, the original or first tumor in the body, abnormal cells that divide without control and can invade nearby tissues."
-                Code from PrimaryCancerDisorderVS if covered
-  	            StageInformation.StageDetail value is type ref(CancerStageGroup)
-
-EntryElement:   SecondaryCancerCondition
-Based on:       CancerCondition
-Description:    "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site."
-				Code from SecondaryCancerDisorderVS if covered
-0..1			ref(PrimaryCancerCondition)
-0..0			StageInformation
-
-/*
-EntryElement:   CancerHistologicType  // Morphology ICD-O-3
-// MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
-Based on:       SimpleCodedLaboratoryObservation
-Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
-// MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
-                Code is SCT#371441004 "Histologic type (observable entity)"
-                DataValue from CancerHistologicTypeVS
-0..1			ref(PrimaryCancerCondition)
-0..0	        BodyLocation
-0..0            Device
-*/
-
-
-EntryElement:   CancerHistologicGrade
-// did not use precoordinated codes because only available for clinical and pathologic.
-Based on:       CodedLaboratoryObservation
-Description:    "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
-                DataValue from CancerHistologicGradeVS if covered //The LOINC answer list specifies "code - not defined in code system". Instead of adding an "other" term, loosening binding to to allow for codes missing from value set.
-                Code is LNC#21858-6 "Grade Cancer"
-0..1			ref(PrimaryCancerCondition)
-0..0		    BodyLocation
-0..0            Device
-0..0            PanelMembers
-0..0			Components
+Entry:             CancerHistologicGrade
+                   // did not use precoordinated codes because only available for clinical and pathologic.
+Parent:            CodedLaboratoryObservation
+Description:       "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
+Property:          PrimaryCancerCondition 0..1
+                   Code = LNC#21858-6 "Grade Cancer"
+                   //The LOINC answer list specifies "code - not defined in code system". Instead of adding an "other" term, loosening binding to to allow for codes missing from value set.
+                   DataValue from CancerHistologicGradeVS (extensible)
+                   Device 0..0
+                   PanelMembers 0..0
+                   Components 0..0
 
 /* DISCUSSION: Options and pros/cons for modeling progression/disease status:
 
@@ -90,29 +62,52 @@ ii. The lesion(s) examined could be pre-coordinated in the observation code, for
 iii. BodyLocation could be used. However, Observation.bodySite should be a body site, not a notation like "primary tumor" or "metastatic tumors".
 iv. Create an extension for recording which lesion(s) were evaluated. That's always a last resort; an addition downside is that suitable codes do not exist. Still, this is probably the least bad of the proposed solutions.
 */
+Element:           PractitionerInformationSource
+Parent:            PersonInformationSource
+Description:       "The information comes from a practitioner who asserts the condition."
+Value:             Practitioner
 
-EntryElement:   CancerDiseaseStatus 
-Based on:       CodedNonLaboratoryObservation
-Description:    "A clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based a single type or multiple kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
-                Code is LNC#88040-1 "Response to cancer treatment"	
-                DataValue from ConditionStatusTrendVS
-				Performer value is type ref(Practitioner)
-				SubjectOfRecord value is type ref(Patient)
-0..1			RelatedCancerCondition
-0..*            EvidenceType from CancerDiseaseStatusEvidenceTypeVS
-0..0		    BodyLocation
-0..0            Device	
-0..0            PanelMembers
-0..0            Components
+Entry:             SecondaryCancerCondition
+Parent:            CancerCondition
+Description:       "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site."
+Property:          PrimaryCancerCondition 0..1
+                   Code from SecondaryCancerDisorderVS (extensible)
+                   StageInformation 0..0
 
-		Element:	EvidenceType
-		Description:	"The type of evidence considered in making the determination."
-		Value:		CodeableConcept	
+/*
+EntryElement:   CancerHistologicType  // Morphology ICD-O-3
+// MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
+Based on:       SimpleCodedLaboratoryObservation
+Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
+// MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
+                Code is SCT#371441004 "Histologic type (observable entity)"
+                DataValue from CancerHistologicTypeVS
+0..1			ref(PrimaryCancerCondition)
+0..0	        BodyLocation
+0..0            Device
+*/
+Element:           EvidenceType
+Description:       "The type of evidence considered in making the determination."
+Value:             concept
 
-		Element:	RelatedCancerCondition
-		Description:	"Cancer condition this information relates to. Includes the primary cancer, secondary cancer, or a particular tumor."
-		Value:		ref(PrimaryCancerCondition) or ref(SecondaryCancerCondition) or ref(Tumor)
+Entry:             CancerDiseaseStatus
+Parent:            CodedNonLaboratoryObservation
+Description:       "A clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based a single type or multiple kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
+Property:          RelatedCancerCondition 0..1
+Property:          EvidenceType 0..*
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#88040-1 "Response to cancer treatment"
+                   Performer only Practitioner
+                   DataValue from ConditionStatusTrendVS (required)
+                   BodyLocation 0..0
+                   Device 0..0
+                   PanelMembers 0..0
+                   Components 0..0
+                   EvidenceType from CancerDiseaseStatusEvidenceTypeVS (required)
 
+Element:           RelatedCancerCondition
+Description:       "Cancer condition this information relates to. Includes the primary cancer, secondary cancer, or a particular tumor."
+Value:             PrimaryCancerCondition or SecondaryCancerCondition or Tumor
 
 /* Discussion: How to capture date and site of first metastases.
 Could be modeled with condition, observation, or clinical impression.
@@ -123,98 +118,92 @@ Could be modeled with condition, observation, or clinical impression.
 
 Conclusion: Having a place for the onset date of mets, which is an mCODE requirement, is a +1 for Condition...so is the ability to give multiple body sites. Use of Condition to describe a part of another condition is consistent with the philosophy used for wounds, where each wound is a separate condition, each wound tunnel on the wound is a (sub)condition, the length of the tunnel is an observation on the wound tunnel. Another advantage is that using condition provides a natural way to track the progression of the mets, separate from the progression of the entire disease (see discussion on DiseaseStatus).
 */
+Entry:             Tumor
+Parent:            AbnormalBodyStructure
+Concept:           SCT#395557000 "Tumor finding (finding)"
+Description:       "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
+Property:          PrimaryCancerCondition 0..1
+Property:          IsPrimaryTumor 0..1
+                   Code from HistologyMorphologyBehaviorVS (extensible)
+                   Severity 0..0
+                   StageInformation 0..0
 
+Element:           IsPrimaryTumor
+Description:       "Whether the tumor is the original or first tumor in the body, for a particular cancer."
+Value:             concept from YesNoUnknownVS (required)
 
-EntryElement:   Tumor
-Based on:		AbnormalBodyStructure
-Concept:        SCT#395557000 "Tumor finding (finding)"
-Description:    "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
-                Code from HistologyMorphologyBehaviorVS if covered
-0..1			ref(PrimaryCancerCondition)
-0..0			Severity
-0..0			StageInformation
-0..1            IsPrimaryTumor
+Entry:             TumorDimensions
+Parent:            CodedLaboratoryObservation
+Description:       "The size of a given tumor along different dimensions."
+Property:          RelatedTumor 1..1
+                   Code = SCT#263605001 "Tumor size (observable entity)"
+                   DataValue 0..0
+                   PanelMembers 0..0
+                   Components.ObservationComponent 1..1
+                   Components.ObservationComponent
+                   includes TumorLongestDimension 0..1
+                   includes TumorDimension2 0..1
+                   includes TumorDimension3 0..1
+                   includes SizeOfGrossTumorBed 0..1
 
-        Element:        IsPrimaryTumor
-        Description:    "Whether the tumor is the original or first tumor in the body, for a particular cancer."
-        Value:          CodeableConcept from YesNoUnknownVS
+Element:           RelatedTumor
+Description:       "The tumor that is being characterized."
+Value:             Tumor
 
+Group:             TumorLongestDimension
+Parent:            QuantitativeObservationComponent
+Description:       "The longest dimension of the tumor."
+                   Code = LNC#33728-7 "Size.maximum dimension in Tumor"
+                   DataValue[Quantity].Units = UCUM#mm
 
-EntryElement: 	TumorDimensions
-Based on:		CodedLaboratoryObservation
-Description:	"The size of a given tumor along different dimensions."
-0..0			DataValue
-1..1			RelatedTumor
-				Code is SCT#263605001 "Tumor size (observable entity)"
-0..0            PanelMembers
-1..1			Components.ObservationComponent
-				includes 0..1	TumorLongestDimension
-				includes 0..1	TumorDimension2
-				includes 0..1   TumorDimension3
-				includes 0..1	SizeOfGrossTumorBed
+Group:             TumorDimension2
+Parent:            QuantitativeObservationComponent
+Concept:           SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+Description:       "The second longest dimension of the tumor, generally measured perpendicularly to the tumor's longest dimension."
+                   Code = SCT#372300005 "Tumor size, dimension 2 (observable entity)"
+                   DataValue[Quantity].Units = UCUM#mm
 
-	Element:	RelatedTumor
-	Description:  "The tumor that is being characterized."
-	Value:		ref(Tumor)
+Group:             TumorDimension3
+Parent:            QuantitativeObservationComponent
+Concept:           SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+Description:       "The third longest dimension of the tumor, generally measured perpendicularly to the tumor's two longest perpendicular dimensions."
+                   Code = SCT#372301009 "Tumor size, dimension 3 (observable entity)"
+                   DataValue[Quantity].Units = UCUM#mm
 
-		Element:		TumorLongestDimension
-		Description:	"The longest dimension of the tumor."
-		Based on:		QuantitativeObservationComponent
-                        Code is LNC#33728-7 "Size.maximum dimension in Tumor"
-		                DataValue.Quantity.Units is UCUM#mm		
-		
-		Element:		TumorDimension2
-		Description:	"The second longest dimension of the tumor, generally measured perpendicularly to the tumor's longest dimension."
-		Based on:		QuantitativeObservationComponent
-		Concept:		SCT#372300005 "Tumor size, dimension 2 (observable entity)"
-                        Code is SCT#372300005 "Tumor size, dimension 2 (observable entity)"
-		                DataValue.Quantity.Units is UCUM#mm	
+Group:             SizeOfGrossTumorBed
+Parent:            QuantitativeObservationComponent
+Description:       "The largest dimension of the gross tumor bed/fibrotic area."
+                   Code = TBD#TBD
+                   DataValue[Quantity].Units = UCUM#mm
 
-		Element:		TumorDimension3
-		Description:	"The third longest dimension of the tumor, generally measured perpendicularly to the tumor's two longest perpendicular dimensions."
-		Based on:		QuantitativeObservationComponent
-		Concept:		SCT#372301009 "Tumor size, dimension 3 (observable entity)"
-                        Code is SCT#372301009 "Tumor size, dimension 3 (observable entity)"
-		                DataValue.Quantity.Units is UCUM#mm	
+Entry:             TumorInvolvementAtSurgicalMargin
+Parent:            CodedLaboratoryObservation
+Description:       "The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
+                   Code = SCT#371488000 "Status of margin involvement by tumor (observable entity)"
+                   DataValue from SurgicalMarginInvolvementVS (required)
+                   // Specimen should be required!
+                   PanelMembers 0..0
+                   Components 0..0
 
-		Element:		SizeOfGrossTumorBed
-		Based on:		QuantitativeObservationComponent
-		Description:	"The largest dimension of the gross tumor bed/fibrotic area."
-                        Code is TBD#TBD
-		                DataValue.Quantity.Units is UCUM#mm	
+Entry:             CancerRelatedSurgicalProcedure
+Parent:            SurgicalProcedure
+Description:       "A surgical action addressing a cancer condition."
+                   ReasonCode from CancerDisorderVS (extensible)
+                   ReasonReference substitute CancerSurgicalProcedureReasonReference
+                   // It is cancer-related only if the reason is a cancer condition
+                   Code from CancerRelatedSurgicalProcedureVS (extensible)
 
+Element:           CancerSurgicalProcedureReasonReference
+Parent:            ProcedureReasonReference
+Description:       "Reference to a primary or secondary cancer condition."
+                   Value only PrimaryCancerCondition or SecondaryCancerCondition
 
-EntryElement: 	TumorInvolvementAtSurgicalMargin
-Based on:		CodedLaboratoryObservation
-Description:	"The edge or border of the tissue removed in cancer surgery. The margin is described as negative or clean when the pathologist finds no cancer cells at the edge of the tissue, suggesting that all of the cancer has been removed. The margin is described as positive or involved when the pathologist finds cancer cells at the edge of the tissue, suggesting that all of the cancer has not been removed."
-				Code is SCT#371488000 "Status of margin involvement by tumor (observable entity)"
-				DataValue from SurgicalMarginInvolvementVS
-// Specimen should be required!
-0..0            PanelMembers
-0..0			Components
-
-
-EntryElement:	CancerRelatedSurgicalProcedure
-Based on:		SurgicalProcedure
-Description:	"A surgical action addressing a cancer condition."
-// It is cancer-related only if the reason is a cancer condition
-				Code from CancerRelatedSurgicalProcedureVS if covered
-0..1			ProcedureReasonReference is type CancerSurgicalProcedureReasonReference
-0..1			ReasonCode from CancerDisorderVS if covered
-
-		Element:	CancerSurgicalProcedureReasonReference
-		Based on:	ProcedureReasonReference
-		Description: "Reference to a primary or secondary cancer condition."
-		Value:		ref(PrimaryCancerCondition) or ref(SecondaryCancerCondition)
-
-EntryElement:	CancerRelatedRadiationProcedure
-Based on:		RadiationProcedure
-Description:	"A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions."
-// It is cancer-related only if the reason is a cancer condition
-0..1			ReasonReference is type CancerSurgicalProcedureReasonReference
-0..1			ReasonCode from CancerDisorderVS if covered
-
-/*
+Entry:             CancerRelatedRadiationProcedure
+Parent:            RadiationProcedure
+Description:       "A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions."
+                   ReasonCode from CancerDisorderVS (extensible)
+                   // It is cancer-related only if the reason is a cancer condition
+                   ReasonReference substitute CancerSurgicalProcedureReasonReference/*
 EntryElement:	TumorMarginDescription
 Based on:		CodedObservationComponent
 Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."

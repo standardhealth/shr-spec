@@ -1,0 +1,99 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
+Uses:              shr.core
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+
+Entry:             ResearchStudy
+Parent:            Entity
+Description:       "A clinical trial or similar research study. Reference: list of FDA data elements describing a research study: prsinfo.clinicaltrials.gov/definitions.html"
+Property:          Title 1..1
+Property:          Purpose 0..1
+Property:          ResearchStudyPhase 0..1
+Property:          Category 0..*
+Property:          FocalSubject 0..*
+Property:          ConditionStudied 0..*
+Property:          ContactDetail 0..*
+Property:          RelatedArtifact 0..*
+Property:          Keyword 0..*
+Property:          Jurisdiction 0..*
+Property:          DescriptionMarkdown 0..1
+Property:          Enrollment 0..*
+Property:          EffectiveTimePeriod 0..1
+Property:          Sponsor 0..1
+Property:          PrincipalInvestigator 0..1
+Property:          Location 0..*
+Property:          TerminationReason 0..1
+Property:          Annotation 0..*
+Property:          StudyArm 0..*
+Property:          StudyObjective 0..*
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/research-study-status (required)
+                   Identifier 1..1
+                   PartOf[DomainResource] substitute ResearchStudy
+                   Purpose from http://hl7.org/fhir/ValueSet/research-study-prim-purp-type (extensible)
+                   FocalSubject only concept
+
+                   // 0..*			ref(PlanDefinition) // not implemented
+Element:           ResearchStudyPhase
+Description:       "The stage in the progression of a therapy from initial experimental use in humans in clinical trials to post-market evaluation."
+Value:             concept from http://hl7.org/fhir/ValueSet/research-study-phase (example)
+
+Element:           ConditionStudied
+Description:       "The condition that is the focus of the study. For example, In a study to examine risk factors for Lupus, might have as an inclusion criterion 'healthy volunteer', but the target condition code would be a Lupus SNOMED code."
+Value:             Condition
+
+Element:           Keyword
+Description:       "Key terms to aid in searching for or filtering the study."
+Value:             concept
+
+Element:           Enrollment
+Concept:           MTH#C4041024
+Description:       "Description of the group or groups enrolled or qualified to be enrolled in the study."
+Value:             Group
+
+Element:           Sponsor
+Description:       "The organization responsible for the execution of the study."
+Value:             Organization
+
+Element:           PrincipalInvestigator
+Description:       "Indicates the individual who has primary oversite of the execution of the study."
+Value:             Practitioner
+
+Group:             StudyArm
+Description:       "Arm refers to pre-specified group or subgroup of participant(s) in a clinical trial assigned to receive specific intervention(s) (or no intervention) according to a protocol."
+Property:          Name 1..1
+Property:          Type 0..1
+Property:          CommentOrDescription 0..1
+                   Type from StudyArmTypeVS (required)
+
+Group:             StudyObjective
+Description:       "A goal that the study is aiming to achieve in terms of a scientific question to be answered by the analysis of data collected during the study."
+Property:          Name 0..1
+Property:          Type 0..1
+                   Type from http://hl7.org/fhir/ValueSet/research-study-objective-type (preferred)
+
+Entry:             ResearchSubject
+Parent:            Role
+Description:       "Record of a subject's enrollment and participation in a research study."
+Property:          ParticipationPeriod 1..1
+Property:          ResearchStudy 1..1
+Property:          Patient 1..1
+Property:          AssignedArm 0..1
+Property:          ActualArm 0..1
+Property:          TerminationReason 0..1
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/research-subject-status (required)
+                   // upper card 1 from STU3
+                   Identifier 0..1
+                   TerminationReason from ResearchSubjectTerminationReasonVS (required)
+
+                   //0..1			ref(Consent)  -- not yet implemented
+                   // SHR Extension
+Element:           AssignedArm
+Description:       "The name of the arm in the study the subject is expected to follow as part of this study."
+Value:             string
+
+Element:           ActualArm
+Description:       "The name of the arm in the study the subject actually followed as part of this study."
+Value:             string
