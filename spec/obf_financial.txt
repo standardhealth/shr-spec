@@ -1,0 +1,93 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Uses:              shr.core
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+
+                   // had to change to obf because insurance coverage is part of ServiceRequest
+Element:           CoverageType
+Description:       "Coverage category such as medical or accident."
+Value:             concept
+
+Entry:             Coverage
+Parent:            InformationItem
+Concept:           MTH#C0021682 "HealthInsurance"
+Description:       "Health insurance coverage available (even if not used for payment for a given encounter)."
+Property:          CoverageType 0..1
+Property:          PolicyHolder 0..1
+Property:          Subscriber 0..1
+Property:          SubscriberId 0..1
+Property:          Beneficiary 1..1
+Property:          DependentIdentifier 0..1
+Property:          BeneficiaryRelationship 0..1
+Property:          EffectiveTimePeriod 0..1
+Property:          Payor 1..*
+Property:          CoverageClassification 0..*
+Property:          PriorityRank 0..1
+Property:          InsurerNetwork 0..1
+Property:          CostToBeneficiary 0..*
+Property:          Subrogation 0..1
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/fm-status (required)
+                   CoverageType from http://hl7.org/fhir/ValueSet/coverage-type (preferred)
+
+                   // 0..*	  ref(Contract) -- not implemented
+Element:           Subscriber
+Description:       "The party who has signed-up for or 'owns' the contractual relationship to the policy or to whom the benefit of the policy for services rendered to them or their family is due."
+Value:             Patient or RelatedPerson
+
+Element:           SubscriberId
+Description:       "The insurer assigned ID for the Subscriber."
+                   // string in STU3, Identifier in STU2
+Value:             string or Identifier
+
+Element:           Beneficiary
+Description:       "The party who benefits from the insurance coverage., the patient when services are provided."
+Value:             Patient
+
+Element:           PolicyHolder
+Description:       "Owner of the policy"
+Value:             Patient or RelatedPerson or Organization
+
+Element:           DependentIdentifier
+Description:       "A unique identifier for a dependent under the coverage."
+Value:             string
+
+Element:           BeneficiaryRelationship
+Description:       "The relationship of beneficiary (patient) to the subscriber."
+Value:             concept from http://hl7.org/fhir/ValueSet/subscriber-relationship (extensible)
+
+Element:           Payor
+Description:       "The program or plan underwriter or payor including both insurance and non-insurance agreements, such as patient-pay agreements."
+Value:             Organization or Patient or RelatedPerson
+
+Group:             CoverageClassification
+Description:       "A suite of underwriter specific classifiers."
+Property:          Type 1..1
+Property:          IdentifierString 1..1
+Property:          Name 0..1
+                   Type from http://hl7.org/fhir/ValueSet/coverage-class (extensible)
+
+Group:             CostToBeneficiary
+Description:       "A suite of codes indicating the cost category and associated amount which have been detailed in the policy and may have been included on the health card. Alternate names include co-pay, deductible, exceptions."
+Property:          Type 0..1
+Property:          CostOrPercentage 1..1
+Property:          Exception 0..*
+                   Type from http://hl7.org/fhir/ValueSet/coverage-copay-type (extensible)
+
+Element:           CostOrPercentage
+Description:       "The amount due from the patient for the cost category."
+Value:             Money or SimpleQuantity
+
+Group:             Exception
+Description:       "A suite of codes indicating exceptions or reductions to patient costs and their effective periods."
+Property:          Type 1..1
+Property:          EffectiveTimePeriod 0..1
+                   Type from http://hl7.org/fhir/ValueSet/coverage-financial-exception (example)
+
+Element:           InsurerNetwork
+Description:       "The insurer-specific identifier for the insurer-defined network of providers to which the beneficiary may seek treatment which will be covered at the 'in-network' rate, otherwise 'out of network' terms and conditions apply."
+Value:             string
+
+Element:           Subrogation
+Description:       "Reimbursement to insurer. When 'subrogation=true' this insurance instance has been included not for adjudication but to provide insurers with the details to recover costs."
+Value:             boolean

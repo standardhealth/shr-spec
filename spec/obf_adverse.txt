@@ -1,0 +1,86 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Uses:              shr.core
+
+Entry:             AdverseEvent
+Parent:            SituationStatement
+Description:       "A record of an untoward or unexpected event in a patient under treatment, and which does not necessarily have to have a causal relationship with that treatment. Adverse events may capture either a workflow breach that may or may not result in harm, but must be documented for quality improvement purposes, or an adverse finding whether or not it can be traceable to an actual workflow breach."
+Property:          Mode 1..1
+Property:          Category 0..1
+Property:          OccurrenceTime 0..1
+Property:          DetectionTime 0..1
+Property:          ResultingCondition 0..*
+Property:          Location 0..1
+Property:          Seriousness 1..1
+Property:          Severity 0..1
+Property:          Outcome 0..1
+Property:          PersonAuthor 0..1
+                   // upper card from STU3
+Property:          Participant 0..1
+Property:          PotentialCause 0..*
+Property:          AssociatedStudy 0..1
+                   // SHR Extensions
+Property:          ActionTaken 0..*
+                   Identifier 0..1
+                   SubjectOfRecord 1..1
+                   SubjectOfRecord only Patient
+                   CareContext only Encounter
+                   Code from MedDRAVS (preferred)
+                   Mode from http://hl7.org/fhir/ValueSet/adverse-event-actuality (required)
+                   Category from http://hl7.org/fhir/ValueSet/adverse-event-category (required)
+                   Severity from http://hl7.org/fhir/ValueSet/adverse-event-severity (required)
+                   Outcome from http://hl7.org/fhir/ValueSet/adverse-event-outcome (required)
+
+Element:           DetectionTime
+Description:       "The date on which the existence of the AdverseEvent first become known or was first observed."
+Value:             dateTime
+
+Element:           Seriousness
+Description:       "A coded value specifying the level of injury suffered by the subject for whom the event is reported, perferrably using the CTCAE coding system."
+Value:             concept from http://hl7.org/fhir/ValueSet/adverse-event-seriousness (example)
+
+Element:           ResultingCondition
+Description:       "The condition, sign or symptom triggering the adverse event report."
+Value:             Condition
+
+Group:             PotentialCause
+Description:       "A possible cause of an observed adverse event, known or theorized. There can be more than one possible cause."
+Property:          SuspectEntity 1..1
+Property:          Certainty 1..1
+                   // SHR Extensions
+Property:          CauseCategory 1..1
+
+Element:           SuspectEntity
+Description:       "Identifies the actual instance of what may have caused the adverse event."
+                   // or ref(Immunization) (in FHIR R4)
+Value:             Procedure or Substance or Medication or MedicationAdministration or MedicationStatement or Device
+
+Element:           Certainty
+Description:       "The degree of confidence in a conclusion or assertion."
+Value:             concept from http://hl7.org/fhir/ValueSet/adverse-event-causality-assess (example)
+
+Element:           CauseCategory
+Description:       "Whether the adverse event is attributed to a treatment, course of the disease, unrelated to either, or unknown."
+Value:             concept from AttributionCategoryVS (required)
+
+Group:             ActionTaken
+Description:       "The action taken as a result of the adverse reaction. May include changing or discontinuing medication, reducing dose, etc."
+Property:          CommentOrDescription 1..1
+                   // such as MedicationChangeStatement
+Property:          ActionStatement 0..1
+
+Element:           AssociatedStudy
+Description:       "The related clinical trial or other formal study."
+Value:             ResearchStudy
+
+                   // Adverse drug reactions are a subset of adverse events, and are specifically associated with an exposure to a medication.
+Entry:             AdverseDrugReaction
+Parent:            AdverseEvent
+Description:       "A noxious and unintended response to a medicinal product. To be considered an ADR, a causal relationship must be at least suspected by the medical practitioner. The principal difference between an adverse drug reaction (ADR) an adverse event (AE) and is that a causal relationship is suspected for the ADR, but is not required for the AE. Adverse drug reactions are therefore a subset of adverse event reports."
+                   PotentialCause 1..*
+                   PotentialCause.SuspectEntity substitute MedicationType
+
+Element:           MedicationType
+Parent:            SuspectEntity
+Description:       "Drug suspected as possible cause of the adverse event."
+                   Value only Medication or MedicationAdministration or MedicationStatement

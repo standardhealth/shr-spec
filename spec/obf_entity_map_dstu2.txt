@@ -1,0 +1,198 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_DSTU_2
+
+Patient maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-patient: // dstu 2 change (different mapping target)
+	Identifier maps to identifier
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Deceased maps to deceased[x]
+	Address maps to address
+	MaritalStatus maps to maritalStatus
+	MultipleBirth maps to multipleBirth[x]
+	PhotographicImage maps to photo
+	ContactPerson.Relationship maps to contact.relationship
+	ContactPerson.HumanName maps to contact.name
+	ContactPerson.ContactPoint maps to contact.telecom
+	ContactPerson.Address maps to contact.address
+	ContactPerson.AdministrativeGender maps to contact.gender
+	ContactPerson.Organization maps to contact.organization
+	ContactPerson.TimePeriod maps to contact.period
+	constrain animal to 0..0
+	Communication.Language maps to communication.language
+	Communication.Preferred maps to communication.preferred
+	GeneralPractitioner maps to careProvider
+	ManagingOrganization maps to managingOrganization
+	SamePersonAs.Patient maps to link.other 
+	SamePersonAs.Relationship maps to link.type
+	BirthSex maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex
+	Race maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-race
+	Ethnicity maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity
+
+
+Practitioner maps to Practitioner:  // dstu 2 change (different mapping target)
+	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
+	Active maps to active
+	HumanName maps to name
+	ContactPoint maps to telecom
+	Address maps to address
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	PhotographicImage maps to photo
+	Qualification maps to qualification
+	Qualification.Identifier maps to qualification.identifier
+	Qualification.Type maps to qualification.code
+	Qualification.EffectiveTimePeriod maps to qualification.period
+	Qualification.Issuer maps to qualification.issuer
+	Communication.Language maps to communication
+	
+RelatedPerson maps to RelatedPerson:
+	Identifier maps to identifier
+	Active maps to extension
+	Patient maps to patient
+	Relationship maps to relationship
+	HumanName maps to name
+	ContactPoint maps to telecom
+	AdministrativeGender maps to gender
+	BirthDate maps to birthDate
+	Address maps to address
+	PhotographicImage maps to photo
+	EffectiveTimePeriod maps to period
+	Communication maps to extension
+	
+Organization maps to Organization:
+	Identifier maps to identifier
+	Active maps to active
+	Type maps to type
+	Name maps to name
+	Address maps to address
+	ContactPoint maps to telecom
+	PartOf maps to partOf
+
+Group maps to Group:
+	Identifier maps to identifier
+	Active maps to extension
+	Type maps to type
+	Actual maps to actual
+	Code maps to code
+	Name maps to name
+	Count maps to quantity
+	GroupCharacteristic.GroupCharacteristicValue maps to characteristic.value[x]
+	GroupCharacteristic.Code maps to characteristic.code
+	GroupCharacteristic.ExcludeFlag maps to characteristic.exclude
+	GroupCharacteristic.TimePeriod maps to characteristic.period
+	GroupParticipation.GroupParticipant maps to member.entity
+	GroupParticipation.ParticipationPeriod maps to member.period
+	GroupParticipation.Inactive maps to member.inactive
+	ManagingEntity maps to extension
+	
+Location maps to Location:
+	Identifier maps to identifier
+	Status maps to status
+	OperationalStatus maps to extension
+	Name maps to name
+	Alias maps to extension
+	CommentOrDescription maps to description
+	Mode maps to mode
+	Type maps to type
+	ContactPoint maps to telecom
+	Address maps to address
+	PhysicalType maps to physicalType
+	Geoposition.Latitude maps to position.latitude
+	Geoposition.Longitude maps to position.longitude
+	Geoposition.Altitude maps to position.altitude
+	ManagingOrganization maps to managingOrganization
+	PartOf maps to partOf
+	HoursOfOperation maps to extension
+
+Substance maps to Substance:
+	Identifier maps to identifier
+	Status maps to extension
+	Code maps to code
+	Category maps to category
+	CommentOrDescription maps to description
+	Ingredient.IngredientStrength maps to ingredient.quantity
+	Ingredient.SubstanceOrCode[Substance] maps to ingredient.substance
+
+Medication maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-medication:
+	Identifier maps to extension
+	Status maps to extension
+	Code maps to code
+	DoseForm maps to product.form  
+	Ingredient.SubstanceOrCode maps to product.ingredient.item
+	Ingredient.IngredientStrength maps to product.ingredient.amount 
+	Manufacturer maps to manufacturer
+	constrain product.batch to 0..1 
+	LotNumber maps to product.batch.lotNumber  
+	ExpirationDate maps to product.batch.expirationDate   
+	
+Specimen maps to Specimen:
+	Identifier maps to identifier
+	Status maps to status
+	SpecimenType maps to type
+	AccessionIdentifier maps to accessionIdentifier
+	CollectionSource maps to subject
+	PartOf maps to parent
+	ReceivedTime maps to receivedTime
+	AmountOrSize maps to collection.quantity
+	CollectionSite.BodyLocation.Code maps to collection.bodySite
+	CollectionSite.BodyLocation.Laterality maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.Orientation maps to collection.bodySite.extension
+	CollectionSite.BodyLocation.RelationToLandmark maps to collection.bodySite.extension
+	CollectionTime maps to collection.collected[x]
+//	SpecimenCollection.Participation.Participant maps to collection.collector
+	CollectionMethod maps to collection.method
+	SpecimenContainer.Identifier maps to container.identifier
+	SpecimenContainer.CommentOrDescription maps to container.description
+	SpecimenContainer.Type maps to container.type
+	SpecimenContainer.Capacity maps to container.capacity
+	SpecimenContainer.SpecimenQuantity maps to container.specimenQuantity
+	SpecimenContainer.Additive maps to container.additive[x]
+
+Device maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-device:
+	Identifier maps to identifier
+	Status maps to status
+	Type maps to type
+	ModelNumber maps to model
+	ManufacturerName maps to manufacturer
+	ManufactureDate maps to manufactureDate
+	// dstu 2 change (different attribute)
+	ExpirationDate maps to expiry  
+	VersionString maps to version
+	Url maps to url
+	LotNumber maps to lotNumber
+	Owner maps to owner
+	ContactPoint maps to contact
+	Location maps to location
+	Url maps to url
+	Annotation maps to note
+	Patient maps to patient
+
+Media maps to Media:
+	Type maps to type
+	Modality maps to subtype
+	Identifier maps to identifier
+	SubjectOfRecord maps to subject
+	Performer maps to operator
+	View maps to view
+	DeviceName maps to deviceName
+	PixelHeight maps to height
+	PixelWidth maps to width
+	Frames maps to frames
+	NumberOfSecondsDuration maps to duration
+    Attachment maps to content
+// Attributes in STU3 and R4 that aren't in DSTU2
+	MediaBasedOn maps to extension
+	PartOf maps to extension
+	Status maps to extension
+	CareContext maps to extension
+	RelevantTime maps to extension
+	StatementDateTime maps to extension
+    ReasonCode maps to extension
+    Annotation maps to extension
+	BodyLocation maps to extension
+	Device maps to extension
+
