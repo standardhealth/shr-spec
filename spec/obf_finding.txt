@@ -92,6 +92,7 @@ Property:          Annotation 0..*
 Property:          BodyLocation 0..1
 Property:          Method 0..1
                    // Specimen added at LaboratoryObservation
+Property:          Specimen 0..1
 Property:          Device 0..1
 Property:          ReferenceRange 0..1
 Property:          PanelMembers 0..1
@@ -111,7 +112,8 @@ Property:          Components 0..1
 
 Entry:             NonLaboratoryObservation
 Parent:            Observation
-Description:       "An observation not based on a specimen."
+Description:       "An observation that is not based on a specimen."
+                   Specimen 0..0
 
 Element:           DataValue
 Description:       "The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
@@ -126,7 +128,7 @@ Description:       "The result of evaluations (measurements, tests, or questions
 
 Element:           ObservationSubjectOfRecord
 Parent:            SubjectOfRecord
-Description:       "A choice of Patient, Group, Device, or Location. These are the potential subjects for an Observation."
+Description:       "The subject of an observation."
                    Value only Patient or Group or Device or Location
 
 Element:           Performer
@@ -190,7 +192,6 @@ Description:       "A non-independent finding whose result is a quantity."
 Entry:             LaboratoryObservation
 Parent:            Observation
 Description:       "A coded finding based on a specimen, usually collected from a patient (but possibly from a location)."
-Property:          Specimen 0..1
                    Identifier
                    includes AccessionIdentifier 0..1
                    includes FillerOrderNumber 0..1
@@ -230,7 +231,7 @@ Description:       "A result from a laboratory test without panel members or com
                    PanelMembers 0..0
                    Components 0..0
 
-Group:             SocialHistoryObservation
+Entry:             SocialHistoryObservation
 Parent:            NonLaboratoryObservation
 Description:       "A simplified observation for social histories."
                    ObservationSubjectOfRecord only Patient
@@ -244,7 +245,7 @@ Description:       "A simplified observation for social histories."
                    ReferenceRange 0..0
                    PanelMembers 0..0
 
-Group:             CodedSocialHistoryObservation
+Entry:             CodedSocialHistoryObservation
 Parent:            SocialHistoryObservation
 Description:       "The result of social history questions, whose answer is expressed as a code."
                    DataValue only concept
@@ -323,7 +324,7 @@ Value:             Range
 
 Element:           ObservationBasedOn
 Parent:            BasedOn
-Description:       "A plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
+Description:       "The plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
                    Value only MedicationRequest or ServiceRequest or ProcedureRequest or ReferralRequest
 
                    // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder) 
@@ -415,7 +416,7 @@ Description:       "A panel that does not have an overall value that summarizes 
 
 Entry:             Panel
 Parent:            Observation
-Description:       "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
+Description:       "A set of independent but related observations that are often presented together to facilitate interpretation, or based on a single sample, such as a lipid panel."
                    BodyLocation 0..0
                    Device 0..0
                    Components 0..0
@@ -429,13 +430,13 @@ Description:       "A panel that does not have an overall value that summarizes 
 
 Element:           SocialHistoryObservationBasedOn
 Parent:            ObservationBasedOn
-Description:       "A plan, proposal or order that is fulfilled in whole or in part by this observation."
+Description:       "The plan, proposal or order that is fulfilled in whole or in part by this observation."
                    Value only ServiceRequest or ProcedureRequest or ReferralRequest
 
                    // or ref(CarePlan) 
 Element:           SocialHistoryObservationPartOf
 Parent:            ObservationPartOf
-Description:       "A larger procedure that this particular observation is a component or step."
+Description:       "The larger procedure that this particular observation is a component or step."
                    Value only Procedure
 
                    // or ref(ImagingStudy) or ref(Immunization)
