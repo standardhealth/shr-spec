@@ -24,14 +24,14 @@ Description:       "A restricted set of value types that could be associated wit
 /* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
 
 EntryElement:	CancerGeneticRegionAnalyzed
-Based on:		GeneticRegionAnalysisResult
+Parent:		GeneticRegionAnalysisResult
 Description:	"Results of analyzing a specified genetic region for cancer-related genetic variants."
 				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept -- MK: Since that doesn't exist, there's no point in specializing GeneticRegionAnalyzed to cancer.  
 	// DOES NOT WORK -- CIMPL can't constrain a slice.. so Genename is not taken from CancerGeneNameVS
 				Components.ObservationComponent.GeneName is type CancerGeneName
 
 		Element:		CancerGeneName
-		Based on:		GeneName
+		Parent:		GeneName
 		Description:	"The gene name, using HUGO Gene Nomenclature Committee (HGNC) identifier. (source: LOINC)"
 						Code is LNC#48018-6 "Gene studied [ID]"
 						DataValue from CancerGeneVS if covered
@@ -152,20 +152,20 @@ Description:       "Description of the variant. Ideally, this should be a human-
 //					includes 0..1	ComplexVariantCode
 
 		Element:		DNAChangeTranscriptcHGVS
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
 						Code is LNC#48004-6 "DNA change (c.HGVS)"
 						DataValue value is type string
 		0..0			ReferenceRange
 
 		Element:		ComplexVariantCode
-		Based on:		CodedObservationComponent
+		Parent:		CodedObservationComponent
 		Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
 						Code is LNC#81260-2 "Complex genetic variant [ID]"
 						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
 
 		Element:		DNAChangeType		// AminoAcidChangepHGVS 
-		Based on:		CodedObservationComponent
+		Parent:		CodedObservationComponent
 		Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
 						Code is LNC#48005-3 "DNA change type"
 						// DataValue from DNAChangeTypeVS if covered // mlt: move to 48019-4
