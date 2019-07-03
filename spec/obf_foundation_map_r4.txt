@@ -2,9 +2,8 @@ Grammar:	Map 5.1
 Namespace:	obf
 Target:		FHIR_R4
 
-DomainResource maps to DomainResource:
+Resource maps to Resource:
 	Language maps to language
-	Narrative maps to text
 	ImplicitRules maps to implicitRules
 	Metadata.VersionId maps to meta.versionId
 	Metadata.SourceSystem maps to meta.source
@@ -12,6 +11,9 @@ DomainResource maps to DomainResource:
 	Metadata.LastUpdated maps to meta.lastUpdated
 	Metadata.SecurityLabel maps to meta.security
 	Metadata.Tag maps to meta.tag
+
+DomainResource maps to DomainResource:
+	Narrative maps to text
 
 Composition maps to Composition (no profile):
 	Identifier maps to identifier
@@ -34,7 +36,7 @@ Composition maps to Composition (no profile):
     EventContext.TimePeriod maps to event.period
     EventContext.SupportingInformation maps to event.detail
     // section
-    Section maps to section
+    Section maps to section (slice on = code; slice strategy = includes)
     Section.Title maps to section.title
     Section.Code maps to section.code
     Section.Author maps to section.author
@@ -42,7 +44,7 @@ Composition maps to Composition (no profile):
     Section.Narrative maps to section.text
     Section.Type maps to section.mode
     Section.SortOrder maps to section.orderedBy // terrible FHIR name!
-    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.Resource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
     Section.EmptyReason maps to section.emptyReason
 	Section.Section maps to section.section
 
@@ -124,7 +126,7 @@ ValueSet maps to ValueSet (no profile):
     // compose.include.concept.designation.language	-- Change binding strength from extensible to preferred
 
 
-DocumentReference maps to DocumentReference (no profile):
+DocumentReference maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference (no profile):
     MasterIdentifier maps to masterIdentifier
     Identifier maps to identifier
     Status maps to status
@@ -190,7 +192,7 @@ List maps to List (no profile):
     ListItem.Inactive maps to entry.deleted
     ListItem.TimePeriod.BeginDateTime maps to entry.date
     ListItem.TimePeriod.EndDateTime maps to entry.extension
-    ListItem.DomainResource maps to entry.item
+    ListItem.Resource maps to entry.item
     EmptyReason maps to emptyReason
 
 Signature maps to Signature (no profile):
@@ -203,6 +205,6 @@ Signature maps to Signature (no profile):
 	BinaryData maps to data
 
 Annotation maps to Annotation (no profile):
-//	Text maps to text  // text changed to markdown in R4cls
+	TextMarkdown maps to text
 	PersonAuthor maps to author[x]
 	OccurrenceTime maps to time

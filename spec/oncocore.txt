@@ -77,7 +77,7 @@ Property:          PrimaryCancerCondition 0..1
 /*
 EntryElement:   CancerHistologicType  // Morphology ICD-O-3
 // MK - PLEASE EXPLAIN COMMENT:  did not use precoordinated codes because only available for clinical and pathologic. 
-Based on:       SimpleCodedLaboratoryObservation
+Parent:       SimpleCodedLaboratoryObservation
 Description:    "Classification of the cancer by the type of tissue in which the cancer originates. (Source: NCI)"
 // MK - PLEASE EXPLAIN:  'TODO: LOINC number for Cancer Histology (SNOMED) whose title and related code goes to a value set containing descendants of known cancer morphology codes.' "
                 Code is SCT#371441004 "Histologic type (observable entity)"
@@ -133,7 +133,7 @@ Description:       "Whether the tumor is the original or first tumor in the body
 Value:             concept from YesNoUnknownVS (required)
 
 Entry:             TumorDimensions
-Parent:            CodedLaboratoryObservation
+Parent:            LaboratoryObservation
 Description:       "The size of a given tumor along different dimensions."
 Property:          RelatedTumor 1..1
                    Code = SCT#263605001 "Tumor size (observable entity)"
@@ -205,25 +205,25 @@ Description:       "A radiological treatment addressing a cancer condition. The 
                    // It is cancer-related only if the reason is a cancer condition
                    ReasonReference substitute CancerSurgicalProcedureReasonReference/*
 EntryElement:	TumorMarginDescription
-Based on:		CodedObservationComponent
+Parent:		CodedObservationComponent
 Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
 				Code is TBD#TBD
 		        DataValue from TumorMarginDescriptionVS
 
 Element:		TumorCellularity
 Concept:		MTH#C4055283
-Based on:		QuantitativeObservationComponent
+Parent:		QuantitativeObservationComponent
 Description:	"Percentage of cells in a sample that are cancerous"
 				DataValue.Quantity.Units is UCUM#%
 
 Element:		PercentageOfInSituDisease
-Based on:		QuantitativeObservationComponent
+Parent:		QuantitativeObservationComponent
 Description:	"The percentage of the cancer that is in situ, as opposed to invading other tissues."
 			    DataValue.Quantity.Units is UCUM#%
 
 EntryElement:	EarliestDateOfCancerCondition
 // TODO_discussion: Not convinced we need a separate element for this given the Onset property of Condition.
-Based on:		SimpleNonLaboratoryObservation
+Parent:		SimpleNonLaboratoryObservation
 Concept:		LNC#77975-1 "Earliest date of diagnosis"
 Description:	"The earliest date of diagnosis (clinical or laboratory) of an illness or condition (Source: LOINC). This element is the same as the WhenClinicallyRecognized property in CancerCondition."
 Value:			dateTime // parent class only allows time, dateTime or TimePeriod as choices.
