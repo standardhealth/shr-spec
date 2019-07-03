@@ -65,7 +65,7 @@ Value:             Observation or DiagnosticReport
 Group:             Evidence
 Description:       "Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
 Property:          Manifestation 0..*
-Property:          DomainResource 0..*
+Property:          Resource 0..*
 
 Element:           Manifestation
 Description:       "Clinical symptoms/signs."
@@ -108,7 +108,7 @@ Property:          Components 0..1
                    // upper card forced by DSTU 2
                    Category from http://hl7.org/fhir/ValueSet/observation-category (extensible)
                    // not a code
-                   FocalSubject only DomainResource
+                   FocalSubject only Resource
 
 Entry:             NonLaboratoryObservation
 Parent:            Observation
@@ -270,8 +270,10 @@ Property:          ReferenceRange 0..0
 
 Entry:             DiagnosticReport
 Parent:            SituationStatement
+Description:       "The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports."
 Property:          BasedOn 0..*
-Property:          Category 0..1
+// Category is 0..1 in DSTU 2 and 1..* in US-Core v3. Therefore must be 1..1.
+Property:          Category 1..1
 Property:          RelevantTime 0..1
 Property:          DiagnosticReportPerformer 0..1
 Property:          ResultsInterpreter 0..1
@@ -285,10 +287,19 @@ Property:          PresentedForm 0..*
                    // 'issued' is required in DSTU-2
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status (required)
+                   // SubjectOfRecord is required in US Core v3
+                   SubjectOfRecord 1..1
                    SubjectOfRecord substitute ObservationSubjectOfRecord
                    CareContext only Encounter
                    StatementDateTime 1..1
-                   Code from http://hl7.org/fhir/ValueSet/report-codes (preferred)
+                   // US Core v3 uses extensible binding to http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-report-and-note-codes, but this contains all of LOINC, just like http://hl7.org/fhir/ValueSet/report-codes
+                   Code from http://hl7.org/fhir/ValueSet/report-codes (extensible)
+
+Entry:             LaboratoryReport
+Parent:            DiagnosticReport
+Description:       "A grouping or summarization of laboratory results, where individual results are typically Observations or nested Observations (panels). This class aligns with US Core DiagnosticReport Profile for Laboratory Results Reporting."
+                   // result must map to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab in R4
+                   Observation substitute LaboratoryObservation
 
 Entry:             SimpleCodedNonLaboratoryObservation
 Parent:            CodedNonLaboratoryObservation
@@ -326,8 +337,8 @@ Element:           ObservationBasedOn
 Parent:            BasedOn
 Description:       "The plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
                    Value only MedicationRequest or ServiceRequest or ProcedureRequest or ReferralRequest
+                   // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder)        
 
-                   // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder) 
 Element:           ObservationPartOf
 Parent:            PartOf
 Description:       "A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure."
@@ -370,17 +381,17 @@ Description:       "Identifier assigned by the lab carrying out the test."
 
 /*
 		Element:		ResponsibleObserver
-		Based on:		Performer
+		Parent:		Performer
 		Description:	"Person directly responsible for carrying out the test."
 		Value:			ref(Patient) or ref(RelatedPerson) or ref(Practitioner) 
 
 		Element:		PerformingLaboratory
-		Based on:		Performer
+		Parent:		Performer
 		Description:	"Organization responsible for carrying out the test."
 		Value:			ref(Organization)
 		
 		Element:		PerformingOrganizationMedicalDirector
-		Based on:		Performer
+		Parent:		Performer
 		Description:	"Director of the laboratory performing the test."
 		Value:			ref(Practitioner)
 */
@@ -432,14 +443,14 @@ Element:           SocialHistoryObservationBasedOn
 Parent:            ObservationBasedOn
 Description:       "The plan, proposal or order that is fulfilled in whole or in part by this observation."
                    Value only ServiceRequest or ProcedureRequest or ReferralRequest
-
                    // or ref(CarePlan) 
+
 Element:           SocialHistoryObservationPartOf
 Parent:            ObservationPartOf
 Description:       "The larger procedure that this particular observation is a component or step."
                    Value only Procedure
-
                    // or ref(ImagingStudy) or ref(Immunization)
+
 Element:           StageSummary
 Description:       "A code representing the current stage of a disease."
 Value:             concept

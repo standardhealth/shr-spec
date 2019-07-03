@@ -2,11 +2,9 @@ Grammar:	Map 5.1
 Namespace:	obf
 Target:		FHIR_DSTU_2
 
-
-DomainResource maps to DomainResource:
+Resource maps to Resource:
 //	_Entry.EntryId maps to id
 	Language maps to language
-	Narrative maps to text
 	ImplicitRules maps to implicitRules
 	Metadata.VersionId maps to meta.versionId
 	Metadata.SourceSystem maps to meta.extension
@@ -15,6 +13,9 @@ DomainResource maps to DomainResource:
 	Metadata.LastUpdated maps to meta.lastUpdated
 	Metadata.SecurityLabel maps to meta.security
 	Metadata.Tag maps to meta.tag
+
+DomainResource maps to DomainResource:
+	Narrative maps to text
 
 Composition maps to Composition:
 	Identifier maps to identifier
@@ -36,7 +37,7 @@ Composition maps to Composition:
     EventContext.SupportingInformation maps to event.detail
     CareContext maps to encounter
     // section
-    Section maps to section
+    Section maps to section (slice on = code; slice strategy = includes)
     Section.Title maps to section.title
     Section.Code maps to section.code
     Section.Author maps to section.extension
@@ -44,7 +45,7 @@ Composition maps to Composition:
     Section.Narrative maps to section.text
     Section.Type maps to section.mode
     Section.SortOrder maps to section.orderedBy // terrible FHIR name!
-    Section.DomainResource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.Resource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
     Section.EmptyReason maps to section.emptyReason
 	Section.Section maps to section.section
 
@@ -117,7 +118,7 @@ List maps to List:
     ListItem.Inactive maps to entry.deleted
     ListItem.TimePeriod.BeginDateTime maps to entry.date
     ListItem.TimePeriod.EndDateTime maps to entry.extension
-    ListItem.DomainResource maps to entry.item
+    ListItem.Resource maps to entry.item
     EmptyReason maps to emptyReason
 
 Signature maps to Signature:
