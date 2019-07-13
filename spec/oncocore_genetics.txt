@@ -3,7 +3,7 @@ Namespace:         onco.core
 Description:       "Oncology data elements that broadly apply to most cancer cases."
 Uses:              shr.core, obf
 CodeSystem:        LNC = http://loinc.org
-CodeSystem:        UNK1 = http://terminology.hl7.org/CodeSystem/v2-0074
+CodeSystem:        V20074 = http://terminology.hl7.org/CodeSystem/v2-0074
 
 Entry:             TumorMarkerTest
 Parent:            LaboratoryObservation
@@ -50,9 +50,9 @@ Property:          SpecimenType 0..1
 Property:          RegionStudied 0..*
                    ObservationSubjectOfRecord only Patient
                    // US Core v3 requires an extensible binding to Code
-                   Code from https://www.ncbi.nlm.nih.gov/gtr (extensible)
+                   Code from GeneticTestVS (extensible)
                    Category 1..1
-                   Category = UNK1#GE
+                   Category = V20074#GE
                    Observation
                    includes GeneticVariantFound 0..*
                    includes GeneticVariantTested 0..*
@@ -81,7 +81,7 @@ Property:          VariantTested 1..1
 Element:           GeneStudied
 Description:       "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HGNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
                    // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
-Value:             concept from http://www.genenames.org (extensible)
+Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
 
 Group:             VariantTested
 Description:       "The specific genetic variant that is targeted by this test."
@@ -91,7 +91,7 @@ Property:          VariantDescription 0..1
 
 Element:           VariantIdentifier
 Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
-Value:             concept from https://www.ncbi.nlm.nih.gov/clinvar (extensible)
+Value:             concept from http://www.ncbi.nlm.nih.gov/clinvar/ (extensible)
 
 Element:           VariantHGVSName
 Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
@@ -128,8 +128,8 @@ Description:       "The genomic class of the specimen being analyzed, for exampl
 Group:             VariantFoundIdentifier
 Parent:            CodedObservationComponent
 Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
-                   Code = LNC#48003-8 "DNA sequence variation identifier"
-                   DataValue from https://www.ncbi.nlm.nih.gov/clinvar (extensible)
+                   Code = LNC#48003-8 "DNA sequence variation identifier [Identifier]"
+                   DataValue from http://www.ncbi.nlm.nih.gov/clinvar/ (extensible)
                    DataAbsentReason 0..0
 
 Group:             VariantFoundHGVSName
@@ -144,7 +144,7 @@ Description:       "Symbolic representation of the variant used in HGVS, for exa
 Group:             VariantFoundDescription
 Parent:            ObservationComponent
 Description:       "Description of the variant. Ideally, this should be a human-readable 'thumbnail' display."
-                   Code = LNC#47998-0 "DNA sequence variation display name"
+                   Code = LNC#47998-0 "DNA sequence variation display name [Text] Narrative"
                    DataValue only string
                    DataAbsentReason 0..0/* out of scope for mCODE 0.9
 
@@ -163,7 +163,7 @@ Description:       "Description of the variant. Ideally, this should be a human-
 		Parent:		CodedObservationComponent
 		Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
 						Code is LNC#81260-2 "Complex genetic variant [ID]"
-						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
+						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar/ 
 
 		Element:		DNAChangeType		// AminoAcidChangepHGVS 
 		Parent:		CodedObservationComponent
