@@ -4,12 +4,26 @@ Description:       "The SHR Core domain contains definitions for a variety of ge
 Uses:              shr.core
 CodeSystem:        LNC = http://loinc.org
 
+Element:           ProceduralObservationBasedOn
+Parent:            ObservationBasedOn
+Description:       "The plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
+                   Value only ServiceRequest or ProcedureRequest
+                   // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder)
+
+Element:           ProceduralObservationPartOf
+Parent:            ObservationPartOf
+Description:       "The larger procedure that this particular observation is a component or step."
+                   Value only Procedure
+                   // or ref(ImagingStudy) or ref(Immunization)                 
+
 Entry:             ECOGPerformanceStatus
 Parent:            SimpleCodedNonLaboratoryObservation
 Description:       "The Eastern Cooperative Oncology Group (ECOG) Performance Status represents the patient's functional status and is used to determine their ability to tolerate therapies in serious illness, specifically for chemotherapy. Source: LOINC"
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#89262-0 "ECOG Performance Status [Interpretation]"
                    Performer only Practitioner
+                   ObservationBasedOn substitute ProceduralObservationBasedOn
+                   ObservationPartOf substitute ProceduralObservationPartOf
                    DataValue from ECOGPerformanceStatusVS (required)
                    BodyLocation 0..0
                    Device 0..0
@@ -20,6 +34,8 @@ Description:       "The Karnofsky Performance Status (KPS) is a tool used to mea
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#89245-5 "Karnofsky Performance Status [Interpretation]"
                    Performer only Practitioner
+                   ObservationBasedOn substitute ProceduralObservationBasedOn
+                   ObservationPartOf substitute ProceduralObservationPartOf                  
                    DataValue from KarnofskyPerformanceStatusVS (required)
                    // not body-site specific
                    // does not require a device
