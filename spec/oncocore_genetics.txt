@@ -3,14 +3,13 @@ Namespace:         onco.core
 Description:       "Oncology data elements that broadly apply to most cancer cases."
 Uses:              shr.core, obf
 CodeSystem:        LNC = http://loinc.org
-CodeSystem:        UNK1 = http://terminology.hl7.org/CodeSystem/v2-0074
+CodeSystem:        V20074 = http://terminology.hl7.org/CodeSystem/v2-0074
 
 Entry:             TumorMarkerTest
 Parent:            LaboratoryObservation
-Concept:           LNC#21924-6 "Tumor marker Cancer"
-Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from NCI Dictionary of Cancer Terms and Cancer.net)
+Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms) and [Cancer.net](https://www.cancer.net/))
 
-Implementation note: The data value element is 'required if known' (0..1) because, for quantitative tests that are indeterminate, no data value will be reported, and the reason for the null value should be reported in the DataAbsentReason field."
+Implementation note: The data value for TumorMarkerTest has cardinality is 0..1 (required if known) because when the test result is indeterminate, no quantitative data value will be reported. Instead, the reason for the null value will be reported in the DataAbsentReason field."
                    ObservationSubjectOfRecord only Patient
                    Code from TumorMarkerTestVS (extensible)
                    DataValue substitute TumorMarkerTestDataValue
@@ -50,9 +49,9 @@ Property:          SpecimenType 0..1
 Property:          RegionStudied 0..*
                    ObservationSubjectOfRecord only Patient
                    // US Core v3 requires an extensible binding to Code
-                   Code from https://www.ncbi.nlm.nih.gov/gtr (extensible)
+                   Code from GeneticTestVS (extensible)
                    Category 1..1
-                   Category = UNK1#GE
+                   Category = V20074#GE
                    Observation
                    includes GeneticVariantFound 0..*
                    includes GeneticVariantTested 0..*
@@ -81,7 +80,7 @@ Property:          VariantTested 1..1
 Element:           GeneStudied
 Description:       "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HGNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
                    // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
-Value:             concept from http://www.genenames.org (extensible)
+Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
 
 Group:             VariantTested
 Description:       "The specific genetic variant that is targeted by this test."
@@ -91,7 +90,7 @@ Property:          VariantDescription 0..1
 
 Element:           VariantIdentifier
 Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
-Value:             concept from https://www.ncbi.nlm.nih.gov/clinvar (extensible)
+Value:             concept from ClinVarVS (extensible)
 
 Element:           VariantHGVSName
 Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
@@ -128,8 +127,8 @@ Description:       "The genomic class of the specimen being analyzed, for exampl
 Group:             VariantFoundIdentifier
 Parent:            CodedObservationComponent
 Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
-                   Code = LNC#48003-8 "DNA sequence variation identifier"
-                   DataValue from https://www.ncbi.nlm.nih.gov/clinvar (extensible)
+                   Code = LNC#48003-8 "DNA sequence variation identifier [Identifier]"
+                   DataValue from ClinVarVS (extensible)
                    DataAbsentReason 0..0
 
 Group:             VariantFoundHGVSName
@@ -144,7 +143,7 @@ Description:       "Symbolic representation of the variant used in HGVS, for exa
 Group:             VariantFoundDescription
 Parent:            ObservationComponent
 Description:       "Description of the variant. Ideally, this should be a human-readable 'thumbnail' display."
-                   Code = LNC#47998-0 "DNA sequence variation display name"
+                   Code = LNC#47998-0 "DNA sequence variation display name [Text] Narrative"
                    DataValue only string
                    DataAbsentReason 0..0/* out of scope for mCODE 0.9
 
@@ -163,7 +162,7 @@ Description:       "Description of the variant. Ideally, this should be a human-
 		Parent:		CodedObservationComponent
 		Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
 						Code is LNC#81260-2 "Complex genetic variant [ID]"
-						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar 
+						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar/ 
 
 		Element:		DNAChangeType		// AminoAcidChangepHGVS 
 		Parent:		CodedObservationComponent
