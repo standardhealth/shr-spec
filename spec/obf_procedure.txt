@@ -67,7 +67,7 @@ Description:       "The justification that the procedure was performed."
 
 Entry:             RadiationProcedure
 Parent:            Procedure
-Description:       "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
+Description:       "A radiation oncology procedure. The procedure might represent a complete course of treatment, or a single session that is part of a series of treatments. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that. If the procedure represents the entire course of therapy, the RadiationFractionsDelivered should indicate the number of sessions. If the procedure represents one session, then the RadiationFractionsDelivered would be 1, and the TotalRadiationDoseDelivered will be the same as the RadiationDosePerFraction."
 Property:          RadiationDosePerFraction 0..1
 Property:          RadiationFractionsDelivered 0..1
 Property:          TotalRadiationDoseDelivered 0..1
@@ -198,12 +198,12 @@ Description:       "Constrains participants to classes that are accepted by FHIR
                    Value only Practitioner
 
 Element:           RadiationDosePerFraction
-Description:       "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
-Value:             Ratio
+Description:       "The amount of radiation administered during a single session (fraction) of radiation therapy therapy."
+Value:             Quantity
+                   Value[Quantity].Units = UCUM#cGy
 
 Element:           RadiationFractionsDelivered
-Concept:           LNC#21959-2 "Number of radiation treatment"
-Description:       "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
+Description:       "Records the total number of treatment sessions (fractions) administered during the first course of therapy. Corresponds to LOINC 21950-2 'Number of radiation treatment' [sic]."
 Value:             Quantity
                    Value[Quantity].Units = UCUM#1
 
@@ -211,7 +211,7 @@ Element:           TotalRadiationDoseDelivered
 Concept:           SCT#445461008 "Total radiation dose delivered (observable entity)"
 Description:       "The total amount of radiation dose delivered for the course of therapy. (source: SNOMED, ASTRO)"
 Value:             Quantity
-                   Value[Quantity].Units = UCUM#Gy
+                   Value[Quantity].Units = UCUM#cGy
 
 Entry:             DiagnosticImaging
 Parent:            ImagingProcedure
