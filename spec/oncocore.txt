@@ -29,7 +29,7 @@ Entry:             CancerHistologicGrade
                    // did not use precoordinated codes because only available for clinical and pathologic.
 Parent:            CodedLaboratoryObservation
 Description:       "A description of a tumor based on how abnormal the cancer cells and tissue look under a microscope and how quickly the cancer cells are likely to grow and spread. Low-grade cancer cells look more like normal cells and tend to grow and spread more slowly than high-grade cancer cells. (Source: NCI Dictionary of Cancer Terms)"
-Property:          PrimaryCancerCondition 0..1
+                   FocalSubject only PrimaryCancerCondition  // MK change 7/19/2019
                    Code = LNC#21858-6 "Grade Cancer"
                    //The LOINC answer list specifies "code - not defined in code system". Instead of adding an "other" term, loosening binding to to allow for codes missing from value set.
                    DataValue from CancerHistologicGradeVS (extensible)
@@ -72,7 +72,7 @@ Parent:            CancerCondition
 Description:       "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site (reference: https://www.cancer.gov/publications/dictionaries/cancer-terms/def/secondary-tumor)."
 Property:          PrimaryCancerCondition 0..1
                    Code from SecondaryCancerDisorderVS (extensible)
-                   StageInformation 0..0
+                   StageInformation 0..0  // secondary cancers are not staged
 
 /*
 EntryElement:   CancerHistologicType  // Morphology ICD-O-3
@@ -93,8 +93,8 @@ Value:             concept
 Entry:             CancerDiseaseStatus
 Parent:            CodedNonLaboratoryObservation  // Could be ClinicalImpression, but that is not supported by most systems
 Description:       "A clinician's qualitative judgment on the current trend of the cancer, e.g., whether it is stable, worsening (progressing), or improving (responding). The judgment may be based a single type or multiple kinds of evidence, such as imaging data, assessment of symptoms, tumor markers, laboratory data, etc."
-Property:          RelatedCancerCondition 0..1
 Property:          EvidenceType 0..*
+                   FocalSubject substitute RelatedCancerCondition  // MK changed 7/19/2019 
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#88040-1 "Response to cancer treatment"
                    Performer only Practitioner
@@ -106,8 +106,9 @@ Property:          EvidenceType 0..*
                    EvidenceType from CancerDiseaseStatusEvidenceTypeVS (required)
 
 Element:           RelatedCancerCondition
+Parent:            FocalSubject
 Description:       "Cancer condition this information relates to. Includes the primary cancer, secondary cancer, or a particular tumor."
-Value:             PrimaryCancerCondition or SecondaryCancerCondition or Tumor
+                   Value only PrimaryCancerCondition or SecondaryCancerCondition or Tumor
 
 /* Discussion: How to capture date and site of first metastases.
 Could be modeled with condition, observation, or clinical impression.
@@ -134,20 +135,18 @@ Value:             concept from YesNoUnknownVS (required)
 Entry:             TumorDimensions
 Parent:            LaboratoryObservation
 Description:       "The size of a given tumor along different dimensions."
-Property:          RelatedTumor 1..1
+                   FocalSubject 1..1
+                   FocalSubject only Tumor
                    Code = SCT#263605001 "Tumor size (observable entity)"
                    DataValue 0..0
                    PanelMembers 0..0
+                   ReferenceRange 0..0
                    Components.ObservationComponent 1..1
                    Components.ObservationComponent
                    includes TumorLongestDimension 0..1
                    includes TumorDimension2 0..1
                    includes TumorDimension3 0..1
                    includes SizeOfGrossTumorBed 0..1
-
-Element:           RelatedTumor
-Description:       "The tumor that is being characterized."
-Value:             Tumor
 
 Group:             TumorLongestDimension
 Parent:            QuantitativeObservationComponent
@@ -188,11 +187,11 @@ Entry:             CancerRelatedSurgicalProcedure
 Parent:            SurgicalProcedure
 Description:       "A surgical action addressing a cancer condition."
                    ReasonCode from CancerDisorderVS (extensible)
-                   ReasonReference substitute CancerSurgicalProcedureReasonReference
+                   ReasonReference substitute CancerProcedureReasonReference
                    // It is cancer-related only if the reason is a cancer condition
                    Code from CancerRelatedSurgicalProcedureVS (extensible)
 
-Element:           CancerSurgicalProcedureReasonReference
+Element:           CancerProcedureReasonReference
 Parent:            ProcedureReasonReference
 Description:       "Reference to a primary or secondary cancer condition."
                    Value only PrimaryCancerCondition or SecondaryCancerCondition
@@ -202,7 +201,9 @@ Parent:            RadiationProcedure
 Description:       "A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions."
                    ReasonCode from CancerDisorderVS (extensible)
                    // It is cancer-related only if the reason is a cancer condition
-                   ReasonReference substitute CancerSurgicalProcedureReasonReference/*
+                   ReasonReference substitute CancerProcedureReasonReference
+                   
+/*
 EntryElement:	TumorMarginDescription
 Parent:		CodedObservationComponent
 Description:	"Description of the edge or border of tumor in situ by radiologist or of removed tumor by pathologist."
