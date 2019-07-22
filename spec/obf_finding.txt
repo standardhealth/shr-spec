@@ -23,7 +23,7 @@ Entry:             Condition
 Parent:            SituationStatement
 Description:       "A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
 The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
-SHR Condition uses the SHR BodyLocation structure that includes not only a code, but optional laterality, direction, clock direction, and distance. If included, the distance is measured from the location specified by the code, laterality, and direction."
+This profiled Condition uses the BodyLocation structure that includes not only a code, but optional laterality, direction, and relation to landmark(s)."
 Property:          ClinicalStatus 0..1
 Property:          Category 1..1
 Property:          Severity 0..1
@@ -47,7 +47,7 @@ Property:          DateOfDiagnosis 0..1
                    Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem (extensible)
                    ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical (required)
                    // category is 1..1 in Argonaut
-                   Category from ConditionCategoryVS (extensible)
+                   Category from http://hl7.org/fhir/us/core/ValueSet/us-core-condition-category (extensible)
                    Severity from http://hl7.org/fhir/ValueSet/condition-severity (preferred)
 
 Group:             StageInformation
@@ -299,8 +299,7 @@ Property:          PresentedForm 0..*
                    SubjectOfRecord substitute ObservationSubjectOfRecord
                    CareContext only Encounter
                    StatementDateTime 1..1
-                   // US Core v3 uses extensible binding to http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-report-and-note-codes, but this contains all of LOINC, just like http://hl7.org/fhir/ValueSet/report-codes
-                   Code from http://hl7.org/fhir/ValueSet/report-codes (extensible)
+                   Code from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-report-and-note-codes (extensible)
 
 Entry:             LaboratoryReport
 Parent:            DiagnosticReport
@@ -386,26 +385,26 @@ Description:       "Identifier assigned by the lab carrying out the test."
                    Type 1..1
                    Type = UNK0#FILL
 
-/*
-		Element:		ResponsibleObserver
-		Parent:		Performer
-		Description:	"Person directly responsible for carrying out the test."
-		Value:			ref(Patient) or ref(RelatedPerson) or ref(Practitioner) 
-
-		Element:		PerformingLaboratory
-		Parent:		Performer
-		Description:	"Organization responsible for carrying out the test."
-		Value:			ref(Organization)
-		
-		Element:		PerformingOrganizationMedicalDirector
-		Parent:		Performer
-		Description:	"Director of the laboratory performing the test."
-		Value:			ref(Practitioner)
-*/
 Element:           LaboratoryObservationPerformer
 Parent:            Performer
 Description:       "The practitioner that carried out the observation or action."
                    Value only Practitioner or Organization
+/*
+		Element:		ResponsibleObserver
+		Parent:		    Performer
+		Description:	"Person directly responsible for carrying out the test."
+		Value:			ref(Practitioner) 
+
+		Element:		PerformingLaboratory
+		Parent:		    Performer
+		Description:	"Organization responsible for carrying out the test."
+		Value:			ref(Organization)
+		
+		Element:		PerformingOrganizationMedicalDirector
+		Parent:		    Performer
+		Description:	"Director of the laboratory performing the test."
+		Value:			ref(Practitioner)
+*/
 
 Entry:             QuantitativeLaboratoryObservation
 Parent:            LaboratoryObservation
@@ -422,7 +421,7 @@ Description:       "An observation whose result is a quantity, with no component
 Entry:             LaboratoryPanel
 Parent:            LaboratoryObservation
 Description:       "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
-                   Device 0..0
+                   Device 0..0 // seems to be correct that a panel never has a device common to all independent sub-observations
                    Components 0..0
 
 Entry:             HeadlessLaboratoryPanel
@@ -479,7 +478,9 @@ Value:             dateTime
 */
 Entry:             ComorbidCondition
 Parent:            Condition
-Description:       "A comorbidity refers to one or more diseases or conditions that occur along with another condition in the same person at the same time. Conditions considered comorbidities are often long-term or chronic conditions. Comorbidities are defined relative to an index disease and may be categorical, rather than described in full detail. The comorbid condition class provides comorbidity codes corresponding the Elixhauser Comorbidity Index."
+Description:       "A comorbidity refers to one or more diseases or conditions that occur along with another condition in the same person at the same time. Conditions considered comorbidities are often long-term or chronic conditions. Comorbidities are defined relative to an index disease and may be categorical, rather than described in full detail. The comorbid condition class provides comorbidity codes corresponding the Elixhauser Comorbidity Index. 
+
+Conformance note: If an ICD-10-CM code is used for the code attribute, and a semantically equivalent SNOMED code is available, the resulting instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
                    Code from ComorbidConditionVS (extensible)
                    Category = SCT#398192003 "Co-morbid conditions (finding)"
                    DateOfDiagnosis 0..0

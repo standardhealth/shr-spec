@@ -7,9 +7,13 @@ CodeSystem:     ICD10CM = http://hl7.org/fhir/sid/icd-10-cm
 CodeSystem:     AJCC = http://cancerstaging.org
 CodeSystem:     GTR = http://www.ncbi.nlm.nih.gov/gtr
 CodeSystem:     CLINVAR = http://www.ncbi.nlm.nih.gov/clinvar/
+CodeSystem:     USDRLC = http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes
 
 ValueSet:    GeneticTestVS
-Description: "Value set containing codes representing genetic tests. Currently the best source of codes is the [Genetic Test Registry](http://www.ncbi.nlm.nih.gov/gtr). The user should be aware that the GTR cannot be a sole reliable source since the test data is voluntarily updated and there is no overarching data steward. This value set contains all codes from GTR."
+Description: "Value set containing codes representing genetic tests. Currently the best source of codes is the [Genetic Test Registry](http://www.ncbi.nlm.nih.gov/gtr). The user should be aware that the GTR cannot be a sole reliable source since the test data is voluntarily updated and there is no overarching data steward. This value set contains all codes from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes, and all codes from GTR.
+
+Conformance note: To be conformant to US Core, a LOINC code must be used, if available. Only if there is no suitable code in LOINC may other codes (such as those from GTR) be used."
+Includes codes from USDRLC
 Includes codes from GTR
 
 ValueSet:    ClinVarVS
@@ -21,7 +25,7 @@ Description:  "Codes describing the location(s) of primary or secondary cancer. 
 Includes codes descending from SCT#123037004  "Body Structure"
 
 ValueSet:   HistologyMorphologyBehaviorVS
-Description: "Codes representing the structure, arrangement, and behavioral characteristics of tumors and cancer cells. Codes are preferrably taken from the SNOMED CT hierarchy under 367651003 (Malignant neoplasm of primary, secondary, or uncertain origin (morphologic abnormality)). ICD-O-3 morphology codes (including behavior suffix) can also be used, although they are not included in the value set for intellectual property reasons. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6 or /9. Only SNOMED CT and ICD-O-3 are considered conformant to the specification."
+Description: "Codes representing the structure, arrangement, and behavioral characteristics of tumors and cancer cells. Codes are preferrably taken from the SNOMED CT hierarchy under 367651003 (Malignant neoplasm of primary, secondary, or uncertain origin (morphologic abnormality)). ICD-O-3 morphology codes (including behavior suffix) can also be used, although they are not included in the value set for intellectual property reasons. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6. Only SNOMED CT and ICD-O-3 are considered conformant to the specification. However, to be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html), ICD-O-3 can only be used if there is no suitable code in SNOMED-CT."
 Includes codes descending from SCT#367651003 "Malignant neoplasm of primary, secondary, or uncertain origin (morphologic abnormality)" 
 
 /*
@@ -157,7 +161,9 @@ Description: "Modifiers related to the staging category. Examples of modifiers i
 */
 
 ValueSet: CancerRelatedSurgicalProcedureVS
-Description: "Includes selected SNOMED CT codes that may be used in the treatment of cancer tumors. Codes from ICD-10-PCS and CPT are acceptable. CPT codes are not listed here due to intellectual property restrictions. ICD-10-PCS codes are not listed because of a limitation in the FHIR Implementation Guide publisher. For CPT and ICD-10-PCS, only codes representing surgical procedures should be used."
+Description: "Includes selected SNOMED CT codes that may be used in the treatment of cancer tumors. Codes from ICD-10-PCS and CPT are acceptable. CPT codes are not listed here due to intellectual property restrictions. ICD-10-PCS codes are not listed because of a limitation in the FHIR Implementation Guide publisher. For CPT and ICD-10-PCS, only codes representing surgical procedures should be used. 
+
+Conformance note: If an ICD-10-PCS code is used, and a semantically equivalent SNOMED CT code is available, the resulting FHIR Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
 SCT#174337000    "Destruction of lesion"
 SCT#49264007    "Excision of lesion"
 SCT#119894003    "Anus excision"
@@ -224,7 +230,7 @@ SCT#174431000    "Wedge resecton of liver"
 SCT#85946004    "Lobectomy of liver"
 SCT#15257006    "Lobectomy w/ partial excision of adjacent lobes"
 SCT#107963000    "Hepatectomy"
-SCT#13600000000000000    "Excision of tumor of liver"
+SCT#13580001000004101   "Excision of tumor of liver"
 SCT#27280000    "Liver transplant w/recipient hepatectomy"
 SCT#4974007    "Operation on liver [NOS]"
 SCT#450608000    "Destruction of lesion"

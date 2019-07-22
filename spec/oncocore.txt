@@ -17,7 +17,9 @@ Property:          HistologyMorphologyBehavior 0..1
 
 Entry:             PrimaryCancerCondition
 Parent:            CancerCondition
-Description:       "Records the history of the primary cancer condition, the original or first tumor in the body (ref https://www.cancer.gov/publications/dictionaries/cancer-terms/def/primary-tumor). Cancers of uncertain origin or behavior should be documented as primary."
+Description:       "Records the history of the primary cancer condition, the original or first tumor in the body (ref https://www.cancer.gov/publications/dictionaries/cancer-terms/def/primary-tumor). Cancers that are not clearly secondary (of uncertain origin or behavior) should be documented as primary. 
+
+Conformance note: For the code attribute, to be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html), SNOMED-CT must be used unless there is no suitable code, in which case ICD-10-CM can be used."
                    Code from PrimaryOrUncertainBehaviorCancerDisorderVS (extensible)
                    StageInformation.StageDetail only CancerStageGroup  // Clinical or Path
 
@@ -69,7 +71,9 @@ Description:       "The information comes from a practitioner who asserts the co
 
 Entry:             SecondaryCancerCondition
 Parent:            CancerCondition
-Description:       "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site (reference: https://www.cancer.gov/publications/dictionaries/cancer-terms/def/secondary-tumor)."
+Description:       "Records the history of secondary neoplasms, including location(s) and the date of onset of metastases. A secondary cancer results from the spread (metastasization) of cancer from its original site (reference: https://www.cancer.gov/publications/dictionaries/cancer-terms/def/secondary-tumor). 
+
+Conformance note: For the code attribute, to be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html), SNOMED-CT must be used unless there is no suitable code, in which case ICD-10-CM can be used."
 Property:          PrimaryCancerCondition 0..1
                    Code from SecondaryCancerDisorderVS (extensible)
                    StageInformation 0..0  // secondary cancers are not staged
@@ -121,7 +125,9 @@ Conclusion: Having a place for the onset date of mets, which is an mCODE require
 */
 Entry:             Tumor
 Parent:            AbnormalBodyStructure
-Description:       "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary)."
+Description:       "The presence of an abnormal mass of tissue (neoplasm) that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). (source: NCI Dictionary). 
+
+Conformance note: For the HistologyMorphologyBehavior attribute, to be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html), SNOMED-CT must be used unless there is no suitable code, in which case ICD-O-3 can be used."
 Property:          PrimaryCancerCondition 0..1
 Property:          IsPrimaryTumor 0..1
                    Code from HistologyMorphologyBehaviorVS (extensible)
@@ -185,7 +191,9 @@ Description:       "The edge or border of the tissue removed in cancer surgery. 
 
 Entry:             CancerRelatedSurgicalProcedure
 Parent:            SurgicalProcedure
-Description:       "A surgical action addressing a cancer condition."
+Description:       "A surgical action addressing a cancer condition. 
+
+Conformance note: If an ICD-10-PCS code is used in the code attribute, and there is a semantically equivalent SNOMED CT or CPT code, the resulting Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
                    ReasonCode from CancerDisorderVS (extensible)
                    ReasonReference substitute CancerProcedureReasonReference
                    // It is cancer-related only if the reason is a cancer condition
@@ -198,7 +206,9 @@ Description:       "Reference to a primary or secondary cancer condition."
 
 Entry:             CancerRelatedRadiationProcedure
 Parent:            RadiationProcedure
-Description:       "A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions."
+Description:       "A radiological treatment addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions. 
+
+Conformance note: If an ICD-10-PCS code is used in the code attribute, and there is a semantically equivalent SNOMED CT or CPT code, the resulting Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)"
                    ReasonCode from CancerDisorderVS (extensible)
                    // It is cancer-related only if the reason is a cancer condition
                    ReasonReference substitute CancerProcedureReasonReference

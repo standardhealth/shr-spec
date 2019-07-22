@@ -1,39 +1,180 @@
-<h1><a name="#Implementation"></a>Appendix A: Technical Implementation Notes</h1>
-
-<p>This section contains content specific for FHIR implementers.  This allows for introductory and overview content to be shared among the broader community which includes clinicians, project leaders, and executive decision makers.</p>
-
-<p>&nbsp;</p>
-
-<h2>General Notes</h2>
-
-<h3><em>Data Dictionary and FHIR IG alignment</em></h3>
-<ul>
-    <li>The data dictionary elements are meant to address a clinical and project leadership audience who seek a high level list of mCODE elements and might not reflect the detailed list of of must-support elements which appear in the FHIR IG.</li>
-</ul>
-
-<h3><em>FHIR Examples</em></h3>
-<ul>
-    <li>Elements in the structured part of FHIR examples may be omitted from the narrative part. The narrative part may also slightly vary in the field description, even though it is semantically equivalent to its structured representation.  This is allowable in FHIR and done on purpose to demonstrate that a FHIR implementer might need to make adjustments to present mCODE elements in a clinically understandable way. </li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h2>Cancer Staging</h2>
-
-<h3><em>Representing Staging Category Values</em></h3>
-
-<p>Clinical applications vary in their representation of T, N, and M staging category values, falling into one of two naming conventions:</p>
+<h1><a name="#Implementation"></a>Implementation Notes</h1>
+<p>This page contains miscellaneous (but important) information on modeling and FHIR implementation. The content is primarily directed at informaticists and implementers of mCODE. The following topics are addressed: </p>
 
 <ul>
-    <li>prepended with a staging classification abbreviation (e.g.: <em>cT3</em>). This is the coding convention returned by AJCC in their digital data content retrieved via the <a href="https://ajcc.3scale.net/">AJCC Application Programming Interface (API)</a>.</li>
-    <li>without a prepended staging classification abbreviation (e.g.: <em>T3</em>)</li>
+    <li><a href="#Conformance">Conformance</a></li>
+    <li><a href="#Profiles">Ancillary Profiles</a></li>
 </ul>
 
-<p>mCODE recommends that the implementer align with AJCC's convention of representing the staging category value with the <em>pre-pended classification</em> in both <b>TNMClinicalStageGroup</b> and <b>TNMPathologicStageGroup</b> profiles. This code convention is aligned with the AJCC's digital data and clearly distinguishes the staging classification as clinical, pathologic, or neoadjuvant without having to retrieve further context from the model. </p>
+<h2><a name="Conformance"></a>Conformance Requirements</h2>
 
+
+<h3>Relationship to US Core</h3>
+<p>With one exception (see <a href="#exception">below</a>), the profiles presented in this guide conform to <a href="http://hl7.org/fhir/us/core/" target="_blank">US Core Implementation Guide (v3.0.0)</a>. Each mCODE Profile uses the corresponding US Core profiles as its base profile, and thus, cannot break the rules established by that profile in US Core. For example, if US Core has a required element, by virtue of profile inheritance, mCODE cannot make that element optional. However, <em>it is not true that any instance that conforms to an mCODE profile will automatically conform to US Core</em>. In particular, the use of <a href="https://www.hl7.org/fhir/valueset-binding-strength.html" target="_blank">extensible value sets</a> requires caution. Extensibility is only allowed when an appropriate concept is not available in the US Core value set. Please note:</p>
+<ul>
+    <li>In ComorbidCondition, if an ICD-10-CM code is used, and a semantically equivalent SNOMED-CT code is available, the resulting instance will not conform to US Core.</li>
+    <li>In mCODE Procedures, if an ICD-10-PCS code is used, and a semantically equivalent SNOMED CT or CPT code is available, the resulting instance will not confirm to US Core.</li>
+    <li>In GenomicsReport, a LOINC code must be used, if available. If there is no suitable code in LOINC, then a code from an alternative code system (such as a code from the <a href="https://www.ncbi.nlm.nih.gov/gtr/" target="_blank">Genetic Testing Registry</a> can be used.</li>
+    <li>In PrimaryCancerCondition and SecondaryCancerCondition, if an ICD-10-CM code is used, and a semantically equivalent SNOMED-CT code is available, the resulting instance will not conform to US Core.</li>
+</ul>
+
+<p><a name="exception"></a>An exception to US Core compliance, the category attribute for GenomicsReport is set to 'GE' (for Genetics), a code from <a href="http://hl7.org/fhir/ValueSet/diagnostic-service-sections">the Diagnostic Service Section Codes value set</a>. However, US Core requires the category 'LAB' in every diagnostic report containing laboratory results, and restricts the category to 1..1, thus preventing any other categorization. This is assumed to be an oversight in the US Core specifications.</p>
+
+<h3>International Version of mCODE</h3>
+<p>Although the current version of mCODE is US-specific, there is a potential for an international version of mCODE. If interested, please contact one of the authors.</p>
+
+<h3>mCODE Roles</h3>
+<p>At present, two roles are defined:</p>
+<ul>
+    <li><strong>mCODE Data Sender</strong> - a participant in exchange of mCODE data who provides mCODE data in response to a data query or autonomously pushes mCODE data to an mCODE receiver. The data sender does not have to be the originator of the data it possesses.</li>
+    <li><strong>mCODE Data Receiver</strong> - a participant in exchange of mCODE data who accepts mCODE data from an mCODE Data Sender.</li>
+</ul>
+<p>In the future, additional roles may be defined.</p>
+
+<h3>"Must Support" Interpretation</h3>
+<p>In FHIR, the <a href="https://www.hl7.org/fhir/conformance-rules.html#mustSupport">MustSupport</a> flag indicates that implementation shall provide "meaningful support" for the element, as defined by its implementation guide. In mCODE, there are two sources of MustSupport elements: those inherited from US Core, and those defined in mCODE. To conform to US Core, the MustSupport elements inherited from US Core must follow <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#must-support">the interpretation of MustSupport defined in US Core.</a></p>
+<p> Elements defined as MustSupport in mCODE do not follow the US Core rules. MustSupport elements defined in mCODE shall be interpreted as follows:</p>
+
+<ul>
+    <li><strong>mCODE Data Sender</strong> - MustSupport is interpreted as "required to be sent if known" (subject to applicable privacy and security rules). That is, every MustSupport element in a profiled mCODE resource SHALL to be provided to an mCODE Data Receiver, if Data Sender has that data. In addition, all required (1..1) or (1..*) elements in the resource must be provided.</li>
+    <li>An <strong>mCODE Data Receiver</strong> SHALL be capable of receiving and storing each required and MustSupport element in mCODE, if the profile has been declared as a "supportedProfile" in the receiver's <a href="http://hl7.org/fhir/R4/capabilitystatement.html">capability statement</a>.</li>
+</ul>
+    
+<p>Unfortunately, FHIR does not have the ability to track the source of MustSupport flags, and the only way to know where a MustSupport flag is defined is by direct comparison of US Core and mCODE profiles.  </p>
+
+<h3>Minimum Requirement for "mCODE Conformance"</h3>
+The mCODE IG outlines conformance requirements and expectations for individual mCODE instances in terms of structural constraints and terminology bindings. Any FHIR resources claiming to conform to mCODE must <a href="https://www.hl7.org/fhir/validation.html">validate</a> against the declared mCODE profile.
+<p>At present, there are no additional conformance rules on what mCODE data is to be collected, by whom, and when, or when that data is to be exchanged. mCODE Data Senders and Data Receivers may choose the subset of mCODE resources they support, according to their business needs. For example, a Genomics Laboratory may support GenomicsReport, but not vital signs or staging.</p>  
+<a href="http://hl7.org/fhir/R4/capabilitystatement.html">FHIR capability statements</a> describe the capabilities of actual implementation or requirements of a desired solution. This IG does not include sample capability statements. The expectation is to use implementation experience collected during the STU period to model the different types of actors (such as medical oncologist, radiologist, genomics laboratory, etc.), and define appropriate capability statements for each, including search parameters and operations.</p>
+
+<h2>Ancillary Profiles</h2>
+<p>The observant reader will note that mCODE includes profiles on Practitioner, Encounter, and even complex data types such as Annotation, classes not directly in the clinical scope of mCODE. 
+
+Objective FHIR (OBF) and Standard Health Record (SHR)
+</p>
+
+
+
+</p>
+
+<h2>Body Locations</h2>
+<p>A single code is frequently not sufficient to precisely determine a body site for the purpose of describing where a tumor is located, where a surgery is targeted, or where a radiation treatment is focused. For example, in breast cancer, the location of a tumor is described in terms of the radial position (clock face direction) and distance relative to the left or right nipple.</p>
+<p>The native FHIR approach to modeling body locations is not sufficient. Both Condition and Procedure represent body sites with a single code. FHIR provides a standard extension, <a href="http://hl7.org/fhir/StructureDefinition/bodySite" target="_blank">BodyStructure Reference</a> that can be used, however, this requires a separate BodyStructure resource, an approach that has two problems:
+<ul>
+    <li>The bodySite attribute is a terminology concept, but BodyStructure is an instance, a body site on a specific patient. Concepts and instances are not analogous and cannot be arbitrarily swapped. For example, "3 cm from left nipple at 2 o'clock" is a conceptual location, but "3 cm from Jane Doe's left nipple at 2 o'clock" is not.</li>
+    <li>Even if the difference between a concept and an instance is overlooked, the BodyStructure resource is insufficient to express general body locations.</li>
+</ul>
+</p>
+<p>mCODE introduces three optional extensions on bodySite that allow sufficient specificity, while staying in conceptual domain:</p> 
+<ul>
+    <li><a href="StructureDefinition/shr-core-AnatomicalOrientation-extension">AnatomicalOrientation</a> - captures the orientation of the body location, if needed to distinguish from a similar location in another orientation.</li>
+    <li><a href="StructureDefinition/shr-core-Laterality-extension">Laterality</a> - the side of the body the body location, if needed to distinguish from a similar location on the other side of the body</li>
+    <li><a href="StructureDefinition/shr-core-RelationToLandmark-extension">RelationToLandmark</a> - Zero or more relationships between a landmark and the body location that helps determine the body location itself. RelationToLandmark itself is a structure that:
+        <ul>
+            <li>Specifies the location and type of landmark using a body site code and optional laterality/orientation,</li>
+            <li>Specifies the direction from the landmark to the body location, and</li>
+            <li>Specifies the distance from the landmark to the body location.</li>
+        </ul>
+</ul>
+</p>
+
+
+<h2>Laboratory Profiles</h2>
+<p>mCODE laboratory profiles are based on <a href="http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab">US Core Observation Lab</a> profile. 
+    
+<p>Many laboratory profiles are not listed on the <a href="profiles.html">main Profiles pages</a>, but are listed on the ...  A complete list of profiles include the following 72 laboratory profiles:</p>
+<ul>
+        <li><a href="StructureDefinition-obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-HemoglobinMCncPtBldQnLabObs.html">StructureDefinition/obf-lab-HemoglobinMCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-HematocritVFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-HematocritVFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PlateletsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletsNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Neutrophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Neutrophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-NeutrophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Lymphocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Lymphocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Monocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Monocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Eosinophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Eosinophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Basophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Basophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-LymphocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-MonocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-MonocytesNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-EosinophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-EosinophilsNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-BasophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-BasophilsNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Metamyelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Metamyelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Myelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Myelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Promyelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Promyelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PromyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-PromyelocytesNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-LymphocytesVariant100WBCNFrPtBldQnLabObs.html">StructureDefinition/obf-lab-LymphocytesVariant100WBCNFrPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Blasts100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Blasts100WBCNFrPtBldQnManCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-BlastsNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-BlastsNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleatedNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleatedNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs.html">StructureDefinition/obf-lab-PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-MyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-MyelocytesNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-MetamyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-MetamyelocytesNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandFormNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandFormNCncPtBldQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GranulocytesImmatureNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-GranulocytesImmatureNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-MorphologyImpPtBldNarLabObs.html">StructureDefinition/obf-lab-MorphologyImpPtBldNarLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ErythrocyteDistributionWidthEntVolPtRBCQnLabObs.html">StructureDefinition/obf-lab-ErythrocyteDistributionWidthEntVolPtRBCQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-Granulocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Granulocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-OtherCells100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-OtherCells100WBCNFrPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandFormNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandFormNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-LymphocytesVariantNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesVariantNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-LeukocytesOtherNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LeukocytesOtherNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-OtherCellsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-OtherCellsNCncPtBldQnAutoCntLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GlobulinMCncPtSerQnCalculatedLabObs.html">StructureDefinition/obf-lab-GlobulinMCncPtSerQnCalculatedLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AlanineAminotransferaseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlanineAminotransferaseCCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AlbuminMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlbuminMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AlbuminGlobulinMRtoPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlbuminGlobulinMRtoPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-CalciumMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CalciumMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AspartateAminotransferaseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AspartateAminotransferaseCCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-BilirubinMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BilirubinMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-CarbonDioxideSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CarbonDioxideSCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ChlorideSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-ChlorideSCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-CreatinineMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CreatinineMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GlucoseMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-GlucoseMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-PotassiumSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-PotassiumSCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-ProteinMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-ProteinMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-SodiumSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-SodiumSCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-UreaNitrogenMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-UreaNitrogenMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AlkalinePhosphataseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlkalinePhosphataseCCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-BilirubinDirectMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BilirubinDirectMCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-BicarbonateSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BicarbonateSCncPtSerPlasQnLabObs</a></li>
+        <li><a href="StructureDefinition-obf-lab-AniongapSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AniongapSCncPtSerPlasQnLabObs</a></li>
+</ul>
+
+<p>To assure uniqueness over the thousands of LOINC laboratory tests, laboratory profile names are a concatenation of the LOINC Component, Property, Time, System, Scale, and Method, except where the concatenation exceeds the <a href="https://www.hl7.org/fhir/elementdefinition.html">FHIR element name length limitation</a> of 64 characters, in which case <em>ad hoc</em> contractions have been introduced.
+    
+    Although mCODE defines its own laboratory profiles, if and when detailed laboratory profiles are standardized in a widely-accepted IG, mCODE will likely switch over to those profiles.</p>
+<p>Lab tests need <a href="https://www.cms.gov/Regulations-and-Guidance/Legislation/CLIA/index.html?redirect=/clia">Clinical Laboratory Improvement Amendments (CLIA)</a> regulations to have performing technologist, performing laboratory, and performing laboratory medical director. Slices are called ResponsibleObserver (lab tech), PerformingLaboratory, and PerformingOrganizationMedicalDirector.</p>
+<p>
+Tumor Marker tests are open-ended....
+</p>
+
+<h3><em>Vital Sign Profiles</em></h3>
+<p>The vital sign profiles defined by mCODE are consistent with the <a href="http://hl7.org/fhir/R4/observation-vitalsigns.html">FHIR vital sign profiles</a>, which are incorporated by reference into <a href="http://hl7.org/fhir/us/core/">US Core v3</a>. The difference between FHIR and mCODE vital signs is that mCODE provides for reporting of preconditions, body positions, blood pressure method, and blood pressure body location, with appropriate value sets. The vital signs model in mCODE is aligned with the Vital Signs Implementation Guide being developed in cooperation with the <a href="https://www.hl7.org/Special/Committees/cimi/index.cfm">Clinical Information Modeling Initiative (CIMI) Work Group</a>. 
+ <p>Although mCODE defines its own vital signs profiles, if and when detailed vital signs profiles are standardized in a widely-accepted FHIR IG, mCODE will likely switch over to those profiles.</p>
 <p>&nbsp;</p>
 
-<h3><em>Representing Stage Group</em></h3>
+
+
+
+<h2>Cancer Staging Profiles</h2>
 
 <p>The <b><em>PrimaryCancerCondition</em></b> profile has a staging.assessment attribute referencing  <b><em>CancerStageGroup</em></b> which is used to validate the <b><em>TNMClinicalStageGroup</em></b> and <b><em>TNMPathologicStageGroup</em></b> profiles.  The implementation therefore will reference either one of those profiles wherever <b><em>CancerStageGroup</em></b> appears.</p>
 
@@ -41,18 +182,7 @@
 
 <p>Reference <a href="Condition-mCODEPrimaryCancerConditionExample01.html">mCODEPrimaryCancerConditionExample01</a> for a FHIR example using <b><em>PrimaryCancerCondition</em></b> staging.</p>
 
-<h2>Treatment</h2>
 
-<p>The following mCODE FHIR profiles are relevant to cancer treatment:</p>
-<ul>
-    <li><em>CancerRelatedRadiationProcedure</em></li>
-    <li><em>CancerRelatedSurgicalProcedure</em></li> 
-    <li><em>MedicationStatement</em></li> 
-</ul>
-<p>&nbsp;</p>
-
-<h3><em>Representing Clinical Trial Drugs</em></h3>
-<p>Given RxNorm's limitation of including only FDA approved drugs, mCODE represents the MedicationStatement ValueCodeableConcept with a binding of <b>RxNorm <em>(extensible)</em></b>. This allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs.</p>
 
 <h2>Laboratory and Vital Signs</h2>
 
@@ -84,7 +214,7 @@
 
 <p>There may be differences across these specifications in the value sets used, as well as binding strength. This guide addresses these discrepancies by using the lowest common denominator amongst the specifications. This approach is not without challenges, as there cases where different value sets are required by different specifications, which leaves no choice but to opt for one value set over another.</p>
 
-<h3><em>On SNOMED extensions</em></h3>
+<h3><em>SNOMED extensions</em></h3>
 <p>mCODE aligns with the Systematic Nomenclature of Medicine, Clinical Terms <b>(SNOMED CT) U.S. Edition</b>. SNOMED CT extensions outside of the U.S. Edition (e.g.: HSPC extensions, local extensions) are not included at this time.<p>
 
 <p>The specification of SNOMED US Edition is handled within the FHIR <b>CodeableConcept.version</b> attribute:</i></p>
@@ -94,17 +224,11 @@
 
 <h3><em>Local Value Sets</em></h3>
 
-<p>This guide includes multiple value sets created specifically to support the terminology needs of the models. These value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value needs needed to be extended.</p>
+<p>This guide includes value sets created specifically to support the terminology needs of the models. These value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value sets were needed to be extended.</p>
 
 <p><strong>NOTE:</strong>There is a known issue with HL7's FHIR implementation guide publisher that causes an error in the expansion of local value sets in the implementation guide. While this prevents the value sets from being shown in the value set pages, the content of the value sets is correctly expanded in json and xml, which readers can access from the individual value set pages.</p>
 
-<p>&nbsp;</p>
 
-<h3><em>Cancer Staging and Proprietary Terminologies</em></h3>
-
-<p>Several proprietary terminologies, including ICD-O-3 and the American Joint Commission on Cancer (AJCC) Staging System are widely used in the cancer domain. Others, such as Current Procedural Terminology (CPT&#174;), while not cancer-specific, are relevant for the representation of cancer-related procedures, such as surgeries or radiation procedures. This guide does not include content from these terminologies due to licensing restrictions. The guide does, however, indicate where it is appropriate to use codes from such terminologies.</p>
-
-<p>&nbsp;</p>
 <footer>
     <hr>
     <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
