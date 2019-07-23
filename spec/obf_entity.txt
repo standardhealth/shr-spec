@@ -3,7 +3,7 @@ Namespace:         obf
 Uses:              shr.core
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 CodeSystem:        LNC = http://loinc.org
-CodeSystem:        UNK0 = http://terminology.hl7.org/CodeSystem/v2-0203
+CodeSystem:        IDTYPE = http://terminology.hl7.org/CodeSystem/v2-0203
 
 Abstract:          EntityOrRole
 Parent:            InformationItem
@@ -291,7 +291,7 @@ Property:          Relationship 1..1
 Entry:             Practitioner
 Parent:            Role
 Description:       "A person who practices a healing art.
-HumanName is limited to one required value by US-Core. Gender is required by US-Core. US-Core required an identifier, either a NPI (preferred) or tax id."
+HumanName is limited to one required value by US-Core. Gender is required by US-Core. US-Core required an identifier, either a NPI (required if known) or tax id (permitted alternative)."
 Property:          Active 0..1
                    // upper card from us-core
 Property:          HumanName 1..1
@@ -317,16 +317,16 @@ Group:             NationalProviderIdentifier
 Parent:            Identifier
 Description:       "NPI: a unique 10 digit number to allow US healthcare providers to identify themselves in a standard way throughout the healthcare industry."
                    Type 1..1
-                   Type = UNK0#NPI
+                   Type = IDTYPE#PRN
+// Awaiting Nick F's fix!!!           CodeSystem = "http://hl7.org/fhir/sid/us-npi"
 
 Group:             TaxIdentificationNumber
 Parent:            Identifier
 Description:       "Tax identification number for the practitioner."
                    Type 1..1
-                   Type = UNK0#TAX
+                   Type = IDTYPE#TAX
 
 Group:             Qualification
-Concept:           MTH#C0037778
 Description:       "A right to practice medicine obtained by training and certification."
 Property:          Identifier 0..*
 Property:          Type 1..1
@@ -541,6 +541,7 @@ Property:          ContactPoint 1..*
 Property:          Address 1..*
 Property:          ContactPerson 0..*
                    // cardinality constraint
+                   Status 0..0
                    Identifier 1..*
                    PartOf[Resource] substitute Organization
                    Type from http://hl7.org/fhir/ValueSet/organization-type (example)
@@ -558,7 +559,7 @@ Group:             AccessionIdentifier
 Parent:            Identifier
 Description:       "Identifier assigned by the lab"
                    Type 1..1
-                   Type = UNK0#ACSN
+                   Type = IDTYPE#ACSN
 
 Element:           HandlingRisk
 Description:       "Cautions on the handling of this specimen."
