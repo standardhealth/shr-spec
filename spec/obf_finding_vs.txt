@@ -6,7 +6,7 @@ CodeSystem:     SCT = http://snomed.info/sct
 //CodeSystem:     OIT = http://hl7.org/fhir/v3/ObservationInterpretation
 CodeSystem:     OIT = http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation
 CodeSystem:     ICD10CM = http://hl7.org/fhir/sid/icd-10-cm 
-CodeSystem:     FHIRCONDCAT = http://terminology.hl7.org/CodeSystem/condition-category 
+//CodeSystem:     CONDCAT = http://hl7.org/fhir/us/core/ValueSet/us-core-condition-category
 
 ValueSet:   QuantitativeResultInterpretationVS
 Description:    "Interpretations of abnormal quantitative results."
@@ -17,9 +17,10 @@ OIT#HH	"Panic High. The result for a quantitative observation is above a referen
 Synonym: Above upper panic limits."
 OIT#LL	"Panic Low. The result for a quantitative observation is below a reference level at which immediate action should be considered for patient safety (as defined for the respective test procedure)."
 
+/*
 ValueSet:		ConditionCategoryVS
 Description:     "A category assigned to the condition, for example, a disease, concern, symptom, functional impairment, or structural abnormality. Extends http://hl7.org/fhir/ValueSet/condition-category by including all codes from the corresponding code system, namely, http://terminology.hl7.org/CodeSystem/condition-category. Extensions are based on http://fhir.org/guides/argonaut/ValueSet/condition-category, but substituting SNOMED CT codes."
-Includes codes from FHIRCONDCAT
+Includes codes from CONDCAT
 SCT#64572001	"Disease"
 SCT#40226000    "Impairment"
 SCT#49755003    "Morphologic abnormality"
@@ -27,10 +28,12 @@ SCT#48694002    "Anxiety (a concern about something that may or may not have yet
 SCT#55607006    "Problem (a difficulty the patient has or is experiencing)"
 SCT#409586006   "Complaint (a symptom or condition the patient considers an issue to be addressed)"
 SCT#439401001   "Diagnosis"
-
+*/
 
 ValueSet:   ComorbidConditionVS
-Description:    "SNOMED and ICD-10 codes for common comorbid conditions. Aligns with Elixhauser comorbidity scale. ICD-10 codes are drawn from https://www.hcup-us.ahrq.gov/toolssoftware/comorbidityicd10/comformat_icd10cm_2019_1.txt"
+Description:    "SNOMED and ICD-10-CM codes for common comorbid conditions. Aligns with Elixhauser comorbidity scale. ICD-10 codes are drawn from https://www.hcup-us.ahrq.gov/toolssoftware/comorbidityicd10/comformat_icd10cm_2019_1.txt. 
+
+Conformance note: If an ICD-10-CM code is used, and an equivalent SNOMED-CT code is available, the resulting instance will not validate against US Core Profiles."
 Includes codes descending from SCT#42343007    "Congestive heart failure (disorder)"
 Includes codes descending from SCT#698247007   "Cardiac arrhythmia (disorder)"
 Includes codes descending from SCT#368009      "Heart valve disorder (disorder)"
