@@ -35,15 +35,25 @@
 <p>In the future, additional roles may be defined.</p>
 
 <h3>"Must Support" Interpretation</h3>
-<p>In FHIR, the <a href="https://www.hl7.org/fhir/conformance-rules.html#mustSupport" target="_blank">MustSupport</a> flag indicates that implementation shall provide "meaningful support" for the element, as defined by its implementation guide. In mCODE, there are two sources of MustSupport elements: those inherited from US Core, and those defined in mCODE. To conform to US Core, the MustSupport elements inherited from US Core must follow <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#must-support" target="_blank">the interpretation of MustSupport defined in US Core.</a></p>
+<p>In FHIR, the <a href="https://www.hl7.org/fhir/conformance-rules.html#mustSupport" target="_blank">MustSupport</a> flag indicates that implementation shall provide "meaningful support" for the element, as defined by its implementation guide. In mCODE, there are two sources of MustSupport elements: those inherited from US Core, and those defined in mCODE. To conform to US Core, the MustSupport elements inherited from US Core must follow <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#must-support" target="_blank">the interpretation of MustSupport defined in US Core</a>.</p>
 <p> Elements defined as MustSupport in mCODE do not follow the US Core rules. MustSupport elements defined in mCODE shall be interpreted as follows:</p>
-
 <ul>
-    <li><strong>mCODE Data Sender</strong> - MustSupport is interpreted as "required to be sent if known" (subject to applicable privacy and security rules). That is, every MustSupport element in a profiled mCODE resource SHALL to be provided to an mCODE Data Receiver, if Data Sender has that data. In addition, all required (1..1) or (1..*) elements in the resource must be provided.</li>
+    <li><strong>mCODE Data Sender</strong> - MustSupport is interpreted as "required to be sent if known" (subject to applicable privacy and security rules). That is, every MustSupport element in a profiled mCODE resource SHALL to be provided to an mCODE Data Receiver, if Data Sender has that data.</li>
     <li>An <strong>mCODE Data Receiver</strong> SHALL be capable of receiving and storing each required and MustSupport element in mCODE, if the profile has been declared as a "supportedProfile" in the receiver's <a href="http://hl7.org/fhir/R4/capabilitystatement.html" target="_blank">capability statement</a>.</li>
 </ul>
     
 <p>Unfortunately, FHIR does not have the ability to track the source of MustSupport flags, and the only way to know where a MustSupport flag is defined is by direct comparison of US Core and mCODE profiles.</p>
+
+<h3>Required Elements</h3>
+<p>An mCODE data element is required if any of the following criteria are met:</p>
+<ul>
+    <li>The element is a top-level element and its minimum cardinality is &gt; 0</li>
+    <li>The element not a top-level element, its minimum cardinality is &gt; 0, and all elements containing that element have minimum cardinality &gt; 0</li>
+    <li>The element is not a top-level element, its minimum cardinality is &gt; 0, and its immediate containing element exists in an instance. </li>
+</ul>
+<p>In other words, a data element may be 1..1, but if it is contained by an optional element, then it is not required unless its containing element is actually present in a given instance of the profile.</p>
+
+<p>mCODE's rules on required data elements follows the same rules as US Core's <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#missing-data">rules for required data</a>. To paraphrase those rules, a Data Sender must provide all required elements or an explicit data absent reason for the missing data.</p>
 
 <h3>Minimum Requirement for "mCODE Conformance"</h3>
 <p>The mCODE IG outlines conformance requirements and expectations for individual mCODE instances in terms of structural constraints and terminology bindings. Any FHIR resources claiming to conform to mCODE must <a href="https://www.hl7.org/fhir/validation.html" target="_blank">validate</a> against the declared mCODE profile.</p>
@@ -55,7 +65,7 @@
 
 <p>This implementation guide supplies terminology bindings drawn primarily from LOINC for "observables", and SNOMED-CT for values, results and findings. When appropriate codes are not available in the preferred vocabulary, alternative vocabularies are used, in the following order of preference: SNOMED-CT (if the element is an observable), NCI Thesaurus and Metathesaurus, and local codes. </p>
 
-<p>The specification of SNOMED US Edition is handled within the FHIR <b>CodeableConcept.version</b> attribute:</i></p>
+<p>The specification of SNOMED US Edition is handled within the FHIR <b>CodeableConcept.version</b> attribute:</p>
 <p><code>{version: "http://snomed.info/sct/731000124108"}</code></p>
 <p>where 731000124108 is the SNOMED namespace assigned to the National Library of Medicine (NLM), who manages the SNOMED US Edition.</p>
 
@@ -66,13 +76,12 @@ FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported 
 
 <h2><a name="BodyLocations"></a>Body Locations</h2>
 <p>A single code is often insufficient to precisely determine a body site for the purpose of describing where a tumor is located, where a surgery is targeted, or where a radiation treatment is focused. For example, in breast cancer, the location of a tumor can be described in terms of the radial position (clock face direction) and distance relative to the left or right nipple.</p>
-<p>In FHIR, Condition, Procedure, and other resources represent body sites using a single code. In addition, FHIR provides a standard extension, <a href="http://hl7.org/fhir/StructureDefinition/bodySite" target="_blank">BodyStructure Reference</a> that can be used when a single code is insufficient, however, this approach that has problems:
+<p>In FHIR, Condition, Procedure, and other resources represent body sites using a single code. In addition, FHIR provides a standard extension, <a href="http://hl7.org/fhir/StructureDefinition/bodySite" target="_blank">BodyStructure Reference</a> that can be used when a single code is insufficient. However, this approach has not been adopted, for the following reasons:</p>
 <ul>
     <li>The bodySite attribute is a terminology concept, but BodyStructure is a resource, representing a body site on a specific patient. Concepts and instances are not analogous and cannot be arbitrarily swapped. For example, "3 cm from left nipple at 2 o'clock position" is a conceptual location, but "3 cm from Jane Doe's left nipple at 2 o'clock position" is not.</li>
     <li>Even if the difference between a terminology concept and an patient-specific resource is overlooked, the BodyStructure resource is insufficient for mCODE's purposes.</li>
 </ul>
-</p>
-<p>For this reason, mCODE introduces three optional extensions on bodySite that allow sufficient specificity, while staying in conceptual domain: 
+<p>Instead, mCODE uses an approach that defines body sites conceptually, and has the required specificity, by introducing three optional extensions on bodySite:</p>
 <ul>
     <li><a href="StructureDefinition-shr-core-AnatomicalOrientation-extension.html">AnatomicalOrientation</a> - captures the orientation of the body location, if needed to distinguish from a similar location in another orientation.</li>
     <li><a href="StructureDefinition-shr-core-Laterality-extension.html">Laterality</a> - the side of the body the body location, if needed to distinguish from a similar location on the other side of the body</li>
@@ -82,16 +91,17 @@ FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported 
             <li>Specifies the direction from the landmark to the body location, and</li>
             <li>Specifies the distance from the landmark to the body location.</li>
         </ul>
+    </li>
 </ul>
-</p>
 
 <h2><a name="VitalSigns"></a>Vital Sign Profiles</h2>
-<p>The vital sign profiles defined by mCODE are consistent with the <a href="http://hl7.org/fhir/R4/observation-vitalsigns.html" target="_blank">FHIR vital sign profiles</a>, which are incorporated by reference into <a href="http://hl7.org/fhir/us/core/" target="_blank">US Core v3</a>. The difference between FHIR and mCODE vital signs is that mCODE provides for reporting of preconditions, body positions, blood pressure method, and blood pressure body location, with appropriate value sets. The vital signs model in mCODE is aligned with the Vital Signs Implementation Guide being developed in cooperation with the <a href="https://www.hl7.org/Special/Committees/cimi/index.cfm" target="_blank">Clinical Information Modeling Initiative (CIMI) Work Group</a>. 
+<p>The vital sign profiles defined by mCODE are consistent with the <a href="http://hl7.org/fhir/R4/observation-vitalsigns.html" target="_blank">FHIR vital sign profiles</a>, which are incorporated by reference into <a href="http://hl7.org/fhir/us/core/" target="_blank">US Core v3</a>. The difference between FHIR and mCODE vital signs is that mCODE provides for reporting of preconditions, body positions, blood pressure method, and blood pressure body location, with appropriate value sets. The vital signs model in mCODE is aligned with the Vital Signs Implementation Guide being developed in cooperation with the <a href="https://www.hl7.org/Special/Committees/cimi/index.cfm" target="_blank">Clinical Information Modeling Initiative (CIMI) Work Group</a>.</p> 
  <p>Although mCODE defines its own vital signs profiles, if and when detailed vital signs profiles are standardized in a widely-accepted FHIR IG, mCODE will likely switch over to those profiles.</p>
 
 <h2><a name="LaboratoryProfiles"></a>Laboratory Profiles</h2> 
 <p>Many laboratory profiles in mCODE are not shown on the <a href="profiles.html">main Profiles page</a>, but are listed with the panels they are a part of. To assure naming uniqueness over thousands of LOINC laboratory tests, laboratory profile names have been formulated as a concatenation of the LOINC Component, Property, Time, System, Scale, and Method. Where the concatenation exceeds the <a href="https://www.hl7.org/fhir/elementdefinition.html" target="_blank">FHIR element name length limitation</a> of 64 characters, some additional contractions have been introduced. Although mCODE defines its own laboratory profiles, if and when detailed laboratory profiles are standardized in a widely-accepted IG, mCODE will likely switch over to those profiles.
-</p>mCODE includes the following 72 laboratory profiles:</p>
+</p>
+<p>mCODE includes the following 72 laboratory profiles:</p>
 <ul>
         <li><a href="StructureDefinition-obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs</a></li>
         <li><a href="StructureDefinition-obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs</a></li>
@@ -168,6 +178,6 @@ FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported 
 </ul>
 
 <footer>
-    <hr>
+<hr/>
     <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
 </footer>
