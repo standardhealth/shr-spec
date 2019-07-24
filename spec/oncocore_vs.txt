@@ -7,13 +7,15 @@ CodeSystem:     ICD10CM = http://hl7.org/fhir/sid/icd-10-cm
 CodeSystem:     AJCC = http://cancerstaging.org
 CodeSystem:     GTR = http://www.ncbi.nlm.nih.gov/gtr
 CodeSystem:     CLINVAR = http://www.ncbi.nlm.nih.gov/clinvar/
-CodeSystem:     USDRLC = http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes
+CodeSystem:     LNC = http://loinc.org/
 
 ValueSet:    GeneticTestVS
-Description: "Value set containing codes representing genetic tests. Currently the best source of codes is the [Genetic Test Registry](http://www.ncbi.nlm.nih.gov/gtr). The user should be aware that the GTR cannot be a sole reliable source since the test data is voluntarily updated and there is no overarching data steward. This value set contains all codes from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes, and all codes from GTR.
+Description: "Value set containing codes representing genetic tests. Currently the best source of codes is the [Genetic Test Registry](http://www.ncbi.nlm.nih.gov/gtr). The user should be aware that the GTR cannot be a sole reliable source since the test data is voluntarily updated and there is no overarching data steward. This value set contains all codes from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes (namely, the subset of LOINC codes with CLASSTYPE = 1), plus all codes in GTR.
+
+Implementation note: Although only a subset of LOINC codes is formally part of this value set, the value set itself contains all codes in LOINC, because FHIR cannot create an implicitly-defined value set based on LOINC's CLASSTYPE property.
 
 Conformance note: To be conformant to US Core, a LOINC code must be used, if available. Only if there is no suitable code in LOINC may other codes (such as those from GTR) be used."
-Includes codes from USDRLC
+Includes codes from LNC // where CLASSTYPE = 1 (FHIR terminology server can't handle this yet)
 Includes codes from GTR
 
 ValueSet:    ClinVarVS
