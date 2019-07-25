@@ -35,7 +35,7 @@
 <p>In the future, additional roles may be defined.</p>
 
 <h3>"Must Support" Interpretation</h3>
-<p>In FHIR, the <a href="https://www.hl7.org/fhir/conformance-rules.html#mustSupport" target="_blank">MustSupport</a> flag indicates that implementation shall provide "meaningful support" for the element, as defined by its implementation guide. In mCODE, there are two sources of MustSupport elements: those inherited from US Core, and those defined in mCODE. To conform to US Core, the MustSupport elements inherited from US Core must follow <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#must-support" target="_blank">the interpretation of MustSupport defined in US Core</a>.</p>
+<p>In FHIR, the <a href="https://www.hl7.org/fhir/conformance-rules.html#mustSupport" target="_blank">MustSupport</a> flag indicates that implementation shall provide "meaningful support" for the element, as defined by its implementation guide. In mCODE, there are two sources of MustSupport elements: those inherited from US Core, and those defined in mCODE. To conform to US Core, the MustSupport elements inherited from US Core must follow <a href="http://hl7.org/fhir/us/core/STU3/general-guidance.html#must-support" target="_blank">the interpretation of MustSupport defined in US Core</a>.</p>
 <p> Elements defined as MustSupport in mCODE do not follow the US Core rules. MustSupport elements defined in mCODE shall be interpreted as follows:</p>
 <ul>
     <li><strong>mCODE Data Sender</strong> - MustSupport is interpreted as "required to be sent if known" (subject to applicable privacy and security rules). That is, every MustSupport element in a profiled mCODE resource SHALL to be provided to an mCODE Data Receiver, if Data Sender has that data.</li>
@@ -47,13 +47,13 @@
 <h3>Required Elements</h3>
 <p>An mCODE data element is required if any of the following criteria are met:</p>
 <ul>
-    <li>The element is a top-level element and its minimum cardinality is &gt; 0</li>
-    <li>The element not a top-level element, its minimum cardinality is &gt; 0, and all elements containing that element have minimum cardinality &gt; 0</li>
-    <li>The element is not a top-level element, its minimum cardinality is &gt; 0, and its immediate containing element exists in an instance. </li>
+    <li>The element is a top-level element (a first-level property of the resource) and its minimum cardinality is &gt; 0</li> in the profile.
+    <li>The element not a top-level element (a second-level property or below), its minimum cardinality is &gt; 0, and all elements directly containing that element have minimum cardinality &gt; 0</li> in the profile.
+    <li>The element is not a top-level element, its minimum cardinality is &gt; 0, and its immediate higher-level containing element exists in an <em>instance</em> of the profile. </li>
 </ul>
 <p>In other words, a data element may be 1..1, but if it is contained by an optional element, then it is not required unless its containing element is actually present in a given instance of the profile.</p>
 
-<p>mCODE's rules on required data elements follows the same rules as US Core's <a href="http://hl7.org/fhir/us/core/stu3/general-guidance.html#missing-data">rules for required data</a>. To paraphrase those rules, a Data Sender must provide all required elements or an explicit data absent reason for the missing data.</p>
+<p>mCODE's rules regarding required data elements are the same as <a href="http://hl7.org/fhir/us/core/STU3/general-guidance.html#missing-data">US Core's rules</a>. To paraphrase those rules, a Data Sender must provide each required element or an explicit data absent reason for each missing data item.</p>
 
 <h3>Minimum Requirement for "mCODE Conformance"</h3>
 <p>The mCODE IG outlines conformance requirements and expectations for individual mCODE instances in terms of structural constraints and terminology bindings. Any FHIR resources claiming to conform to mCODE must <a href="https://www.hl7.org/fhir/validation.html" target="_blank">validate</a> against the declared mCODE profile.</p>
@@ -72,7 +72,7 @@
 <p>Value sets from the FHIR specification and US Core were reused to the extent possible. New value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value sets were needed to be extended.</p>
 
 <h2><a name="Patient"></a>Patient</h2>
-FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported in mCODE should be the one specified by Address.use of "home" and Address.type of "physical".
+<p>FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported in mCODE should be the one specified by Address.use of "home" and Address.type of "physical".</p>
 
 <h2><a name="BodyLocations"></a>Body Locations</h2>
 <p>A single code is often insufficient to precisely determine a body site for the purpose of describing where a tumor is located, where a surgery is targeted, or where a radiation treatment is focused. For example, in breast cancer, the location of a tumor can be described in terms of the radial position (clock face direction) and distance relative to the left or right nipple.</p>
@@ -176,7 +176,7 @@ FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported 
         <li><a href="StructureDefinition-obf-lab-BicarbonateSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BicarbonateSCncPtSerPlasQnLabObs</a></li>
         <li><a href="StructureDefinition-obf-lab-AniongapSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AniongapSCncPtSerPlasQnLabObs</a></li>
 </ul>
-
+<br/>
 <footer>
 <hr/>
     <p><font color="#BEBEBD"><small>Approved for Public Release. Distribution Unlimited. Case Number 16-1988</small></font></p>
