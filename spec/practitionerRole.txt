@@ -1,0 +1,206 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "The datatype domain contains definitions of complex datatypes used in FHIR, with several additions."
+Uses:              shr.core, datatype
+
+Entry: HealthcareService
+Description: "The details of a healthcare service available at a location."
+Property: Identifier 0..*
+Property: Active 0..1
+Property: OrganizationProvidingService 0..1
+Property: CategoryOfService 0..*
+Property: TypeOfService 0..*
+Property: SpecialtiesHandled 0..*
+Property: Location  0..*
+Property: Name 0..1
+Property: Comment 0..1
+Property: ExtraDetails 0..1
+Property: Photo 0..1
+Property: Telecom 0..*
+Property: CoverageArea 0..*
+Property: ServiceProvisionCode 0..*
+Property: Eligibility 0..*
+Property: Program 0..*
+Property: Characteristic 0..*
+Property: LanguageSpoken 0..*
+Property: ReferralMethod 0..*
+Property: AppointmentRequired 0..1
+Property: AvailableTime 0..*
+Property: NotAvailable 0..*
+Property: AvailabilityExceptions 0..1
+Property: Endpoint 0..*
+
+Element: OrganizationProvidingService
+Description: "Organization that provides this service"
+Value: Organization
+
+Element: CategoryOfService
+Description: "Broad category of service being performed or delivered Service category (Example)"
+Value: concept from http://hl7.org/fhir/ValueSet/service-category
+
+Element: TypeOfService
+Description: "Type of service that may be delivered or performed Service type (Example)"
+Value: concept from hhttp://hl7.org/fhir/ValueSet/service-type 
+
+Element: SpecialtiesHandled
+Description: "Specialties handled by the HealthcareService Practice Setting Code Value Set (Preferred)"
+Value: concept from http://hl7.org/fhir/ValueSet/c80-practice-codes
+
+Element: ExtraDetails
+Description: "Extra details about the service that can't be placed in the other fields"
+Value: markdown 
+
+Element: Photo
+Description: "Facilitates quick identification of the service"
+Value: PhotographicImage
+
+Element: Comment
+Description: "Additional description and/or any specific issues not covered elsewhere"
+Value: CommentOrDescription
+
+Element: Telecom
+Description: "Contacts related to the healthcare service"
+Value: ContactPoint
+
+Element: CoverageArea
+Description:  "Location(s) service is intended for/available to"
+Value: Location 
+
+Element: ServiceProvisionCode
+Description: "Conditions under which service is available/offered"
+Value: concept from http://hl7.org/fhir/ValueSet/service-provision-conditions
+
+Group: Eligibility
+Description: "Specific eligibility requirements required to use the service"
+Property: Code 0..1
+Property: DescriptionMarkdown 0..1
+
+Element: Program
+Description: "Programs that this service is applicable to"
+Value: concept from http://hl7.org/fhir/ValueSet/program
+
+Element: Characteristic
+Description: "Collection of characteristics (attributes)"
+Value: concept
+
+Element: LanguageSpoken
+Description: "The language that this service is offered in"
+Value: concept from http://hl7.org/fhir/valueset-languages.html (preferred) 
+
+Element: ReferralMethod
+Description: "Ways that the service accepts referrals"
+Value: concept from http://hl7.org/fhir/ValueSet/service-referral-method
+
+Element: AppointmentRequired
+Description: "If an appointment is required for access to this service"
+Value: boolean
+
+
+Entry:  Endpoint 
+Description:  "PractitionerRole covers the recording of the location and types of services that Practitioners are able to provide for an organization."
+Property:   Identifier 0..*
+Property:   EndpointStatus 1..1   //active | suspended | error | off | entered-in-error | test EndpointStatus (Required)
+Property:   EndpointConnectionType 1..1 // Protocol/Profile/Standard to be used with this endpoint connection
+Property:   EndpointName  0..1 //A name that this endpoint can be identified by
+Property:   ManagingOrganization 0..1
+Property:   Contact 0..*
+Property:   Period 0..1
+Property:   PayloadType 1..* 
+Property:   PayloadMimeType 0..* 
+Property:   EndpointAddress 1..1
+Property:   Header 0..*
+
+Element: EndpointName
+Description: "A name that this endpoint can be identified by"
+Value: string
+
+Element: Contact
+Description:  "Contact details for source (e.g. troubleshooting)"
+Value: ContactPoint 
+
+Element:  EndpointAddress
+Description: "The technical base address for connecting to this endpoint"
+Value:  uri
+
+Element: Header
+Description: "Usage depends on the channel type"
+Value: string 
+
+Element: EndpointStatus
+Description:  "Contact details for source (e.g. troubleshooting)"
+Value:  concept from http://hl7.org/fhir/ValueSet/endpoint-status
+Element: EndpointConnectionType 
+Description:  "Contact details for source (e.g. troubleshooting)"
+Value: concept from http://hl7.org/fhir/ValueSet/endpoint-connection-type
+Element: PayloadType
+Description:  "Contact details for source (e.g. troubleshooting)"
+Value:   concept from http://hl7.org/fhir/ValueSet/endpoint-payload-type
+Element: PayloadMimeType
+Description:  "Contact details for source (e.g. troubleshooting)"
+Value: concept from http://hl7.org/fhir/ValueSet/mimetypes
+Entry:  PractitionerRole
+Parent: Role 
+Description:  "PractitionerRole covers the recording of the location and types of services that Practitioners are able to provide for an organization."
+Property:   RoleSpecificIdentifier 0..*
+Property:   Active 0..1
+Property:   Period 0..1
+Property:   PractitionerWithRole 0..1  //(reference)
+Property:   PractitionerOrganization 0..1
+Property:   Code 0..*
+Property:   Specialty 0..*
+Property:   Location 0..* // (reference)
+Property:   HealthCareServiceProvided 0..* // (reference)
+Property:   Telecom 0..*
+Property:   AvailableTime 0..*
+Property:   NotAvailable 0..*
+Property:   AvailabilityExceptions 0..1
+Property:   RoleSpecificEndpoint  0..* // (reference)
+    Code from http://hl7.org/fhir/ValueSet/practitioner-role (preferred)
+
+
+Element:  RoleSpecificIdentifier
+Description:  "Business Identifiers that are specific to a role/location"
+Value:   Identifier
+/* Element:  Active
+Description:  "Whether this practitioner role record is in active use"
+Value:   boolean */
+Element:  Period
+Description:   "The period during which the practitioner is authorized to perform in these role(s)"
+Value: TimePeriod
+Element:  PractitionerWithRole
+Description:  "Practitioner that is able to provide the defined services for the organization"
+Value:   Practitioner
+Element:  PractitionerOrganization
+Description:  "Organization where the roles are available"
+Value:   Organization
+/*Element:  Specialty
+Description:  "Specific specialty of the practitioner"
+Value:   Code from 
+Element:  Location
+Description:  "The location(s) at which this practitioner provides care"
+Value:   Location */
+Element:  HealthCareServiceProvided
+Description:  "The list of healthcare services that this worker provides for this role's Organization/Location(s)"
+Value:   HealthcareService
+
+Element:  AvailableTime
+Description:  "Times the Service Site is available"
+Value:   AvailableTime
+Group:  NotAvailable
+Description:  "Not available during this time due to provided reason"
+Property:          Description 1..1
+Property:          During 0..1
+Element:  RoleSpecificEndpoint
+Description:  "Technical endpoints providing access to services operated for the practitioner with this role"
+Value:   Endpoint
+Element: During
+Description: "Reason presented to the user explaining why time not available"
+Value: TimePeriod
+/* Element: AvailabilityExceptions
+Description: "Times when Provider not Available"
+Value: string 
+*/
+Element: Description
+Description: "Description"
+Value: string
+
