@@ -1,9 +1,9 @@
 Grammar:           DataElement 6.0
 Namespace:         vital
 Description:       "The vital signs domain (vital) contains observations for common vital signs, and a panel including all vitals."
-Uses:              shr.core, obf
+Uses:              obf.datatype, obf
 CodeSystem:        LNC = http://loinc.org
-CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:        OBSCAT = http://terminology.hl7.org/CodeSystem/observation-category
 CodeSystem:        UCUM = http://unitsofmeasure.org
 
                    //----------------Vital Sign Panel----------------
@@ -36,23 +36,23 @@ Description:       "A summary of vital signs, including weight, height (or lengt
                    Components 0..0
 
                    //------------------ Vital Sign ---------------------------
-Abstract:          VitalSign
+Entry:             VitalSign
 Parent:            QuantitativeNonLaboratoryObservation
 Description:       "Abstract class parent for all vital sign profiles."
-Property:          Precondition 0..*
+Property:          PreconditionCode 0..*
                    ObservationSubjectOfRecord only Patient
                    Category 1..1
                    Category = OBSCAT#vital-signs
                    // zeroed out because we are using pre-coordinated body site codes to describe body locations associated with vital signs
                    BodyLocation.Laterality 0..0
-                   BodyLocation.Orientation 0..0
+                   BodyLocation.AnatomicalOrientation 0..0
                    BodyLocation.RelationToLandmark 0..0
                    Device 0..0
                    PanelMembers.Observation substitute VitalSign
                    PanelMembers 0..0
 
-Element:           Precondition
-Description:       "A description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
+Element:           PreconditionCode
+Description:       "A coded description of the conditions or context of an observation, for example, under sedation, fasting or post-exercise. A qualifier cannot modify the measurement type; for example, a fasting blood sugar is still a blood sugar."
 Value:             concept
 
 /*		Element:		DeviceType
@@ -61,7 +61,7 @@ Value:             concept
 */
 Entry:             BodyWeight
 Parent:            VitalSign
-Description:       "Data structure for recording the body weight, defined as the mass or quantity of heaviness of the individual."
+Description:       "Records the body weight, defined as the mass or quantity of heaviness of the individual."
                    // CIMI uses 3141-9 "Body weight Measured" but Argonaut, US-Core, and FHIR R4 all use 29462-7
                    Code = LNC#29463-7 "Body weight"
                    DataValue 1..1
@@ -69,11 +69,11 @@ Description:       "Data structure for recording the body weight, defined as the
                    BodyLocation 0..0
                    Method from BodyWeightMethodVS (extensible)
                    Components 0..0
-                   Precondition from BodyWeightPreconditionVS (extensible)
+                   PreconditionCode from BodyWeightPreconditionVS (extensible)
 
 Entry:             BodyHeight
 Parent:            VitalSign
-Description:       "Data structure for recording the body height, defined as the distance from the sole to the crown of the head."
+Description:       "Records the body height, defined as the distance from the sole to the crown of the head."
 Property:          BodyPosition 0..1
                    Code = LNC#8302-2 "Body height"
                    DataValue 1..1
@@ -81,7 +81,7 @@ Property:          BodyPosition 0..1
                    BodyLocation 0..0
                    Method from BodyHeightLengthMethodVS (extensible)
                    Components 0..0
-                   Precondition from BodyHeightPreconditionVS (extensible)
+                   PreconditionCode from BodyHeightPreconditionVS (extensible)
 
 Element:           BodyPosition
 Description:       "The position or physical attitude of the body."
@@ -97,15 +97,17 @@ Property:          BodyPosition 0..1
                    BodyLocation 0..0
                    Method from BodyHeightLengthMethodVS (required)
                    Components 0..0
-                   Precondition 0..0
+                   PreconditionCode 0..0
 */
                    // Implemented with components
 Entry:             BloodPressure
 Parent:            VitalSign
-Description:       "The force of circulating blood on the walls of the arteries."
+Description:       "Records blood pressure measurements, defined as the force of circulating blood on the walls of the arteries.
+
+Conformance note: The blood pressure profile is based on the FHIR profile for blood pressure, and adds a set of optional elements that can help clinicians interpret the result. Because these additional elements are optional, any BloodPressure that conforms to the current profile also will conform to the FHIR profile, and vice versa."
 Property:          BodyPosition 0..1
 Property:          BloodPressureCuffSize 0..1
-                   Code = LNC#55284-4 "Blood pressure systolic and diastolic"
+                   Code = LNC#85354-9 "Blood pressure panel with all children optional"
                    DataValue 0..0
                    DataAbsentReason 0..0
                    BodyLocation.Code from BloodPressureBodyLocationVS (extensible)
@@ -115,7 +117,7 @@ Property:          BloodPressureCuffSize 0..1
                    Components.ObservationComponent
                    includes SystolicPressure 1..1  // required per FHIR
                    includes DiastolicPressure 1..1  // required per FHIR
-                   Precondition from CardiopulmonaryPreconditionVS (extensible)
+                   PreconditionCode from CardiopulmonaryPreconditionVS (extensible)
 
 Group:             SystolicPressure
 Parent:            QuantitativeObservationComponent
@@ -143,7 +145,7 @@ Property:          BodyPosition 0..1
                    BodyLocation 0..0
                    Method from RespiratoryRateMethodVS (extensible)
                    Components 0..0
-                   Precondition from CardiopulmonaryPreconditionVS (extensible)
+                   PreconditionCode from CardiopulmonaryPreconditionVS (extensible)
 
 Entry:             HeartRate
 Parent:            VitalSign
@@ -155,13 +157,14 @@ Description:       "The number of times the heart ventricles contract per unit o
                    BodyLocation.Code from HeartRateBodyLocationVS (extensible)
                    Method from HeartRateMethodVS (extensible)
                    Components 0..0
-                   Precondition from CardiopulmonaryPreconditionVS (extensible)
+                   PreconditionCode from CardiopulmonaryPreconditionVS (extensible)
 
 Entry:             OxygenSaturation
 Parent:            VitalSign
 Description:       "Oxygen saturation in Arterial blood by Pulse oximetry."
                    // Argo, US Core and CIMI use LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry" but FHIR R4 changes to 2708-6 "Oxygen saturation in Arterial blood" (latter code doesn't presume a method).
-                   Code = LNC#59408-5 "Oxygen saturation in Arterial blood by Pulse oximetry"
+                   // US Core R4 changes the fixed code to LNC#2708-6.
+                   Code = LNC#2708-6 "Oxygen saturation in Arterial blood by Pulse oximetry"
                    DataValue 1..1
                    DataValue[Quantity].Units = UCUM#% "%"
                    BodyLocation.Code from OxygenSaturationBodyLocationVS (required)
@@ -169,7 +172,7 @@ Description:       "Oxygen saturation in Arterial blood by Pulse oximetry."
                    Components.ObservationComponent
                    includes SupplementalOxygenFlowrate 0..1
                    includes SupplementalOxygenConcentration 0..1
-                   Precondition from CardiopulmonaryPreconditionVS (required)
+                   PreconditionCode from CardiopulmonaryPreconditionVS (required)
 
 Group:             SupplementalOxygenFlowrate
 Parent:            QuantitativeObservationComponent
@@ -189,20 +192,20 @@ Description:       "The measure of the level of heat in the body."
                    Code = LNC#8310-5 "Body temperature"
                    DataValue[Quantity].Units = UCUM#Cel "C"
                    BodyLocation.Code from BodyTemperatureBodyLocationVS (required)
-                   //				Precondition from BodyTemperatureQualifierVS
+                   // PreconditionCode from BodyTemperatureQualifierVS
                    Method from BodyTemperatureMethodVS (required)
                    Components 0..0
 
 Entry:             HeadCircumference
 Parent:            VitalSign
 Description:       "Circumference of the head (typically 0-2 years)."
-                   Code = LNC#8287-5 "Head Occipital-frontal circumference by Tape measure"
+                   Code = LNC#9843-4 "Head Occipital-frontal circumference by Tape measure"
                    DataValue 1..1
                    DataValue[Quantity].Units = UCUM#cm "cm"
                    BodyLocation 0..0
                    Method 0..0
                    Components 0..0
-                   Precondition 0..0
+                   PreconditionCode 0..0
 
 Entry:             BodyMassIndex
 Parent:            VitalSign
@@ -213,7 +216,9 @@ Description:       "A general indicator of the body fat an individual is carryin
                    BodyLocation 0..0
                    Method 0..0
                    Components 0..0
-                   Precondition 0..0/*
+                   PreconditionCode 0..0
+                   
+/*
 	Element: 		HeadTiltAngle // This is only used during a tilt table test.
 	Concept: 		LNC#8360-0
 	Description:	"The angle at which the head is tilted relative to a level position while physiologic tests are taken."

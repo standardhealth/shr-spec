@@ -1,7 +1,7 @@
 Grammar:           DataElement 6.0
 Namespace:         brca
 Description:       "Breast Cancer data elements."
-Uses:              shr.core, obf, onco.core
+Uses:              obf.datatype, obf, onco.core
 CodeSystem:        UCUM = http://unitsofmeasure.org
 CodeSystem:        LNC = http://loinc.org
 CodeSystem:        SCT = http://snomed.info/sct
@@ -17,7 +17,7 @@ Entry:             BreastSpecimen
 Parent:            Specimen
 Description:       "Specimen resulting from biopsy or excision of breast and surrounding tissue."
 Property:          ColdIschemiaTime 0..1
-                   PartOf[DomainResource] substitute BreastSpecimen
+                   PartOf[Resource] substitute BreastSpecimen
                    SpecimenType from BreastSpecimenTypeVS (required)
                    CollectionMethod from BreastSpecimenCollectionMethodVS (required)
                    CollectionSite[BodyLocation] substitute BreastSite
@@ -39,7 +39,7 @@ Description:       "Diagnosis of cancer originating in the tissues of the breast
 
 /*
 EntryElement:	BreastCancerHistologicType
-Based on:		CancerHistologicType
+Parent:		CancerHistologicType
 Description:	"Classification of breast cancer according to histopathologic subtypes, as determined by microscopic observation of breast tissue samples."
 				Code is LNC#44638-5 "Histologic type in Breast tumor"
 				DataValue from BreastCarcinomaHistologicTypeVS
@@ -64,9 +64,9 @@ Entry:             BreastTNMPathologicStageGroup
 Parent:            TNMPathologicStageGroup
                    // Concept inherited from parent class, was not breast-specific in BrCa ballot either, was MTH#C2216702 "Malignant Neoplasm of Breast Staging"
 Description:       "A panel of breast cancer staging information that is performed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy. The panel includes biomarkers and histologic grade scales used specifically for breast cancer. The panel should not include both a DCISNuclearGrade and a BreastCancerHistologicGrade, since the latter implies an invasive cancer."
-                   //				PanelMembers.Observation.TNMPathologicPrimaryTumorCategory is type BreastTNMPathologicPrimaryTumorCategory
-                   //				PanelMembers.Observation.TNMPathologicRegionalNodesCategory is type BreastTNMPathologicRegionalNodesCategory
-                   //				PanelMembers.Observation.TNMPathologicDistantMetastasesCategory is type BreastTNMPathologicDistantMetastasesCategory
+                   // PanelMembers.Observation.TNMPathologicPrimaryTumorCategory is type BreastTNMPathologicPrimaryTumorCategory
+                   // PanelMembers.Observation.TNMPathologicRegionalNodesCategory is type BreastTNMPathologicRegionalNodesCategory
+                   // PanelMembers.Observation.TNMPathologicDistantMetastasesCategory is type BreastTNMPathologicDistantMetastasesCategory
                    PanelMembers.Observation
                    includes HER2ReceptorStatus 0..1
                    includes EstrogenReceptorStatus 0..1
@@ -78,14 +78,14 @@ Entry:             BreastClinicalLymphNodeInvolvement
 Parent:            ComponentOnlyNonLaboratoryObservation
 Concept:           MTH#C0806692 "Lymph Node Involvement"
 Description:       "Clinical assessment of lymph nodes for presence of cancer cells in staging the N category in breast cancer."
-Property:          RelatedCancerCondition 0..1
+                   FocalSubject only PrimaryCancerCondition
                    BodyLocation substitute BreastLymphNodeBodyLocation
                    Method from LymphNodeClinicalMethodVS (extensible)
                    Components.ObservationComponent
                    includes LymphNodeMobility 0..1
                    includes LymphNodeSize 0..1
 
-Entry:             BreastLymphNodeBodyLocation
+Group:             BreastLymphNodeBodyLocation
 Parent:            BodyLocation
 Description:       "A body site specific to the breast lymph node structure."
                    Code from BreastLymphNodeGroupVS (preferred)
@@ -385,14 +385,14 @@ The is currently no LOINC code for Mammaprint test."
                    Specimen substitute BreastSpecimen/************* Temporarily cut out by MK 3/20/2019 -Just to de-clutter unused elements ************
 
 EntryElement: 	BreastTNMClinicalPrimaryTumorCategory
-Based on:		TNMClinicalPrimaryTumorCategory
+Parent:		TNMClinicalPrimaryTumorCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
 Description:	"Category based on the size and extent of the primary breast tumor, assessed prior to surgery, based on evidence such as physical examination, imaging, and/or biopsy."
 				PanelMembers.Observation
 					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
 
 EntryElement:	BreastTNMClinicalRegionalNodesCategory
-Based on:		TNMClinicalRegionalNodesCategory
+Parent:		TNMClinicalRegionalNodesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
 Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed using tests that are done before surgery."
 				PanelMembers.Observation
@@ -400,19 +400,19 @@ Description:	"Category describing the presence or absence of metastases in regio
 
 // TODO: add in relationships to Met location and FindingMethod since both evaluate M category values.
 EntryElement:	BreastTNMClinicalDistantMetastasesCategory
-Based on:		TNMClinicalDistantMetastasesCategory
+Parent:		TNMClinicalDistantMetastasesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot either.
 Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed using tests that are done before surgery."
 
 EntryElement:	BreastTNMPathologicPrimaryTumorCategory
-Based on:		TNMPathologicPrimaryTumorCategory
+Parent:		TNMPathologicPrimaryTumorCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
 Description:	"Category describing the primary breast tumor, based on its size and extent, assessed through pathologic analysis of a tumor specimen."
 				PanelMembers.Observation
 					includes 0..1 TumorDimensions //TODO: need to distinguish tumor dimensions between clinical and pathologic, specify method?
 
 EntryElement:	BreastTNMPathologicRegionalNodesCategory
-Based on:		TNMPathologicRegionalNodesCategory
+Parent:		TNMPathologicRegionalNodesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
 Description:	"Category describing the presence or absence of metastases in regional lymph nodes for breast cancer, assessed through pathologic analysis of a specimen."
 				PanelMembers.Observation
@@ -420,7 +420,7 @@ Description:	"Category describing the presence or absence of metastases in regio
 
 // TODO: add in relationships to Met location and Method since both evaluate M category values.
 EntryElement:	BreastTNMPathologicDistantMetastasesCategory
-Based on:		TNMPathologicDistantMetastasesCategory
+Parent:		TNMPathologicDistantMetastasesCategory
 // Concept inherited from parent class, was not breast-specific in BrCa ballot.
 Description:	"Category describing the presence or absence of metastases in remote anatomical locations relative to the breast, assessed through pathologic analysis of a specimen."
 
@@ -428,8 +428,7 @@ Description:	"Category describing the presence or absence of metastases in remot
 /************* LEGACY BEGIN ************		 
 
 EntryElement:	BreastTumor
-Based on:		FindingSiteConditionPresenceStatement
-Concept:		SCT#395557000 "Tumor finding (finding)"
+Parent:		FindingSiteConditionPresenceStatement
 Description:	"An abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign (not cancer), or malignant (cancer). Also called neoplasm. (source: NCI)"
 1..1			TopicCode is SCT#395557000 "Tumor finding (finding)"
 1..1			Category is OBSCAT#exam
@@ -454,65 +453,65 @@ includes 0..1	OtherReceptorScoringSystem
 
 
 		Element:		Aneusomy
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Concept:		CAP#30478
 		Description:	"Aneusomy (as defined by vendor kit used)"
 		Value:			concept from YesNoVS
 	
 		Element:		HeterogeneousSignals
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Concept:		CAP#30482 
 		Description:	"Whether In Situ Hybridization signals were heterogeneous."
 		Value:			concept from YesNoVS
 		
 		Element:		PercentageAmplified
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Concept:		CAP#31073
 		Description:	"Percentage of cells with amplified HER2 signals"
 		Value:			Quantity with units UCUM#%
 
 		Element:		NuclearPositivity
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 				Description:	"The percentage of cells that test (stain) positive for the presence of a receptor."
 		Value:			Range
 	
 		Element:		PrimaryAntibody
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Concept:		CAP#31092
 		Description:	""
 		Value:			concept
 		
 		Element:		StainingControl
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Concept:		CAP#25895
 		Description:	"Whether control cells were present."
 		Value:			concept from StainingControlVS if covered
 		
 		Element:		AllredProportionScore
 		Concept:		CAP#31054
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Description:	"Part of Allred scoring, based on the percentage of cells that stain for a receptor, on a scale of 0 to 5."
 		Value:			IntegerQuantity
 
 		Element:		AllredIntensityScore
 		Concept:		CAP#29749
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Description:	"Part of the Allred scoring, based on the intensity of that staining, on a scale of 0 to 3."
 		Value:			IntegerQuantity
 							
 		Element:		AllredTotalScore
 		Concept:		CAP#31056
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Description:	"The total Allred score, the total of proportion and intensity scores, from 0 to 8."
 		Value:			IntegerQuantity  // unsignedInt -  limit to max of 8				
 
 		Element:		OtherReceptorScoringSystem
 		Concept:		CAP#31062
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 		Description:	"A scoring system other than Allred."
 
 	Element: 		Ki-67LabelingIndex
-	Based on:		SimpleCodedObservation		
+	Parent:		SimpleCodedObservation		
 	Concept:		MTH#C4049944
 	Description:	"Ki-67 is a protein phosphatase whose expression is strongly associated with cell proliferation and encoded by the MKI67 gene. The Ki67 labeling index is the fraction of Ki-67-positive cells to total cells in a tumor specimen and may be useful for determining prognosis with respect to survival and disease recurrence. The more positive cells there are, the more quickly they are dividing and forming new cells.	ReferenceRange: Low <10, Intermediate 10-20, >20 High"
 	Value:		 	Quantity with units UCUM#%
@@ -521,14 +520,14 @@ includes 0..1	OtherReceptorScoringSystem
 	includes 0..1	PrimaryAntibody  //from Ki67AntibodyVS if covered
 
 	Element:		S-PhaseFraction
-	Based on:		SimpleCodedObservation
+	Parent:		SimpleCodedObservation
 	Concept:		MTH#C0812425
 	Description: "An expression of the number of mitoses found in a stated number of cells. The S-phase fraction number tells you what percentage of cells in the tissue sample are in the process of copying their genetic information (DNA). This S-phase, short for synthesis phase, happens just before a cell divides into two new cells. ReferenceRange: Low <6, Intermediate 6-10, >10 High."
 	Value:			Quantity with units UCUM#%
 					Code is LNC#29593-1
 
 EntryElement:	GeneticVariant
-Based on:		Observation
+Parent:		    Observation
 Concept:		MTH#C0678941
 Description:	"Whether a subject carries a mutation in a particular gene."
 Value:			concept from PositiveNegativeVS
@@ -540,12 +539,12 @@ Value:			concept from PositiveNegativeVS
 includes 0..1	Refseq
 
 			Element:		Refseq
-			Based on:		ObservationComponent
+			Parent:		ObservationComponent
 						Description:	"The Reference Sequence (RefSeq) collection provides a comprehensive, integrated, non-redundant, well-annotated set of sequences, including genomic DNA, transcripts, and proteins. RefSeq sequences form a foundation for medical, functional, and diversity studies. They provide a stable reference for genome annotation, gene identification and characterization, mutation and polymorphism analysis (especially RefSeqGene records), expression studies, and comparative analyses."
 			Value: 			concept from RefseqVS
 
 EntryElement:	BreastCancerGeneticAnalysisObservation
-Based on:		Observation
+Parent:		    Observation
 Description:	"The status of genes known or suspected to play a role in breast cancer risk, for example, the tumor suppressor genes, BRCA1 and BRCA2."
 				Observation.Code is TBD#TBD
 0..0			Components
@@ -554,14 +553,14 @@ includes 1..1	BRCA1Variant
 includes 1..1	BRCA2Variant
 
 	Element:		BRCA1Variant
-		Based on:		GeneticVariant
+		Parent:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA1 gene."
 	Value:			concept from PositiveNegativeVS
 //					GeneName is HGNC#BRCA1Gene
 					
 
 	Element:		BRCA2Variant
-		Based on:		GeneticVariant
+		Parent:		GeneticVariant
 	Description:	"Whether the patient has a mutation in the BRCA2 gene."
 	Value:			concept from PositiveNegativeVS
 //					GeneName is HGNC#BRCA2Gene

@@ -1,5 +1,5 @@
 Grammar:           DataElement 6.0
-Namespace:	       shr.core
+Namespace:	       obf.datatype
 Description:       "The datatype domain contains definitions of complex datatypes used in FHIR, with several additions."
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 CodeSystem:        UCUM = http://unitsofmeasure.org
@@ -14,15 +14,15 @@ Value:             concept
 
 Group:             BodyLocation
 Description:       "A location or structure in the body, including tissues, regions, cavities, and spaces; for example, right elbow, or left ventricle of the heart. Body location is a flexible structure that allows the location to be determined by a single code, or a code plus laterality and/or orientation. The body location can also be specified in relation to one or more body landmarks. SNOMED CT is used in all cases.
-+ Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
-+ Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
-+ Relation to landmark: The location relative to a landmark is specified by:
-- Establishing the location and type of landmark using a body site code and optional laterality/orientation, and
-- Specifying the direction and distance from the landmark to the body location.
+* Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
+* Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
+* Relation to landmark: The location relative to a landmark is specified by:
+  1. Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
+  2. Specifying the direction and distance from the landmark to the body location.
 Note that BodyLocation is a data type, a reusable structure, not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 Property:          Code 1..1
 Property:          Laterality 0..1
-Property:          Orientation 0..1
+Property:          AnatomicalOrientation 0..1
 Property:          RelationToLandmark 0..*
                    Code from BodyLocationVS (preferred)
 
@@ -49,39 +49,13 @@ Element:           Relationship
 Description:       "A description of the association between people or items."
 Value:             concept
 
-/* not used -- keep for future use
-Element:		QualitativeLikelihood
-Description:	"A qualitative (subjective) likelihood."
-Value:			concept from QualitativeLikelihood
-
-Element:		Length
-Concept:		MTH#C1444754
-Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
-Value:			Quantity with Coding from UnitsOfLengthVS
-
-Element:		Depth
-Concept:		SCT#131197000 "Depth"
-Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
-Value:			Quantity with units UCUM#cm
-
-Element:		Area
-Concept:		SCT#42798000 "Area"
-Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
-Value:			Quantity with units UCUM#cm2
-
-Element:		Volume
-Concept:		MTH#C0449468
-Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
-Value:			Quantity with units UCUM#TBD
-
-Element:		Circumference
-Concept:		MTH#C0332520
-Description:	"The length of such a boundary line of a figure, area, or object."
-*/
-
 Element:           Text
 Description:       "A simple string."
 Value:             string
+
+Element:           TextMarkdown
+Description:       "A string that may contain markdown syntax for optional processing by a markdown presentation engine, in the GFM extension of CommonMark format."
+Value:             markdown
 
 Element:           Number
 Description:       "A decimal value."
@@ -109,13 +83,11 @@ Description:       "How long someone has been alive, or something has existed."
 
 Group:             Distance
 Parent:            Quantity
-Concept:           MTH#C0012751
 Description:       "The measure of space separating two objects or points."
                    Units from http://hl7.org/fhir/ValueSet/distance-units (extensible)
 
 Group:             Duration
 Parent:            SimpleQuantity
-Concept:           MTH#C0449238
 Description:       "The length of time that something continues."
                    Units from http://hl7.org/fhir/ValueSet/duration-units (extensible)
 
@@ -408,7 +380,7 @@ Description:       "A range of durations."
 
 /*	not currently used
 Element:		Statistic
-Based on: 		Quantity
+Parent: 		Quantity
 Description:	"A quantity that represents a statistic, e.g. maximum, minimum, mean, median, etc."
 1..1			StatisticType
 
@@ -432,12 +404,10 @@ Value:             uri
 Element:           AgeGroup
 Concept:           MTH#C0027362
 Description:       "Subgroups of populations based on age."
-Value:             concept from AgeGroupVS (required)
+Value:             concept from AgeGroupVS (extensible)
 
-                   // TODO: this may be an observation - there are different methods (at least 10 LOINC codes) for estimating gestational age.
 Group:             GestationalAge
 Parent:            Age
-Concept:           MTH#C0017504
 Description:       "The age of the embryo or fetus. This may be assessed by medical history, physical examination, early immunologic pregnancy tests, radiography, ultrasonography, and amniotic fluid analysis."
 
 Element:           GestationalTimePeriod
@@ -449,7 +419,6 @@ Value:             concept from GestationalTimePeriodVS (required)
                    // TODO: should be a ratio, but the problem is that ratio uses Quantity in numerator and denominator
 Group:             Frequency
 Parent:            Ratio
-Concept:           MTH#C0376249
 Description:       "How many occurrences of an event per unit of time."
                    Numerator[Quantity].Units = UCUM#1
                    Denominator[Quantity].Units from http://hl7.org/fhir/ValueSet/units-of-time (required)
@@ -476,16 +445,16 @@ Value:             date or dateTime or TimePeriod
 Element:           OccurrenceTime
 Parent:            OccurrenceTimeOrPeriod
 Description:       "The point in time in which something happens."
-Value:             dateTime
+                   Value only dateTime
 
 Element:           OccurrencePeriod
 Parent:            OccurrenceTimeOrPeriod
 Description:       "The point in time or span of time in which something happens."
-Value:             TimePeriod
+                   Value only TimePeriod
 
 Element:           OccurrenceDuration
 Description:       "The length of time in which something happens."
-Value:             Duration
+                   Value only Duration
 
                    //---------------  Positions and Addresses -----------------
 Group:             Geoposition
@@ -521,8 +490,8 @@ Description:       "An address for a place in the USA, conforming to US mail pos
 Element:           UnitedStatesState
 Parent:            State
 Description:       "A state or territory in the USA expressed by 2-letter US Postal code."
-
                    //Value:			string from http://pe.usps.com/text/pub28/28apb.htm   // expressed as string to conform with definition of State
+
 Element:           DisplayText
 Description:       "A string meant for reading by a person, for example, accompanying a code."
 Value:             string
@@ -600,8 +569,7 @@ Group:             PhotographicImage
 Parent:            Attachment
 Concept:           LNC#72170-4 "Photographic image	[Attachment]"
 Description:       "An attachment of a photographic type. The mime type should be either bmp, gif, jpeg, png, svg, or tiff."
-
-                   //				ContentType from ImageMimeTypeVS if covered
+                   // ContentType from ImageMimeTypeVS if covered  // can't do, conflict with required value set
 
 Element:           SignatureType
 Description:       "Type of signature"
@@ -617,27 +585,27 @@ Description:       "Body side of the body location, if needed to distinguish fro
 
 The laterality element is part of BodyLocation, a flexible structure that allows the location to be determined by a single code, or a code plus laterality and/or orientation. The body location can also be specified in relation to one or more body landmarks. SNOMED CT is used in all cases.
 
-+ Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
-+ Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
-+ Relation to landmark: The location relative to a landmark is specified by:
-- Establishing the location and type of landmark using a body site code and optional laterality/orientation, and
-- Specifying the direction and distance from the landmark to the body location.
+* Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
+* Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
+* Relation to landmark: The location relative to a landmark is specified by:
+  1. Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
+  2. Specifying the direction and distance from the landmark to the body location.
 
 Note that BodyLocation is a data type (a reusable structure), not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
-Value:             concept from LateralityVS (extensible)
+Value:             concept from http://hl7.org/fhir/ValueSet/bodysite-laterality (extensible)
 
-Element:           Orientation
-Description:       "Orientation of the body location, if needed to distinguish from a similar location in another orientation.
+Element:           AnatomicalOrientation
+Description:       "AnatomicalOrientation of the body location, if needed to distinguish from a similar location in another orientation.
 The orientation element is part of BodyLocation, a flexible structure that allows the location to be determined by a single code, or a code plus laterality and/or orientation. The body location can also be specified in relation to one or more body landmarks. SNOMED CT is used in all cases.
 
-+ Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
-+ Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
-+ Relation to landmark: The location relative to a landmark is specified by:
-- Establishing the location and type of landmark using a body site code and optional laterality/orientation, and
-- Specifying the direction and distance from the landmark to the body location.
+* Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
+* Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
+* Relation to landmark: The location relative to a landmark is specified by:
+  1. Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
+  2. Specifying the direction and distance from the landmark to the body location.
 
 Note that BodyLocation is a data type (a reusable structure), not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
-Value:             concept from OrientationVS (extensible)
+Value:             concept from AnatomicalOrientationVS (extensible)
 
 Group:             RelationToLandmark
 Description:       "The relationship between a landmark that helps determine a body location and the body location itself. The location relative to a landmark is specified by:
@@ -647,11 +615,11 @@ Description:       "The relationship between a landmark that helps determine a b
 
 The RelationToLandmark element is part of BodyLocation, a flexible structure that allows the location to be determined by a single code, or a code plus laterality and/or orientation. The body location can also be specified in relation to one or more body landmarks. SNOMED CT is used in all cases.
 
-+ Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
-+ Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
-+ Relation to landmark: The location relative to a landmark is specified by:
-- Establishing the location and type of landmark using a body site code and optional laterality/orientation, and
-- Specifying the direction and distance from the landmark to the body location.
+* Code only: The code should include (precoordinate) laterality and/orientation to the degree necessary to completely specify the body location.
+* Code plus laterality and/or orientation: The basic code augmented by codes specifying the body side and/or anatomical orientation.
+* Relation to landmark: The location relative to a landmark is specified by:
+  1. Establishing the location and type of landmark using a body site code and optional laterality/orientation, and 
+  2. Specifying the direction and distance from the landmark to the body location.
 
 Note that BodyLocation is a data type (a reusable structure), not a stand-alone entity. The concept is similar to how a postal address can apply to a person, location, or organization. This contrasts with FHIR's stand-alone BodySite (aka BodyStructure in r4) which 'is not ... intended for describing the type of anatomical location but rather a specific body site on a specific patient' (FHIR 3.5)."
 Property:          LandmarkType 0..1
@@ -667,21 +635,22 @@ Group:             LandmarkLocation
 Description:       "The body location of the landmark, specified by a location code and optional laterality and orientation."
 Property:          Code 0..1
 Property:          Laterality 0..1
-Property:          Orientation 0..1
+Property:          AnatomicalOrientation 0..1
 
 Element:           LandmarkToBodyLocationDirection
 Description:       "The direction from the landmark to the body location of interest, given as a clockface direction or anatomical direction."
-Value:             ClockFaceDirection or AnatomicalDirection
+Value:             concept from AnatomicalDirectionVS (preferred)
 
+/* ClockFaceDirection and AnatomicalDirection elements aren't currently used. The corresponding value sets are directly bound.
 Element:           ClockFaceDirection
 Description:       "A direction indicated by an angle relative to 12 o'clock."
 Value:             concept from ClockFaceDirectionVS (required)
 
-                   // underlaying/over
 Element:           AnatomicalDirection
 Description:       "A direction based on planes, surfaces, and orientations of the body."
                    //TO DO: isolate values that are directions
 Value:             concept from AnatomicalDirectionVS (preferred)
+*/
 
 Element:           LandmarkToBodyLocationDistance
 Description:       "How far the body location of interest is from the given landmark."
@@ -706,17 +675,6 @@ Element:           IdentifierString
 Description:       "An id for the item expressed as a string."
 Value:             string
 
-/*
-Element:		TermMapping
-Description:	"Represents an alternative (mapped) Concept associated with a source concept (i.e., CodedText.concept or the textual value of the CodedText when no equivalent concept has been defined), and the relative match of the mapped Concept with respect to the source Concept. Mappings may be used to add classification terms (e.g. adding ICD classifiers to SNOMED descriptive terms), for computational convenience, or to provide equivalents in other terminologies (e.g. across nursing vocabularies)."
-Value:			CodeableConcept
-1..1			Match
-0..1			Purpose
-
-		Element:		Match
-		Description:	"The relative match of the mapped concept to the original (target) concept. Examples include broader (i.e., the mapped term is more general than the original), equivalent, narrower (e.g. mapped concept is 'atypical diabetes mellitus' and the original term is 'diabetes mellitus'), or unknown."
-		Value:			concept
-*/
 Group:             HumanName
 Description:       "A name used by a human being, written as it would be typically expressed. May include a breakdown of the various elements of the name (family name, given name, etc.)."
 Property:          Purpose 0..1
@@ -775,3 +733,44 @@ Value:             string
 Element:           Citation
 Description:       "A bibliographic citation for the related artifact. This text SHOULD be formatted according to an accepted citation format."
 Value:             markdown
+
+/* not used -- keep for future use
+Element:		QualitativeLikelihood
+Description:	"A qualitative (subjective) likelihood."
+Value:			concept from QualitativeLikelihood
+
+Element:		Length
+Concept:		MTH#C1444754
+Description:	"The measurement or linear extent of something from end to end; the greatest dimensions of a body."
+Value:			Quantity with Coding from UnitsOfLengthVS
+
+Element:		Depth
+Concept:		SCT#131197000 "Depth"
+Description:	"The extent downward or inward; the perpendicular measurement from the surface downward to determine deepness."
+Value:			Quantity with units UCUM#cm
+
+Element:		Area
+Concept:		SCT#42798000 "Area"
+Description:	"The extent of a 2-dimensional surface enclosed within a boundary."
+Value:			Quantity with units UCUM#cm2
+
+Element:		Volume
+Concept:		MTH#C0449468
+Description:	"The amount of three dimensional space occupied by an object or the capacity of a space or container."
+Value:			Quantity with units UCUM#TBD
+
+Element:		Circumference
+Concept:		MTH#C0332520
+Description:	"The length of such a boundary line of a figure, area, or object."
+
+Element:		TermMapping
+Description:	"Represents an alternative (mapped) Concept associated with a source concept (i.e., CodedText.concept or the textual value of the CodedText when no equivalent concept has been defined), and the relative match of the mapped Concept with respect to the source Concept. Mappings may be used to add classification terms (e.g. adding ICD classifiers to SNOMED descriptive terms), for computational convenience, or to provide equivalents in other terminologies (e.g. across nursing vocabularies)."
+Value:			CodeableConcept
+1..1			Match
+0..1			Purpose
+
+		Element:		Match
+		Description:	"The relative match of the mapped concept to the original (target) concept. Examples include broader (i.e., the mapped term is more general than the original), equivalent, narrower (e.g. mapped concept is 'atypical diabetes mellitus' and the original term is 'diabetes mellitus'), or unknown."
+		Value:			concept
+
+*/

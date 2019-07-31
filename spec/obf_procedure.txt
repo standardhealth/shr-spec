@@ -1,10 +1,11 @@
 Grammar:           DataElement 6.0
 Namespace:         obf
-Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:              shr.core
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
 CodeSystem:        SCT = http://snomed.info/sct
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
-CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
+//CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
+CodeSystem:        OBSCAT = http://terminology.hl7.org/CodeSystem/observation-category
 CodeSystem:        LNC = http://loinc.org
 CodeSystem:        UCUM = http://unitsofmeasure.org
 
@@ -28,7 +29,6 @@ Property:          ComplicationReference 0..*
 Property:          FollowUp 0..*
 Property:          Annotation 0..*
 Property:          FocalDevice 0..*
-                   // SHR Extension
 Property:          TreatmentIntent 0..1
 Property:          MaterialUsedReference 0..*
 Property:          UsedCode 0..*
@@ -52,6 +52,9 @@ Property:          UsedCode 0..*
 
 Entry:             SurgicalProcedure
 Parent:            Procedure
+Description:       "A procedure that involves a physical intervention on tissues. 
+
+Conformance note: If an ICD-10-PCS code is used in the code attribute, and an equivalent SNOMED CT is available, the resulting Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
                    Participation.Participant substitute PractitionerProcedureParticipant
                    Method from SurgicalMethodVS (required)
                    // forced by Argonaut because they use an extensible binding
@@ -66,7 +69,7 @@ Description:       "The justification that the procedure was performed."
 
 Entry:             RadiationProcedure
 Parent:            Procedure
-Description:       "A radiation oncology procedure. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that."
+Description:       "A radiation oncology procedure. The procedure might represent a complete course of treatment, or a single session that is part of a series of treatments. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that. If the procedure represents the entire course of therapy, the RadiationFractionsDelivered should indicate the number of sessions. If the procedure represents one session, then the RadiationFractionsDelivered would be 1, and the TotalRadiationDoseDelivered will be the same as the RadiationDosePerFraction."
 Property:          RadiationDosePerFraction 0..1
 Property:          RadiationFractionsDelivered 0..1
 Property:          TotalRadiationDoseDelivered 0..1
@@ -134,7 +137,7 @@ Parent:            ServiceRequest
 Description:       "A request for a procedure to be performed. May be a proposal or an order."
 Property:          PartOf 0..1
 Property:          Method 0..1
-                   PartOf[DomainResource] substitute Procedure
+                   PartOf[Resource] substitute Procedure
                    ReasonReference substitute ProcedureRequestReasonReference
                    Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code (extensible)
                    // this is a constraint on the cardinality of Action.Category
@@ -188,22 +191,21 @@ Description:       "The site where the procedure is performed."
 Property:          SurgicalBodyLocationRole 0..1
 
 Element:           SurgicalBodyLocationRole
-Parent:            BodyLocation
 Description:       "Describes the role played by the body site in the surgery."
-Value:             concept from SurgicalBodyLocationRoleVS (extensible)
+                   Value[concept] from SurgicalBodyLocationRoleVS (extensible)
 
 Element:           PractitionerProcedureParticipant
 Parent:            ProcedureParticipant
 Description:       "Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
-Value:             Practitioner
+                   Value only Practitioner
 
 Element:           RadiationDosePerFraction
-Description:       "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
-Value:             Ratio
+Description:       "The amount of radiation administered during a single session (fraction) of radiation therapy therapy."
+Value:             Quantity
+                   Value[Quantity].Units = UCUM#cGy
 
 Element:           RadiationFractionsDelivered
-Concept:           LNC#21959-2 "Number of radiation treatment"
-Description:       "The total number of treatment sessions (fractions) administered during a course of radiation therapy therapy. A fraction is a portion of the total radiation dose, delivered as a series of treatments that make up the full course of radiotherapy. (source: LOINC)"
+Description:       "Records the total number of treatment sessions (fractions) administered during the first course of therapy. Corresponds to LOINC 21950-2 'Number of radiation treatment' [sic]."
 Value:             Quantity
                    Value[Quantity].Units = UCUM#1
 
@@ -211,14 +213,14 @@ Element:           TotalRadiationDoseDelivered
 Concept:           SCT#445461008 "Total radiation dose delivered (observable entity)"
 Description:       "The total amount of radiation dose delivered for the course of therapy. (source: SNOMED, ASTRO)"
 Value:             Quantity
-                   Value[Quantity].Units = UCUM#Gy
+                   Value[Quantity].Units = UCUM#cGy
 
 Entry:             DiagnosticImaging
 Parent:            ImagingProcedure
 Description:       "Diagnostic imaging procedure performed."
                    Code from DiagnosticImagingVS (required)/*
 EntryElement:	SubstanceAbuseTreatment
-Based on:		ProcedurePerformed
+Parent:		ProcedurePerformed
 Description:	"The treatment program used to address a substance abuse problem."
 				Code from SubstanceAbuseTreatmentTypeVS
 */

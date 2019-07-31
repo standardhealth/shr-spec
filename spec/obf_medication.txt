@@ -1,7 +1,7 @@
 Grammar:           DataElement 6.0
 Namespace:         obf
-Description:       "The SHR Core domain contains definitions for a variety of general-purpose elements that are used widely in SHR. These include definitions for coding, expressions of time, quantities, addresses, names, and more."
-Uses:              shr.core
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
 CodeSystem:        SCT = http://snomed.info/sct
 CodeSystem:        MTH = http://ncimeta.nci.nih.gov
 
@@ -89,29 +89,27 @@ Property:          Dosage 0..1
 
 Element:           MedicationCodeOrReference
 Description:       "A choice of a medication code or reference."
-Value:             concept from http://h7.org/fhir/us/core/ValueSet/us-core-medication-codes (extensible) or Medication
+//Value:             concept from http://h7.org/fhir/us/core/ValueSet/us-core-medication-codes (extensible) or Medication
+Value:             concept from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes (extensible) or Medication
 
 Entry:             MedicationStatement
 Parent:            MedicationAction
                    // TODO: investigate whether we need a new code or use a drug concept.
-Concept:           SCT#416608005 "Drug therapy (procedure)"
-Description:       "A record of the use of a medication. The use may be reported by the patient or clinician and adminstration does not have to be directly observed.
+Description:       "A record of the use of a medication (individual administration or entire course). The use may be reported by the patient or clinician and adminstration does not have to be directly observed.
 
-FHIR Notes:
+Implementation note: Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). Extensions are provided.
 
-Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). Extensions are provided.
-
-The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
+Conformance note: The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
 ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick a type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously.
 
-Preference is given to using the National Library of Medicine (NLM) RxNorm terminology for medications. RxNorm is a coding standard established by the Office of the National Coordinator (ONC). However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. MedicationStatement allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs."
+Implementation note: Preference is given to using the National Library of Medicine (NLM) RxNorm terminology for medications. RxNorm is a coding standard established by the Office of the National Coordinator (ONC). However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. MedicationStatement allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs.
+"
 Property:          MedicationStatementPartOf 0..*
 Property:          StatusReason 0..*
 Property:          Category 0..1
 Property:          MedicationInformationSource 0..1
 Property:          SupportingInformation 0..*
 Property:          Annotation 0..*
-                   // SHR extensions
 Property:          TreatmentIntent 0..1
 Property:          TerminationReason 0..*
                    Status from http://hl7.org/fhir/ValueSet/medication-statement-status (required)
@@ -195,7 +193,7 @@ Description:       "A choice of Patient, Practitioner and RelatedPerson as parti
 Element:           MedicationAdministrationBasedOn
 Parent:            BasedOn
 Description:       "The original request, instruction or authority to perform the administration."
-Value:             MedicationRequest
+                   Value only MedicationRequest
 
 Entry:             MedicationDispense
 Parent:            MedicationAction
@@ -266,7 +264,8 @@ Value:             boolean or concept
 
 Element:           SubstitutionReason
 Description:       "Why should (not) substitution be made."
-Value:             concept from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason (example)
+//Value:             concept from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason (example)
+Value:             concept from http://terminology.hl7.org/ValueSet/v3-SubstanceAdminSubstitutionReason (example)
 
 Group:             DispenseRequest
 Description:       "Indicates the specific details for the dispense or medication supply part of a medication request (also known as a Medication Prescription or Medication Order). Note that this information is not always sent with the order. There may be in some settings (e.g. hospitals) institutional or system support for completing the dispense details in the pharmacy department."

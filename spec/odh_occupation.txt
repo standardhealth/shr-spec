@@ -1,10 +1,11 @@
 Grammar:           DataElement 6.0
 Namespace:         odh
 Description:       "Patient’s or family member's work information."
-Uses:              shr.core, obf
+Uses:              obf.datatype, obf
 CodeSystem:        LNC = http://loinc.org
 CodeSystem:        UCUM = http://unitsofmeasure.org
-CodeSystem:        V2 = http://hl7.org/fhir/v2/0131
+//CodeSystem:        V2 = http://hl7.org/fhir/v2/0131   
+CodeSystem:        V2 = http://terminology.hl7.org/CodeSystem/v2-0131
 
 Entry:             OccupationalDataForHealth
 Parent:            Composition
@@ -16,7 +17,7 @@ Description:       "Information about a person's work and volunteer positions to
 Group:             OccupationalDataSection
 Parent:            Section
 Description:       "Section in the OccupationalDataForHealth composition, containing the person's occupational data, past and present."
-                   DomainResource
+                   Resource
                    includes EmploymentStatus 0..*
                    includes RetirementDate 0..*
                    includes CombatZonePeriod 0..*
@@ -27,8 +28,8 @@ Element:           EmploymentStatusValue
 Parent:            DataValue
 Description:       "A person’s employment status as defined by compensation and sector (e.g. paid vs. unpaid, self-employed vs. not self-employed, government vs. private, etc.)."
                    Value[concept] from http://terminology.hl7.org/ValueSet/v3-employmentStatusODH (required)
-
                    // https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7129
+                   
 Entry:             EmploymentStatus
 Parent:            CodedSocialHistoryObservation
 Description:       "The self-reported current and/or historical status about a person’s economic relationship to work (e.g. having one or more jobs), including start and end dates. A person’s Employment Status could change over time, for example, a person could be employed following a period of choosing to not be in the labor force. Outside of ODH, the employment arrangement between an employer and a person (one job) has sometimes been referred to as a person’s ‘employment status.’ However, in ODH, Employment Status is used to characterize a person, Work Classification is used to characterize a job, and Retirement Date is used to characterize a person as retired."
@@ -41,7 +42,7 @@ Description:       "The self-reported current and/or historical status about a p
 Element:           EmploymentStatusRelevantTime
 Parent:            RelevantTime
 Description:       "The time period the employment status addresses. If the employment is current, the ending time of the time period should be omitted."
-Value:             TimePeriod
+                   Value only TimePeriod
 
 Entry:             RetirementDate
 Parent:            SocialHistoryObservation
@@ -66,7 +67,7 @@ Description:       "Self-reported date range(s) when a person worked in what is 
 Element:           CombatZonePeriodValue
 Parent:            DataValue
 Description:       "Self-reported date range(s) when a person worked in what is considered a combat zone; sometimes called a hazardous duty work."
-Value:             TimePeriod
+                   Value only TimePeriod
 
 Entry:             UsualWork
 Parent:            CodedSocialHistoryObservation
@@ -83,8 +84,7 @@ Description:       "Related data elements about the work a person reports having
 Group:             UsualIndustry
 Parent:            CodedObservationComponent
                    // "A history of this observation is not retained.   Actually past versions of the observation could be retained, but the panel should refer to the latest one only.
-Description:       "The industry (type of business) in which the subject has worked for the longest duration while in the usual occupation.
-For example, a person who has spent 30 years as a building carpenter in various industries, but mostly in construction, would record a usual occupation of building carpenter and a usual industry of construction."
+Description:       "The industry (type of business) in which the subject has worked for the longest duration while in the usual occupation. For example, a person who has spent 30 years as a building carpenter in various industries, but mostly in construction, would record a usual occupation of building carpenter and a usual industry of construction."
                    //Value:			concept from IndustryVS 
                    Code = LNC#21844-6 "History of Usual industry"
                    DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7187 (required)
@@ -154,18 +154,14 @@ Description:       "A coded indicator of responsibilities for directing work and
                    DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7613 (required)
 
 Group:             JobDuty
-Parent:            ObservationComponent
+Parent:            StringObservationComponent
 Description:       "A regular action performed by a person at a job, as reported by the person. For example, a Job Duty could be 'carry construction supplies' for a job with the Occupation 'construction laborer.'"
                    Code = LNC#63761-1 "What were your main activities or duties for this job [NHANES]"
-                   DataValue only string
-                   ReferenceRange 0..0
 
 Group:             OccupationalHazard
-Parent:            ObservationComponent
+Parent:            StringObservationComponent
 Description:       "A hazard that is specific to a person's work or work environment at one job and with which the person might come in contact, as reported by the person. A hazard is a source of potential harm to a person’s physical or mental health. Hazards can be biological, physical, psychological, chemical, or radiological in nature."
                    Code = LNC#87729-0 "History of Occupational hazard"
-                   DataValue only string
-                   ReferenceRange 0..0
 
 Group:             WorkSchedule
 Parent:            CodedObservationComponent
@@ -196,7 +192,7 @@ Description:       "A flag indicating if this is the person's current job (at th
 /* Hold for later use
 
 EntryElement:	MilitaryServiceHistory
-Based on:		CodedSocialHistoryObservation
+Parent:		CodedSocialHistoryObservation
 Description:	"History of service in the US military."
 				Category is OBSCAT#social-history "Social History"
 				Code is MTH#C3714797
@@ -211,28 +207,28 @@ includes 0..1	ServiceConnectedDisability
 
 	Element:		MilitaryStatus
 	Concept:		MTH#C1550416
-	Based on:		ObservationComponent
+	Parent:		ObservationComponent
 	Description:	"The current connection to the US military."
 	Value:			concept from MilitaryStatusVS
 
 	Element:		MilitaryServiceDischargeStatus
-		Based on:		ObservationComponent
+	Parent:		ObservationComponent
 	Description:	"How the subject was formally discharged from the US Military."
 	Value:			concept from MilitaryServiceDischargeStatusVS
 
 	Element:		MilitaryBranch
 	Concept:		MTH#C2129058
-	Based on:		ObservationComponent
+	Parent:		ObservationComponent
 	Description:	"The branch of the US military that the subject has served."
 	Value:			concept from USMilitaryBranchVS
 
 	Element:		MilitaryServiceEra
-		Based on:		ObservationComponent
+		Parent:		ObservationComponent
 	Description:	"The time period of US military service."
 	Value:			concept from MilitaryServiceEraVS
 
 	Element:		ServiceConnectedDisability
-	Based on:		ObservationComponent
+	Parent:		ObservationComponent
 		Description:	"Percentage disability resulting from US Military Service."
 	Value:			Quantity with units UCUM#%
 	0..0			ReferenceRange

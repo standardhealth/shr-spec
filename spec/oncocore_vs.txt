@@ -4,14 +4,31 @@ Namespace:	onco.core
 CodeSystem:     SCT = http://snomed.info/sct
 CodeSystem:	    MTH = http://ncimeta.nci.nih.gov
 CodeSystem:     ICD10CM = http://hl7.org/fhir/sid/icd-10-cm
+CodeSystem:     AJCC = http://cancerstaging.org
+CodeSystem:     GTR = http://www.ncbi.nlm.nih.gov/gtr
+CodeSystem:     CLINVAR = http://www.ncbi.nlm.nih.gov/clinvar
+CodeSystem:     LNC = http://loinc.org
+
+ValueSet:    GeneticTestVS
+Description: "Value set containing codes representing genetic tests. Currently the best source of codes is the [Genetic Test Registry](http://www.ncbi.nlm.nih.gov/gtr). The user should be aware that the GTR cannot be a sole reliable source since the test data is voluntarily updated and there is no overarching data steward. This value set contains all codes from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-lab-codes (namely, the subset of LOINC codes with CLASSTYPE = 1), plus all codes in GTR.
+
+Implementation note: Although only a subset of LOINC codes is formally part of this value set, the value set itself contains all codes in LOINC, because FHIR cannot create an implicitly-defined value set based on LOINC's CLASSTYPE property.
+
+Conformance note: To be conformant to US Core, a LOINC code must be used, if available. Only if there is no suitable code in LOINC may other codes (such as those from GTR) be used."
+Includes codes from LNC // where CLASSTYPE = 1 (FHIR terminology server can't handle this yet)
+Includes codes from GTR
+
+ValueSet:    ClinVarVS
+Description: "Value set of human genetic variants, drawn from [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)."
+Includes codes from CLINVAR
 
 ValueSet:     CancerBodyLocationVS
-Description:  "Codes describing the location(s) of primary or secondary cancer. The value set includes all codes from the SNOMED-CT body structure hierarchy (codes descending from 123037004 'Body Structure'). The cancer body location may also be expressed using ICD-O-3 topography codes, however, those codes are not included here due to intellectual property restrictions. No other code systems are considered conformant."
+Description:  "Codes describing the location(s) of primary or secondary cancer. The value set includes all codes from the SNOMED CT body structure hierarchy (codes descending from 123037004 'Body Structure'). The cancer body location may also be expressed using ICD-O-3 topography codes, however, those codes are not included here due to intellectual property restrictions. No other code systems are considered conformant."
 Includes codes descending from SCT#123037004  "Body Structure"
 
 ValueSet:   HistologyMorphologyBehaviorVS
-Description: "Codes representing the structure, arrangement, and behavioral characteristics of tumors and cancer cells. Codes are preferrably taken from the SNOMED CT hierarchy under 108369006 Neoplasm (morphologic abnormality). ICD-O-3 morphology codes (including behavior suffix) can also be used, although they are not included in the value set for intellectual property reasons. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6 or /9. Only SNOMED CT and ICD-O-3 are considered conformant to the specification."
-Includes codes descending from SCT#108369006 "Neoplasm (morphologic abnormality)"
+Description: "Codes representing the structure, arrangement, and behavioral characteristics of tumors and cancer cells. Codes are preferrably taken from the SNOMED CT hierarchy under 367651003 (Malignant neoplasm of primary, secondary, or uncertain origin (morphologic abnormality)). ICD-O-3 morphology codes (including behavior suffix) can also be used, although they are not included in the value set for intellectual property reasons. For primary cancers, the ICD-O-3 behavior suffix should be /1, /2, or /3. For secondary cancers, the ICD-O-3 behavior suffix should be /6. Only SNOMED CT and ICD-O-3 are considered conformant to the specification. However, to be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html), ICD-O-3 can only be used if there is no suitable code in SNOMED CT."
+Includes codes descending from SCT#367651003 "Malignant neoplasm of primary, secondary, or uncertain origin (morphologic abnormality)" 
 
 /*
 ValueSet:		CancerBehaviorVS
@@ -96,6 +113,7 @@ Description: "This value set is intended to contain allowable values for Stage G
 *AJCC terminology: examples of stage groups include 'Stage 0' and 'Stage IIA'. The full set of stage groups, as well rules on how to assign a stage group, can be accessed through the AJCC Staging Manual and any applicable updates and corrections, as well as the AJCC API.
 
 * SNOMED CT has content representing stage group under the hierarchy of 261612004 'Stages', such as 258215001 'Stage 1' and 261614003 'Stage2A'. In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+Includes codes from AJCC
 // SCT#309689007 "Occult carcinoma - stage (qualifier value)"
 // Includes codes descending from SCT#261613009  "Stage 0"
 // Includes codes descending from SCT#258215001  "Stage 1"
@@ -108,7 +126,8 @@ Description: "This value set is intended to contain allowable values for the T c
 
 * AJCC terminology: examples of T categories include 'cTX', used when the tumor primary tumor cannot be evaluated, 'pT0', denoting there is no evidence of a primary tumor, and 'pTis', referencing carcinoma in situ (with some cancer-specific exceptions). Other T categories refer to increasing size of the primary tumor. Please note allowable T categories may vary between clinical and pathologic classifications. The full set of allowable clinical and pathologic T categories, along with its current descriptions, can be accessed through the AJCC Staging Manual and any applicable updates and corrections, as well as the AJCC API.
 
-* SNOMED CT has content related to the T category under the hierarchy of 385356007 'Tumor stage finding', such as 23351008 'T1 category' and 261650005 'Tumor stage T1c'. If using SNOMED-CT to store T category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. cT1 and pT1 may be represented by the same SNOMED CT code 23351008 'T1 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+* SNOMED CT has content related to the T category under the hierarchy of 385356007 'Tumor stage finding', such as 23351008 'T1 category' and 261650005 'Tumor stage T1c'. If using SNOMED CT to store T category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. cT1 and pT1 may be represented by the same SNOMED CT code 23351008 'T1 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+Includes codes from AJCC
 // Includes codes descending from SCT#44401000 "Tis category (finding)"
 // Includes codes descending from SCT#23351008 "T1 category (finding)"
 // Includes codes descending from SCT#67673008 "T2 category (finding)"
@@ -123,7 +142,8 @@ Description: "This value set is intended to contain allowable values for the N c
 
 * AJCC terminology: examples of N categories include 'cN0', indicating no evidence of lymph node involvement, and 'pN1', indicating regional lymph node involvement to a small extent, with specific thresholds for the lymph node groups and number of lymph nodes involved. Other N categories refer to increasing lymph node involvement. Please note allowable N categories may vary between clinical and pathologic classifications. The full set of allowable clinical and pathologic N categories, along with its current descriptions, can be accessed through the AJCC Staging Manual and any applicable updates and corrections, as well as the AJCC API.
 
-* SNOMED CT has content related to the N category under the hierarchy of 385382003 'Node category finding', such as 5856006 'N3 category' and 277672002 'Node stage N1a'. If using SNOMED-CT to store N category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. 'cN1' and 'pN1' may be represented by the same SNOMED CT code 53623008 'N1 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+* SNOMED CT has content related to the N category under the hierarchy of 385382003 'Node category finding', such as 5856006 'N3 category' and 277672002 'Node stage N1a'. If using SNOMED CT to store N category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. 'cN1' and 'pN1' may be represented by the same SNOMED CT code 53623008 'N1 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+Includes codes from AJCC
 // Includes codes descending from SCT#385382003 "Node category finding (finding)"
 
 ValueSet: TNMDistantMetastasesCategoryVS
@@ -131,7 +151,8 @@ Description: "This value set is intended to contain allowable values for the M c
 
 * AJCC terminology: examples of M categories include 'cM0', denoting there is no evidence of distant metastases, and 'pM1', an indication that the cancer has metasticized. The full set of allowable clinical and pathologic M categories, along with its current descriptions, can be accessed through the AJCC Staging Manual and any applicable updates and corrections, as well as the AJCC API.
 
-* SNOMED CT: The SNOMED CT US Edition has content related to the M category under the hierarchy of 385380006 'Metastasis category finding', such as 30893008 'M0 category' and 443841006 'pM1a category'. If using SNOMED-CT to store M category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. 'cM0' and 'pM0' may be represented by the same SNOMED CT code 30893008 'M0 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+* SNOMED CT: The SNOMED CT US Edition has content related to the M category under the hierarchy of 385380006 'Metastasis category finding', such as 30893008 'M0 category' and 443841006 'pM1a category'. If using SNOMED CT to store M category findings, the use of codes that do not contain descriptions of the categories, such as the examples provided, is encouraged, as stage finding codes in SNOMED CT may not be up-to-date with current AJCC guidance. Note that SNOMED CT codes do not always make a distinction between clinical and pathological classifications (e.g. 'cM0' and 'pM0' may be represented by the same SNOMED CT code 30893008 'M0 category'). In addition, SNOMED CT may not have complete TNM staging terminology and may require supplementation with codes from another controlled vocabulary (e.g. NCI Thesaurus)."
+Includes codes from AJCC
 // Includes codes descending from SCT#385380006 "Metastasis category finding"
 
 /*
@@ -142,7 +163,9 @@ Description: "Modifiers related to the staging category. Examples of modifiers i
 */
 
 ValueSet: CancerRelatedSurgicalProcedureVS
-Description: "Includes selected SNOMED CT codes that may be used in the treatment of cancer tumors. Codes from ICD-10-PCS and CPT are acceptable. CPT codes are not listed here due to intellectual property restrictions. ICD-10-PCS codes are not listed because of a limitation in the FHIR Implementation Guide publisher. For CPT and ICD-10-PCS, only codes representing surgical procedures should be used."
+Description: "Includes selected SNOMED CT codes that may be used in the treatment of cancer tumors. Codes from ICD-10-PCS and CPT are acceptable. CPT codes are not listed here due to intellectual property restrictions. ICD-10-PCS codes are not listed because of a limitation in the FHIR Implementation Guide publisher. For CPT and ICD-10-PCS, only codes representing surgical procedures should be used. 
+
+Conformance note: If an ICD-10-PCS code is used, and a semantically equivalent SNOMED CT code is available, the resulting FHIR Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
 SCT#174337000    "Destruction of lesion"
 SCT#49264007    "Excision of lesion"
 SCT#119894003    "Anus excision"
@@ -209,7 +232,7 @@ SCT#174431000    "Wedge resecton of liver"
 SCT#85946004    "Lobectomy of liver"
 SCT#15257006    "Lobectomy w/ partial excision of adjacent lobes"
 SCT#107963000    "Hepatectomy"
-SCT#13600000000000000    "Excision of tumor of liver"
+SCT#13580001000004101   "Excision of tumor of liver"
 SCT#27280000    "Liver transplant w/recipient hepatectomy"
 SCT#4974007    "Operation on liver [NOS]"
 SCT#450608000    "Destruction of lesion"
