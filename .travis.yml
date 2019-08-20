@@ -12,7 +12,19 @@ before_install:
   - cd shr-cli/
   - yarn
 script:
-  - node . ../spec/ > run.log
+  - node . ../spec/ -c ./ig-all/ig-all-r4-config.json > run.log
   - cat run.log
-  - errors=$(grep "errors" run.log | sed $'s,\x1b\\[[0-9;]*[a-zA-Z],,g')
-  - if [[ "$errors" != "0 errors" ]]; then ( echo There were errors in running shr-cli. ; exit 1 ); fi
+  - errors_r4=$(grep "errors" run.log | sed $'s,\x1b\\[[0-9;]*[a-zA-Z],,g')
+
+  - node . ../spec/ --clean -c ./ig-all/ig-all-stu3-config.json > run.log
+  - cat run.log
+  - errors_stu3=$(grep "errors" run.log | sed $'s,\x1b\\[[0-9;]*[a-zA-Z],,g')
+ 
+  - node . ../spec/ --clean -c ./ig-all/ig-all-dstu2-config.json > run.log
+  - cat run.log
+  - errors_dstu2=$(grep "errors" run.log | sed $'s,\x1b\\[[0-9;]*[a-zA-Z],,g')
+  
+  - if [[ "$errors_r4" != "0 errors" ]]; then ( echo There were errors in running shr-cli for ig-all-r4-config.json.); fi
+  - if [[ "$errors_stu3" != "0 errors" ]]; then ( echo There were errors in running shr-cli for ig-all-stu3-config.json.); fi
+  - if [[ "$errors_dstu2" != "0 errors" ]]; then ( echo There were errors in running shr-cli for ig-all-dstu2-config.json.); fi
+  - if [[ "$errors_r4" != "0 errors" ]] || [[ "$errors_stu3" != "0 errors" ]] || [[ "$errors_dstu2" != "0 errors" ]]; then (echo There were errors in running shr-cli. ; exit 1); fi
