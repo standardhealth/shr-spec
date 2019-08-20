@@ -53,7 +53,7 @@ Value:             Condition or Observation or DiagnosticReport or DocumentRefer
 Element:           BasedOn
 Description:       "The proposal, order, or plan that is partly or wholly fulfilled by this item."
                    // ref(Resource)
-Value:             ServiceRequest or ReferralRequest or ProcedureRequest or MedicationRequest
+Value:             ServiceRequest or ReferralRequest or ProcedureRequest or MedicationRequest or CarePlan
 
 Element:           ParticipationType
 Description:       "The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
@@ -113,14 +113,19 @@ Value:             Patient or Practitioner or RelatedPerson or Organization or D
 		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
 		Value:			concept
 */
-Element:           Replaces
+Element:           ReplacesAction
+Description:       "The action replaced by the current action."
+Value:             ActionStatement
+
+Element:           ReplacesRequest
+Parent:            ReplacesAction
 Description:       "Request(s) replaced by this request"
-Value:             ActionRequest
+                   Value only ActionRequest
 
 Entry:             ServiceRequest
 Parent:            ActionRequest
 Description:       "A record of a request for service such as diagnostic investigations, treatments, or operations to be performed."
-Property:          Replaces 0..*
+Property:          ReplacesRequest 0..*
 Property:          GroupIdentifier 0..1
 Property:          DoNotPerform 0..1
                    // orderDetails
@@ -137,7 +142,7 @@ Property:          SupportingInformation 0..*
 Property:          Specimen 0..*
 Property:          BodyLocation 0..*
 Property:          PatientInstruction 0..1
-                   Replaces[ActionRequest] substitute ServiceRequest
+                   ReplacesRequest[ActionRequest] substitute ServiceRequest
                    // encounter
                    CareContext only Encounter
                    // card change from 0..* to accomodate DSTU2 mapping to argo-ProcedureRequest
