@@ -1,0 +1,113 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_R4
+
+Encounter maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter:
+	Identifier maps to identifier
+	Status maps to status 
+	StatusHistory maps to statusHistory
+	StatusHistory.Status maps to statusHistory.status
+	StatusHistory.TimePeriod maps to statusHistory.period
+	EncounterClass maps to class // Min Cardinality changed from 0 to 1
+	ClassHistory maps to classHistory
+	ClassHistory.EncounterClass maps to classHistory.class
+	ClassHistory.TimePeriod maps to classHistory.period
+	Type maps to type
+	PriorityCode maps to priority
+	SubjectOfRecord maps to subject
+	EpisodeOfCare maps to episodeOfCare
+	ReferralBasedOn maps to basedOn  // ReferralRequest changed to basedOn, Added Target Type ServiceRequest
+	Participation maps to participant
+	Participation.ParticipationType maps to participant.type
+	Participation.ParticipationPeriod maps to participant.period
+	Participation.Participant maps to participant.individual // Added Target Type PractitionerRole
+	Appointment maps to appointment // Max Cardinality changed from 1 to *
+	TimePeriod maps to period
+	Duration maps to length
+	ReasonCode maps to reasonCode
+	EncounterReasonReference maps to reasonReference
+	EncounterDiagnosis maps to diagnosis
+	EncounterDiagnosis.DiagnosisCode maps to diagnosis.extension
+	EncounterDiagnosis.Condition maps to diagnosis.condition
+	EncounterDiagnosis.Type maps to diagnosis.use // renamed from role to use
+	EncounterDiagnosis.PriorityRank maps to diagnosis.rank
+//	Account maps to account
+// haven't touched hospitalization yet	
+	EncounterLocation maps to location
+	EncounterLocation.Location maps to location.location
+	EncounterLocation.Status maps to location.status
+	EncounterLocation.TimePeriod maps to location.period
+	Organization maps to serviceProvider
+	PartOf maps to partOf
+// Added ServiceDetails, location.physicalType
+
+
+EpisodeOfCare maps to EpisodeOfCare:
+	Identifier maps to identifier
+	Status maps to status  // Change value set from http://hl7.org/fhir/ValueSet/episode-of-care-status to http://hl7.org/fhir/ValueSet/episode-of-care-status|4.0.0
+	StatusHistory maps to statusHistory
+	StatusHistory.Status maps to statusHistory.status // Change value set from http://hl7.org/fhir/ValueSet/episode-of-care-status to http://hl7.org/fhir/ValueSet/episode-of-care-status|4.0.0
+	StatusHistory.TimePeriod maps to statusHistory.period
+	Type maps to type
+	EncounterDiagnosis maps to diagnosis
+	EncounterDiagnosis.DiagnosisCode maps to diagnosis.extension
+	EncounterDiagnosis.Condition maps to diagnosis.condition
+	EncounterDiagnosis.Type maps to diagnosis.role
+	EncounterDiagnosis.PriorityRank maps to diagnosis.rank
+	SubjectOfRecord maps to patient
+	Organization maps to managingOrganization
+	TimePeriod maps to period
+	ReferralBasedOn maps to referralRequest  // Added Target Type ServiceRequest, removed ReferralRequest
+	CareManager maps to careManager // Added Target Type PractitionerRole
+//	Account maps to account
+
+
+Appointment maps to Appointment:
+	Identifier maps to identifier
+	Status maps to status // Change value set from http://hl7.org/fhir/ValueSet/appointmentstatus to http://hl7.org/fhir/ValueSet/appointmentstatus|4.0.0
+	ServiceCategory maps to serviceCategory
+	ServiceDetails maps to serviceType
+	Specialty maps to specialty
+	Type maps to appointmentType
+	ReasonCode maps to reasonCode
+	AppointmentReasonReference maps to extension
+	PriorityRank maps to priority
+	SupportingInformation maps to supportingInformation
+	TimePeriod.BeginDateTime maps to start
+	TimePeriod.EndDateTime maps to end
+	//maps to minutesDuration
+	//maps to slot
+	StatementDateTime maps to created
+	//maps to comment
+	ReferralBasedOn maps to basedOn // name changed to basedOn
+ 	AppointmentParticipation maps to participant
+	AppointmentParticipation.ParticipationType maps to participant.type
+	AppointmentParticipation.Participant maps to participant.actor // Added Target Type PractitionerRole
+	AppointmentParticipation.Need maps to participant.required // Change value set from http://hl7.org/fhir/ValueSet/participantrequired to http://hl7.org/fhir/ValueSet/participantrequired|4.0.0
+	AppointmentParticipation.Status maps to participant.status // Change value set from http://hl7.org/fhir/ValueSet/participationstatus to http://hl7.org/fhir/ValueSet/participationstatus|4.0.0
+	ExpectedPerformanceTime maps to requestedPeriod
+// Added: cancellationReason, reasonReference, patientInstruction, participant.period
+
+ReferralRequest maps to ServiceRequest:
+	Identifier maps to identifier
+	// maps to defintion
+	ServiceBasedOn maps to basedOn
+	ReplacesRequest maps to replaces
+	GroupIdentifier maps to requisition
+	Status maps to status
+	RequestIntent maps to intent
+	Code maps to code
+	PriorityCode maps to priority
+	ServiceDetails maps to orderDetail
+	ReferralRequestSubjectOfRecord maps to subject
+	CareContext maps to encounter
+	ExpectedPerformanceTime maps to occurrence[x]
+	StatementDateTime maps to authoredOn
+	ReferralRequester maps to requester
+	ExpectedPerformerType maps to performerType
+	ReferralRecipient maps to performer
+	ReasonCode maps to reasonCode
+	ReferralReasonReference maps to reasonReference
+	SupportingInformation maps to supportingInfo
+	Annotation maps to note
+

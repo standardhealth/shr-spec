@@ -1,0 +1,510 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Uses:              obf.datatype
+// CodeSystem:        OBSCAT = http://terminology.hl7.org/CodeSystem/observation-category
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+CodeSystem:        UNK0 = http://terminology.hl7.org/CodeSystem/v2-0203
+CodeSystem:        SCT = http://snomed.info/sct
+
+Abstract:          SituationStatement
+Parent:            ClinicalStatement
+Description:       "An assertion, determination, opinion, evaluation, result, observation, or measurement made by a person or device."
+Property:          Code 1..1
+
+Element:           ClinicalStatus
+Description:       "A flag indicating whether the condition is active or inactive, recurring, in remission, or resolved (as of the last update of the Condition)."
+Value:             concept
+
+Element:           Severity
+Description:       "Degree of harshness or extent of a symptom, disorder, or condition."
+Value:             concept
+
+Entry:             Condition
+Parent:            SituationStatement
+Description:       "A condition that is or may be present in a subject. 'Condition' is interpreted broadly and could be a disorder, abnormality, problem, injury, complaint, functionality, illness, disease, ailment, sickness, affliction, upset, difficulty, disorder, symptom, worry, or trouble.
+The Observation-based class, ConditionAbsent, should be used to describe conditions that are not present or negative findings.
+This profiled Condition uses the BodyLocation structure that includes not only a code, but optional laterality, direction, and relation to landmark(s)."
+Property:          ClinicalStatus 0..1
+Property:          Category 1..1
+Property:          Severity 0..1
+Property:          BodyLocation 0..*
+Property:          Onset 0..1
+Property:          Abatement 0..1
+Property:          Author 0..1
+Property:          PersonInformationSource 0..1
+Property:          StageInformation 0..1
+Property:          Evidence 0..1
+Property:          Annotation 0..*
+Property:          DateOfDiagnosis 0..1
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/condition-ver-status (required)
+                   SubjectOfRecord 1..1
+                   // restricted in DSTU 2 (from Patient or Group)
+                   SubjectOfRecord only Patient
+                   CareContext only Encounter
+                   // cannot make the binding weaker because US Core requires an extensible binding
+                   //Conformance: terminology binding incompatibility between argo (DSTU2) and us-core (R4). Leaving binding to mapping.
+                   // Code from http://hl7.org/fhir/ValueSet/daf-problem (extensible)
+                   // Code from http://hl7.org/fhir/us/core/ValueSet/us-core-problem (extensible)
+                   ClinicalStatus from http://hl7.org/fhir/ValueSet/condition-clinical (required)
+                   // category is 1..1 in Argonaut
+                   Category from http://hl7.org/fhir/us/core/ValueSet/us-core-condition-category (extensible)
+                   Severity from http://hl7.org/fhir/ValueSet/condition-severity (preferred)
+
+Group:             StageInformation
+Description:       "The relative advancement in the course of a disease. The StageCode is the summary stage or stage group. StageDetail optionally contains the full staging information."
+Property:          StageSummary 0..1
+Property:          StageDetail 0..1
+Property:          Type 0..1
+                   Type from http://hl7.org/fhir/ValueSet/condition-stage-type (example)
+
+Element:           StageDetail
+Description:       "The full staging information"
+                   // or ClinicalImpression
+Value:             Observation or DiagnosticReport
+
+Group:             Evidence
+Description:       "Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition."
+Property:          Manifestation 0..*
+Property:          Resource 0..*
+
+Element:           Manifestation
+Description:       "Clinical symptoms/signs."
+Value:             concept from http://hl7.org/fhir/ValueSet/clinical-findings (example)
+
+Entry:             Observation
+Parent:            SituationStatement
+Description:       "Represents the result of evaluations (measurements, tests, or questions) that have been performed.
+Observation has a value representing the result (answer), or an DataAbsentReason indicating why the value is not present. Things observed about the subject can include social and behavioral factors, subjective and objective observations, and assessments.
+For an Observation, the Code describes the aspect or property of the subject being observed or measured. The Code is the 'question code' that pairs to the 'answer' contained in the Value."
+Property:          ObservationBasedOn 0..*
+Property:          PartOf 0..*
+Property:          Category 0..1
+Property:          FocalSubject 0..*
+                   // R4 add Timing, instant -- not supported
+Property:          RelevantTime 0..1
+Property:          Performer 0..*
+                   // added integer -- not supported
+Property:          DataValue 0..1
+Property:          DataAbsentReason 0..1
+                   // R4 upper card from 1 to * -- not supported
+Property:          Interpretation 0..1
+Property:          Annotation 0..*
+Property:          BodyLocation 0..1
+Property:          Method 0..1
+                   // Specimen added at LaboratoryObservation
+Property:          Specimen 0..1
+Property:          Device 0..1
+Property:          ReferenceRange 0..1
+Property:          PanelMembers 0..1
+Property:          ObservationDerivedFrom 0..*
+Property:          Components 0..1
+                   PartOf substitute ObservationPartOf
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/observation-status (required)
+                   SubjectOfRecord substitute ObservationSubjectOfRecord
+                   ObservationSubjectOfRecord 1..1
+                   CareContext only Encounter
+                   // FHIR-- missing StatusReason
+                   // upper card forced by DSTU 2
+                   Category from http://hl7.org/fhir/ValueSet/observation-category (extensible)
+                   // not a code
+                   FocalSubject only Resource
+
+Entry:             NonLaboratoryObservation
+Parent:            Observation
+Description:       "An observation that is not based on a specimen."
+                   Specimen 0..0
+
+Element:           DataValue
+Description:       "The value or result of a test, evaluation, or judgment, for example, a systolic blood pressure, or if a condition or body structure is present or absent."
+Value:             concept or Quantity or string or Range or Ratio or time or dateTime or TimePeriod or SampledData
+
+                   // exclude boolean because FHIR STU3 component doesn't include it, although Observation does; exclude Attachment because it is not present in FHIR v4
+Entry:             CodedNonLaboratoryObservation
+Parent:            NonLaboratoryObservation
+Description:       "The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
+                   DataValue only concept
+                   ReferenceRange 0..0
+
+Element:           ObservationSubjectOfRecord
+Parent:            SubjectOfRecord
+Description:       "The subject of an observation."
+                   Value only Patient or Group or Device or Location
+
+Element:           Performer
+Description:       "The actor that carried out the observation or action."
+                   // need to add PractitionerRole
+Value:             Practitioner or Organization or Patient or RelatedPerson
+
+Group:             PanelMembers
+Description:       "PanelMembers represent the elements of a group of a related but independent evaluations.
+
+Examples are the measurements that compose a complete blood count (CBC), or the elements of a pathology report. Each member is an independent evaluation, but the grouping reflects a composite lab order, shared specimen, or a single report author. Typically the  are not given for individual findings that are part of the panel, but rather given at the level of the panel itself."
+Property:          Observation 0..*
+
+Entry:             ComponentOnlyNonLaboratoryObservation
+Parent:            NonLaboratoryObservation
+Description:       "An observation with components, but without a result value or panel members."
+                   DataValue 0..0
+                   DataAbsentReason 0..0
+                   ReferenceRange 0..0
+                   PanelMembers 0..0
+
+                   // Laboratory Measurements and Results
+Group:             Components
+Description:       "Sub-observations that are part of this observation. A sub-observation contributs to the parent observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
+Property:          ObservationComponent 0..*
+
+/* commented out but might need to come back, so saving
+		Element:		DeltaFlag
+		Concept:		MTH#C1705241
+		Description:	"Indicator of significant change (delta) from the last or previous measurement."
+		Value:			concept from DeltaFlagVS
+				
+		Element:		Issued
+		Description:	"The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
+		Value:			instant
+*/
+                   //  Non-Laboratory Results
+Group:             ObservationComponent
+Description:       "A sub-observation contributing to the parent observation, expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations. Component observations share the same attributes in the Observation resource as the primary observation and are always treated a part of a single observation (they are not separable). However, the reference range for the primary observation value is not inherited by the component values and is required when appropriate for each component observation."
+                   // should an observation component have additional properties, such as protocol, circumstance, or interpretation?
+                   // how do we handle a normal? (physical exam normal)
+                   // exclusions? (diabetes excluded)
+Property:          Code 1..1
+Property:          DataValue 0..1
+Property:          DataAbsentReason 0..1
+                   // R4 upper card * not implemented
+Property:          Interpretation 0..1
+Property:          ReferenceRange 0..1
+
+Group:             CodedObservationComponent
+Parent:            ObservationComponent
+Description:       "A non-independent finding whose result is a concept code. A CodedObservationComponent does not have a reference range."
+                   DataValue only concept
+                   ReferenceRange 0..0
+
+Group:             StringObservationComponent
+Parent:            ObservationComponent
+Description:       "A non-independent finding whose result is a string. A StringObservationComponent does not have a reference range."
+                   DataValue only string
+                   ReferenceRange 0..0                   
+
+
+Group:             QuantitativeObservationComponent
+Parent:            ObservationComponent
+Description:       "A non-independent finding whose result is a quantity."
+                   DataValue only Quantity
+
+Entry:             LaboratoryObservation
+Parent:            Observation
+Description:       "A coded finding based on a specimen, usually collected from a patient (but possibly from a location)."
+                   Identifier
+                   includes AccessionIdentifier 0..1
+                   includes FillerOrderNumber 0..1
+                   includes PlacerOrderNumber 0..1
+                   Code from http://hl7.org/fhir/ValueSet/observation-codes (extensible)
+                   Category 1..1
+//                   Category = OBSCAT#laboratory
+                   Performer substitute LaboratoryObservationPerformer
+                   // BodyLocation is determined indirectly from Specimen.CollectionSite
+                   BodyLocation 0..0
+
+/*  Performer cannot be sliced because there is no way to identify which slice a practitioner performer is associated with
+				Performer
+	includes 	0..1 ResponsibleObserver
+	includes	0..1 PerformingLaboratory
+	includes 	0..1 PerformingOrganizationMedicalDirector
+*/
+Element:           Interpretation
+Description:       "A clinical interpretation of a finding (applies to both assertions and observation)."
+Value:             concept from http://hl7.org/fhir/ValueSet/observation-interpretation (extensible)
+
+Entry:             CodedLaboratoryObservation
+Parent:            LaboratoryObservation
+Description:       "A coded result from a laboratory test."
+                   DataValue only concept
+                   ReferenceRange 0..0
+
+Entry:             SimpleCodedLaboratoryObservation
+Parent:            CodedLaboratoryObservation
+Description:       "A coded result from a laboratory test without further panel members or components."
+                   PanelMembers 0..0
+                   Components 0..0
+
+Entry:             SimpleLaboratoryObservation
+Parent:            LaboratoryObservation
+Description:       "A result from a laboratory test without panel members or components."
+                   PanelMembers 0..0
+                   Components 0..0
+
+Element:           RelevantTime
+Description:       "The time or time period that the statement addresses.
+The clinically relevant time is not necessarily when the information is gathered or when a test is carried out, but for example, when a specimen was collected, or the time period referred to by the question. Use a TimePeriod for a measurement or specimen collection continued over a significant period of time (e.g. 24 hour Urine Sodium)."
+                   // not supporting Timing (dateTime can map to instant)
+Value:             dateTime or TimePeriod
+
+Element:           PersonInformationSource
+Parent:            InformationSource
+Description:       "The person who provided the information, not necessarily the patient."
+                   Value only Patient or Practitioner or RelatedPerson
+
+                   // may need to add PractitionerRole
+Entry:             AbnormalBodyStructure
+Parent:            Condition
+Description:       "A body structure such as wound or tumor, observed to be present in a patient. The body structure is a condition that persists over time. The Code represents the body structure itself (the morphology), while the BodyLocation is the location of that structure. This corresponds to FHIR R4, where the BodyStructure resource has morphology (corresponding to Code) and a location. For example, the Code could be blunt force injury (SCT 3821009) and location left knee."
+Property:          ReferenceRange 0..0
+                   Code from AbnormalBodyStructureVS (extensible)
+
+Entry:             DiagnosticReport
+Parent:            SituationStatement
+Description:       "The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports."
+Property:          BasedOn 0..*
+// Category is 0..1 in DSTU 2 and 1..* in US-Core v3. Therefore must be 1..1.
+Property:          Category 1..1
+Property:          RelevantTime 0..1
+Property:          DiagnosticReportPerformer 0..1
+Property:          ResultsInterpreter 0..1
+Property:          Specimen 0..*
+Property:          Observation 0..*
+                   //0..*			ref(ImagingStudy) -- not yet implemented
+Property:          MediaIncluded 0..*
+Property:          ConclusionText 0..1
+Property:          ConclusionCode 0..*
+Property:          PresentedForm 0..*
+                   // 'issued' is required in DSTU-2
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status (required)
+                   // SubjectOfRecord is required in US Core v3
+                   SubjectOfRecord 1..1
+                   SubjectOfRecord substitute ObservationSubjectOfRecord
+                   CareContext only Encounter
+                   StatementDateTime 1..1
+                   // Code from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-report-and-note-codes (extensible) //DSTU2-STU3-R4 binding incompatibility
+
+Entry:             LaboratoryReport
+Parent:            DiagnosticReport
+Description:       "A grouping or summarization of laboratory results, where individual results are typically Observations or nested Observations (panels). This class aligns with US Core DiagnosticReport Profile for Laboratory Results Reporting."
+                   // result must map to http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab in R4
+                   Observation substitute LaboratoryObservation
+
+Entry:             SimpleCodedNonLaboratoryObservation
+Parent:            CodedNonLaboratoryObservation
+Description:       "An observation whose result is a code, and also having no components or panel members"
+                   PanelMembers 0..0
+                   Components 0..0
+
+Element:           DataAbsentReason
+Description:       "Reason that a value associated with a test or other finding is missing."
+Value:             concept
+                    // Conformance: terminology binding incompatibility between DSTU2 and R4. Leaving binding to mapping.
+                    // concept from http://hl7.org/fhir/ValueSet/observation-valueabsentreason (extensible) // DSTU2
+                    // concept from http://hl7.org/fhir/ValueSet/data-absent-reason (extensible) // R4
+
+Group:             ReferenceRange
+Concept:           MTH#C0883335
+Description:       "The usual or acceptable range for a test result."
+Property:          LowerBound 0..1
+Property:          UpperBound 0..1
+Property:          Type 0..1
+Property:          ApplicableSubpopulation 0..1
+Property:          ApplicableAgeRange 0..1
+Property:          Text 0..1
+                   // R4 changes binding  from extensible to preferred -- not implemented
+                   Type from http://hl7.org/fhir/ValueSet/referencerange-meaning (extensible)
+
+Element:           ApplicableSubpopulation
+Concept:           MTH#C0039309 "Target Population"
+Description:       "Codes to indicate the target population this reference range applies to. For example, a reference range may be based on the normal population or a particular sex or race."
+Value:             concept from http://hl7.org/fhir/ValueSet/referencerange-appliesto (extensible)
+
+Element:           ApplicableAgeRange
+                   // FHIR: how exactly does one indicate a neonatal or prenatal age?
+Description:       "The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so."
+Value:             Range
+
+Element:           ObservationBasedOn
+Parent:            BasedOn
+Description:       "The plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed."
+                   Value only MedicationRequest or ServiceRequest or ProcedureRequest or ReferralRequest
+                   // or ref(CarePlan) or ref(DeviceRequest) or ref(ImmunizationRecommendation) or ref(NutritionOrder)        
+
+Element:           ObservationPartOf
+Parent:            PartOf
+Description:       "A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure."
+                   Value only MedicationAdministration or MedicationDispense or MedicationStatement or Procedure
+
+Element:           DerivedFrom
+Description:       "Indicates the source of information in the case the Entry has been created by logical extension or modification of one or more source entries."
+Value:             DocumentReference or Media or QuestionnaireResponse or Observation or CanonicalUrl
+
+                   // or ref(ImagingStudy) or ref(Immunization)
+Element:           ObservationDerivedFrom
+Parent:            DerivedFrom
+Description:       "The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image."
+                   Value only DocumentReference or Media or QuestionnaireResponse or Observation
+
+                   // or ref(MolecularSequence) or ref(ImagingStudy)
+Entry:             SimpleNonLaboratoryObservation
+Parent:            NonLaboratoryObservation
+Description:       "An observation having no components or panel members"
+                   PanelMembers 0..0
+                   Components 0..0
+
+Entry:             QuantitativeNonLaboratoryObservation
+Parent:            NonLaboratoryObservation
+Description:       "The result of evaluations (measurements, tests, or questions) whose answer is expressed as a code."
+                   DataValue only Quantity
+                   Interpretation from QuantitativeResultInterpretationVS (extensible)
+
+Group:             PlacerOrderNumber
+Parent:            Identifier
+Description:       "Identifier assigned by the requester of the lab."
+                   Type 1..1
+                   Type = UNK0#PLAC
+
+Group:             FillerOrderNumber
+Parent:            Identifier
+Description:       "Identifier assigned by the lab carrying out the test."
+                   Type 1..1
+                   Type = UNK0#FILL
+
+Element:           LaboratoryObservationPerformer
+Parent:            Performer
+Description:       "The practitioner that carried out the observation or action."
+                   Value only Practitioner or Organization
+/*
+		Element:		ResponsibleObserver
+		Parent:		    Performer
+		Description:	"Person directly responsible for carrying out the test."
+		Value:			ref(Practitioner) 
+
+		Element:		PerformingLaboratory
+		Parent:		    Performer
+		Description:	"Organization responsible for carrying out the test."
+		Value:			ref(Organization)
+		
+		Element:		PerformingOrganizationMedicalDirector
+		Parent:		    Performer
+		Description:	"Director of the laboratory performing the test."
+		Value:			ref(Practitioner)
+*/
+
+Entry:             QuantitativeLaboratoryObservation
+Parent:            LaboratoryObservation
+Description:       "A quantiative result from a laboratory test."
+                   DataValue only Quantity
+                   Interpretation from QuantitativeResultInterpretationVS (extensible)
+
+Entry:             SimpleQuantitativeLaboratoryObservation
+Parent:            QuantitativeLaboratoryObservation
+Description:       "An observation whose result is a quantity, with no components or panel members"
+                   PanelMembers 0..0
+                   Components 0..0
+
+Entry:             LaboratoryPanel
+Parent:            LaboratoryObservation
+Description:       "A set of independent but related observations that are often presented together to facilitate interpretation, such as a lipid panel."
+                   Device 0..0 // seems to be correct that a panel never has a device common to all independent sub-observations
+                   Components 0..0
+
+Entry:             HeadlessLaboratoryPanel
+Parent:            LaboratoryPanel
+Description:       "A panel that does not have an overall value that summarizes the entire panel."
+                   DataValue 0..0
+                   DataAbsentReason 0..0
+                   ReferenceRange 0..0
+
+Entry:             Panel
+Parent:            Observation
+Description:       "A set of independent but related observations that are often presented together to facilitate interpretation, or based on a single sample, such as a lipid panel."
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components 0..0
+
+Entry:             HeadlessPanel
+Parent:            Panel
+Description:       "A panel that does not have an overall value that summarizes the entire panel."
+                   DataValue 0..0
+                   DataAbsentReason 0..0
+                   ReferenceRange 0..0
+
+Element:           SocialHistoryObservationBasedOn
+Parent:            ObservationBasedOn
+Description:       "The plan, proposal or order that is fulfilled in whole or in part by this observation."
+                   Value only ServiceRequest or ProcedureRequest or ReferralRequest
+                   // or ref(CarePlan) 
+
+Element:           StageSummary
+Description:       "A code representing the current stage of a disease."
+Value:             concept
+
+Element:           Onset
+Description:       "The beginning or first appearance of a mental or physical disorder."
+Value:             dateTime or Age or TimePeriod or Range or string
+
+Element:           Abatement
+Description:       "The end, remission or resolution."
+Value:             dateTime or Age or boolean or TimePeriod or Range or string
+
+Element:           DateOfDiagnosis
+Description:       "The date the disease was first clinically recognized with sufficient certainty, regardless of whether it was fully characterized at that time."
+Value:             dateTime
+
+/* Hold
+			Element:		AlleviatingFactor
+			Description:	"Activities that reduce the severity of the pathology"
+			Value:			concept
+
+			Element:		ExacerbatingFactor
+			Description:	"Activities that increase the severity of the pathology"
+			Value:			concept
+*/
+Entry:             ComorbidCondition
+Parent:            Condition
+Description:       "A comorbidity refers to one or more diseases or conditions that occur along with another condition in the same person at the same time. Conditions considered comorbidities are often long-term or chronic conditions. Comorbidities are defined relative to an index disease and may be categorical, rather than described in full detail. The comorbid condition class provides comorbidity codes corresponding the Elixhauser Comorbidity Index. 
+
+Conformance note: If an ICD-10-CM code is used for the code attribute, and a semantically equivalent SNOMED code is available, the resulting instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
+                   Code from ComorbidConditionVS (extensible)
+                   Category = SCT#398192003 "Co-morbid conditions (finding)"
+                   DateOfDiagnosis 0..0
+
+Entry:             CongenitalAbnormality
+Parent:            Condition
+Concept:           MTH#C0000768 "Congenital Abnormality"
+Description:       "Any abnormality, genetic, anatomical, biochemical, evident at birth or during the neonatal period. Includes malformations, deformations, and chromosomal abnormalities."
+                   Code from CongenitalAbnormalitiesVS (extensible)
+
+Element:           DiagnosticReportPerformer
+Parent:            Performer
+Description:       "The diagnostic service that is responsible for issuing the report."
+                   Value only Practitioner or Organization
+
+Element:           ResultsInterpreter
+Parent:            Performer
+Description:       "The practitioner or organization that is responsible for the report's conclusions and interpretations."
+                   Value only Practitioner or Organization
+
+Group:             MediaIncluded
+Description:       "A list of key images associated with this report. The images are generally created during the diagnostic process, and may be directly of the patient, or of treated specimens (i.e. slides of interest)."
+Property:          CommentOrDescription 0..1
+Property:          Media 1..1
+
+Element:           ConclusionText
+Description:       "Concise and clinically contextualized impression / summary of the diagnostic report."
+Value:             string
+
+Element:           ConclusionCode
+Description:       "One or more codes that represent the summary conclusion (interpretation/impression) of the diagnostic report."
+Value:             concept
+
+Element:           PresentedForm
+Description:       "Fully formatted representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent."
+Value:             Attachment
+
+Entry:             ClinicalNote
+Parent:            DocumentReference
+Description:       "An entry concerning a patient where the result is a narrative text."
+                   Category 1..1
+                   // Category from http://fhir.org/guides/argonaut-clinicalnotes/ValueSet/documentreference-category (required) //DSTU2-R4 binding incompatibility

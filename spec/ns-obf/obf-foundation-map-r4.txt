@@ -1,0 +1,210 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_R4
+
+Resource maps to Resource:
+	Language maps to language
+	ImplicitRules maps to implicitRules
+	Metadata.VersionId maps to meta.versionId
+	Metadata.SourceSystem maps to meta.source
+    Metadata.Profile maps to meta.profile
+	Metadata.LastUpdated maps to meta.lastUpdated
+	Metadata.SecurityLabel maps to meta.security
+	Metadata.Tag maps to meta.tag
+
+DomainResource maps to DomainResource:
+	Narrative maps to text
+
+Composition maps to Composition:
+	Identifier maps to identifier
+	Status maps to status
+	Type maps to type
+    Category maps to category
+    FocalSubject maps to subject
+    CareContext maps to encounter
+    StatementDateTime maps to date
+    Author maps to author
+    Title maps to title
+    ConfidentialityCode maps to confidentiality
+    Attestation.AttestationMode maps to attester.mode
+    Attestation.CreationDateTime maps to attester.time
+    Attestation.Attester maps to attester.party
+    ManagingOrganization maps to custodian
+    RelatedDocument.Relationship maps to relatesTo.code
+    RelatedDocument.TargetDocument maps to relatesTo.target[x]
+    EventContext.Code maps to event.code
+    EventContext.TimePeriod maps to event.period
+    EventContext.SupportingInformation maps to event.detail
+    // section
+    Section maps to section (slice on = code.coding.code; slice strategy = includes)
+    Section.Title maps to section.title
+    Section.Code maps to section.code
+    Section.Author maps to section.author
+    Section.FocalSubject maps to section.focus
+    Section.Narrative maps to section.text
+    Section.Type maps to section.mode
+    Section.SortOrder maps to section.orderedBy // terrible FHIR name!
+    Section.Resource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.EmptyReason maps to section.emptyReason
+	Section.Section maps to section.section
+
+Narrative maps to Narrative:
+	NarrativeText maps to div
+	NarrativeQualifier maps to status
+
+
+ValueSet maps to ValueSet:
+    Url maps to url
+    Identifier maps to identifier
+    VersionString maps to version
+    Name maps to name
+    Title maps to title
+    Status maps to status
+    IsExperimental maps to experimental
+    LastUpdated maps to date
+    PublisherName maps to publisher
+    ContactDetail maps to contact
+    DescriptionMarkdown maps to description
+    UseContext.Code maps to useContext.code
+    UseContext.ContextValue maps to useContext.value[x]
+    Jurisdiction maps to jurisdiction
+    IsImmutable maps to immutable
+    PurposeMarkdown maps to purpose
+    Copyright maps to copyright
+    ContentLogicalDefinition maps to compose
+    ContentLogicalDefinition.LockedDate maps to compose.lockedDate
+    ContentLogicalDefinition.IncludeInactiveCodes maps to compose.inactive
+    ContentLogicalDefinition.IncludeCodes maps to compose.include
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSystem maps to compose.include.system
+    ContentLogicalDefinition.IncludeCodes.CodeSet.VersionString maps to compose.include.version
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept maps to compose.include.concept
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Code maps to compose.include.concept.code
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.DisplayText maps to compose.include.concept.display
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation maps to compose.include.concept.designation
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.Language maps to compose.include.concept.designation.language
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.Type  maps to compose.include.concept.designation.use
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetConcept.Designation.DisplayText maps to  compose.include.concept.designation.value
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter maps to compose.include.filter
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.Property maps to compose.include.filter.property
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.Operation maps to compose.include.filter.op // Change value set from http://hl7.org/fhir/ValueSet/filter-operator to http://hl7.org/fhir/ValueSet/filter-operator|4.0.0
+    ContentLogicalDefinition.IncludeCodes.CodeSet.CodeSetFilter.FilterValue maps to compose.include.filter.value // Type changed from code to string
+    ContentLogicalDefinition.IncludeCodes.CodeSet.ValueSetUri maps to compose.include.valueSet // Type changed from uri to canonical(ValueSet)
+    // ExcludeCodes
+    ContentLogicalDefinition.ExcludeCodes maps to compose.exclude
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSystem maps to compose.exclude.system
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.VersionString maps to compose.exclude.version
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept maps to compose.exclude.concept
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Code maps to compose.exclude.concept.code
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.DisplayText maps to compose.exclude.concept.display
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation maps to compose.exclude.concept.designation
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.Language maps to compose.exclude.concept.designation.language
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.Type  maps to compose.exclude.concept.designation.use
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetConcept.Designation.DisplayText maps to  compose.exclude.concept.designation.value
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter maps to compose.exclude.filter
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.Property maps to compose.exclude.filter.property
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.Operation maps to compose.exclude.filter.op
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.CodeSetFilter.FilterValue maps to compose.exclude.filter.value
+    ContentLogicalDefinition.ExcludeCodes.CodeSet.ValueSetUri maps to compose.exclude.valueSet
+    // expansion
+    ValueSetExpansion maps to expansion
+    ValueSetExpansion.Url maps to expansion.identifier // Min Cardinality changed from 1 to 0
+    ValueSetExpansion.CreationDateTime maps to expansion.timestamp
+    ValueSetExpansion.TotalCount maps to expansion.total
+    ValueSetExpansion.Offset maps to expansion.offset
+    ValueSetExpansion.ExpansionParameter maps to expansion.parameter
+    ValueSetExpansion.ExpansionParameter.Name maps to expansion.parameter.name
+    ValueSetExpansion.ExpansionParameter.ParameterValue maps to expansion.parameter.value[x] // Add Type dateTime
+    ValueSetExpansion.ExpansionCoding maps to expansion.contains
+    ValueSetExpansion.ExpansionCoding.Code maps to expansion.contains.code
+    ValueSetExpansion.ExpansionCoding.CodeSystem maps to expansion.contains.system
+    ValueSetExpansion.ExpansionCoding.VersionString maps to expansion.contains.version
+    ValueSetExpansion.ExpansionCoding.DisplayText maps to expansion.contains.display
+    ValueSetExpansion.ExpansionCoding.Inactive maps to expansion.contains.inactive
+    ValueSetExpansion.ExpansionCoding.NonSelectable maps to expansion.contains.abstract
+    ValueSetExpansion.ExpansionCoding.Designation maps to expansion.contains.designation
+    ValueSetExpansion.ExpansionCoding.ExpansionCoding maps to expansion.contains.contains
+    // compose.include.concept.designation.language	-- Change binding strength from extensible to preferred
+
+
+DocumentReference maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference:
+    MasterIdentifier maps to masterIdentifier
+    Identifier maps to identifier
+    Status maps to status
+    DocumentStatus maps to docStatus
+    Type maps to type // Min Cardinality changed from 1 to 0
+    Category maps to category
+    SubjectOfRecord maps to subject
+    StatementDateTime maps to date
+    DocumentAuthor maps to author // Added Target Type PractitionerRole
+    Authenticator maps to authenticator // Added Target Type PractitionerRole
+    ManagingOrganization maps to custodian
+    RelatedDocument maps to relatesTo
+    RelatedDocument.Relationship maps to relatesTo.code
+	RelatedDocument.TargetDocument maps to relatesTo.target
+    CommentOrDescription maps to description
+    SecurityLabel maps to securityLabel
+	DocumentReferenced maps to content
+	DocumentReferenced.Attachment maps to content.attachment
+	DocumentReferenced.Type maps to content.format
+    EventContext maps to context
+    EventContext.CareContext maps to context.encounter // Max Cardinality changed from 1 to *; Added Target Type EpisodeOfCare
+	EventContext.Code maps to context.event
+	EventContext.TimePeriod maps to context.period
+	EventContext.FacilityType maps to context.facilityType
+	EventContext.Setting maps to context.practiceSetting
+	EventContext.Patient maps to context.sourcePatientInfo
+	EventContext.SupportingInformation maps to context.related
+
+Provenance maps to Provenance:
+    RefersTo maps to target
+    OccurrenceTimeOrPeriod maps to occurred[x]
+    StatementDateTime maps to recorded
+    ImplicitRules maps to policy   // change from Implicit to Rules
+    Location maps to location
+    ReasonCode  maps to reason
+    ActivityCode maps to activity
+    ProvenanceParticipation maps to agent
+    ProvenanceParticipation.Participant maps to agent.who
+    ProvenanceParticipation.ParticipationType maps to agent.type
+    ProvenanceParticipation.ParticipationRole maps to agent.role
+    ProvenanceParticipation.OnBehalfOf maps to agent.onBehalfOf
+    Used maps to entity
+    Used.UsedType maps to entity.role
+    Used.UsedReference maps to entity.what
+    Used.UsedParticipation maps to entity.agent
+    Signature maps to signature
+
+
+List maps to List:
+    Identifier maps to identifier
+    Status maps to status
+    Mode maps to mode
+    Title maps to title
+    Code maps to code
+    ListSubjectOfRecord maps to subject
+    CareContext maps to encounter
+    StatementDateTime maps to date
+    ListAuthor maps to source
+    SortOrder maps to orderedBy
+    Annotation maps to note
+    ListItem maps to entry
+    ListItem.Status maps to entry.flag
+    ListItem.Inactive maps to entry.deleted
+    ListItem.TimePeriod.BeginDateTime maps to entry.date
+    ListItem.TimePeriod.EndDateTime maps to entry.extension
+    ListItem.Resource maps to entry.item
+    EmptyReason maps to emptyReason
+
+Signature maps to Signature:
+	SignatureType maps to type
+	CreationDateTime maps to when
+	Signer maps to who
+	OnBehalfOf maps to onBehalfOf
+	SignatureFormat maps to sigFormat
+	TargetFormat maps to targetFormat
+	BinaryData maps to data
+
+Annotation maps to Annotation:
+	TextMarkdown maps to text
+	PersonAuthor maps to author[x]
+	OccurrenceTime maps to time

@@ -1,0 +1,213 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+
+                   //---------- Actions --------------
+Element:           Method
+Description:       "The technique used to carry out an action, for example, the specific imaging technical or assessment vehicle."
+                   // TODO: limit to a procedure code
+Value:             concept
+
+Abstract:          ActionStatement
+Parent:            ClinicalStatement
+Description:       "Abstract class representing any type of action or event."
+Property:          ReasonCode 0..*
+Property:          ReasonReference 0..*
+Property:          BasedOn 0..*
+                   SubjectOfRecord 1..1
+
+Abstract:          ActionPerformed
+Parent:            ActionStatement
+Description:       "Abstract class representing an event occurrence or performance of any type of action."
+Property:          OccurrenceTimeOrPeriod 1..1
+Property:          Participation 0..*
+Property:          Method 0..1
+                   // change to required... should be from http://hl7.org/fhir/ValueSet/event-status  DSTU 2 change (conflict in required data sets)
+                   Status 1..1
+
+Group:             Participation
+Description:       "Record of someone or something involvement in an activity or event."
+Property:          Participant 0..1
+                   // role could be multiple (e.g., appointment participation)
+Property:          ParticipationType 0..1
+Property:          ParticipationPeriod 0..1
+Property:          OnBehalfOf 0..1
+
+Element:           Outcome
+Description:       "The result of an event or performance of an action or behavior, for example, an adverse reaction or procedure."
+Value:             concept
+
+Element:           ReasonCode
+Concept:           MTH#C0566251
+Description:       "The explanation or justification for the current item or action, as a code.
+Reason is a string or CodeableConcept in DSTU2 but in later versions only a CodeableConcept."
+Value:             concept
+
+Element:           ReasonReference
+Description:       "The justification, as reference to a condition or observation."
+                   //ref(Resource)
+Value:             Condition or Observation or DiagnosticReport or DocumentReference or Procedure
+
+Element:           BasedOn
+Description:       "The proposal, order, or plan that is partly or wholly fulfilled by this item."
+                   // ref(Resource)
+Value:             ServiceRequest or ReferralRequest or ProcedureRequest or MedicationRequest or CarePlan
+
+Element:           ParticipationType
+Description:       "The role played by the participant engaged in the action, for example, as the attending physician, surgical assistant, etc."
+Value:             concept from http://hl7.org/fhir/ValueSet/performer-role (example)
+
+Element:           ParticipationPeriod
+Description:       "The point in time or span of time the participant is involved."
+Value:             TimePeriod
+
+Element:           Participant
+Description:       "An entity (usually a Practitioner, Patient, or Organization but potentially a device or other entity) that participates in a healthcare task or activity. The participant is not necessarily the performer, and the role (ParticipationType), the ParticipationPeriod, and other details of the participation are by the Participation structure."
+Value:             Patient or Practitioner or RelatedPerson or Organization or Device or Group or Location
+
+Abstract:          ActionRequest
+Parent:            ActionStatement
+Description:       "Abstract class representing a request for any type of action to be performed."
+                   // the item or action being requested
+Property:          Code 0..1
+Property:          Category 0..*
+Property:          Requester 0..1
+Property:          RequestIntent 1..1
+Property:          ExpectedPerformanceTime 0..1
+Property:          ExpectedPerformerType 0..1
+Property:          ExpectedPerformer 0..*
+                   //should be from http://hl7.org/fhir/ValueSet/request-priority  // DSTU2 change (conflicting value sets)
+Property:          PriorityCode 0..1
+Property:          Annotation 0..*
+                   // should be from http://hl7.org/fhir/ValueSet/request-status  (incompatible VS between DSTU2 and STU3, R4)
+                   Status 1..1
+
+Element:           Requester
+Description:       "The person or organization originating this referral"
+                   // missing PractitionerRole
+Value:             Practitioner or Organization or Patient or RelatedPerson or Device
+
+Element:           RequestIntent
+Description:       "Indicates the level of authority/intentionality associated with the request and where the request fits into the workflow chain."
+                   //should be from http://hl7.org/fhir/ValueSet/request-intent // conflict with MedicationRequest STU3 and R4
+Value:             concept
+
+Element:           ExpectedPerformanceTime
+Description:       "When an action should be done. If the action is a series or recurs (e.g. daily blood sugar testing in the morning) then a Timing can be used to describe the periodicity."
+Value:             dateTime or TimePeriod or Timing
+
+Element:           ExpectedPerformerType
+Description:       "What type of party should carry out the testing."
+                   // what ValueSet??
+Value:             concept
+
+Element:           ExpectedPerformer
+Description:       "Who this request is being addressed to."
+                   // or ref(CareTeam)
+Value:             Patient or Practitioner or RelatedPerson or Organization or Device
+
+/*		
+		Element:		CommunicationMethod
+		Description:	"This is the method the provider used to communicate. Examples include: Written, Telephoned, Verbal, Electronically Entered, Policy, Service Correction, Duplicate, etc. 'Code indicating the origin of the prescription.' - NCPDP Telecommunication (Field 419-DJ, Data Dictionary 201104). Possible values include: Written; Telephone; Electronic; Facsimile; Pharmacy; Not Known."
+		Value:			concept
+*/
+Element:           ReplacesAction
+Description:       "The action replaced by the current action."
+Value:             ActionStatement
+
+Element:           ReplacesRequest
+Parent:            ReplacesAction
+Description:       "Request(s) replaced by this request"
+                   Value only ActionRequest
+
+Entry:             ServiceRequest
+Parent:            ActionRequest
+Description:       "A record of a request for service such as diagnostic investigations, treatments, or operations to be performed."
+Property:          ReplacesRequest 0..*
+Property:          GroupIdentifier 0..1
+Property:          DoNotPerform 0..1
+                   // orderDetails
+Property:          ServiceDetails 0..*
+                   // quantity[x]
+Property:          RequestQuantity 0..1
+                   // subject
+Property:          RequestSubjectOfRecord 1..1
+Property:          AsNeeded 0..1
+Property:          LocationType 0..*
+Property:          Location 0..*
+Property:          Insurance 0..*
+Property:          SupportingInformation 0..*
+Property:          Specimen 0..*
+Property:          BodyLocation 0..*
+Property:          PatientInstruction 0..1
+                   ReplacesRequest[ActionRequest] substitute ServiceRequest
+                   // encounter
+                   CareContext only Encounter
+                   // card change from 0..* to accomodate DSTU2 mapping to argo-ProcedureRequest
+                   // card change from 0..*  to accomodate DSTU2 mapping to argo-ProcedureRequest
+                   // authoredOn
+                   ReasonCode 0..1
+                   // card change from 0..* for DSTU2 mapping to argo-ProcedureRequest
+                   ReasonReference substitute ServiceReasonReference
+                   ServiceReasonReference 0..1
+                   // 0..*			InstantiatesCanonical  // not implemented
+                   // 0..*			InstantiatesUri // not implemented
+                   BasedOn substitute ServiceBasedOn
+                   // card change from 0..1 to accomodate DSTU2 mapping to argo-ProcedureRequest
+                   Code 1..1
+                   RequestIntent from http://hl7.org/fhir/ValueSet/request-intent (required)
+                   ExpectedPerformer 0..1
+
+Element:           ServiceBasedOn
+Parent:            BasedOn
+Description:       "The original or initiating plan, proposal, or request."
+                   Value only ServiceRequest or ReferralRequest or ProcedureRequest
+
+Element:           GroupIdentifier
+Description:       "A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier."
+Value:             Identifier
+
+Element:           DoNotPerform
+Description:       "A flag, when set to true, indicates that the service/procedure should NOT be performed."
+Value:             boolean
+
+Element:           ServiceDetails
+Description:       "A service requested or performed. Additional details and instructions about the service requested or performed. For example, and order for a urinary catheter may have an order detail for an external or indwelling catheter, or an order for a bandage may require additional instructions specifying how the bandage should be applied."
+Value:             concept from http://hl7.org/fhir/ValueSet/service-type (example)
+
+Element:           RequestQuantity
+Description:       "An amount of service being requested which can be a quantity ( for example $1,500 home modification), a ratio ( for example, 20 half day visits per month), or a range (2.0 to 1.8 Gy per fraction)."
+Value:             Quantity or Ratio or Range
+
+Element:           RequestSubjectOfRecord
+Parent:            SubjectOfRecord
+Description:       "The subject of the requested service. This is usually limited to a human patient, but can also be requested on groups, devices, or locations (typically for environmental scans)."
+                   Value only Patient or Group or Device or Location
+
+Element:           AsNeeded
+Description:       "Preconditions for service, either 'true' indicating to be performed if needed, or a code indicating the pre-condition for performing the service. For example 'pain', 'on flare-up', etc."
+Value:             boolean or concept
+
+Element:           LocationType
+Description:       "The preferred type of location(s) where the service should happen, in coded or free text form, e.g. at home or nursing day care center."
+Value:             concept
+
+Element:           Insurance
+Description:       "Insurance plans, coverage extensions, pre-authorizations and/or pre-determinations that may be needed for delivering the requested service."
+                   // or ClaimResponse
+Value:             Coverage
+
+Element:           SupportingInformation
+Description:       "Additional information to support this request."
+Value:             Resource
+
+Element:           PatientInstruction
+Description:       "Patient or consumer-oriented instructions."
+Value:             string
+
+Element:           ServiceReasonReference
+Parent:            ReasonReference
+Description:       "Explanation/Justification for service or service"
+                   Value only Condition or Observation or DiagnosticReport or DocumentReference

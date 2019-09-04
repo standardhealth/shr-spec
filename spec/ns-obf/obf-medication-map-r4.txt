@@ -1,0 +1,116 @@
+Grammar:	Map 5.1
+Namespace:  obf
+Target:		FHIR_R4
+
+Dosage maps to Dosage:
+	DoseSequenceNumber maps to sequence
+	InstructionText maps to text
+	InstructionCode maps to additionalInstruction
+	PatientInstruction maps to patientInstruction
+	Timing maps to timing
+	AsNeeded maps to asNeeded[x]
+	AdministrationSite maps to site
+	RouteIntoBody maps to route
+	Method maps to method
+	MaxDosePerPeriod maps to maxDosePerPeriod
+	MaxDosePerAdministration maps to maxDosePerAdministration
+	MaxDosePerLifetime maps to maxDosePerLifetime
+	constrain doseAndRate to 0..1
+	DoseAndRate.DoseAmount maps to doseAndRate.dose[x]
+	DoseAndRate.DoseRate maps to doseAndRate.rate[x]
+
+MedicationStatement maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationstatement:
+	Identifier maps to identifier
+	MedicationBasedOn maps to basedOn
+	MedicationStatementPartOf maps to partOf
+	Status maps to status
+	StatusReason maps to statusReason
+	Category maps to category
+	MedicationCodeOrReference maps to medication[x]
+	SubjectOfRecord maps to subject
+	CareContext maps to context
+	OccurrenceTimeOrPeriod maps to effective[x]
+	StatementDateTime maps to dateAsserted
+	MedicationInformationSource maps to informationSource 
+	SupportingInformation maps to derivedFrom  //erroneous attribute name in FHIR STU3, R4
+	ReasonCode maps to reasonCode
+	MedicationReasonReference maps to reasonReference 
+	Annotation maps to note
+	Dosage maps to dosage
+
+MedicationAdministration maps to MedicationAdministration:
+	Identifier maps to identifier
+	MedicationAdministrationPartOf maps to partOf
+	Status maps to status
+	StatusReason maps to statusReason
+	Category maps to category
+	MedicationReasonReference maps to reasonReference  // Added Target Type DiagnosticReport
+	SubjectOfRecord maps to subject
+	CareContext maps to context
+	SupportingInformation maps to supportingInformation
+	OccurrenceTimeOrPeriod maps to effective[x]
+	Participation maps to performer
+	Participation.Participant maps to performer.actor // Added Target Type PractitionerRole
+	Participation.ParticipationType maps to performer.function
+	Participation.OnBehalfOf maps to performer.extension
+	ReasonCode maps to reasonCode
+	MedicationReasonReference maps to reasonReference
+	MedicationAdministrationBasedOn maps to request // renamed prescription to request
+	Device maps to device
+	Annotation maps to note
+	Dosage maps to dosage
+	Dosage.InstructionText maps to dosage.text
+	Dosage.AdministrationSite maps to dosage.site
+	Dosage.RouteIntoBody maps to dosage.route
+	Dosage.Method maps to dosage.method
+	Dosage.DoseAndRate.DoseAmount maps to dosage.dose
+	Dosage.DoseAndRate.DoseRate maps to dosage.rate[x] // Ratio, Range, SimpleQuantity maps to Ratio, Quantity
+	Dosage.DoseSequenceNumber maps to dosage.extension
+	Dosage.InstructionCode maps to dosage.extension
+
+
+MedicationRequest maps to http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest:
+	Identifier maps to identifier
+	Status maps to status
+	StatusReason maps to statusReason
+	RequestIntent maps to intent
+	Category maps to category
+	PriorityCode maps to priority
+	DoNotPerform maps to doNotPerform
+	Reported maps to reported[x]
+	MedicationCodeOrReference maps to medication[x]
+	SubjectOfRecord maps to subject
+	CareContext maps to encounter
+	SupportingInformation maps to supportingInformation
+	StatementDateTime maps to authoredOn
+	Requester maps to requester
+	ExpectedPerformer maps to performer
+	ExpectedPerformerType maps to performerType
+	Author maps to recorder
+	ReasonCode maps to reasonCode
+	MedicationReasonReference maps to reasonReference
+	//maps to instantiatesCanonical
+	//maps to instantiatesUri
+	MedicationBasedOn maps to basedOn
+	GroupIdentifier maps to groupIdentifier
+	CourseOfTherapyType maps to courseOfTherapyType
+	Insurance maps to insurance
+	Annotation maps to note
+	Dosage maps to dosageInstruction
+	DispenseRequest maps to dispenseRequest
+	DispenseRequest.InitialFill maps to dispenseRequest.initialFill
+	DispenseRequest.InitialFill.SimpleQuantity maps to dispenseRequest.initialFill.quantity
+	DispenseRequest.InitialFill.Duration maps to dispenseRequest.initialFill.duration
+	DispenseRequest.DispenseInterval maps to dispenseRequest.dispenseInterval
+	DispenseRequest.ValidityPeriod maps to dispenseRequest.validityPeriod
+	DispenseRequest.NumberOfRefillsAllowed maps to dispenseRequest.numberOfRepeatsAllowed
+	DispenseRequest.QuantityPerDispense maps to dispenseRequest.quantity
+	DispenseRequest.SupplyDuration maps to dispenseRequest.expectedSupplyDuration
+	DispenseRequest.ExpectedPerformer maps to dispenseRequest.performer
+	Substitution maps to substitution
+	Substitution.SubstitutionAllowed maps to substitution.allowed[x]
+	Substitution.SubstitutionReason maps to substitution.reason
+	ReplacesRequest maps to priorPrescription
+	//maps to detectedIssue
+	//maps to eventHistory
+

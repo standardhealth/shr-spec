@@ -1,0 +1,105 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_DSTU_2
+
+
+Observation maps to Observation:
+	Identifier maps to identifier
+	ObservationBasedOn maps to extension
+	ObservationPartOf maps to extension
+	Status maps to status
+	Category maps to category
+	Code maps to code
+	ObservationSubjectOfRecord maps to subject
+	FocalSubject maps to modifierExtension 
+	CareContext maps to encounter
+	RelevantTime maps to effective[x]
+	StatementDateTime maps to issued
+	Performer maps to performer
+	DataValue maps to value[x]
+	DataAbsentReason maps to dataAbsentReason
+	Interpretation maps to interpretation
+	Annotation maps to extension
+	BodyLocation.Code maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.AnatomicalOrientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	Method maps to method
+	Specimen maps to specimen
+	Device maps to device
+	ReferenceRange maps to referenceRange
+	ReferenceRange.LowerBound maps to referenceRange.low
+	ReferenceRange.UpperBound maps to referenceRange.high
+	ReferenceRange.Type maps to referenceRange.meaning
+	ReferenceRange.ApplicableSubpopulation maps to referenceRange.extension
+	ReferenceRange.ApplicableAgeRange maps to referenceRange.age
+	ReferenceRange.Text maps to referenceRange.text
+	fix related.type to #has-member
+	PanelMembers maps to related
+	PanelMembers.Observation maps to related.target (slice at = related; slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+	ObservationDerivedFrom maps to extension
+	Components.ObservationComponent maps to component (slice on = code.coding.code; slice strategy = includes)
+	Components.ObservationComponent.Code maps to component.code
+	Components.ObservationComponent.DataValue maps to component.value[x]
+	Components.ObservationComponent.DataAbsentReason maps to component.dataAbsentReason
+//	Components.ObservationComponent.Interpretation maps to component.extension
+	Components.ObservationComponent.ReferenceRange maps to component.referenceRange
+	Components.ObservationComponent.ReferenceRange.LowerBound maps to component.referenceRange.low
+	Components.ObservationComponent.ReferenceRange.UpperBound maps to component.referenceRange.high
+	Components.ObservationComponent.ReferenceRange.Type maps to component.referenceRange.meaning
+//	Components.ObservationComponent.ReferenceRange.ApplicableSubpopulation maps to component.referenceRange.extension
+	Components.ObservationComponent.ReferenceRange.ApplicableAgeRange maps to component.referenceRange.age
+	Components.ObservationComponent.ReferenceRange.Text maps to component.referenceRange.text
+
+LaboratoryObservation maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-observationresults: 
+	Identifier maps to identifier (slice on = type.coding.code; slice strategy = includes)
+	Performer maps to performer (slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+
+Condition maps to http://fhir.org/guides/argonaut/StructureDefinition/argo-condition:
+	Identifier maps to identifier
+	SubjectOfRecord maps to patient
+	CareContext maps to encounter
+	PersonInformationSource maps to asserter
+	Author maps to extension
+	StatementDateTime maps to dateRecorded
+	Code maps to code
+	Category maps to category
+	ClinicalStatus maps to clinicalStatus
+	Status maps to verificationStatus
+	Severity maps to severity
+	Onset maps to onset[x]
+	Abatement maps to abatement[x]
+	StageInformation maps to stage
+	StageInformation.StageSummary maps to stage.summary
+	StageInformation.StageDetail maps to stage.assessment
+	StageInformation.Type maps to stage.extension
+	Evidence.Manifestation maps to evidence.code
+	Evidence.Resource maps to evidence.detail	
+	BodyLocation.Code maps to bodySite
+	BodyLocation.Laterality maps to bodySite.extension
+	BodyLocation.AnatomicalOrientation maps to bodySite.extension
+	BodyLocation.RelationToLandmark maps to bodySite.extension
+	Annotation maps to extension
+	DateOfDiagnosis maps to extension	
+
+DiagnosticReport maps to DiagnosticReport:
+	Identifier maps to identifier
+	Status maps to status
+	Code maps to code
+	Category maps to category
+	ObservationSubjectOfRecord maps to subject 
+	CareContext maps to encounter
+	RelevantTime maps to effective[x]
+	StatementDateTime maps to issued
+	DiagnosticReportPerformer maps to performer
+	ResultsInterpreter maps to extension
+//	BasedOn maps to request
+	Specimen maps to specimen
+	Observation maps to result (slice on = target.reference.resolve(); slice on type = profile; slice strategy = includes)
+// ref(ImagingStudy) or imaging manifest
+	MediaIncluded.CommentOrDescription maps to image.comment
+	MediaIncluded.Media maps to image.link
+    ConclusionText maps to conclusion
+	ConclusionCode maps to codedDiagnosis
+	PresentedForm maps to presentedForm
+

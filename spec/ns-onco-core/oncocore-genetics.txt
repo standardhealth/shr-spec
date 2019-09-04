@@ -1,0 +1,173 @@
+Grammar:           DataElement 6.0
+Namespace:         onco.core
+Description:       "Oncology data elements that broadly apply to most cancer cases."
+Uses:              obf.datatype, obf
+CodeSystem:        LNC = http://loinc.org
+//CodeSystem:        V20074 = http://terminology.hl7.org/CodeSystem/v2-0074
+
+Entry:             TumorMarkerTest
+Parent:            LaboratoryObservation
+Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms) and [Cancer.net](https://www.cancer.net/))
+
+Implementation note: The data value for TumorMarkerTest has cardinality is 0..1 (required if known) because when the test result is indeterminate, no quantitative data value will be reported. Instead, the reason for the null value will be reported in the DataAbsentReason field."
+                   ObservationSubjectOfRecord only Patient
+                   Code from TumorMarkerTestVS (extensible)
+                   DataValue substitute TumorMarkerTestDataValue
+
+Element:           TumorMarkerTestDataValue
+Parent:            DataValue
+Description:       "A restricted set of value types that could be associated with a tumor marker test."
+                   Value only concept or Quantity or Ratio or string
+
+/* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
+
+EntryElement:	CancerGeneticRegionAnalyzed
+Parent:		GeneticRegionAnalysisResult
+Description:	"Results of analyzing a specified genetic region for cancer-related genetic variants."
+				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept -- MK: Since that doesn't exist, there's no point in specializing GeneticRegionAnalyzed to cancer.  
+	// DOES NOT WORK -- CIMPL can't constrain a slice.. so Genename is not taken from CancerGeneNameVS
+				Components.ObservationComponent.GeneName is type CancerGeneName
+
+		Element:		CancerGeneName
+		Parent:		GeneName
+		Description:	"The gene name, using HUGO Gene Nomenclature Committee (HGNC) identifier. (source: LOINC)"
+						Code is LNC#48018-6 "Gene studied [ID]"
+						DataValue from CancerGeneVS if covered
+						// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
+*/
+Entry:             GenomicsReport
+Parent:            DiagnosticReport
+Description:       "Genetic analysis summary report. The report may include one or more tests, with two distinct test types. The first type is a targeted mutation test, where a specific mutation on a specific gene is tested for. The result is either positive or negative for that mutation. The second type is a more general test for variants. This type of test returns the identity of variants found in a certain region of the genome.
+
+The identity of non-genomic laboratory tests is typically represented by a LOINC code. However, many genetic tests and panels do not have LOINC codes, although some might have an identifier in NCBI Genetic Testing Registry (GTR), a central location for voluntary submission of genetic test information by providers. To identify the diagnostic report, the name of the report must be in the text sub-field of the code structure. If there is a coded identifier from GTR, LOINC, or other source, then it should be included into the the code sub-field of the code structure. If there is no suitable code, the code can be omitted.
+
+Conformance note: To be conformant to US Core, the code attribute must be a LOINC code, if available. If there is no suitable code in LOINC, then a code from an alternative code system (such as GTR) can be used.
+
+Implementation note: The performer of the test (organization or practitioner) should be included in the FHIR profile as the performer.actor.
+
+Conformance note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This is contrary to the [Argonaut](http://www.fhir.org/guides/argonaut/r2/) and [US Core](http://hl7.org/fhir/us/core/STU3/index.html) specifications, which require the category 'LAB' in diagnostic reports containing laboratory results. This is assumed to be an oversight in the US Core and Argonaut specifications."
+Property:          SpecimenType 0..1
+Property:          RegionStudied 0..*
+                   ObservationSubjectOfRecord only Patient
+                   // US Core v3 requires an extensible binding to Code
+                   Code from GeneticTestVS (extensible)
+                   Category 1..1
+// should be GE per CGWG IG but US Core restricts to #LAB so this might generate an error. Also the code system changed from DSTU2 to R4, so fixed value doesn't fly               
+//                   Category = V20074#GE
+                   Observation
+                   includes GeneticVariantFound 0..*
+                   includes GeneticVariantTested 0..*
+                   SpecimenType from GeneticSpecimenTypeVS (extensible)
+
+
+                   // 0..0			ImagingStudy (not yet defined in SHR)
+Element:           RegionStudied
+Description:       "A description of the coverage of the genome that was tested for variants."
+Value:             string
+
+Entry:             GeneticVariantTested
+Parent:            LaboratoryObservation
+Description:       "A test for a specific mutation on a particular gene. This profile is used to record whether a single discrete variant tested is present or absent (denoted as positive or negative respectively)."
+Property:          GeneStudied 0..1
+Property:          VariantTested 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
+                   DataValue 1..1
+                   DataValue from PositiveNegativeVS (required)
+                   DataAbsentReason 0..0
+                   Method from GeneticTestMethodVS (extensible)
+                   PanelMembers 0..0
+                   Components 0..0
+                   ReferenceRange 0..0
+
+Element:           GeneStudied
+Description:       "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HGNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
+                   // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
+Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
+
+Group:             VariantTested
+Description:       "The specific genetic variant that is targeted by this test."
+Property:          VariantIdentifier 0..1
+Property:          VariantHGVSName 0..*
+Property:          VariantDescription 0..1
+
+Element:           VariantIdentifier
+Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
+Value:             concept from ClinVarVS (extensible)
+
+Element:           VariantHGVSName
+Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
+                   // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+Value:             string
+
+Element:           VariantDescription
+Description:       "A clinician-friendly description for the variant. This could be, but not limited to, the protein change associated with the variation. For example, the protein change associated with Clinvar 3236 is G482V."
+Value:             string
+
+Entry:             GeneticVariantFound
+Parent:            LaboratoryObservation
+Description:       "Records an alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. When reporting 'Genetic Variant Found', at least one element out of the following must be reported: 'Variant Found Identifier', 'Variant Found HGVS Name', and 'Variant Found Description'."
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#69548-6 "Genetic variant assessment"
+                   DataValue 0..0
+                   DataAbsentReason 0..0
+                   Method from GeneticTestMethodVS (extensible)
+                   ReferenceRange 0..0
+                   PanelMembers 0..0
+                   Components.ObservationComponent
+                   includes GenomicSourceClass 0..1
+                   includes VariantFoundIdentifier 0..1
+                   includes VariantFoundHGVSName 0..*
+                   includes VariantFoundDescription 0..1
+
+Group:             GenomicSourceClass
+Parent:            CodedObservationComponent
+Description:       "The genomic class of the specimen being analyzed, for example, germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome."
+                   Code = LNC#48002-0 "Genomic source class [Type]"
+                   DataValue from GenomicSourceClassVS (required)
+                   DataAbsentReason 0..0
+
+Group:             VariantFoundIdentifier
+Parent:            CodedObservationComponent
+Description:       "The variation ID assigned by HGVS, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
+                   Code = LNC#48003-8 "DNA sequence variation identifier [Identifier]"
+                   DataValue from ClinVarVS (extensible)
+                   DataAbsentReason 0..0
+
+Group:             VariantFoundHGVSName
+Parent:            StringObservationComponent
+Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for HVGS variation ID 360448."
+                   // mlt: changed from complex variant name to a more general concept.
+                   Code = LNC#82154-6 "Genomic structural variant name"
+                   // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+                   DataAbsentReason 0..0
+
+Group:             VariantFoundDescription
+Parent:            StringObservationComponent
+Description:       "Description of the variant. Ideally, this should be a human-readable 'thumbnail' display."
+                   Code = LNC#47998-0 "DNA sequence variation display name [Text] Narrative"
+                   DataAbsentReason 0..0/* out of scope for mCODE 0.9
+
+//					includes 0..1	DNAChangeType
+//					includes 0..1	DNAChangeTranscriptcHGVS
+//					includes 0..1	ComplexVariantCode
+
+		Element:		DNAChangeTranscriptcHGVS
+		Parent:		ObservationComponent
+		Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
+						Code is LNC#48004-6 "DNA change (c.HGVS)"
+						DataValue value is type string
+		0..0			ReferenceRange
+
+		Element:		ComplexVariantCode
+		Parent:		CodedObservationComponent
+		Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
+						Code is LNC#81260-2 "Complex genetic variant [ID]"
+						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar/ 
+
+		Element:		DNAChangeType		// AminoAcidChangepHGVS 
+		Parent:		CodedObservationComponent
+		Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
+						Code is LNC#48005-3 "DNA change type"
+						// DataValue from DNAChangeTypeVS if covered // mlt: move to 48019-4
+*/

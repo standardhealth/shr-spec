@@ -1,0 +1,192 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
+
+/*
+Abstract Element:   PublishedArtifact  // might be a useful parent class
+Parent:           DomainResource
+Description:    "Abstract class with common elements for information items that are published."
+0..1 		    Url
+0..1            VersionString
+0..1            Name
+0..1            Title
+1..1            Status from http://hl7.org/fhir/ValueSet/publication-status
+0..1            IsExperimental
+0..*            SubjectType
+0..1            LastUpdated
+0..1            PublisherName
+0..*            ContactDetail
+0..1            DescriptionMarkdown
+0..*            UseContext
+0..*            Jurisdiction
+0..1            PurposeMarkdown
+0..1            Copyright
+*/
+Entry:             Questionnaire
+Parent:            InformationItem
+Description:       "A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection."
+Property:          Url 0..1
+Property:          VersionString 0..1
+Property:          Name 0..1
+Property:          Title 0..1
+Property:          DerivedFrom 0..*
+Property:          IsExperimental 0..1
+Property:          SubjectType 0..*
+Property:          LastUpdated 0..1
+Property:          PublisherName 0..1
+Property:          ContactDetail 0..*
+Property:          DescriptionMarkdown 0..1
+Property:          UseContext 0..*
+Property:          Jurisdiction 0..*
+Property:          PurposeMarkdown 0..1
+Property:          Copyright 0..1
+Property:          ApprovalDate 0..1
+Property:          ReviewedDate 0..1
+Property:          EffectiveTimePeriod 0..1
+Property:          Code 0..*
+Property:          QuestionnaireItem 0..*
+                   // from http://hl7.org/fhir/ValueSet/publication-status conflict with DSTU2
+                   Status 1..1
+                   DerivedFrom only CanonicalUrl
+                   Code from http://hl7.org/fhir/ValueSet/questionnaire-questions (example)
+
+Element:           ReviewedDate
+Description:       "The most recent date the item was reviewed."
+Value:             date
+
+Element:           ApprovalDate
+Description:       "The date on which the item was officiallly deemed acceptable by the publisher."
+Value:             date
+
+Group:             QuestionnaireItem
+Description:       "Questions and sections within the Questionnaire."
+Property:          IdentifierString 1..1
+Property:          DetailsUri 0..1
+Property:          Code 0..*
+Property:          Prefix 0..1
+Property:          Question 0..1
+                   // from http://hl7.org/fhir/ValueSet/item-type  conflict with DSTU2
+Property:          Type 1..1
+Property:          EnableWhen 0..*
+Property:          EnableBehavior 0..1
+Property:          IsRequired 0..1
+Property:          MayRepeat 0..1
+Property:          IsReadOnly 0..1
+Property:          MaxTextLength 0..1
+Property:          AnswerValueSet 0..1
+Property:          AnswerOption 0..*
+Property:          PrepopulateValue 0..*
+Property:          QuestionnaireItem 0..*
+                   Code from http://hl7.org/fhir/ValueSet/questionnaire-questions (example)
+
+Element:           DetailsUri
+Description:       "A URI that refers to an ElementDefinition that provides information about this item, including information that might otherwise be included in the instance of the Questionnaire resource."
+Value:             uri
+
+Element:           Question
+Description:       "The text of the question."
+Value:             string
+
+Element:           IsRequired
+Description:       "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
+Value:             boolean
+
+Element:           EnableBehavior
+Description:       "Controls how multiple enableWhen values are interpreted - whether all or any must be true."
+Value:             concept from http://hl7.org/fhir/ValueSet/questionnaire-enable-behavior (required)
+
+Element:           MayRepeat
+Description:       "An indication, if true, that the item may occur multiple times in the response, collecting multiple answers answers for questions or multiple sets of answers for groups."
+Value:             boolean
+
+Element:           IsReadOnly
+Description:       "An indication, when true, that the value cannot be changed by a human respondent to the Questionnaire."
+Value:             boolean
+
+Element:           MaxTextLength
+Description:       "The maximum number of characters that are permitted in a text field."
+Value:             integer
+
+Element:           AnswerValueSet
+Description:       "Canonical URL of the valueset containing permitted answers."
+Value:             CanonicalUrl
+
+Group:             AnswerOption
+Description:       "One of the permitted answers for a 'choice' or 'open-choice' question, and whether that answer should be initially selected."
+Property:          AnswerOptionValue 1..1
+Property:          InitiallySelected 0..1
+
+Element:           AnswerOptionValue
+Description:       "A potential answer that's allowed as the answer to this question."
+Value:             integer or date or time or string or concept or Resource
+
+Element:           InitiallySelected
+Description:       "Whether option is selected by default."
+Value:             boolean
+
+Element:           PrepopulateValue
+Description:       "One or more values that should be pre-populated in the answer when initially rendering the questionnaire for user input."
+Value:             boolean or decimal or integer or date or dateTime or time or string or uri or Attachment or concept or Quantity or Resource
+
+Group:             EnableWhen
+Description:       "A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true."
+Property:          Question 1..1
+Property:          EnableOperator 1..1
+Property:          AnswerValue 1..1
+
+Element:           EnableOperator
+Description:       "Specifies the criteria by which the question is enabled."
+Value:             concept from http://hl7.org/fhir/ValueSet/questionnaire-enable-operator (required)
+
+Element:           AnswerValue
+Description:       "The answer to a question."
+Value:             boolean or decimal or integer or date or dateTime or time or string or uri or concept or Quantity or Resource
+
+Entry:             QuestionnaireResponse
+Parent:            ClinicalStatement
+Description:       "A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to. As in Structured Data Capture (SDC), the questionnaire subject is restricted to be a Patient."
+Property:          BasedOn 0..*
+Property:          QuestionnaireResponsePartOf 0..*
+Property:          QuestionnaireCanonical 0..1
+Property:          StatementDateTime 0..1
+Property:          QuestionnaireResponseRecorder 0..1
+Property:          PersonInformationSource 0..1
+Property:          QuestionnaireResponseItem 0..*
+                   BasedOn substitute QuestionnaireResponseBasedOn
+                   Status 1..1
+                   Status from http://hl7.org/fhir/ValueSet/questionnaire-answers-status (required)
+                   Identifier 0..1
+                   CareContext only Encounter
+                   SubjectOfRecord only Patient
+
+Element:           QuestionnaireResponsePartOf
+Parent:            PartOf
+Description:       "A procedure or observation that this questionnaire was performed as part of the execution of. For example, the surgery a checklist was executed as part of."
+                   Value only Observation or Procedure
+
+Element:           QuestionnaireCanonical
+Description:       "The Questionnaire that defines and organizes the questions for which answers are being provided."
+Value:             CanonicalUrl
+
+Element:           QuestionnaireResponseRecorder
+Description:       "The recorder of the information, who received and recorded the answers. For example, the nurse taking a list of medications reported by the patient."
+                   // missing PractitionerRole, Organization (not supported in STU3)
+Value:             Practitioner or Patient or RelatedPerson or Device
+
+Group:             QuestionnaireResponseItem
+Description:       "Questions and sections within the Questionnaire."
+Property:          IdentifierString 1..1
+Property:          DetailsUri 0..1
+Property:          Question 0..1
+Property:          Answer 0..*
+Property:          QuestionnaireResponseItem 0..*
+
+Group:             Answer
+Description:       "The respondent's answer(s) to the question."
+Property:          AnswerValue 0..1
+Property:          QuestionnaireResponseItem 0..*
+
+Element:           QuestionnaireResponseBasedOn
+Parent:            BasedOn
+                   Value only ServiceRequest or ReferralRequest or ProcedureRequest

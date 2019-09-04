@@ -1,0 +1,137 @@
+Grammar:	Map 5.1
+Namespace:	obf
+Target:		FHIR_DSTU_2
+
+Resource maps to Resource:
+//	_Entry.EntryId maps to id
+	Language maps to language
+	ImplicitRules maps to implicitRules
+	Metadata.VersionId maps to meta.versionId
+	Metadata.SourceSystem maps to meta.extension
+	// _Entry.EntryType maps to meta.profile // (this will force a profile -- don't do it)
+	Metadata.Profile maps to meta.profile
+	Metadata.LastUpdated maps to meta.lastUpdated
+	Metadata.SecurityLabel maps to meta.security
+	Metadata.Tag maps to meta.tag
+
+DomainResource maps to DomainResource:
+	Narrative maps to text
+
+Composition maps to Composition:
+	Identifier maps to identifier
+    StatementDateTime maps to date
+	Type maps to type
+	Category maps to class
+    Title maps to title
+	Status maps to status
+    ConfidentialityCode maps to confidentiality 
+    FocalSubject maps to subject
+    Author maps to author
+    Attestation.AttestationMode maps to attester.mode
+    Attestation.CreationDateTime maps to attester.time
+    Attestation.Attester maps to attester.party
+    ManagingOrganization maps to custodian
+	RelatedDocument maps to extension
+    EventContext.Code maps to event.code
+    EventContext.TimePeriod maps to event.period
+    EventContext.SupportingInformation maps to event.detail
+    CareContext maps to encounter
+    // section
+    Section maps to section (slice on = code.coding.code; slice strategy = includes)
+    Section.Title maps to section.title
+    Section.Code maps to section.code
+    Section.Author maps to section.extension
+    Section.FocalSubject maps to section.modifierExtension
+    Section.Narrative maps to section.text
+    Section.Type maps to section.mode
+    Section.SortOrder maps to section.orderedBy // terrible FHIR name!
+    Section.Resource maps to section.entry  (slice on = reference.resolve(); slice on type = profile; slice strategy = includes)
+    Section.EmptyReason maps to section.emptyReason
+	Section.Section maps to section.section
+
+Narrative maps to Narrative:
+	NarrativeText maps to div
+	NarrativeQualifier maps to status
+
+DocumentReference maps to DocumentReference:
+    MasterIdentifier maps to masterIdentifier
+    Identifier maps to identifier
+    SubjectOfRecord maps to subject
+    Type maps to type
+    Category maps to class
+    DocumentAuthor maps to author 
+    ManagingOrganization maps to custodian
+    Authenticator maps to authenticator
+    StatementDateTime maps to indexed
+    Status maps to status
+    DocumentStatus maps to docStatus
+    RelatedDocument maps to relatesTo
+    RelatedDocument.Relationship maps to relatesTo.code
+	RelatedDocument.TargetDocument maps to relatesTo.target
+    CommentOrDescription maps to description
+    SecurityLabel maps to securityLabel
+	DocumentReferenced maps to content
+	DocumentReferenced.Attachment maps to content.attachment
+	DocumentReferenced.Type maps to content.format
+    EventContext maps to context
+    EventContext.CareContext maps to context.encounter
+	EventContext.Code maps to context.event
+	EventContext.TimePeriod maps to context.period
+	EventContext.FacilityType maps to context.facilityType
+	EventContext.Setting maps to context.practiceSetting
+	EventContext.Patient maps to context.sourcePatientInfo 
+	EventContext.SupportingInformation maps to context.related.ref
+    
+Provenance maps to Provenance:
+    RefersTo maps to target
+    OccurrenceTimeOrPeriod maps to period
+    StatementDateTime maps to recorded
+    ImplicitRules maps to policy 
+    Location maps to location
+    ReasonCode  maps to reason
+    ActivityCode maps to activity
+    ProvenanceParticipation maps to agent
+    ProvenanceParticipation.Participant maps to agent.actor
+    ProvenanceParticipation.ParticipationType maps to agent.extension
+    ProvenanceParticipation.ParticipationRole maps to agent.role
+    ProvenanceParticipation.OnBehalfOf maps to agent.extension
+    Used maps to entity
+    Used.UsedType maps to entity.role
+    Used.UsedReference maps to entity.extension // entity.reference is a uri in DSTU2
+    Used.UsedParticipation maps to entity.agent
+    Signature maps to signature
+
+List maps to List:
+    Identifier maps to identifier
+    Status maps to status
+    Mode maps to mode
+    Title maps to title
+    Code maps to code
+    ListSubjectOfRecord maps to subject
+    CareContext maps to encounter
+    StatementDateTime maps to date
+    ListAuthor maps to source
+    SortOrder maps to orderedBy
+    Annotation maps to extension
+    ListItem maps to entry
+    ListItem.Status maps to entry.flag
+    ListItem.Inactive maps to entry.deleted
+    ListItem.TimePeriod.BeginDateTime maps to entry.date
+    ListItem.TimePeriod.EndDateTime maps to entry.extension
+    ListItem.Resource maps to entry.item
+    EmptyReason maps to emptyReason
+
+Signature maps to Signature:
+	SignatureType maps to type
+	CreationDateTime maps to when
+	Signer maps to who[x]
+	OnBehalfOf maps to extension 
+	SignatureFormat maps to contentType
+	TargetFormat maps to extension
+	BinaryData maps to blob
+
+
+Annotation maps to Annotation:
+	TextMarkdown maps to text
+	PersonAuthor maps to author[x]
+	OccurrenceTime maps to time

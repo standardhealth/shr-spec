@@ -1,0 +1,230 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
+CodeSystem:        SCT = http://snomed.info/sct
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+//CodeSystem:        OBSCAT = http://hl7.org/fhir/observation-category
+//CodeSystem:        OBSCAT = http://terminology.hl7.org/CodeSystem/observation-category
+CodeSystem:        LNC = http://loinc.org
+CodeSystem:        UCUM = http://unitsofmeasure.org
+
+Entry:             Procedure
+Parent:            ActionPerformed
+Description:       "An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy."
+Property:          PartOf 0..1
+                   // Status from http://hl7.org/fhir/ValueSet/event-status conflicts with V2 http://hl7.org/fhir/ValueSet/procedure-status
+Property:          StatusReason 0..1
+                   // max card constraint
+Property:          Category 0..1
+Property:          Code 1..1
+Property:          Author 0..1
+Property:          InformationSource 0..1
+Property:          Location 0..1
+Property:          BodyLocation 0..*
+Property:          Outcome 0..1
+Property:          DiagnosticReport 0..*
+Property:          ComplicationCode 0..*
+Property:          ComplicationReference 0..*
+Property:          FollowUp 0..*
+Property:          Annotation 0..*
+Property:          FocalDevice 0..*
+Property:          TreatmentIntent 0..1
+Property:          MaterialUsedReference 0..*
+Property:          UsedCode 0..*
+                   PartOf substitute ProcedurePartOf
+                   Author substitute PersonAuthor
+                   InformationSource substitute PersonInformationSource
+                   SubjectOfRecord only Patient
+                   CareContext only Encounter
+                   ReasonCode 0..1
+                   ReasonReference substitute ProcedureReasonReference
+                   ProcedureReasonReference 0..1
+                   // not implemented: instantiatesCanonical, instantiatesUri
+                   BasedOn substitute ProcedureBasedOn
+                   ProcedureBasedOn 0..1
+                   Participation.Participant substitute ProcedureParticipant
+                   Participation.OnBehalfOf only Organization
+                   // Procedure doesn't have Method
+                   Method 0..0
+                   // Conformance: terminology binding incompatibility between argo (DSTU2) and us-core (R4). Leaving binding to mapping.
+                   // Code from http://fhir.org/guides/argonaut/ValueSet/procedure-type (extensible) // argo (DSTU2)
+                   // Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code (extensible) // us-core (R4)
+                   Outcome from http://hl7.org/fhir/ValueSet/procedure-outcome (example)
+
+Entry:             SurgicalProcedure
+Parent:            Procedure
+Description:       "A procedure that involves a physical intervention on tissues. 
+
+Conformance note: If an ICD-10-PCS code is used in the code attribute, and an equivalent SNOMED CT is available, the resulting Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
+                   Participation.Participant substitute PractitionerProcedureParticipant
+                   Method from SurgicalMethodVS (required)
+                   // forced by Argonaut because they use an extensible binding
+                   Code from SurgicalProcedureVS (extensible)
+                   // includes the role of the body site in the procedure
+                   BodyLocation substitute SurgicalBodyLocation
+
+Element:           ProcedureReasonReference
+Parent:            ReasonReference
+Description:       "The justification that the procedure was performed."
+                   Value only Condition or Observation or Procedure or DiagnosticReport or DocumentReference
+
+Entry:             RadiationProcedure
+Parent:            Procedure
+Description:       "A radiation oncology procedure. The procedure might represent a complete course of treatment, or a single session that is part of a series of treatments. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that. If the procedure represents the entire course of therapy, the RadiationFractionsDelivered should indicate the number of sessions. If the procedure represents one session, then the RadiationFractionsDelivered would be 1, and the TotalRadiationDoseDelivered will be the same as the RadiationDosePerFraction."
+Property:          RadiationDosePerFraction 0..1
+Property:          RadiationFractionsDelivered 0..1
+Property:          TotalRadiationDoseDelivered 0..1
+Property:          TerminationReason 0..*
+                   Participation.Participant substitute PractitionerProcedureParticipant
+                   Code from RadiationProcedureVS (extensible)
+                   BodyLocation.Code from RadiationTargetBodySiteVS (extensible)
+                   FocalDevice 0..0
+                   TerminationReason from TreatmentTerminationReasonVS (required)
+
+Element:           StatusReason
+Description:       "Captures the reason for the current state of the procedure."
+Value:             concept
+
+Element:           MaterialUsedReference
+Parent:            UsedReference
+Description:       "Identifies medications, devices and any other substance used as part of the procedure."
+                   Value only Device or Medication or Substance
+
+Element:           ComplicationCode
+Description:       "Complication following the procedure, as a code."
+Value:             concept
+
+Element:           ComplicationReference
+Description:       "Complication following the procedure, as a reference to a Condition."
+Value:             Condition
+
+Element:           FollowUp
+Description:       "Instructions for follow up."
+Value:             concept
+
+Element:           ProcedurePartOf
+Parent:            PartOf
+Description:       "A larger event of which this particular procedure is a component or step."
+                   Value only Procedure or MedicationAdministration or Observation
+
+Element:           ProcedureParticipant
+Parent:            Participant
+Description:       "Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
+                   Value only Practitioner or Organization or Patient or RelatedPerson or Device
+
+Element:           TreatmentIntent
+                   // TODO: Needs a new LOINC number"
+Concept:           SCT#395077000 "Treatment intent (situation)"
+Description:       "The purpose of a treatment."
+Value:             concept from TreatmentIntentVS (required)
+
+Element:           ProcedureBasedOn
+Parent:            BasedOn
+Description:       "A request for this procedure."
+                   Value only ProcedureRequest or ReferralRequest or ServiceRequest
+
+                   // or CarePlan (or DiagnosticOrder in DSTU2)
+Group:             FocalDevice
+Description:       "Activity involving a device that is implanted, removed or otherwise manipulated (e.g., calibration, battery replacement, fitting a prosthesis, attaching a wound-vac, etc.) as a focal portion of the Procedure."
+Property:          Device 1..1
+Property:          FocalDeviceAction 0..1
+
+Element:           FocalDeviceAction
+Description:       "The kind of change that happened to the device during the procedure."
+Value:             concept from http://hl7.org/fhir/ValueSet/device-action (required)
+
+Entry:             ProcedureRequest
+Parent:            ServiceRequest
+Description:       "A request for a procedure to be performed. May be a proposal or an order."
+Property:          PartOf 0..1
+Property:          Method 0..1
+                   PartOf[Resource] substitute Procedure
+                   ReasonReference substitute ProcedureRequestReasonReference
+                   // Conformance: terminology binding incompatibility between argo (DSTU2) and us-core (R4). Leaving binding to mapping.
+                   // Code from http://fhir.org/guides/argonaut/ValueSet/procedure-type (extensible) // argo (DSTU2)
+                   // Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code (extensible) // us-core (R4)
+                   // this is a constraint on the cardinality of Action.Category
+                   // limit upper card to 1 in DSTU2
+                   //0..*			InputFinding  -- covered by Reason
+                   //0..*			Indication
+                   // restricted to 0..1 in DSTU2
+                   Category 0..1
+                   Requester substitute ProcedureRequester
+                   RequestSubjectOfRecord substitute ProcedureRequestSubjectOfRecord
+
+                   // limit upper card to 1 in DSTU2
+Element:           ProcedureRequester
+Parent:            Requester
+Description:       "The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
+                   Value only Practitioner or Device
+
+Element:           ProcedureRequestSubjectOfRecord
+Parent:            RequestSubjectOfRecord
+Description:       "A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
+                   Value only Patient or Group
+
+Element:           ProcedureRequestReasonReference
+Parent:            ServiceReasonReference
+Description:       "The justification that the procedure was performed"
+                   Value only Condition or Observation
+
+                   //---------- Specialized Types of Procedures ----------------
+Entry:             ImagingProcedure
+Parent:            Procedure
+Description:       "Experimental class for an imaging procedure. This class is still incomplete at this time."
+Property:          ImagingSubstance 0..*
+
+Element:           ImagingSubstance
+Description:       "Substance used for this imaging procedure such as a contrast agent."
+Value:             concept
+
+Entry:             LaboratoryProcedure
+Parent:            Procedure
+Concept:           MTH#C0456984
+Description:       "A procedure performed on a collected specimen such as a blood panel or a biopsy."
+Property:          Specimen 0..1
+//                   Category = OBSCAT#laboratory
+                   // ??
+                   // Code from http://hl7.org/fhir/ValueSet/observation-codes (required) // DSTU2-R4 binding incompatibility
+
+                   //0..1 			ref(Device)   // constraint from 0..*
+Group:             SurgicalBodyLocation
+Parent:            BodyLocation
+Description:       "The site where the procedure is performed."
+Property:          SurgicalBodyLocationRole 0..1
+
+Element:           SurgicalBodyLocationRole
+Description:       "Describes the role played by the body site in the surgery."
+                   Value[concept] from SurgicalBodyLocationRoleVS (extensible)
+
+Element:           PractitionerProcedureParticipant
+Parent:            ProcedureParticipant
+Description:       "Constrains participants to classes that are accepted by FHIR as actors in procedures in STU 3."
+                   Value only Practitioner
+
+Element:           RadiationDosePerFraction
+Description:       "The amount of radiation administered during a single session (fraction) of radiation therapy therapy."
+Value:             Quantity
+                   Value[Quantity].Units = UCUM#cGy
+
+Element:           RadiationFractionsDelivered
+Description:       "Records the total number of treatment sessions (fractions) administered during the first course of therapy. Corresponds to LOINC 21950-2 'Number of radiation treatment' [sic]."
+Value:             Quantity
+                   Value[Quantity].Units = UCUM#1
+
+Element:           TotalRadiationDoseDelivered
+Concept:           SCT#445461008 "Total radiation dose delivered (observable entity)"
+Description:       "The total amount of radiation dose delivered for the course of therapy. (source: SNOMED, ASTRO)"
+Value:             Quantity
+                   Value[Quantity].Units = UCUM#cGy
+
+Entry:             DiagnosticImaging
+Parent:            ImagingProcedure
+Description:       "Diagnostic imaging procedure performed."
+                   Code from DiagnosticImagingVS (required)/*
+EntryElement:	SubstanceAbuseTreatment
+Parent:		ProcedurePerformed
+Description:	"The treatment program used to address a substance abuse problem."
+				Code from SubstanceAbuseTreatmentTypeVS
+*/

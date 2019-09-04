@@ -1,0 +1,357 @@
+Grammar:           DataElement 6.0
+Namespace:         sw
+Description:       "SHR implementation of wound assessment."
+Uses:              obf.datatype, obf
+// CodeSystem:        OBSCAT = http://terminology.hl7.org/CodeSystem/observation-category //R4 code system
+CodeSystem:        LNC = http://loinc.org
+CodeSystem:        UCUM = http://unitsofmeasure.org
+
+                   // Condition cause could be hoisted to Condition itself, but the only use so far is here in skin & wound
+Element:           ConditionCause
+Description:       "The cause of the condition. This includes such causes as disease vectors and endogenous states (e.g., macular degeneration due to diabetes), substances, medications, micro-organisms, and forces associated with the occurrence of a Condition from temporal or causative perspectives."
+                   // or ref(Entity) or ref(SituationStatement) // probably other attributes needed, such as likelihood or type of cause
+Value:             concept
+
+Entry:             WoundCondition
+Parent:            Condition
+Description:       "A determination that a particular type of wound that exists at a particular body site.
+The WoundIdentifier serves as a link between this assertion and assessments of the wound that might occur at later times. Multiple wound assessments can be associated with a single wound."
+Property:          WoundIdentifier 1..1
+Property:          ConditionCause 0..1
+Property:          PresentOnAdmission 0..1
+Property:          Recurrence 0..1
+                   Code from WoundTypeVS (extensible)
+//                  Category = OBSCAT#exam
+                   // not sure if zeroing it out is wise, but severity is not part of LOINC panel
+                   Severity 0..0
+                   BodyLocation 1..1
+                   // nowhere to put code LOINC 85585-8  Date of Onset {mm/dd/yyyy} 
+                   // nowhere to put code 88878-4 Date of abatement {mm/dd/yyyy}
+                   Onset only dateTime
+                   Abatement only dateTime
+                   ConditionCause from WoundTypeEtiologyVS (required)
+
+Element:           WoundIdentifier
+Description:       "A human-readable identifier for the lesion; e.g., a letter or integer."
+Value:             string
+
+Element:           PresentOnAdmission
+Concept:           LNC#89251-3 "Condition present on admission"
+Description:       "If the problem or condition existed before the current episode of care."
+Value:             concept from YesNoUnknownVS (required)
+
+Element:           Recurrence
+Description:       "A code that describes the number of recurrences of an event."
+Value:             concept from RecurrenceVS (required)
+
+                   //--------------- Wound Assessment -------------------------
+Entry:             WoundAssessmentPanel
+Parent:            NonLaboratoryObservation
+Description:       "Group of observations regarding the properties and severity of a wound."
+Property:          WoundIdentifier 1..1
+Property:          Attachment 0..*
+                   // 72170-4  	Photographic image	[Attachment]
+                   Attachment substitute PhotographicImage
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#39135-9 "Wound assessment panel"
+                   // carried by wound assertion
+                   DataValue 0..0
+                   DataAbsentReason 0..0
+                   Interpretation from WoundAssessmentInterpretationVS (extensible)
+                   BodyLocation 0..0
+                   Device 0..0
+                   ReferenceRange 0..0
+                   PanelMembers.Observation
+                   // moved from wound assert
+                   // moved from wound assert
+                   includes WoundBedAssessment 0..1
+                   includes WoundEdgeAssessment 0..1
+                   includes WoundTunnelingAssessment 0..*
+                   includes WoundUnderminingAssessment 0..*
+                   includes WoundExudateAssessment 0..1
+                   includes WoundSize 0..1
+                   Components.ObservationComponent
+                   includes WoundEpisode 0..1
+                   includes WoundTrend 0..1
+                   includes WoundPeriwoundCondition 0..1
+                   includes WoundVisibleInternalStructure 0..*
+                   includes WoundGradation 0..1
+                   includes WoundTunneling 0..1
+                   includes WoundUndermining 0..1
+                   includes WoundExudate 0..1
+
+Group:             WoundEpisode
+Parent:            CodedObservationComponent
+Description:       "Wound episode refers to a period of the wound, an incident in the course of a wound"
+                   Code = LNC#89252-1 "Episode of Wound"
+                   DataValue from WoundEpisodeVS (required)
+
+Group:             WoundPeriwoundCondition
+Parent:            CodedObservationComponent
+Description:       "A description of the skin around the wound (periwound). Color, induration, warmth and edema should be assessed. Redness of the surrounding skin can be indicative of unrelieved pressure. Irritation of the surrounding skin can result from exposure to feces or urine, a reaction to the dressing or tape, or inappropriate removal of dressing or tape. Redness, tenderness, warmth and swelling are classical clinical signs of infection. [Reference: Brown, P., 2009]"
+                   Code = LNC#72301-5 "Description of Periwound"
+                   DataValue from PeriwoundConditionVS (required)
+
+Group:             WoundVisibleInternalStructure
+Parent:            CodedObservationComponent
+Description:       "Exposed body structures, devices, and/or foreign bodies visible by the naked eye in a wound."
+                   Code = LNC#89250-5 "Device or anatomic structure visible in wound"
+                   DataValue from WoundVisibleInternalStructureVS (required)
+
+Group:             WoundGradation
+Parent:            CodedObservationComponent
+Description:       "The grade of the wound."
+                   Code = TBD#TBD
+                   DataValue from WoundGradationVS (required)
+
+Group:             WoundTunneling
+Parent:            CodedObservationComponent
+Description:       "The presence or absence of wound tunneling."
+                   Code = LNC#72298-3 "Tunneling of Wound"
+                   DataValue from DetectedNotDetectedVS (required)
+
+Group:             WoundUndermining
+Parent:            CodedObservationComponent
+Description:       "The presence or absence of wound undermining."
+                   Code = LNC#72295-9 "Undermining of Wound"
+                   DataValue from DetectedNotDetectedVS (required)
+
+Group:             WoundExudate
+Parent:            CodedObservationComponent
+Description:       "The presence or absence of wound exudate."
+                   Code = LNC#89259-6 "Presence of wound exudate"
+                   DataValue from DetectedNotDetectedVS (required)
+
+Group:             WoundTrend
+Parent:            CodedObservationComponent
+Description:       "Whether a condition is improving, worsening, stable, or resolved."
+                   Code = LNC#89253-9 "Trend"
+                   DataValue from ConditionStatusTrendVS (required)
+
+Entry:             WoundBedAssessment
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "The appearance and color of the base (bed) of the wound, together with the percentage of the bed with each type of appearance and color. The appearance and appearance percentage arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs. The same rule applies to the color and color percentage arrays. The number of color areas and appearance areas do not have to be the same.
+
+*See https://www.hl7.org/fhir/xml.html: When an element is allowed to repeat, the elements are ordered, and the technical infrastructure needs to be able to access the items in the right order. https://www.hl7.org/fhir/json.html The order of properties of an object is not significant in the JSON representation, though order within an array SHALL be maintained."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#89254-7 "Wound Bed Panel"
+                   // body site is given in the wound assertion	
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundBedAppearance 0..*
+                   includes WoundBedAppearancePercentage 0..*
+                   includes WoundBedColor 0..*
+                   includes WoundBedColorAreaPercentage 0..*
+
+Group:             WoundBedAppearance
+Parent:            CodedObservationComponent
+Description:       "Appearance of wound base (bed)."
+                   Code = LNC#72371-8 "Appearance of Wound base"
+                   DataValue from WoundBedAppearanceVS (preferred)
+
+Group:             WoundBedAppearancePercentage
+Parent:            QuantitativeObservationComponent
+Description:       "Area of wound bed appearance/Entire ​Area of wound bed."
+                   Code = LNC#72370-0 "Area of identified wound bed appearance/Area of wound bed of Wound base"
+                   DataValue[Quantity].Units = UCUM#%
+                   ReferenceRange 0..0
+
+Group:             WoundBedColor
+Parent:            CodedObservationComponent
+Description:       "Color of Wound base (bed)."
+                   Code = LNC#39132-6 "Color of Wound base (bed)."
+                   DataValue from WoundBedEdgeColorVS (preferred)
+
+Group:             WoundBedColorAreaPercentage
+Parent:            QuantitativeObservationComponent
+Description:       "Wound bed area identified by color/​Area of wound bed."
+                   Code = LNC#89255-4 "Wound bed area identified by color/​Area of wound bed."
+                   DataValue[Quantity].Units = UCUM#%
+                   ReferenceRange 0..0
+
+Entry:             WoundEdgeAssessment
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "The state of the tissue at the edge of the wound."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#89256-2 "Wound edge panel"
+                   // location is given by the wound assertion	
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundEdgeDescription 0..1
+                   includes WoundEdgeColor 0..1
+
+                   // Is the entire edge of the wound described by one color? Or should it be by percentage, similar to the wound bed?
+Group:             WoundEdgeDescription
+Parent:            CodedObservationComponent
+Description:       "Edge of wound description."
+                   Code = LNC#72304-9 "Edge of wound description"
+                   DataValue from WoundEdgeDescriptionVS (preferred)
+
+Group:             WoundEdgeColor
+Parent:            CodedObservationComponent
+Description:       "Color of Wound edge."
+                   Code = LNC#39133-4 "Color of Wound edge"
+                   DataValue from WoundBedEdgeColorVS (preferred)
+
+Entry:             WoundTunnelingAssessment
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "Observation of one or more tunnels on a single wound. The length and clockface direction arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs.
+
+*See https://www.hl7.org/fhir/xml.html: When an element is allowed to repeat, the elements are ordered, and the technical infrastructure needs to be able to access the items in the right order. https://www.hl7.org/fhir/json.html The order of properties of an object is not significant in the JSON representation, though order within an array SHALL be maintained."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#239158009 "Tunneling wound"
+                   // location is given by the wound assertion
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundTunnelLength 0..*
+                   includes WoundTunnelClockFaceDirection 0..*
+
+                   // LOINC: why precoordinate length + tunneling?
+                   // LOINC: why precoordinate clock position + tunneling?
+Group:             WoundTunnelLength
+Parent:            QuantitativeObservationComponent
+Description:       "Length of wound tunneling."
+                   Code = LNC#72296-7 "Length of wound tunneling."
+                   DataValue[Quantity].Units = UCUM#cm
+                   ReferenceRange 0..0
+
+                   // LOINC: should require use the full clock position value set
+Group:             WoundTunnelClockFaceDirection
+Parent:            CodedObservationComponent
+Description:       "Clock position of wound tunnel"
+                   Code = LNC#72297-5 "Clock position of wound tunnel"
+                   DataValue from ClockFaceDirectionVS (required)
+
+Entry:             WoundUnderminingAssessment
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "Assessment of deep tissue (subcutaneous fat and muscle) damage around the wound margin. If there is more than one undermining The undermining length and clock direction arrays must be the same length, and the order in the arrays is significant*; the elements at the same array position shall be interpreted as pairs.
+
+*See https://www.hl7.org/fhir/xml.html: When an element is allowed to repeat, the elements are ordered, and the technical infrastructure needs to be able to access the items in the right order. https://www.hl7.org/fhir/json.html The order of properties of an object is not significant in the JSON representation, though order within an array SHALL be maintained."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#449752001 "Wound tissue undermining"
+                   // location is given by the wound assertion	
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundUnderminingLength 0..1
+                   includes WoundUnderminingClockFaceDirection 0..1
+
+Group:             WoundUnderminingLength
+Parent:            QuantitativeObservationComponent
+Description:       "Length of wound undermining."
+                   Code = LNC#72293-4 "Undermining [Length] of Wound"
+                   DataValue[Quantity].Units = UCUM#cm
+                   ReferenceRange 0..0
+
+                   // LOINC: should require use the full clock position value set
+Group:             WoundUnderminingClockFaceDirection
+Parent:            CodedObservationComponent
+Description:       "Clock position of wound undermining"
+                   Code = LNC#72294-2 "Undermining clock position of Wound"
+                   DataValue from ClockFaceDirectionVS (required)
+
+Entry:             WoundExudateAssessment
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "Description of the fluid produced by a wound."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#239164002 "Wound discharge"
+                   // location is given by the wound assertion	
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundExudateAmountDescription 0..1
+                   includes WoundExudateAppearance 0..1
+                   includes WoundExudateColor 0..1
+                   includes WoundExudateOdor 0..1
+                   includes WoundExudateVolume 0..1
+
+                   //  LOINC: Wound area should be in wound size panel, not wound exudate panel
+Group:             WoundExudateAmountDescription
+Parent:            CodedObservationComponent
+Description:       "Drainage amount of wound"
+                   Code = LNC#39116-9 "Drainage amount of Wound"
+                   DataValue from GradedAmountVS (preferred)
+
+Group:             WoundExudateAppearance
+Parent:            CodedObservationComponent
+Description:       "Appearance of exudate from wound"
+                   Code = LNC#72290-0 "Appearance of exudate from wound"
+                   DataValue from WoundExudateAppearanceVS (preferred)
+
+Group:             WoundExudateColor
+Parent:            CodedObservationComponent
+Description:       "Color of exudate from wound"
+                   Code = LNC#72289-2 "Color of exudate from wound"
+                   DataValue from WoundExudateColorVS (preferred)
+
+Group:             WoundExudateOdor
+Parent:            CodedObservationComponent
+Description:       "Odor of exudate from wound"
+                   Code = LNC#72288-4 "Odor of Exudate from wound"
+                   DataValue from WoundExudateOdorVS (preferred)
+
+Group:             WoundExudateVolume
+Parent:            QuantitativeObservationComponent
+Description:       "Odor of exudate from wound"
+                   // no LOINC given
+                   Code = TBD#TBD
+                   DataValue[Quantity].Units = UCUM#mL
+
+                   // what period of time?
+Entry:             WoundSize
+Parent:            ComponentOnlyNonLaboratoryObservation
+Description:       "The estimated or measured dimensions of a wound."
+Property:          WoundIdentifier 1..1
+                   ObservationSubjectOfRecord only Patient
+                   Code = LNC#72287-6 "Wound size panel"
+                   // location is given by the wound assertion	
+                   BodyLocation 0..0
+                   Device 0..0
+                   Components.ObservationComponent
+                   includes WoundLength 0..1
+                   includes WoundWidth 0..1
+                   includes WoundDepth 0..1
+                   includes WoundArea 0..1
+                   includes WoundDepthQualitative 0..1
+
+Group:             WoundLength
+Parent:            QuantitativeObservationComponent
+Description:       "Length of the wound (longest dimension)."
+                   Code = LNC#39126-8 "Length of wound"
+                   DataValue[Quantity].Units = UCUM#cm
+                   ReferenceRange 0..0
+
+Group:             WoundWidth
+Parent:            QuantitativeObservationComponent
+Description:       "Width of the wound (perpendicular to longest dimension)."
+                   Code = LNC#39125-0 "Width of wound"
+                   DataValue[Quantity].Units = UCUM#cm
+                   ReferenceRange 0..0
+
+Group:             WoundDepth
+Parent:            QuantitativeObservationComponent
+Description:       "Depth of the wound."
+                   Code = LNC#39127-6 "Depth of the wound."
+                   DataValue[Quantity].Units = UCUM#cm
+                   ReferenceRange 0..0
+
+Group:             WoundArea
+Parent:            QuantitativeObservationComponent
+Description:       "Area of the wound."
+                   Code = LNC#89260-4 "Area of the wound."
+                   DataValue[Quantity].Units = UCUM#cm2
+                   ReferenceRange 0..0
+
+Group:             WoundDepthQualitative
+Parent:            CodedObservationComponent
+Description:       "Codes that describe the depth of a wound in qualitative terms."
+                   Code = LNC#39114-4 "Depth of Wound - nominal"
+                   DataValue from WoundDepthQualitativeVS (preferred)

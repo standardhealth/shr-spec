@@ -1,0 +1,324 @@
+Grammar:           DataElement 6.0
+Namespace:         obf
+Description:       "Objective FHIR (obf) namespace contains definitions for parent classes used to develop domain-specific profiles."
+Uses:              obf.datatype
+CodeSystem:        SCT = http://snomed.info/sct
+CodeSystem:        MTH = http://ncimeta.nci.nih.gov
+
+/* Taking out for now since Plan has not been defined
+EntryElement:	MedicationRegimen   // Definitional 
+Concept:		MTH#C0237125
+Description:	"Defines a specific application of over-the-counter and prescribed/recommended medications and infusions to meet guidelines for therapeutic action, safety, and schedule."
+1..*			MedicationUsePlanned
+*/ 
+Element:           TerminationReason
+Description:       "A code explaining unplanned or premature termination of a plan of treatment, course of medication, or research study."
+Value:             concept
+
+Element:           InstructionCode
+Description:       "Coded instructions, e.g., 'with meals'."
+Value:             concept
+
+Group:             Dosage
+Description:       "The dosage of the medication. The data structure is flexible and can describe a dosage prescribed, administered, or reported."
+Property:          DoseSequenceNumber 0..1
+Property:          InstructionText 0..1
+Property:          InstructionCode 0..*
+Property:          PatientInstruction 0..1
+Property:          Timing 0..1
+Property:          AsNeeded 0..1
+Property:          AdministrationSite 0..1
+Property:          RouteIntoBody 0..1
+Property:          Method 0..1
+                   // STU3 allows 0..1 dose[x] and rate[x]
+Property:          DoseAndRate 0..1
+Property:          MaxDosePerPeriod 0..1
+Property:          MaxDosePerAdministration 0..1
+Property:          MaxDosePerLifetime 0..1
+                   InstructionCode from http://hl7.org/fhir/ValueSet/additional-instruction-codes (example)
+                   RouteIntoBody from http://hl7.org/fhir/ValueSet/route-codes (required)
+                   Method from http://hl7.org/fhir/ValueSet/administration-method-codes (preferred)
+
+Element:           DoseSequenceNumber
+Description:       "Dose number within series."
+Value:             integer
+
+Element:           InstructionText
+Description:       "The directions (signetur) on the drug prescription or dispensing record."
+Value:             string
+
+Element:           AdministrationSite
+Description:       "The anatomic site at which the medication applied."
+Value:             concept from http://hl7.org/fhir/ValueSet/body-site (example)
+
+Element:           MaxDosePerPeriod
+Description:       "The maximum amount of a medication to be taken in a given period of time (e.g., no more than x in any 24-hour period)"
+Value:             Ratio
+
+Element:           MaxDosePerAdministration
+Description:       "Upper limit on medication per administration."
+Value:             SimpleQuantity
+
+Element:           MaxDosePerLifetime
+Description:       "Upper limit on medication per lifetime of the patient."
+Value:             SimpleQuantity
+
+Group:             DoseAndRate
+Description:       "The amount of medication administered."
+Property:          Type 0..1
+Property:          DoseAmount 0..1
+Property:          DoseRate 0..1
+                   Type from http://hl7.org/fhir/ValueSet/dose-rate-type (example)
+
+Element:           DoseAmount
+Description:       "The amount of medication taken per dose, as a quantity or range. Relative dose (e.g., per kg body weight or surface area) are indicated by specifying appropriate units (e.g., mg/kg or mg/m2 etc)."
+Value:             SimpleQuantity or Range
+
+Element:           DoseRate
+Description:       "The speed with which the medication was or will be introduced into the patient. Typically the rate is used to describe an infusion, e.g,. 100 ml per 1 hour or 100 ml/hr."
+Value:             Ratio or Range or SimpleQuantity
+
+Abstract:          MedicationAction
+                   // event that happened
+Parent:            ActionPerformed
+Description:       "Abstract class representing medication exposure, independent of whether reported in a medication statement or medication administration. Does not include medication requests (prescriptions)."
+Property:          MedicationCodeOrReference 1..1
+Property:          Dosage 0..1
+                   // because of Dosage.Method
+                   Method 0..0
+
+Element:           MedicationCodeOrReference
+Description:       "A choice of a medication code or reference."
+//Value:             concept from http://h7.org/fhir/us/core/ValueSet/us-core-medication-codes (extensible) or Medication
+Value:             concept or Medication
+                    // Conformance: terminology binding incompatibility between argo (DSTU2) and us-core (R4). Leaving binding to mapping.
+                    // concept from  http://fhir.org/guides/argonaut/ValueSet/medication-codes (extensible)  or Medication // argo (DSTU2)
+                    // concept from http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes (extensible)  or Medication // us-core (R4) 
+
+Entry:             MedicationStatement
+Parent:            MedicationAction
+                   // TODO: investigate whether we need a new code or use a drug concept.
+Description:       "A record of the use of a medication (individual administration or entire course). The use may be reported by the patient or clinician and adminstration does not have to be directly observed.
+
+Implementation note: Although FHIR supports the asserter (information source) and date asserted, it does not have a place for the author (who created and is responsible for the statement) and recorder (who entered the statement). Extensions are provided.
+
+Conformance note: The treatment of 'not taken' has changed from DSTU2 and STU3 to R4. In R4, status and statusReason are used to indicate medications not taken. For upward compatibility, the 'not taken' attributes are profiled out.
+ReasonCode is a choice of CodeableConcept or ref(Condition) in DSTU2, and limited to one reason (pick a type). In STU3 and R4, there can be multiple reason codes, and multiple reason references, simultaneously.
+
+Implementation note: Preference is given to using the National Library of Medicine (NLM) RxNorm terminology for medications. RxNorm is a coding standard established by the Office of the National Coordinator (ONC). However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. MedicationStatement allows for the inclusion of other coding systems like the NCI Thesaurus (NCIT) to represent clinical trial oncology drugs.
+"
+Property:          MedicationStatementPartOf 0..*
+Property:          StatusReason 0..*
+Property:          Category 0..1
+Property:          MedicationInformationSource 0..1
+Property:          SupportingInformation 0..*
+Property:          Annotation 0..*
+Property:          TreatmentIntent 0..1
+Property:          TerminationReason 0..*
+                   Status from http://hl7.org/fhir/ValueSet/medication-statement-status (required)
+                   //1..1 MedicationCodeOrReference (inherited, no change)
+                   // no Group in DSTU2
+                   SubjectOfRecord only Patient
+                   // us-core required
+                   StatementDateTime 1..1
+                   // Upper cardinality imposed by DSTU 2
+                   ReasonCode 0..1
+                   // value is type ref(Condition)
+                   ReasonReference substitute MedicationReasonReference
+                   MedicationReasonReference 0..1
+                   BasedOn substitute MedicationBasedOn
+                   Participation 0..0
+                   Category from http://hl7.org/fhir/ValueSet/medication-statement-category (preferred)
+                   TerminationReason from TreatmentTerminationReasonVS (required)
+
+Element:           MedicationStatementPartOf
+Parent:            PartOf
+Description:       "A larger event of which this particular event is a component or step."
+                   Value only MedicationAdministration or MedicationDispense or MedicationStatement or Procedure or Observation
+
+Element:           MedicationInformationSource
+Parent:            InformationSource
+Description:       "The informant for this medication statement."
+                   Value only Patient or Practitioner or RelatedPerson or Organization
+
+Element:           MedicationReasonReference
+Parent:            ReasonReference
+Description:       "Condition or observation that supports why the medication is being/was taken"
+                   Value only Condition or Observation or DiagnosticReport
+
+Element:           MedicationBasedOn
+Parent:            BasedOn
+                   Value only ServiceRequest or MedicationRequest or ReferralRequest or ProcedureRequest
+
+                   // CarePlan not yet implemented  // 
+Entry:             MedicationAdministration
+Parent:            MedicationAction
+Description:       "A record of the use of a medication. If the medication is given as part of a course of treatment, the PartOf attribute should refer to the CourseOfTreatment.
+Although FHIR MedicationAdministration supports date of administration, information source, performer, it lacks common provenance elements, statement creation date, author, and recorder. These are supported as optional extensions.
+FHIR DSTU2 lacks a category attribute, which is provided as an extension in that version.
+SHR does not allow the 'not given' attributes from DSTU2 and STU3, since they are dropped in R4. The status element is used to document medications not given."
+                   // not implemented: instantiates (instantiatesUri) and eventHistory (provenance)
+Property:          MedicationAdministrationPartOf 0..*
+Property:          StatusReason 0..*
+Property:          Category 0..1
+Property:          SupportingInformation 0..*
+Property:          Device 0..*
+Property:          Annotation 0..*
+                   Status from http://hl7.org/fhir/ValueSet/medication-admin-status (required)
+                   // no Group in DSTU2
+                   SubjectOfRecord only Patient
+                   ReasonReference substitute MedicationReasonReference
+                   // max card STU3
+                   BasedOn substitute MedicationAdministrationBasedOn
+                   MedicationAdministrationBasedOn 0..1
+                   Participation 0..1
+                   // DSTU 2 has max card of 1, participant excludes Device
+                   Participation.Participant substitute PersonParticipant
+                   Dosage.InstructionCode 0..0
+                   Dosage.PatientInstruction 0..0
+                   Dosage.Timing 0..0
+                   Dosage.AsNeeded 0..0
+                   Dosage.MaxDosePerPeriod 0..0
+                   Dosage.MaxDosePerAdministration 0..0
+                   Dosage.MaxDosePerLifetime 0..0
+                   Category from http://hl7.org/fhir/ValueSet/medication-admin-category (preferred)
+
+Element:           MedicationAdministrationPartOf
+Parent:            PartOf
+Description:       "A larger event of which this particular event is a component or step."
+                   Value only MedicationAdministration or Procedure
+
+Element:           PersonParticipant
+Parent:            Participant
+Description:       "A choice of Patient, Practitioner and RelatedPerson as participant."
+                   Value only Patient or Practitioner or RelatedPerson
+
+Element:           MedicationAdministrationBasedOn
+Parent:            BasedOn
+Description:       "The original request, instruction or authority to perform the administration."
+                   Value only MedicationRequest
+
+Entry:             MedicationDispense
+Parent:            MedicationAction
+Description:       "Indicates that a medication product has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order."
+
+                   // TODO: Attributes from FHIR needed
+                   // TODO: Mapping needed
+Element:           Reported
+Description:       "Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record. It may also indicate the source of the report."
+Value:             boolean or InformationSource
+
+Entry:             MedicationRequest
+Parent:            ActionRequest
+Description:       "An order for a medication to be dispensed and instructions for use.
+Value sets for status are in direct conflict between DSTU2 Argonaut and STU3 US-Core.
+Category does not exist in DSTU2 and is provided as an extension.
+Intent was added in STU3 and is provided as an extension with required binding."
+Property:          StatusReason 0..1
+Property:          DoNotPerform 0..1
+Property:          Reported 0..1
+Property:          MedicationCodeOrReference 1..1
+Property:          SupportingInformation 0..*
+Property:          Author 0..1
+Property:          GroupIdentifier 0..1
+Property:          CourseOfTherapyType 0..1
+Property:          Insurance 0..*
+Property:          Dosage 0..*
+Property:          DispenseRequest 0..1
+Property:          Substitution 0..1
+Property:          ReplacesRequest 0..1
+                   Reported[InformationSource] substitute MedicationInformationSource
+                   ReplacesRequest[ActionRequest] substitute MedicationRequest
+                   SubjectOfRecord only Patient
+                   CareContext only Encounter
+                   StatementDateTime 1..1
+                   // upper card restricted by us-core-medicationrequest
+                   ReasonCode 0..1
+                   // Upper cardinality of 1 imposed by DSTU 2
+                   ReasonCode from http://hl7.org/fhir/ValueSet/condition-code (example)
+                   // Upper cardinality of 1 imposed by DSTU 2
+                   ReasonReference substitute MedicationReasonReference
+                   MedicationReasonReference 0..1
+                   BasedOn substitute MedicationBasedOn
+                   Category 0..1
+                   Category from http://hl7.org/fhir/ValueSet/medication-admin-category (preferred)
+                   Requester 1..1
+                   ExpectedPerformer 0..1
+                   Annotation 0..1
+                   Author only Practitioner
+
+                   // eventHistory, detectedIssue, instantiatesUri, and instantiatesCanonical not implemented yet
+                   // incompatible between DSTU2 Argonaut and STU3, http://hl7.org/fhir/ValueSet/medication-order-status to http://hl7.org/fhir/ValueSet/medication-request-status
+                   //			RequestIntent from http://hl7.org/fhir/ValueSet/medicationrequest-intent  // required VS conflict STU3 and R4
+                   // from http://hl7.org/fhir/ValueSet/request-priority   // required VS conflict STU3 and R4
+                   // prior Rx
+Element:           CourseOfTherapyType
+Description:       "The description of the overall pattern of the administration of the medication to the patient."
+Value:             concept
+
+Group:             Substitution
+Description:       "Indicates whether or not substitution can or should be part of the dispense. In some cases, substitution must happen, in other cases substitution must not happen. This block explains the prescriber's intent. If nothing is specified substitution may be done."
+Property:          SubstitutionAllowed 1..1
+Property:          SubstitutionReason 0..1
+
+Element:           SubstitutionAllowed
+Description:       "Whether substitution is allowed or not."
+Value:             boolean or concept
+
+Element:           SubstitutionReason
+Description:       "Why should (not) substitution be made."
+//Value:             concept from http://hl7.org/fhir/ValueSet/v3-SubstanceAdminSubstitutionReason (example)
+Value:             concept // from http://terminology.hl7.org/ValueSet/v3-SubstanceAdminSubstitutionReason (example)
+
+Group:             DispenseRequest
+Description:       "Indicates the specific details for the dispense or medication supply part of a medication request (also known as a Medication Prescription or Medication Order). Note that this information is not always sent with the order. There may be in some settings (e.g. hospitals) institutional or system support for completing the dispense details in the pharmacy department."
+Property:          InitialFill 0..1
+Property:          DispenseInterval 0..1
+Property:          ValidityPeriod 0..1
+Property:          NumberOfRefillsAllowed 0..1
+Property:          QuantityPerDispense 0..1
+Property:          SupplyDuration 0..1
+Property:          ExpectedPerformer 0..1
+                   ExpectedPerformer only Organization
+
+Group:             InitialFill
+Description:       "Indicates the quantity or duration for the first dispense of the medication."
+Property:          SimpleQuantity 0..1
+Property:          Duration 0..1
+
+Element:           DispenseInterval
+Description:       "The minimum period of time that must occur between dispenses of the medication."
+Value:             Duration
+
+Element:           ValidityPeriod
+Description:       "This indicates the validity period of a prescription (stale dating the Prescription)."
+Value:             TimePeriod
+
+Element:           NumberOfRefillsAllowed
+Description:       "The maximum number of times the dispense can be repeated. For medication dispense, this integer does NOT include the original order dispense. This means that if an order indicates dispense 30 tablets plus 3 repeats, then the order can be dispensed a total of 4 times and the patient can receive a total of 120 tablets."
+Value:             unsignedInt
+
+Element:           QuantityPerDispense
+Description:       "The amount that is to be dispensed for one fill."
+Value:             SimpleQuantity
+
+Element:           SupplyDuration
+Description:       "Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last."
+Value:             Duration
+
+Entry:             MedicationNonadherence
+Parent:            CodedNonLaboratoryObservation
+                   // possibly a Condition, with start/stop, severity of nonadherence?
+Description:       "Information on the ability and cooperation of the patient in taking medicine or supplement as recommended or prescribed. This includes correct timing, dosage, and frequency. The FocalSubject can reference a specific medication.
+
+Modeling note: MedicationAdherence could be attached to MedicationStatement directly as an extension, but modeling as an observation avoids creating an extension and allows this observation to be made at any time, independent of any specific medication."
+Property:          MedicationNonAdherenceReason 0..*
+                   Code = MTH#C0746935 "Medication Nonadherence"
+                   // which medication(s) weren't adhered to	
+                   FocalSubject only Medication
+                   DataValue from GradedFrequencyVS (required)
+
+Element:           MedicationNonAdherenceReason
+Parent:            ReasonCode
+Description:       "Reason that patient did not adhere to a medication regimen."
+                   Value[concept] from MedicationNonAdherenceReasonVS (required)
