@@ -3,9 +3,8 @@ Namespace:      obf
 Uses:           obf.datatype
 
 Entry:	        CarePlan
-Description:	"Describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions. The care plan tracks the progress of activities associated with the plan."
+Description:	"Describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions. The Care Plan tracks the progress of activities associated with the plan."
 Parent:         ActionStatement  // neither a pure request not a pure performance
-
 // Inherited:        BasedOn 0..*
 // Inherited:        ReasonCode 0..*
 // Inherited:        SubjectOfRecord 0..1
@@ -23,28 +22,24 @@ Property:       CommentOrDescription 0..1  // description
 Property:       ExpectedPerformanceTime 0..1  // period
 Property:       Author 0..1  // author
 Property:       Annotation 0..1 // DSTU 2 upper cardinality bound
-// Extensions:
-Property:       Review 0..*
-// Constraints
                 Narrative 1..1  // Argonaut requirement
-                Review.ChangeDetail.ReasonCode from CarePlanChangeReasonVS (extensible)
                 Status 1..1
                 SubjectOfRecord 1..1
                 BasedOn substitute CarePlanBasedOn
 
 Element:        CarePlanBasedOn
 Parent:         BasedOn
-Description:    "The based on element for care plans, restricted to CarePlan"
+Description:    "The Care Plan that this Care Plan is based on, if any."
                 Value only CarePlan
 
 Element:        CarePlanPartOf
 Parent:         PartOf
-Description:    "The based on element for care plans, restricted to CarePlan"
+Description:    "The Care Plan that this Care Plan is a portion of."
                 Value only CarePlan
 
 Element:        CarePlanReplaces
 Parent:         ReplacesAction
-Description:    "The based on element for care plans, restricted to CarePlan"
+Description:    "The Care Plan that was replaced by the current Care Plan."
                 Value only CarePlan
 
 // Not yet modeled (but present in FHIR R4):
@@ -55,22 +50,28 @@ Description:    "The based on element for care plans, restricted to CarePlan"
 // supportingInfo (any)
 // detail
 
+
+Entry:	        CarePlanWithReview
+Parent:         CarePlan
+Description:    "An extended Care Plan that includes clinical reviews and documentation of changes. The Care Plan itself describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions. The Care Plan tracks the progress of activities associated with the plan. The review extension includes the practitioner doing the review, date of review, whether the plan was changed, a coded reason for change, and a narrative describing the change."
+Property:       Review 0..*
+
 Group:          Review
-Description:    "Documentation of a re-assessment of the care plan, which may or may not lead to a revision of the plan. The fact the assessment has been conducted should be documented even when the care plan is not changed."
+Description:    "Documentation of a re-assessment of the Care Plan, which may or may not lead to a revision of the plan. The fact the assessment has been conducted should be documented even when the Care Plan is not changed."
 Property:       ReviewedBy 0..1 
 Property:       ReviewedDate 1..1
 Property:       Changed 1..1
-Property:       ChangeDetail 0..1
+Property:       ReasonCode 1..1
+Property:       CommentOrDescription 0..1
+                ReasonCode from CarePlanChangeReasonVS (extensible)
 
 Element:        ReviewedBy
-Description:    "The practitioner who is the reviewer. If not provided, it is assumed the author was the reviewer."
+Description:    "The practitioner who is the reviewer. If not provided, it is assumed the author of the Care Plan was the reviewer."
 Value:          Practitioner
 
 Element:        Changed
-Description:    "A flag indicating whether a change was made."
+Description:    "A flag indicating whether a change was made to the Care Plan at the time of the review."
 Value:          boolean
 
-Group:          ChangeDetail
-Description:    "Details of the change. Either a reason code or description, or both, should be provided."
-Property:       ReasonCode 0..1
-Property:       CommentOrDescription 0..1
+                
+                
