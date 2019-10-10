@@ -26,7 +26,7 @@
 <p>In late 2018, ASCO convened committee of twenty leading clinical experts in oncology, radiology, surgery, and public health developed two use cases that drove the initial clinical data requirements for mCODE:</p>
 <ul>
     <li><b>Use Case 1</b>: <a href="mCODE-UseCase-RCC.docx">Comparative Effectiveness Analysis and Cooperative Decision Making</a></li>
-    <li><b>Use Case 2</b>: <a href="mCODE-UseCase-NGS.docx">CEA with Next Generation Sequencing (NGS)</a></li>
+    <li><b>Use Case 2</b>: <a href="mCODE-UseCase-NGS.docx">Comparative Effectiveness Analysis with Next Generation Sequencing (NGS)</a></li>
 </ul>
 <p>While mCODE ultimately is meant to be applicable to across all types of cancer, the initial focus (and both use cases) has been on solid tumors.</p>
 
@@ -38,7 +38,7 @@
         <li><a href="http://www.hl7.org/implement/standards/product_brief.cfm?product_id=383" target="_blank">HL7 CDA R2 IG: Reporting to Public Health Cancer Registries from Ambulatory Healthcare Providers</a></li>
         <li><a href="https://www.nccn.org/professionals/physician_gls/default.aspx#site" target="_blank">National Comprehensive Cancer Network (NCCN) Clinical Practice Guidelines in Oncology</a></li>
         <li><a href="https://project.eortc.org/recist/wp-content/uploads/sites/4/2015/03/RECISTGuidelines.pdf" target="_blank">RECIST Guidelines v1.1</a></li>
-        <li><a href="https://www.hl7.org/fhir/genomics.html" target="_blank">HL7 FHIR Genomics Implementation Guidance</a></li>
+        <li><a href="http://build.fhir.org/ig/HL7/genomics-reporting/general.html" target="_blank">HL7 FHIR Genomics Implementation Guidance</a></li>
         <li><a href="https://www.ncbi.nlm.nih.gov/gtr" target="_blank">The National Center for Biotechnology Genetic Test Registry (GTR)</a></li>
         <li><a href="https://varnomen.hgvs.org/" target="_blank">The Human Genome Variation Society nomenclature for defining genetic variants</a>.</li>
         <li><a href="https://www.genenames.org/" target="_blank">The Human Genome Organization (HUGO) Gene Nomenclature Committee</a></li>
@@ -75,7 +75,7 @@
 
 <p>The mCODE <b>Disease Characterization</b> group includes data elements specific to the diagnosis and staging of cancer. This includes:</p>
 <ul>
-    <li><b>Type of cancer</b> - the primary, or original, cancer diagnosis</li>
+    <li><b>Cancer Diagnosis</b> - the date and location (body site/position and laterality) of the cancer diagnosis</li>
     <li><b>Tumor characteristics</b> - the shape (histologic type) and behavior of the tumor cell, compared to that of a normal cell.</li>
     <li><b>Cancer stage</b> - describes the severity of an individual's cancer based on the magnitude of the original (primary) tumor as well as on the extent cancer has spread in the body. Understanding the stage of the cancer helps doctors to develop a prognosis and design a treatment plan for individual patients. Staging calculations leverage results from the previous two categories, along with prognostic factors relevant to the cancer type, in order to assess an overall cancer stage group (source: <a href="https://cancerstaging.org/references-tools/Pages/What-is-Cancer-Staging.aspx" target="_blank">AJCC</a>).</li>
 </ul>
@@ -88,7 +88,7 @@
     <li><a href="https://codes.iarc.fr/" target="_blank">International Classification of Diseases for Oncology, 3rd version (ICD-O-3)</a></li>
 </ul>
 
-<p>Because each of these coding systems are found "in the wild", mCODE supports all three. Implementers should be aware, however, that how the cancer diagnosis is coded can affect compliance with <a href="http://hl7.org/fhir/us/core/" target="_blank">US Core</a> (see <a href="implementation.html">Implementation Notes</a> for details). Two attributes and one <a href="https://www.hl7.org/fhir/extensibility.html" target="_blank">FHIR extension</a> of the <a href="https://www.hl7.org/fhir/condition.html" target="_blank">FHIR Condition Resource</a> are involved with coding the cancer diagnosis: the Code, the <a href="StructureDefinition-onco-core-HistologyMorphologyBehavior-extension.html">HistologyMorphologyBehavior</a> extension, and the Body Site. How these attributes are used, depending on the coding system, is captured in the table below:</p>
+<p>Because the use of these coding systems vary in different institutions, mCODE supports all three. Implementers should be aware, however, that how the cancer diagnosis is coded can affect compliance with <a href="http://hl7.org/fhir/us/core/" target="_blank">US Core</a> (see <a href="implementation.html">Implementation Notes</a> for details). Two attributes and one <a href="https://www.hl7.org/fhir/extensibility.html" target="_blank">FHIR extension</a> of the <a href="https://www.hl7.org/fhir/condition.html" target="_blank">FHIR Condition Resource</a> are involved with coding the cancer diagnosis: the Code, the <a href="StructureDefinition-onco-core-HistologyMorphologyBehavior-extension.html">HistologyMorphologyBehavior</a> extension, and the Body Site. How these attributes are used, depending on the coding system, is captured in the table below:</p>
 <!--
 <table class="tg">
     <tr>
@@ -169,7 +169,7 @@
 <p>Like US Core, mCODE gives preference to representing medications using the National Library of Medicine (NLM) <a href = "https://www.nlm.nih.gov/research/umls/rxnorm/" target="_blank">RxNorm</a> terminology - a coding standard established by the Office of the National Coordinator (ONC) for the exchange of drugs. However, RxNorm is restricted to FDA-approved drugs and does not include clinical trial drugs. To address this limitation, mCODE allows for the inclusion of other coding systems like the <a href="https://ncit.nci.nih.gov/ncitbrowser/" target="_blank">NCI Thesaurus (NCIT)</a> to represent clinical trial oncology drugs.</p>
 
 <h2><a name="Genomics"></a>Genomics Group</h2>
-<p>mCODE includes the minimal set of genetic related elements relevant to capture in an EHR to inform cancer assessment and treatment options. The approach is based on the <a href="https://www.hl7.org/fhir/genomics.html" target="_blank">HL7 CGWG Clinical Genomics Reporting Implementation Guide</a>. However, mCODE simplifies genomics reporting to single discrete variants or to variants that were found in a given DNA region. Three profiles relate to the capture of clinical genomics data:</p>
+<p>mCODE includes the minimal set of genetic related elements relevant to capture in an EHR to inform cancer assessment and treatment options. The approach is based on the <a href="http://build.fhir.org/ig/HL7/genomics-reporting/general.html" target="_blank">HL7 CGWG Clinical Genomics Reporting Implementation Guide</a>. However, mCODE simplifies genomics reporting to single discrete variants or to variants that were found in a given DNA region. Three profiles relate to the capture of clinical genomics data:</p>
 <ul>
     <li><a href="StructureDefinition-onco-core-GenomicsReport.html">Genomics Report</a> - contain results of genomic analyses. Genomic reports vary in complexity and content, as simple as the results for a single discrete variant to complex sequences that are found in exome and genome-wide association studies (GWAS).</li>
     <li><a href="StructureDefinition-onco-core-GeneticVariantTested.html">Genetic Variant Tested</a> - used to capture the results of a test for a single known variant.</li>
