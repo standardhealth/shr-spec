@@ -1,0 +1,30 @@
+Grammar:        DataElement 6.0
+Namespace:      icare
+Uses:           obf.datatype, obf
+
+Entry:	        CarePlanWithReview
+Parent:         CarePlan
+Description:    "An extended Care Plan that includes clinical reviews and documentation of changes. The Care Plan itself describes how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions. The Care Plan tracks the progress of activities associated with the plan. The review extension includes the practitioner doing the review, date of review, whether the plan was changed, a coded reason for change, and a narrative describing the change."
+Property:       Review 0..*
+
+Group:          Review
+Description:    "Documentation of a re-assessment of the Care Plan, which may or may not lead to a revision of the plan. The fact the assessment has been conducted should be documented even when the Care Plan is not changed.
+
+Implementation note: A ReasonCode is required when Changed value is TRUE."
+
+Property:       ReviewedBy 0..1 
+Property:       ReviewedDate 1..1
+Property:       Changed 1..1
+Property:       ReasonCode 0..1
+Property:       CommentOrDescription 0..1
+                ReasonCode from CarePlanChangeReasonVS (extensible)
+
+Element:        ReviewedBy
+Description:    "The practitioner who is the reviewer. If not provided, it is assumed the author of the Care Plan was the reviewer."
+Value:          Practitioner
+
+Element:        Changed
+Description:    "A flag indicating whether a change was made to the Care Plan at the time of the review."
+Value:          boolean
+
+                
