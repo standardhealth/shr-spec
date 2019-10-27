@@ -41,8 +41,8 @@ Property:          UsedCode 0..*
                    ReasonReference substitute ProcedureReasonReference
                    ProcedureReasonReference 0..1
                    // not implemented: instantiatesCanonical, instantiatesUri
-                   BasedOn substitute ProcedureBasedOn
-                   ProcedureBasedOn 0..1
+                   BasedOn only ProcedureRequest or ReferralRequest or ServiceRequest
+                   BasedOn 0..1
                    Participation.Participant substitute ProcedureParticipant
                    Participation.OnBehalfOf only Organization
                    // Procedure doesn't have Method
@@ -119,11 +119,6 @@ Concept:           SCT#395077000 "Treatment intent (situation)"
 Description:       "The purpose of a treatment."
 Value:             concept from TreatmentIntentVS (required)
 
-Element:           ProcedureBasedOn
-Parent:            BasedOn
-Description:       "A request for this procedure."
-                   Value only ProcedureRequest or ReferralRequest or ServiceRequest
-
                    // or CarePlan (or DiagnosticOrder in DSTU2)
 Group:             FocalDevice
 Description:       "Activity involving a device that is implanted, removed or otherwise manipulated (e.g., calibration, battery replacement, fitting a prosthesis, attaching a wound-vac, etc.) as a focal portion of the Procedure."
@@ -151,18 +146,13 @@ Property:          Method 0..1
                    // restricted to 0..1 in DSTU2
                    Category 0..1
                    Requester substitute ProcedureRequester
-                   RequestSubjectOfRecord substitute ProcedureRequestSubjectOfRecord
+                   SubjectOfRecord only Patient or Group
 
                    // limit upper card to 1 in DSTU2
 Element:           ProcedureRequester
 Parent:            Requester
 Description:       "The agent requesting the procedure. Allows Practitioner and Device, since these represent the intersection between DSTU 2 and STU 3. DSTU 2 allows Organization, and STU 3 allows Patient and RelatedPerson."
                    Value only Practitioner or Device
-
-Element:           ProcedureRequestSubjectOfRecord
-Parent:            RequestSubjectOfRecord
-Description:       "A choice of Patient or Group. These are the potential subjects for Procedure and ReferralRequest resources."
-                   Value only Patient or Group
 
 Element:           ProcedureRequestReasonReference
 Parent:            ServiceReasonReference

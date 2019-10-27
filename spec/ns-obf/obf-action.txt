@@ -132,7 +132,7 @@ Property:          ServiceDetails 0..*
                    // quantity[x]
 Property:          RequestQuantity 0..1
                    // subject
-Property:          RequestSubjectOfRecord 1..1
+Property:          SubjectOfRecord 1..1
 Property:          AsNeeded 0..1
 Property:          LocationType 0..*
 Property:          Location 0..*
@@ -153,16 +153,12 @@ Property:          PatientInstruction 0..1
                    ServiceReasonReference 0..1
                    // 0..*			InstantiatesCanonical  // not implemented
                    // 0..*			InstantiatesUri // not implemented
-                   BasedOn substitute ServiceBasedOn
+                   BasedOn only ServiceRequest or ReferralRequest or ProcedureRequest
                    // card change from 0..1 to accomodate DSTU2 mapping to argo-ProcedureRequest
                    Code 1..1
                    RequestIntent from http://hl7.org/fhir/ValueSet/request-intent (required)
                    ExpectedPerformer 0..1
-
-Element:           ServiceBasedOn
-Parent:            BasedOn
-Description:       "The original or initiating plan, proposal, or request."
-                   Value only ServiceRequest or ReferralRequest or ProcedureRequest
+                   SubjectOfRecord only Patient or Group or Device or Location
 
 Element:           GroupIdentifier
 Description:       "A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier."
@@ -179,11 +175,6 @@ Value:             concept from http://hl7.org/fhir/ValueSet/service-type (examp
 Element:           RequestQuantity
 Description:       "An amount of service being requested which can be a quantity ( for example $1,500 home modification), a ratio ( for example, 20 half day visits per month), or a range (2.0 to 1.8 Gy per fraction)."
 Value:             Quantity or Ratio or Range
-
-Element:           RequestSubjectOfRecord
-Parent:            SubjectOfRecord
-Description:       "The subject of the requested service. This is usually limited to a human patient, but can also be requested on groups, devices, or locations (typically for environmental scans)."
-                   Value only Patient or Group or Device or Location
 
 Element:           AsNeeded
 Description:       "Preconditions for service, either 'true' indicating to be performed if needed, or a code indicating the pre-condition for performing the service. For example 'pain', 'on flare-up', etc."

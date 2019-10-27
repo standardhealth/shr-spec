@@ -126,7 +126,7 @@ Property:          TerminationReason 0..*
                    // value is type ref(Condition)
                    ReasonReference substitute MedicationReasonReference
                    MedicationReasonReference 0..1
-                   BasedOn substitute MedicationBasedOn
+                   BasedOn only ServiceRequest or MedicationRequest or ReferralRequest or ProcedureRequest
                    Participation 0..0
                    Category from http://hl7.org/fhir/ValueSet/medication-statement-category (preferred)
                    TerminationReason from TreatmentTerminationReasonVS (required)
@@ -145,10 +145,6 @@ Element:           MedicationReasonReference
 Parent:            ReasonReference
 Description:       "Condition or observation that supports why the medication is being/was taken"
                    Value only Condition or Observation or DiagnosticReport
-
-Element:           MedicationBasedOn
-Parent:            BasedOn
-                   Value only ServiceRequest or MedicationRequest or ReferralRequest or ProcedureRequest
 
                    // CarePlan not yet implemented  // 
 Entry:             MedicationAdministration
@@ -169,8 +165,8 @@ Property:          Annotation 0..*
                    SubjectOfRecord only Patient
                    ReasonReference substitute MedicationReasonReference
                    // max card STU3
-                   BasedOn substitute MedicationAdministrationBasedOn
-                   MedicationAdministrationBasedOn 0..1
+                   BasedOn only MedicationRequest
+                   BasedOn 0..1
                    Participation 0..1
                    // DSTU 2 has max card of 1, participant excludes Device
                    Participation.Participant substitute PersonParticipant
@@ -192,11 +188,6 @@ Element:           PersonParticipant
 Parent:            Participant
 Description:       "A choice of Patient, Practitioner and RelatedPerson as participant."
                    Value only Patient or Practitioner or RelatedPerson
-
-Element:           MedicationAdministrationBasedOn
-Parent:            BasedOn
-Description:       "The original request, instruction or authority to perform the administration."
-                   Value only MedicationRequest
 
 Entry:             MedicationDispense
 Parent:            MedicationAction
@@ -239,7 +230,7 @@ Property:          ReplacesRequest 0..1
                    // Upper cardinality of 1 imposed by DSTU 2
                    ReasonReference substitute MedicationReasonReference
                    MedicationReasonReference 0..1
-                   BasedOn substitute MedicationBasedOn
+                   BasedOn only ServiceRequest or MedicationRequest or ReferralRequest or ProcedureRequest
                    Category 0..1
                    Category from http://hl7.org/fhir/ValueSet/medication-admin-category (preferred)
                    Requester 1..1

@@ -707,7 +707,7 @@ Value:             concept
 Entry:             Media
 Parent:            Entity
 Description:       "A photo, video, or audio recording acquired or used in healthcare. The actual content may be inline or provided by direct reference."
-Property:          MediaBasedOn 0..*
+Property:          BasedOn 0..*
 Property:          Type 1..1
 Property:          Modality 0..1
 Property:          View 0..1
@@ -728,7 +728,7 @@ Property:          Frames 0..1
 Property:          NumberOfSecondsDuration 0..1
 Property:          Attachment 1..1
 Property:          Annotation 0..*
-                   SubjectOfRecord substitute MediaSubjectOfRecord
+                   SubjectOfRecord only Patient or Practitioner or Group or Device or Specimen
                    Status 1..1
                    Status from http://hl7.org/fhir/ValueSet/event-status (required)
                    // Cannot make media type binding compatible with both R4 and STU3. 
@@ -736,16 +736,7 @@ Property:          Annotation 0..*
                    // Type from http://hl7.org/fhir/ValueSet/media-type (extensible)  // R4
                    CareContext only Encounter
                    ReasonCode from http://hl7.org/fhir/ValueSet/procedure-reason (example)
-
-Element:           MediaBasedOn
-Parent:            BasedOn
-Description:       "Request that caused this media to be created"
-                   Value only ServiceRequest
-
-Element:           MediaSubjectOfRecord
-Parent:            SubjectOfRecord
-Description:       "A choice of Patient, Practitioner, Group, Device or Specimen. These are choices for subject of Media resource."
-                   Value only Patient or Practitioner or Group or Device or Specimen
+                   BasedOn only ServiceRequest
 
 Element:           Modality
 Description:       "Details of the type of the media - usually, how it was acquired (what type of device). If images sourced from a DICOM system, are wrapped in a Media resource, then this is the modality."

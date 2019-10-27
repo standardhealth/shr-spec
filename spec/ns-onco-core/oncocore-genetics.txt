@@ -10,14 +10,9 @@ Parent:            LaboratoryObservation
 Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms) and [Cancer.net](https://www.cancer.net/))
 
 Implementation note: The data value for TumorMarkerTest has cardinality is 0..1 (required if known) because when the test result is indeterminate, no quantitative data value will be reported. Instead, the reason for the null value will be reported in the DataAbsentReason field."
-                   ObservationSubjectOfRecord only Patient
+                   SubjectOfRecord only Patient
                    Code from TumorMarkerTestVS (extensible)
-                   DataValue substitute TumorMarkerTestDataValue
-
-Element:           TumorMarkerTestDataValue
-Parent:            DataValue
-Description:       "A restricted set of value types that could be associated with a tumor marker test."
-                   Value only concept or Quantity or Ratio or string
+                   DataValue only concept or Quantity or Ratio or string
 
 /* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
 
@@ -49,7 +44,7 @@ Implementation note: The performer of the test (organization or practitioner) sh
 Conformance note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This is contrary to the [Argonaut](http://www.fhir.org/guides/argonaut/r2/) and [US Core](http://hl7.org/fhir/us/core/STU3/index.html) specifications, which require the category 'LAB' in diagnostic reports containing laboratory results. This is assumed to be an oversight in the US Core and Argonaut specifications."
 Property:          SpecimenType 0..1
 Property:          RegionStudied 0..*
-                   ObservationSubjectOfRecord only Patient
+                   SubjectOfRecord only Patient
                    // US Core v3 requires an extensible binding to Code
                    Code from GeneticTestVS (extensible)
                    Category 1..1
@@ -71,7 +66,7 @@ Parent:            LaboratoryObservation
 Description:       "A test for a specific mutation on a particular gene. This profile is used to record whether a single discrete variant tested is present or absent (denoted as positive or negative respectively)."
 Property:          GeneStudied 0..1
 Property:          VariantTested 1..1
-                   ObservationSubjectOfRecord only Patient
+                   SubjectOfRecord only Patient
                    Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
                    DataValue 1..1
                    DataValue from PositiveNegativeVS (required)
@@ -108,7 +103,7 @@ Value:             string
 Entry:             GeneticVariantFound
 Parent:            LaboratoryObservation
 Description:       "Records an alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. When reporting 'Genetic Variant Found', at least one element out of the following must be reported: 'Variant Found Identifier', 'Variant Found HGVS Name', and 'Variant Found Description'."
-                   ObservationSubjectOfRecord only Patient
+                   SubjectOfRecord only Patient
                    Code = LNC#69548-6 "Genetic variant assessment"
                    DataValue 0..0
                    DataAbsentReason 0..0
