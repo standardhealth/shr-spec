@@ -7,7 +7,7 @@ CodeSystem:        LNC = http://loinc.org
 
 Entry:             TumorMarkerTest
 Parent:            LaboratoryObservation
-Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Source: Adapted from [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms) and [Cancer.net](https://www.cancer.net/))
+Description:       "The result of a tumor marker test. Tumor marker tests are generally used to guide cancer treatment decisions and monitor treatment, as well as to predict the chance of recovery and cancer recurrence. A tumor marker is a substance found in tissue or blood or other body fluids that may be a sign of cancer or certain benign (noncancer) conditions. Most tumor markers are made by both normal cells and cancer cells, but they are made in larger amounts by cancer cells. A tumor marker may help to diagnose cancer, plan treatment, or find out how well treatment is working or if cancer has come back. Examples of tumor markers include CA-125 (in ovarian cancer), CA 15-3 (in breast cancer), CEA (in colon cancer), and PSA (in prostate cancer). Tumor markers differ from genetic markers in that they are measured at the levels of the protein and substance post-RNA protein synthesis. (Definition adapted from: [NCI Dictionary of Cancer Terms](https://www.cancer.gov/publications/dictionaries/cancer-terms/def/tumor-marker-test) and [Cancer.Net](https://www.cancer.net/navigating-cancer-care/diagnosing-cancer/tests-and-procedures/tumor-marker-tests)).
 
 Implementation note: The data value for TumorMarkerTest has cardinality is 0..1 (required if known) because when the test result is indeterminate, no quantitative data value will be reported. Instead, the reason for the null value will be reported in the DataAbsentReason field."
                    ObservationSubjectOfRecord only Patient
@@ -47,24 +47,30 @@ Conformance note: To be conformant to US Core, the code attribute must be a LOIN
 Implementation note: The performer of the test (organization or practitioner) should be included in the FHIR profile as the performer.actor.
 
 Conformance note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This is contrary to the [Argonaut](http://www.fhir.org/guides/argonaut/r2/) and [US Core](http://hl7.org/fhir/us/core/STU3/index.html) specifications, which require the category 'LAB' in diagnostic reports containing laboratory results. This is assumed to be an oversight in the US Core and Argonaut specifications."
-Property:          SpecimenType 0..1
+// Property: SpecimenType 0..1
 Property:          RegionStudied 0..*
                    ObservationSubjectOfRecord only Patient
                    // US Core v3 requires an extensible binding to Code
                    Code from GeneticTestVS (extensible)
                    Category 1..1
+                   Specimen substitute GeneticSpecimen
 // should be GE per CGWG IG but US Core restricts to #LAB so this might generate an error. Also the code system changed from DSTU2 to R4, so fixed value doesn't fly               
 //                   Category = V20074#GE
                    Observation
                    includes GeneticVariantFound 0..*
                    includes GeneticVariantTested 0..*
-                   SpecimenType from GeneticSpecimenTypeVS (extensible)
+                   // SpecimenType from GeneticSpecimenTypeVS (extensible)
 
 
                    // 0..0			ImagingStudy (not yet defined in SHR)
 Element:           RegionStudied
 Description:       "A description of the coverage of the genome that was tested for variants."
 Value:             string
+
+Entry:            GeneticSpecimen
+Parent:             Specimen
+Description:        "A small sample or part taken to show the nature of the whole."
+                    SpecimenType from GeneticSpecimenTypeVS (extensible)
 
 Entry:             GeneticVariantTested
 Parent:            LaboratoryObservation
