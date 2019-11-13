@@ -1,0 +1,59 @@
+Grammar:           DataElement 6.0
+Namespace:         onco.core
+Description:       "Oncology data elements that broadly apply to most cancer cases."
+Uses:              obf.datatype, obf
+CodeSystem:        SCT = http://snomed.info/sct
+CodeSystem:        LNC = http://loinc.org
+CodeSystem:        UCUM = http://unitsofmeasure.org
+
+Entry: ConditionUSCore3MinusMustSupport
+Parent: Condition
+Description: "Condition consistent with US Core Condition, but without Must Support flags"
+// cannot make the binding weaker because US Core requires an extensible binding
+//Conformance: terminology binding incompatibility between argo (DSTU2) and us-core (R4). Leaving binding to mapping.
+Code from http://hl7.org/fhir/us/core/ValueSet/us-core-condition-code (extensible)
+SubjectOfRecord only PatientUSCore3MinusMustSupport
+
+Entry: PatientUSCore3MinusMustSupport
+Parent: Patient
+Description: "Patient consistent with US Core Patient, but without Must Support flags"
+Race.RaceCategory from http://hl7.org/fhir/us/core/ValueSet/omb-race-category (required)
+Race.RaceDetail from http://hl7.org/fhir/us/core/ValueSet/detailed-race (required)
+Ethnicity.EthnicityCategory from http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity-category (required)
+Ethnicity.EthnicityDetail from http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity (required)
+
+Entry: ProcedureUSCore3MinusMustSupport
+Parent: Procedure
+Description: "Procedure consistent with US Core Procedure, but without Must Support flags"
+Status from http://hl7.org/fhir/ValueSet/event-status (required)
+Code from http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code (required)
+SubjectOfRecord only PatientUSCore3MinusMustSupport
+
+Entry: LaboratoryObservationUSCore3MinusMustSupport
+Parent: LaboratoryObservation
+Description: "LaboratoryObservation consistent with US Core Laboratory Result Observation, but without Must Support flags. The invariants us-core-1 through us-core-4 are not included."
+SubjectOfRecord only PatientUSCore3MinusMustSupport
+
+Entry: DiagnosticReportNoteUSCore3MinusMustSupport
+Parent: DiagnosticReport
+Description: "DiagnosticReport consistent with US Core Diagnostic Report Note, but without Must Support flags."
+SubjectOfRecord only PatientUSCore3MinusMustSupport
+Status from http://hl7.org/fhir/ValueSet/diagnostic-report-status (required)
+Category from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-category (extensible)
+Code from http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-report-and-note-codes (extensible)
+
+/*
+Entry: OrganizationUSCore3MinusMustSupport
+Parent: Organization
+Description: "Organization consistent with US Core Organization, but without Must Support flags."
+Address.State from http://hl7.org/fhir/us/core/ValueSet/us-core-usps-state (extensible)
+Address.AddressLine 0..4
+Identifier 
+includes NPI 0..1
+includes CLIA 0..1
+
+Group:             CLIA
+Parent:            Identifier
+Description:       "Clinical Laboratory Improvement Amendments (CLIA) Number for laboratories."
+                   CodeSystem = "urn:oid:2.16.840.1.113883.4.7" 
+*/
