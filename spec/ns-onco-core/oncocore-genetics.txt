@@ -19,23 +19,7 @@ Parent:            DataValue
 Description:       "A restricted set of value types that could be associated with a tumor marker test."
                    Value only concept or Quantity or Ratio or string
 
-/* Specialization of genomics report to cancer. The only substative change is to use CancerGeneVS, but this doesn't work because it involves applying an 'is type' constraint to a sliced component.
 
-EntryElement:	CancerGeneticRegionAnalyzed
-Parent:		GeneticRegionAnalysisResult
-Description:	"Results of analyzing a specified genetic region for cancer-related genetic variants."
-				Code is LNC#53041-0 "DNA region of interest panel" // mlt: needs Cancer-specific genetic test concept -- MK: Since that doesn't exist, there's no point in specializing GeneticRegionAnalyzed to cancer.  
-	// DOES NOT WORK -- CIMPL can't constrain a slice.. so Genename is not taken from CancerGeneNameVS
-				Components.ObservationComponent.GeneName is type CancerGeneName
-
-		Element:		CancerGeneName
-		Parent:		GeneName
-		Description:	"The gene name, using HUGO Gene Nomenclature Committee (HGNC) identifier. (source: LOINC)"
-						Code is LNC#48018-6 "Gene studied [ID]"
-						DataValue from CancerGeneVS if covered
-						// interpretation LOINC preferred answer list LL378-1 for LNC#48018-6.
-*/
-// comment
 Entry:             GenomicsReport
 Parent:            DiagnosticReport
 Description:       "Genetic analysis summary report. The report may include one or more tests, with two distinct test types. The first type is a targeted mutation test, where a specific mutation on a specific gene is tested for. The result is either positive or negative for that mutation. The second type is a more general test for variants. This type of test returns the identity of variants found in a certain region of the genome.
@@ -48,24 +32,26 @@ Implementation note: The performer of the test (organization or practitioner) sh
 
 Conformance note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This is contrary to the [Argonaut](http://www.fhir.org/guides/argonaut/r2/) and [US Core](http://hl7.org/fhir/us/core/STU3/index.html) specifications, which require the category 'LAB' in diagnostic reports containing laboratory results. This is assumed to be an oversight in the US Core and Argonaut specifications."
 // Property: SpecimenType 0..1
-Property:          RegionStudied 0..*
+// Property:          RegionStudied 0..*
                    ObservationSubjectOfRecord only Patient
                    // US Core v3 requires an extensible binding to Code
                    Code from GeneticTestVS (extensible)
-                   Category 1..1
                    Specimen substitute GeneticSpecimen
 // should be GE per CGWG IG but US Core restricts to #LAB so this might generate an error. Also the code system changed from DSTU2 to R4, so fixed value doesn't fly               
 //                   Category = V20074#GE
                    Observation
                    includes GeneticVariantFound 0..*
                    includes GeneticVariantTested 0..*
+                   includes RegionStudied 0..*
                    // SpecimenType from GeneticSpecimenTypeVS (extensible)
 
 
-                   // 0..0			ImagingStudy (not yet defined in SHR)
-Element:           RegionStudied
+Entry:           RegionStudied
+Parent:            CodedNonLaboratoryObservation
 Description:       "A description of the coverage of the genome that was tested for variants."
-Value:             string
+//Value:             string
+                    FocalSubject substitute RelatedCancerCondition
+                    Code = LNC#53041-0 "DNA region of interest panel"
 
 Entry:            GeneticSpecimen
 Parent:             Specimen
@@ -75,7 +61,7 @@ Description:        "A small sample or part taken to show the nature of the whol
 Entry:             GeneticVariantTested
 Parent:            LaboratoryObservation
 Description:       "A test for a specific mutation on a particular gene. This profile is used to record whether a single discrete variant tested is present or absent (denoted as positive or negative respectively)."
-Property:          GeneStudied 0..1
+// Property:          GeneStudied 0..1
 Property:          VariantTested 1..1
                    ObservationSubjectOfRecord only Patient
                    Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
@@ -84,13 +70,19 @@ Property:          VariantTested 1..1
                    DataAbsentReason 0..0
                    Method from GeneticTestMethodVS (extensible)
                    PanelMembers 0..0
-                   Components 0..0
+//                   Components 0..0
+                   Components.ObservationComponent
+                   includes GeneStudied 0..*
                    ReferenceRange 0..0
 
-Element:           GeneStudied
+Group:             GeneStudied
+Parent:            CodedObservationComponent
 Description:       "A gene targeted for mutation analysis, identified in HUGO Gene Nomenclature Committee (HGNC) notation. The required code is HGNC gene ID. Gene IDs are of the format HGNC:n, where n is a unique number. Only the number, n, should be given as the code. For example, the HGNC identifier for the EGFR gene is 3236. The display text associated with the code should be the HGNC official gene symbol. For example, the official gene symbol for epidermal growth factor receptor is EGFR."
+                   Code = LNC#48018-6 "Gene studied [ID]"
+                   DataValue from http://hl7.org/fhir/ValueSet/genenames (extensible)
+                   DataAbsentReason 0..0
                    // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
-Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
+// Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
 
 Group:             VariantTested
 Description:       "The specific genetic variant that is targeted by this test."
