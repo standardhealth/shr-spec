@@ -64,9 +64,12 @@ Description:       "A test for a specific mutation on a particular gene. This pr
 // Property:          GeneStudied 0..1
 Property:          VariantTested 1..1
                    ObservationSubjectOfRecord only Patient
-                   Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
+//                  Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
+                   Code = LNC#69548-6 "Genetic variant assessment"
                    DataValue 1..1
-                   DataValue from PositiveNegativeVS (required)
+//                   DataValue from PositiveNegativeVS (required)
+                   DataValue only concept
+                   DataValue from https://fhir.loinc.org/ValueSet/LL1971-2 (required)
                    DataAbsentReason 0..0
                    Method from GeneticTestMethodVS (extensible)
                    PanelMembers 0..0
@@ -81,8 +84,6 @@ Description:       "A gene targeted for mutation analysis, identified in HUGO Ge
                    Code = LNC#48018-6 "Gene studied [ID]"
                    DataValue from http://hl7.org/fhir/ValueSet/genenames (extensible)
                    DataAbsentReason 0..0
-                   // http://hl7.org/fhir/uv/genomics-reporting/ValueSet/hgnc
-// Value:             concept from http://hl7.org/fhir/ValueSet/genenames (extensible)
 
 Group:             VariantTested
 Description:       "The specific genetic variant that is targeted by this test."
@@ -91,8 +92,8 @@ Property:          VariantHGVSName 0..*
 Property:          VariantDescription 0..1
 
 Element:           VariantIdentifier
-Description:       "The variation ID assigned by ClinVar, for example, 360448 is the identifier for NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR)."
-Value:             concept from ClinVarVS (extensible)
+Description:       "The variation ID assigned by ClinVar, for example, 360448 is the identifier which includes the HGVS nomenclature NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR). Other acceptable variant standards include the Catalogue Of Somatic Mutations In Cancer (COSMIC) and the International System for Human Cytogenetic Nomenclature (ISCN)."
+Value:             concept from ClinVarVS (preferred)
 
 Element:           VariantHGVSName
 Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for ClinVar variation ID 360448."
