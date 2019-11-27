@@ -193,7 +193,7 @@ Description:       "The edge or border of the tissue removed in cancer surgery. 
 
 Entry:             CancerRelatedSurgicalProcedure
 Parent:            SurgicalProcedure
-Description:       "A surgical action addressing a cancer condition. 
+Description:       "A surgical action addressing a cancer condition. The scope of this profile has been narrowed to cancer-related procedures by constraining the ReasonReference and ReasonCode to cancer conditions. 
 
 Conformance note: If an ICD-10-PCS code is used in the code attribute, and there is a semantically equivalent SNOMED CT or CPT code, the resulting Procedure instance will not be compliant with [US Core Profiles](http://hl7.org/fhir/us/core/STU3/index.html)."
                    ReasonCode from CancerDisorderVS (extensible)
@@ -214,6 +214,16 @@ Conformance note: If an ICD-10-PCS code is used in the code attribute, and there
                    ReasonCode from CancerDisorderVS (extensible)
                    // It is cancer-related only if the reason is a cancer condition
                    ReasonReference substitute CancerProcedureReasonReference
+
+Entry:             CancerRelatedMedicationStatement
+Parent:            MedicationStatement
+Description:       "A record of the use of a medication (individual administration or entire course) for a condition that is related to a primary or secondary cancer condition or comorbid condition. The use may be reported by the patient or clinician and adminstration does not have to be directly observed."
+                    MedicationReasonReference substitute CancerRelatedMedicationReasonReference
+
+Element:            CancerRelatedMedicationReasonReference
+Parent:             MedicationReasonReference
+Description:        "Condition or observation that supports why the medication is being/was taken"
+                    Value only PrimaryCancerCondition or SecondaryCancerCondition or Observation or DiagnosticReport or ComorbidCondition
                    
 /*
 EntryElement:	TumorMarginDescription
