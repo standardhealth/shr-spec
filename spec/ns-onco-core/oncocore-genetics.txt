@@ -41,7 +41,7 @@ Conformance note: The category for this profile is set to GE (Genetics), a code 
 //                   Category = V20074#GE
                    Observation
                    includes GeneticVariantFound 0..*
-                   includes GeneticVariantTested 0..*
+                   includes GeneticVariant 0..*
                    includes RegionStudied 0..*
                    // SpecimenType from GeneticSpecimenTypeVS (extensible)
 
@@ -58,11 +58,11 @@ Parent:             Specimen
 Description:        "A small sample of blood, hair, skin, amniotic fluid (the fluid that surrounds a fetus during pregnancy), or other tissue which is excised from a subject for the purposes of genomics testing or analysis."
                     SpecimenType from GeneticSpecimenTypeVS (extensible)
 
-Entry:             GeneticVariantTested
+Entry:             GeneticVariant
 Parent:            LaboratoryObservation
 Description:       "A test for a specific mutation on a particular gene. This profile is used to record whether a single discrete variant tested is present or absent (denoted as positive or negative respectively)."
 // Property:          GeneStudied 0..1
-Property:          VariantTested 1..1
+// Property:          VariantTested 1..1
                    ObservationSubjectOfRecord only Patient
 //                  Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
                    Code = LNC#69548-6 "Genetic variant assessment"
@@ -76,6 +76,9 @@ Property:          VariantTested 1..1
 //                   Components 0..0
                    Components.ObservationComponent
                    includes GeneStudied 0..*
+                   includes VariationCode 0..*
+                   includes GenomicDNAChange 0..*
+                   includes GenomicSourceClass 0..*
                    ReferenceRange 0..0
 
 Group:             GeneStudied
@@ -85,24 +88,38 @@ Description:       "A gene targeted for mutation analysis, identified in HUGO Ge
                    DataValue from http://hl7.org/fhir/ValueSet/genenames (extensible)
                    DataAbsentReason 0..0
 
+/*
 Group:             VariantTested
 Description:       "The specific genetic variant that is targeted by this test."
 Property:          VariantIdentifier 0..1
 Property:          VariantHGVSName 0..*
 Property:          VariantDescription 0..1
+*/
 
-Element:           VariantIdentifier
+// Group:              VariantIdentifier
+Group:              VariationCode
+Parent:             CodedObservationComponent
 Description:       "The variation ID assigned by ClinVar, for example, 360448 is the identifier which includes the HGVS nomenclature NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR). Other acceptable variant standards include the Catalogue Of Somatic Mutations In Cancer (COSMIC) and the International System for Human Cytogenetic Nomenclature (ISCN)."
-Value:             concept from ClinVarVS (preferred)
+//Value:             concept from ClinVarVS (preferred)
+                    Code = LNC#81252-9 "Discrete genetic variant"
+                    DataValue from ClinVarVS (preferred)
+                    DataAbsentReason 0..0
 
-Element:           VariantHGVSName
-Description:       "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for ClinVar variation ID 360448."
+// Element:           VariantHGVSName
+Group:              GenomicDNAChange
+Parent:             CodedObservationComponent
+Description:        "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for ClinVar variation ID 360448."
                    // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
-Value:             string
+                    Code = LNC#81290-9 "Genomic DNA change (gHGVS)"
+                    DataValue from http://varnomen.hgvs.org (preferred)
+                    DataAbsentReason 0..0
 
+// mlt20191202: VariantDescription will be deprecated and instead represented as the valueCodeableConcept text attribute in GenomicDNAChange.
+/*
 Element:           VariantDescription
 Description:       "A clinician-friendly description for the variant. This could be, but not limited to, the protein change associated with the variation. For example, the protein change associated with Clinvar 3236 is G482V."
 Value:             string
+*/
 
 Entry:             GeneticVariantFound
 Parent:            LaboratoryObservation
