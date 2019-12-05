@@ -1,0 +1,47 @@
+name: shr-spec Build IG
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up java
+        uses: actions/setup-java@v1
+        with:
+          java-version: "11"
+          java-package: jre
+          architecture: x64
+      - name: Set up node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.12"
+      - name: Set up ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+      - name: Install jekyll
+        run: gem install jekyll --no-document
+      - name: Install dependencies
+        run: rm yarn.lock && yarn install --production --no-lockfile
+      - name: Run shr-cli
+        run: node node_modules/shr-cli/app.js spec -o out
+      - name: Run ig-publisher
+        run: java -jar out/fhir/guide/org.hl7.fhir.publisher.jar -ig out/fhir/guide/ig.json
+      # - name: Build docs directory
+      #   run: mkdir -p docs && cp -Rv out/fhir/guide/output/* docs/
+      - name: Push changes
+        uses: peaceiris/actions-gh-pages@v2.5.0
+        env:
+          ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          EXTERNAL_REPOSITORY: standardhealth/shr-spec
+          PUBLISH_BRANCH: dev6-mlt
+          PUBLISH_DIR: ./out/fhir/guide/output
