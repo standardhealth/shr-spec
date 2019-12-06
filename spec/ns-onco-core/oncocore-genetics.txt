@@ -38,7 +38,6 @@ Conformance note: The category for this profile is set to GE (Genetics), a code 
 //                   Code from GeneticTestVS (extensible)
                    Code = LNC#81247-9 "Master HL7 genetic variant reporting panel"
                    Specimen substitute GeneticSpecimen
-// should be GE per CGWG IG but US Core restricts to #LAB so this might generate an error. Also the code system changed from DSTU2 to R4, so fixed value doesn't fly               
 //                   Category = V20074#GE
                    Observation
 //                   includes GeneticVariantFound 0..*
@@ -77,9 +76,13 @@ Description:       "A test for a specific mutation on a particular gene. This pr
 //                   Components 0..0
                    Components.ObservationComponent
                    includes GeneStudied 0..*
-                   includes VariationCode 0..*
-                   includes GenomicDNAChange 0..*
-                   includes GenomicSourceClass 0..*
+                   includes VariationCode 0..1
+                   includes GenomicDNAChange 0..1
+                   includes GenomicSourceClass 0..1
+                   includes AminoAcidChange 0..1
+                   includes AminoAcidChangeType 0..1
+                   includes CytogeneticLocation 0..*
+                   includes CytogeneticNomenclature 0..1
                    ReferenceRange 0..0
 
 Group:             GeneStudied
@@ -109,10 +112,37 @@ Description:       "The variation ID assigned by ClinVar, for example, 360448 is
 // Element:           VariantHGVSName
 Group:              GenomicDNAChange
 Parent:             CodedObservationComponent
-Description:        "Symbolic representation of the variant used in HGVS, for example, NM_005228.4(EGFR):c.-237A>G for ClinVar variation ID 360448."
+Description:        "The symbolic representation of a genetic structural variant reported using HGVS nomenclature (gHGVS)."
                    // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
                     Code = LNC#81290-9 "Genomic DNA change (gHGVS)"
                     DataValue from http://varnomen.hgvs.org (preferred)
+                    DataAbsentReason 0..0
+
+Group:              AminoAcidChange
+Parent:             CodedObservationComponent
+Description:        "The symbolic representation of an amino acid variant reported using HGVS nomenclature (pHGVS)."
+                   // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+                    Code = LNC#48005-3 "Amino acid change (pHGVS)"
+                    DataValue from http://varnomen.hgvs.org (preferred)
+                    DataAbsentReason 0..0
+
+Group:              AminoAcidChangeType
+Parent:             CodedObservationComponent
+Description:        "The type of change related to the amino acid variant."
+                    Code = LNC#48006-1 "Amino acid change [Type]"
+                    DataValue from https://fhir.loinc.org/ValueSet/LL380-7 (required)
+                    DataAbsentReason 0..0
+
+Group:              CytogeneticLocation
+Parent:             CodedObservationComponent
+Description:        "The cytogenetic (chromosome) location."
+                    Code = LNC#48001-2 "Cytogenetic (chromosome) location"
+                    DataAbsentReason 0..0
+
+Group:              CytogeneticNomenclature
+Parent:             CodedObservationComponent
+Description:        "The cytogenetic (chromosome) location, represented using the International System for Human Cytogenetic Nomenclature (ISCN)."
+                    Code = LNC#81291-7 "Variant ISCN"
                     DataAbsentReason 0..0
 
 // mlt20191202: VariantDescription will be deprecated and instead represented as the valueCodeableConcept text attribute in GenomicDNAChange.
@@ -122,6 +152,8 @@ Description:       "A clinician-friendly description for the variant. This could
 Value:             string
 */
 
+// mlt20191205: GeneticVariantFound is merged with GeneticVariantTested into one common profile, GeneticVariant.
+/*
 Entry:             GeneticVariantFound
 Parent:            LaboratoryObservation
 Description:       "Records an alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. When reporting 'Genetic Variant Found', at least one element out of the following must be reported: 'Variant Found Identifier', 'Variant Found HGVS Name', and 'Variant Found Description'."
@@ -137,6 +169,7 @@ Description:       "Records an alteration in the most common DNA nucleotide sequ
                    includes VariantFoundIdentifier 0..1
                    includes VariantFoundHGVSName 0..*
                    includes VariantFoundDescription 0..1
+*/
 
 Group:             GenomicSourceClass
 Parent:            CodedObservationComponent
