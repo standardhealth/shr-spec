@@ -31,27 +31,32 @@ Conformance note: To be conformant to US Core, the code attribute must be a LOIN
 Implementation note: The performer of the test (organization or practitioner) should be included in the FHIR profile as the performer.actor.
 
 Conformance note: The category for this profile is set to GE (Genetics), a code from http://hl7.org/fhir/ValueSet/diagnostic-service-sections. This is contrary to the [Argonaut](http://www.fhir.org/guides/argonaut/r2/) and [US Core](http://hl7.org/fhir/us/core/STU3/index.html) specifications, which require the category 'LAB' in diagnostic reports containing laboratory results. This is assumed to be an oversight in the US Core and Argonaut specifications."
-// Property: SpecimenType 0..1
-// Property:          RegionStudied 0..*
+
                    ObservationSubjectOfRecord only Patient
-                   // US Core v3 requires an extensible binding to Code
-//                   Code from GeneticTestVS (extensible)
                    Code = LNC#81247-9 "Master HL7 genetic variant reporting panel"
                    Specimen substitute GeneticSpecimen
-//                   Category = V20074#GE
                    Observation
-//                   includes GeneticVariantFound 0..*
                    includes GeneticVariant 0..*
                    includes RegionStudied 0..*
                    // SpecimenType from GeneticSpecimenTypeVS (extensible)
 
 
-Entry:           RegionStudied
-Parent:            CodedNonLaboratoryObservation
-Description:       "A description of the coverage of the genome that was tested for variants."
-//Value:             string
+Entry:              RegionStudied
+Parent:             CodedNonLaboratoryObservation
+Description:        "Gene mutations that were tested for."
                     FocalSubject substitute RelatedCancerCondition
                     Code = LNC#53041-0 "DNA region of interest panel"
+                    BodyLocation 0..0
+                    Components.ObservationComponent
+                    includes GeneMutations 0..*
+
+Group:              GeneMutations
+Parent:             CodedObservationComponent
+Description:        "The symbolic representation of a genetic structural variant reported using HGVS nomenclature (gHGVS)."
+                   // or CodeableConcept from http://varnomen.hgvs.org  // this is required in the CGWG obs-variant FHIR profile.
+                    Code = LNC#36908-2 "Gene mutations tested for in Blood or Tissue by Molecular genetics method Nominal"
+                    DataValue from http://varnomen.hgvs.org (required)
+                    DataAbsentReason 0..0
 
 Entry:            GeneticSpecimen
 Parent:             Specimen
@@ -66,6 +71,7 @@ Description:       "A test for a specific mutation on a particular gene. This pr
                    ObservationSubjectOfRecord only Patient
 //                  Code = LNC#41103-3 "Gene XXX mutations found in Blood or Tissue by Molecular genetics method"
                    Code = LNC#69548-6 "Genetic variant assessment"
+                   Specimen substitute GeneticSpecimen
                    DataValue 1..1
 //                   DataValue from PositiveNegativeVS (required)
                    DataValue only concept
@@ -93,24 +99,13 @@ Description:       "A gene targeted for mutation analysis, identified in HUGO Ge
                    DataValue from http://hl7.org/fhir/ValueSet/genenames (extensible)
                    DataAbsentReason 0..0
 
-/*
-Group:             VariantTested
-Description:       "The specific genetic variant that is targeted by this test."
-Property:          VariantIdentifier 0..1
-Property:          VariantHGVSName 0..*
-Property:          VariantDescription 0..1
-*/
-
-// Group:              VariantIdentifier
 Group:              VariationCode
 Parent:             CodedObservationComponent
 Description:       "The variation ID assigned by ClinVar, for example, 360448 is the identifier which includes the HGVS nomenclature NM_005228.4(EGFR):c.-237A>G (single nucleotide variant in EGFR). Other acceptable variant standards include the Catalogue Of Somatic Mutations In Cancer (COSMIC) and the International System for Human Cytogenetic Nomenclature (ISCN)."
-//Value:             concept from ClinVarVS (preferred)
                     Code = LNC#81252-9 "Discrete genetic variant"
                     DataValue from ClinVarVS (preferred)
                     DataAbsentReason 0..0
 
-// Element:           VariantHGVSName
 Group:              GenomicDNAChange
 Parent:             CodedObservationComponent
 Description:        "The symbolic representation of a genetic structural variant reported using HGVS nomenclature (gHGVS)."
@@ -146,32 +141,6 @@ Description:        "The cytogenetic (chromosome) location, represented using th
                     Code = LNC#81291-7 "Variant ISCN"
                     DataAbsentReason 0..0
 
-// mlt20191202: VariantDescription will be deprecated and instead represented as the valueCodeableConcept text attribute in GenomicDNAChange.
-/*
-Element:           VariantDescription
-Description:       "A clinician-friendly description for the variant. This could be, but not limited to, the protein change associated with the variation. For example, the protein change associated with Clinvar 3236 is G482V."
-Value:             string
-*/
-
-// mlt20191205: GeneticVariantFound is merged with GeneticVariantTested into one common profile, GeneticVariant.
-/*
-Entry:             GeneticVariantFound
-Parent:            LaboratoryObservation
-Description:       "Records an alteration in the most common DNA nucleotide sequence. The term variant can be used to describe an alteration that may be benign, pathogenic, or of unknown significance. The term variant is increasingly being used in place of the term mutation. When reporting 'Genetic Variant Found', at least one element out of the following must be reported: 'Variant Found Identifier', 'Variant Found HGVS Name', and 'Variant Found Description'."
-                   ObservationSubjectOfRecord only Patient
-                   Code = LNC#69548-6 "Genetic variant assessment"
-                   DataValue 0..0
-                   DataAbsentReason 0..0
-                   Method from GeneticTestMethodVS (extensible)
-                   ReferenceRange 0..0
-                   PanelMembers 0..0
-                   Components.ObservationComponent
-                   includes GenomicSourceClass 0..1
-                   includes VariantFoundIdentifier 0..1
-                   includes VariantFoundHGVSName 0..*
-                   includes VariantFoundDescription 0..1
-*/
-
 Group:             GenomicSourceClass
 Parent:            CodedObservationComponent
 Description:       "The genomic class of the specimen being analyzed, for example, germline for inherited genome, somatic for cancer genome, and prenatal for fetal genome."
@@ -198,28 +167,5 @@ Group:             VariantFoundDescription
 Parent:            StringObservationComponent
 Description:       "Description of the variant. Ideally, this should be a human-readable 'thumbnail' display."
                    Code = LNC#47998-0 "DNA sequence variation display name [Text] Narrative"
-                   DataAbsentReason 0..0/* out of scope for mCODE 0.9
+                   DataAbsentReason 0..0
 
-//					includes 0..1	DNAChangeType
-//					includes 0..1	DNAChangeTranscriptcHGVS
-//					includes 0..1	ComplexVariantCode
-
-		Element:		DNAChangeTranscriptcHGVS
-		Parent:		ObservationComponent
-		Description:	"Human Genome Variation Society (HGVS) nomenclature for a single DNA marker. The use of the nomenclature must be extended to describe non-variations (aka. wild types) see samples for wild type examples. (source: LOINC)"
-						Code is LNC#48004-6 "DNA change (c.HGVS)"
-						DataValue value is type string
-		0..0			ReferenceRange
-
-		Element:		ComplexVariantCode
-		Parent:		CodedObservationComponent
-		Description:	"This term is used to report the unique identifier of the complex variant found in this study. The identifier may come from various sources, including NCBI's ClinVar and Ensembl. (source: LOINC)"
-						Code is LNC#81260-2 "Complex genetic variant [ID]"
-						DataValue should be from http://hl7.org/fhir/ValueSet/clinvar/ 
-
-		Element:		DNAChangeType		// AminoAcidChangepHGVS 
-		Parent:		CodedObservationComponent
-		Description:	"Codified type for associated DNA Marker. DNA Marker's use the HGVS notation which implies the DNA Marker Type, but the concurrent use of this code will allow a standard and explicit type for technical and display convenience."
-						Code is LNC#48005-3 "DNA change type"
-						// DataValue from DNAChangeTypeVS if covered // mlt: move to 48019-4
-*/
