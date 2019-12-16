@@ -31,11 +31,11 @@ jobs:
       - name: Install jekyll
         run: gem install jekyll --no-document
       - name: Install dependencies
-        run: rm yarn install
+        run: yarn install
       - name: Run shr-cli
-        run: node node_modules/shr-cli/app.js spec -o out
+        run: node node_modules/shr-cli/app.js spec -o $PUBLISH_BRANCH/out
       - name: Run ig-publisher
-        run: java -jar out/fhir/guide/org.hl7.fhir.publisher.jar -ig out/fhir/guide/ig.json
+        run: java -jar $PUBLISH_BRANCH/out/fhir/guide/org.hl7.fhir.publisher.jar -ig $PUBLISH_BRANCH/out/fhir/guide/ig.json
       # - name: Build docs directory
       #   run: mkdir -p docs && cp -Rv out/fhir/guide/output/* docs/
       - name: Push changes
