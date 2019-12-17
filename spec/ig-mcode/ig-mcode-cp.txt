@@ -9,7 +9,6 @@ See
 http://wiki.hl7.org/index.php?title=Conformance_Implementation_Manual
 ------------------*/
 
-// Required fields don't need to be marked must-support so (currently) they are not included in this list. 
 Namespace: obf-datatype
     Quantity: NP
     SimpleQuantity: NP
@@ -49,10 +48,16 @@ Namespace: obf
         DataValue MS  // req
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 3-28-2019
         RelevantTime MS  // req if known
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     KarnofskyPerformanceStatus:
         DataValue MS
 //      Interpretation MS  -- judged unnecessary (redundant with score) -- removed based on CLQ input 
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     ServiceRequest: NP
     AdverseEvent: NP
     AllergyIntolerance: NP
@@ -67,7 +72,7 @@ Namespace: obf
     Location: NP
     Substance: NP
     Medication: NP
-    Specimen: NP
+    // Specimen: NP 
     Device: NP
     Media: NP
     Coverage: NP
@@ -79,30 +84,21 @@ Namespace: obf
     List: NP
     Signature: NP
     PractitionerRole: NP
-
-Namespace: vital
-    BloodPressure:
-        Components.ObservationComponent MS
-// Uncomment out when we have the ability to put MS on components 
-//        Components.ObservationComponent[SystolicPressure].DataValue
-//        Components.ObservationComponent[DiastolicPressure].DataValue
-        RelevantTime MS
-    BodyHeight:
-        DataValue MS
-        RelevantTime MS
-    BodyWeight:
-        DataValue MS
-        RelevantTime MS
+    HealthcareService: NP
+    Endpoint: NP
 
 Namespace: onco.core
     PrimaryCancerCondition:  // req if known
         Code MS    // req
         ClinicalStatus MS  // req
         BodyLocation.Code MS  //  BodyLocation might be conditional (?) but ICD-O-3 code will pre-coordinate body site 
+        BodyLocation.Laterality MS // mlt: added for JIRA/GF#24510
         HistologyMorphologyBehavior MS  // conditional
         DateOfDiagnosis MS  // req if known (MS)
     SecondaryCancerCondition:  // req if known
         Code MS  // req
+        BodyLocation.Code MS
+        BodyLocation.Laterality MS // mlt: added for JIRA/GF#24510
         ClinicalStatus MS  // req
         HistologyMorphologyBehavior MS
         DateOfDiagnosis MS  // req if known (MS)
@@ -113,83 +109,101 @@ Namespace: onco.core
         DataValue MS 
         CancerStagingSystem MS 
         RelevantTime MS 
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMClinicalPrimaryTumorCategory:
         DataValue MS 
         CancerStagingSystem MS
         RelevantTime MS 
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMClinicalRegionalNodesCategory:
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMClinicalDistantMetastasesCategory:
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMPathologicStageGroup:
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMPathologicPrimaryTumorCategory:  // req if known
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMPathologicRegionalNodesCategory:
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TNMPathologicDistantMetastasesCategory:
         DataValue MS
         CancerStagingSystem MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     TumorMarkerTest:
         Code MS
         TumorMarkerTestDataValue MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     CancerDiseaseStatus:
         DataValue MS
         RelevantTime MS
+        Status MS
+        Code MS
+        ObservationSubjectOfRecord MS
     CancerRelatedSurgicalProcedure:  // req if known
         Code MS   // req
         OccurrenceTimeOrPeriod MS  // req -- primarily because it is required in Argonaut Procedure profile
         TreatmentIntent MS  // req if known
+        ReasonCode MS
+        CancerProcedureReasonReference MS
     CancerRelatedRadiationProcedure:
         Code MS
         BodyLocation.Code MS
+        BodyLocation.Laterality MS // mlt: added for JIRA/GF#24510
         OccurrenceTimeOrPeriod MS
         TreatmentIntent MS
+        ReasonCode MS
+        CancerProcedureReasonReference MS
     GenomicsReport:
         Code MS  // Test name in Code.Text
         DiagnosticReportPerformer MS   // Laboratory name
         Observation MS
-        SpecimenType MS
+        GeneticSpecimen MS
         RelevantTime MS
-    GeneticVariantTested:
+    GeneticVariant:
         Method MS
         RelevantTime MS
-        GeneStudied MS
-        VariantTested MS
+        Components.ObservationComponent MS 
         DataValue MS
-    GeneticVariantFound:
-        Method MS
-        RelevantTime MS
-        Components.ObservationComponent MS     
 
-Namespace: obf.lab
-    CBCWAutoDifferentialPanel:
-        // Required: Code, Status, Category, SubjectOfRecord
-        RelevantTime MS
-    //    Observation MS // commented out -- see error below
-    ComprehensiveMetabolic2000SerumOrPlasmaPanel:
-        // Required: Code, Status, Category, SubjectOfRecord
-        RelevantTime MS
-    //    Observation MS // commented out -- see error below
-
-/* Undiagnosed error on Must Support rule on CBCWAutoDifferentialPanel and ComprehensiveMetabolic2000SerumOrPlasmaPanel:
-[15:29:31.796Z] ERROR shr: Could not find FHIR element for content profile rule with path Observation.  ERROR_CODE:13064 (module=shr-fhir-export, shrId=obf.lab.CBCWAutoDifferentialPanel)
-    target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-lab
-
-[15:29:32.459Z] ERROR shr: Could not find FHIR element for content profile rule with path Observation.  ERROR_CODE:13064 (module=shr-fhir-export)
-    shrId: obf.lab.ComprehensiveMetabolic2000SerumOrPlasmaPanel
-    --
-    target: http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-lab
-*/
+    GeneticSpecimen:
+        SpecimenType MS
+    CancerRelatedMedicationStatement:
+        MedicationCodeOrReference MS // Code only?
+        OccurrenceTimeOrPeriod MS
+        TerminationReason MS 
+        TreatmentIntent MS

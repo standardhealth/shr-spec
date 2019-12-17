@@ -8,6 +8,7 @@
     <li><a href="#BodyLocations">Body Locations</a></li>
     <li><a href="#VitalSigns">Vital Sign Profiles</a></li>
     <li><a href="#LaboratoryProfiles">Laboratory Profiles</a></li>
+    <li><a href="#RepresentingProvenance">Representing Provenance of mCODE Information</a></li>
 </ul>
 
 <h2><a name="Conformance"></a>Conformance Requirements</h2>
@@ -17,11 +18,10 @@
 <ul>
     <li>In ComorbidCondition, if an ICD-10-CM code is used, and a semantically equivalent SNOMED-CT code is available, the resulting instance will not conform to US Core.</li>
     <li>In mCODE Procedures, if an ICD-10-PCS code is used, and a semantically equivalent SNOMED CT or CPT code is available, the resulting instance will not confirm to US Core.</li>
-    <li>In GenomicsReport, a LOINC code must be used, if available. If there is no suitable code in LOINC, then a code from an alternative code system (such as a code from the <a href="https://www.ncbi.nlm.nih.gov/gtr/" target="_blank">Genetic Testing Registry</a> can be used.</li>
+    <li>In GenomicsReport, a LOINC code must be used, if available. If there is no suitable code in LOINC, then a code from an alternative code system (such as a code from the <a href="https://www.ncbi.nlm.nih.gov/gtr/" target="_blank">Genetic Testing Registry</a> or other knowledgebase of genomics tests can be used.</li>
+    <li>GenomicsReport.category is bound to <a href="http://hl7.org/fhir/us/core/STU3/ValueSet-us-core-diagnosticreport-category.html" target="_blank">US Core DiagnosticReport Category (extensible)</a>to align with US Core. The value set however does not include an appropriate term for genomics report.  Subsequently, mCODE implementations will fix the LOINC code <em>GE</em> to align with the value constraing specified in the <a href="http://hl7.org/fhir/uv/genomics-reporting/genomics-report.html" target="_blank">Clinical Genomics Reporting IG GenomicsReport profile.</a></li>
     <li>In PrimaryCancerCondition and SecondaryCancerCondition, if an ICD-10-CM code is used, and a semantically equivalent SNOMED-CT code is available, the resulting instance will not conform to US Core.</li>
 </ul>
-
-<p><a name="exception"></a>The one known exception to US Core compliance is in GenomicsReport, where the category attribute is set to 'GE' (Genetics), a code from <a href="http://hl7.org/fhir/ValueSet/diagnostic-service-sections" target="_blank">the Diagnostic Service Section Codes value set</a>. However, US Core requires the category 'LAB' in every diagnostic report containing laboratory results, and restricts the category to 1..1, thus preventing any other categorization. This is assumed to be an oversight in the US Core specifications.</p>
 
 <h3>International Version of mCODE</h3>
 <p>Although the current version of mCODE is US-specific, there is a potential for an international version of mCODE. If interested, please contact one of the authors.</p>
@@ -71,6 +71,8 @@
 
 <p>Value sets from the FHIR specification and US Core were reused to the extent possible. New value sets where created only when no known existing value sets were deemed to be fit for purpose, or when existing value sets were needed to be extended.</p>
 
+<p>mCODE genomics-related elements in the GenomicsReport and GeneticVariant profiles will support the acceptable code systems stated in the <a href="http://hl7.org/fhir/uv/genomics-reporting/codings.html" target="_blank">HL7 Clinical Genomics Reporting FHIR IG, STU1 Release</a>.</p>
+
 <h2><a name="Patient"></a>Patient</h2>
 <p>FHIR (and mCODE) allows multiple addresses for a patient. The zip code reported in mCODE should be the one specified by Address.use of "home" and Address.type of "physical".</p>
 
@@ -99,83 +101,29 @@
  <p>Although mCODE defines its own vital signs profiles, if and when detailed vital signs profiles are standardized in a widely-accepted FHIR IG, mCODE will likely switch over to those profiles.</p>
 
 <h2><a name="LaboratoryProfiles"></a>Laboratory Profiles</h2> 
-<p>Many laboratory profiles in mCODE are not shown on the <a href="profiles.html">main Profiles page</a>, but are listed with the panels they are a part of. To assure naming uniqueness over thousands of LOINC laboratory tests, laboratory profile names have been formulated as a concatenation of the LOINC Component, Property, Time, System, Scale, and Method. Where the concatenation exceeds the <a href="https://www.hl7.org/fhir/elementdefinition.html" target="_blank">FHIR element name length limitation</a> of 64 characters, some additional contractions have been introduced. Although mCODE defines its own laboratory profiles, if and when detailed laboratory profiles are standardized in a widely-accepted IG, mCODE will likely switch over to those profiles.
-</p>
-<p>mCODE includes the following 72 laboratory profiles:</p>
+
+<p><p>Reporting of individual laboratory results must conform to the <a href="http://hl7.org/fhir/us/core/StructureDefinition-us-core-observation-lab.html">US Core Laboratory Result Profile</a>. Several examples of laboratory result reporting are given in the <a href="http://hl7.org/fhir/us/core/index.html">US Core IG</a>. For example, see this <a href="http://hl7.org/fhir/us/core/Observation-erythrocytes.html">erythrocytes laboratory reporting example</a>.</p>
+
+<p>In practice, there are different variations on these panels, as exemplified by <a href="https://search.loinc.org/searchLOINC/search.zul?query=CBC">this list of various CBCs</a>. The individual LOINC codes of interest to mCODE are any that are reported as part of the CBC and CMP panels, which include, but are not limited to:</p>
+
 <ul>
-        <li><a href="StructureDefinition-obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LeukocytesNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocytesNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-HemoglobinMCncPtBldQnLabObs.html">StructureDefinition/obf-lab-HemoglobinMCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-HematocritVFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-HematocritVFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-MeanCorpuscularVolumeEntVolPtRBCQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteMCHEntMassPtRBCQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteMCHCMCncPtRBCQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PlateletsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletsNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Neutrophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Neutrophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-NeutrophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocyteDistributionWidthRatioPtRBCQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Lymphocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Lymphocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Monocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Monocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Eosinophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Eosinophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Basophils100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Basophils100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-LymphocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-MonocytesNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-MonocytesNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-EosinophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-EosinophilsNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-BasophilsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-BasophilsNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnManCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Metamyelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Metamyelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Myelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Myelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Promyelocytes100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Promyelocytes100WBCNFrPtBldQnManCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PromyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-PromyelocytesNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-LymphocytesVariant100WBCNFrPtBldQnLabObs.html">StructureDefinition/obf-lab-LymphocytesVariant100WBCNFrPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Blasts100WBCNFrPtBldQnManCntLabObs.html">StructureDefinition/obf-lab-Blasts100WBCNFrPtBldQnManCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-BlastsNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-BlastsNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleatedNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleatedNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs.html">StructureDefinition/obf-lab-PlateletMeanVolumeEntVolPtBldQnReesEckerLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-MyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-MyelocytesNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-MetamyelocytesNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-MetamyelocytesNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandFormNCncPtBldQnLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandFormNCncPtBldQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-GranulocytesImmature100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GranulocytesImmatureNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-GranulocytesImmatureNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-ErythrocytesNucleated100WBCRatioPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-MorphologyImpPtBldNarLabObs.html">StructureDefinition/obf-lab-MorphologyImpPtBldNarLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ErythrocyteDistributionWidthEntVolPtRBCQnLabObs.html">StructureDefinition/obf-lab-ErythrocyteDistributionWidthEntVolPtRBCQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletDistributionWidthEntVolPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-PlateletMeanVolumeEntVolPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandForm100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-Granulocytes100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-Granulocytes100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesVariant100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-OtherCells100WBCNFrPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-OtherCells100WBCNFrPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-NeutrophilsBandFormNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-NeutrophilsBandFormNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-LymphocytesVariantNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LymphocytesVariantNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-LeukocytesOtherNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-LeukocytesOtherNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-OtherCellsNCncPtBldQnAutoCntLabObs.html">StructureDefinition/obf-lab-OtherCellsNCncPtBldQnAutoCntLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GlobulinMCncPtSerQnCalculatedLabObs.html">StructureDefinition/obf-lab-GlobulinMCncPtSerQnCalculatedLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AlanineAminotransferaseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlanineAminotransferaseCCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AlbuminMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlbuminMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AlbuminGlobulinMRtoPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlbuminGlobulinMRtoPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-CalciumMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CalciumMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AspartateAminotransferaseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AspartateAminotransferaseCCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-BilirubinMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BilirubinMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-CarbonDioxideSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CarbonDioxideSCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ChlorideSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-ChlorideSCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-CreatinineMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-CreatinineMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GlucoseMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-GlucoseMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-PotassiumSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-PotassiumSCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-ProteinMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-ProteinMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-SodiumSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-SodiumSCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-UreaNitrogenMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-UreaNitrogenMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-UreaNitrogenCreatinineMRtoPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AlkalinePhosphataseCCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AlkalinePhosphataseCCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredArVRatPtSerPlasQnMDRDLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredFemaleArVRatPtSerPlasBldQnMDRDLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredNonBlackArVRatPtSerPlasBldQnMDRDLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs.html">StructureDefinition/obf-lab-GFR173sqMPredBlackArVRatPtSerPlasBldQnMDRDLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-BilirubinDirectMCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BilirubinDirectMCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-BicarbonateSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-BicarbonateSCncPtSerPlasQnLabObs</a></li>
-        <li><a href="StructureDefinition-obf-lab-AniongapSCncPtSerPlasQnLabObs.html">StructureDefinition/obf-lab-AniongapSCncPtSerPlasQnLabObs</a></li>
+    <li><b>CBC:</b> 20570-8, 26453-1, 718-7, 26515-7, 28539-5, 28540-3, 28542-9, 30384-2, 30385-9, 30428-7, 26464-8, 30180-4, 26444-0, 34911-8, 34910-0, 26446-5, 30376-8, 26450-7, 26449-9, 34913-4, 34912-6, 30395-8, 30394-1, 35058-7, 30397-4, 26463-0, 26462-2, 26471-3, 30406-3, 34922-5, 35050-4, 26478-8, 26474-7, 30413-9, 30412-1, 13046-8, 26477-0, 30420-4, 35082-7, 34921-7, 35039-7, 30423-8, 30422-0, 34915-9, 34914-2, 28541-1, 30433-7, 34923-3, 35029-8, 26485-3, 26484-6, 30441-0, 30440-2, 34925-8, 34924-1, 30445-1, 30444-4, 26498-6, 30446-9, 26511-6, 26499-4, 26508-2, 26507-4, 30450-1, 30449-3, 30451-9,6505-8, 34917-5, 34916-7, 13047-6, 30458-4, 34999-3, 35003-3, 30465-9, 30464-2, 30466-7, 34926-6, 26524-9, 26523-1, 34919-1, 34918-3, 34992-8, 34993-6, 33255-1
+    </li>
+    <li><b>CMP:</b> 2345-7, 3094-0, 2160-0, 3097-3, 33914-3, 50044-7, 48642-3, 48643-1, 17861-6, 2885-2, 1751-7, 10834-0, 1759-0, 1975-2, 6768-6, 1742-6, 1920-8, 2951-2, 2823-3, 2075-0, 1963-8, 2028-9, 33037-3</li>
 </ul>
+</p>
+
+<h2><a name="RepresentingProvenance"></a>Representing Provenance of mCODE Information</h2> 
+<p>
+Provenance information includes the "who, what, when, where, why" associated with collection, transfer, and updating of clinical information. As a FHIR application, mCODE relies FHIR's native mechanisms for recording and tracking provenance. As such, mCODE shares all the capabilities and limitations of FHIR provenance tracking. The user should refer to the <a href="https://www.hl7.org/fhir/provenance.html">FHIR specification</a> for more information. Only a brief summary is presented here.</p>
+<p>FHIR provenance tracking has three parts:</p>
+<ul>
+    <li>All FHIR resources contain a <a href="https://www.hl7.org/fhir/resource.html#Meta">metadata element</a> that specifies a serially-updated version of the resource, a timestamp of the most recent update to the resource, a URI representing the source system of the resource, URLs of the profiles the resource claims to conform to, and security labels and tags.</li>
+    <li>In addition, each resource contains elements that represent information about how the resource was obtained, and who or what the information applies to. These attributes vary from resource to resource, and may include information such as the subject of care, the author of the information, performer of an action, the date/time of the action, etc.</li>
+    <li>Finally, FHIR provides a <a href="https://www.hl7.org/fhir/provenance.html">Provenance Resource</a> that can be used where additional information is required, or explicit record or provenance is desired.</li>
+</ul>
+</p>In summary, mCODE defers to these FHIR mechanisms for recording and tracking provenance.</p>
+
 <br/>
 <footer>
 <hr/>

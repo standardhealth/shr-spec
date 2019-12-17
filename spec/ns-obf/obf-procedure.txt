@@ -71,16 +71,20 @@ Description:       "The justification that the procedure was performed."
 
 Entry:             RadiationProcedure
 Parent:            Procedure
-Description:       "A radiation oncology procedure. The procedure might represent a complete course of treatment, or a single session that is part of a series of treatments. If the treatment is part of a larger course of treatment, the PartOf attribute should indicate that. If the procedure represents the entire course of therapy, the RadiationFractionsDelivered should indicate the number of sessions. If the procedure represents one session, then the RadiationFractionsDelivered would be 1, and the TotalRadiationDoseDelivered will be the same as the RadiationDosePerFraction."
-Property:          RadiationDosePerFraction 0..1
-Property:          RadiationFractionsDelivered 0..1
-Property:          TotalRadiationDoseDelivered 0..1
+Description:       "A radiation procedure. The procedure might represent a complete course of treatment, or a single session that is part of a series of treatments. If the treatment is part of a larger course of treatment, the 'PartOf' attribute should indicate that. If the procedure represents the entire course of therapy, RadiationDose.RadiationFractionsDelivered should indicate the number of sessions. If the RadiationProcedure represents one session, then RadiationDose.RadiationFractionsDelivered should be 1, and the RadiationDose.TotalRadiationDoseDelivered will be the same as the RadiationDose.RadiationDosePerFraction."
+Property:          RadiationDose 0..1
 Property:          TerminationReason 0..*
                    Participation.Participant substitute PractitionerProcedureParticipant
                    Code from RadiationProcedureVS (extensible)
                    BodyLocation.Code from RadiationTargetBodySiteVS (extensible)
                    FocalDevice 0..0
                    TerminationReason from TreatmentTerminationReasonVS (required)
+
+Group:             RadiationDose
+Description:       "Information related to the dose of radiation received in a RadiationProcedure, including the dose per fraction, the number of fractions delivered, and the total radiation dose delivered."
+Property:          RadiationDosePerFraction 0..1
+Property:          RadiationFractionsDelivered 0..1
+Property:          TotalRadiationDoseDelivered 0..1
 
 Element:           StatusReason
 Description:       "Captures the reason for the current state of the procedure."
@@ -214,7 +218,7 @@ Value:             Quantity
                    Value[Quantity].Units = UCUM#1
 
 Element:           TotalRadiationDoseDelivered
-Concept:           SCT#445461008 "Total radiation dose delivered (observable entity)"
+Concept:           LNC#77304-4 "Radiation dose [Energy/mass]"
 Description:       "The total amount of radiation dose delivered for the course of therapy. (source: SNOMED, ASTRO)"
 Value:             Quantity
                    Value[Quantity].Units = UCUM#cGy

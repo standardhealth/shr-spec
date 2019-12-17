@@ -1,15 +1,11 @@
 <style type="text/css">
-    .tg  {font-size:90%;border-collapse:collapse;border-spacing:0;border-color:#ccc;margin-left:auto; margin-right:auto; width:"50%"}
-    .tg td{padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:bold;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#fff;}
-    .tg th{font-weight:bold;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#f0f0f0;}
-    .tg .tg-p1nr{border-color:inherit;text-align:left;vertical-align:top}
-    .tg .tg-2h92{font-weight:bold;border-color:inherit;text-align:center;vertical-align:middle}
-    .tg .tg-rxu0{background-color:#f9f9f9;font-size:11px;border-color:inherit;text-align:left;vertical-align:top}
-    .tg .tg-1yj1{background-color:#efefef;font-weight:bold;font-size:11px;border-color:inherit;text-align:center;vertical-align:middle}
-    .tg .tg-xpl8{font-weight:bold;background-color:#efefef;border-color:inherit;text-align:center;vertical-align:middle}
-    .tg .tg-ncrr{border-color:inherit;text-align:left;vertical-align:middle}
-    .tg .tg-i82w{background-color:#f9f9f9;border-color:inherit;text-align:left;vertical-align:middle}
-
+    .tg  {font-size:90%;border-collapse:collapse;border-spacing:0;border-color:#ccc;margin-left:auto; margin-right:auto; width:80%}
+    .tg td{padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:bold;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#fff;text-align:center;vertical-align:middle}
+    .tg th{font-weight:bold;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#f0f0f0;text-align:center;vertical-align:middle}
+    .tg caption{padding:10px 5px; font-weight:bold}
+    .tg .tg-bold{font-weight:bold;border-color:inherit;text-align:center;vertical-align:middle}
+    .tg .tg-altbck{background-color:#f9f9f9;border-color:inherit;text-align:center;vertical-align:middle}
+    .tg .tg-altbck-bold{background-color:#f9f9f9;font-weight:bold;border-color:inherit;text-align:center;vertical-align:middle}
     .center {
         display: block;
         margin-left: auto;
@@ -17,100 +13,204 @@
 }
     </style>
 
-<h1>ICAREdata&reg; Structured Phrases to FHIR Mapping Guidance</h1>
+<h1>ICAREdata&reg; Structured Phrases to mCODE&trade; DSTU2 FHIR Mapping Guidance</h1>
 
-<p>There are currently two structured phrases covering disease status, which is an mCODE&trade; data element (see mCODE&trade; CancerDiseaseStatus profile) and treatment change, which is covered in this implementation guide, as it is not part of the mCODE&trade; specification.</p>
+<p>There are currently two structured phrases, including:</p>
+    <ul>
+      <li><strong>Cancer Disease Status</strong>, which maps to the mCODE CancerDisease Status profile; and</li>
+      <li><strong>Cancer Treatment Plan Change</strong>, which maps to the CarePlanWithReview profile defined in this implementation guide.</li>
+    </ul>
+<p>The mapping details for each strcutured phrase are provided below, and are aligned with mCODE v0.9.1 (FHIR DSTU2).</p>
 
 <h2>Cancer Disease Status</h2>
-The ICAREdata&reg; Cancer Disease Status structured phrase maps the mCODE&trade; FHIR profile by the same name. Figure 1 shows the detailed mapping of this ICAREdata structured phrase to specifics of the mCODE&trade; FHIR profiles and value sets.
-<figure>
-    <img src="cancerdiseasestatus_alignment.png" alt="Alignment between cancer disease status structured phrase and mCODE" width="75%" class="center"/>
-    <figcaption align="middle">Figure 1. Cancer disease status structured phrase mapping to mCODE&trade; FHIR profile and value sets</figcaption>
-</figure>
 
-<p>Each element of the structured phrase is mapped to mCODE&trade; as follows:</p>
-<ul>
-    <li><strong>Lesion evaluated:</strong></li>
-        <ul>
-            <li>Primary tumor maps to <code>CancerDiseaseStatus.focus</code>, which in turn references the <code>PrimaryCancerCondition</code> profile.</li>
-            <li>Metastatic lesion maps to <code>CancerDiseaseStatus.focus</code>, which in turn references the <code>SecondaryCancerCondition</code> profile.</li>
-            <li>Not evaluated maps to <code>CancerDiseaseStatus.DataAbsentReason.valueCodeableconcept (to the value set member 'not asked'</code>.</li>
-        </ul> 
-    <li><strong>Status value:</strong> maps to <code>CancerDiseaseStatus.valueCodeableConcept</code>, with the following vocabulary mappings:</li>
-    <br />
-    <table class="tg">
-        <tr>
-          <th class="tg-2h92" rowspan="2">ICAREdata&reg; status value</th>
-          <th class="tg-2h92" colspan="2">mCODE&trade; ConditionStatusTrendVS value set</th>
-        </tr>
-        <tr>
-          <td class="tg-1yj1">Code</td>
-          <td class="tg-xpl8">Code Description</td>
-        </tr>
-        <tr>
-          <td class="tg-ncrr">No evidence of disease</td>
-          <td class="tg-i82w">260415000</td>
-          <td class="tg-p1nr">In full remission. Use this term for expressing NED (no evidence of<br>disease), condition resolved, or full remission.</td>
-        </tr>
-        <tr>
-          <td class="tg-ncrr">Responding</td>
-          <td class="tg-i82w">385633008</td>
-          <td class="tg-p1nr">Improving</td>
-        </tr>
-        <tr>
-          <td class="tg-ncrr">Stable</td>
-          <td class="tg-i82w">58158008</td>
-          <td class="tg-p1nr">Stable</td>
-        </tr>
-        <tr>
-          <td class="tg-ncrr">Progressing</td>
-          <td class="tg-i82w">230993007</td>
-          <td class="tg-p1nr">Worsening</td>
-        </tr>
-    </table>
-    <br />
-<li><strong>Reason value</strong> maps to <code>CancerDiseaseStatus.Extensions.obf-evidenceType-extension.valueCodeableConcept</code>, with the following vocabulary mappings:</li>
-<br />
-    <table class="tg">
-        <tr>
-        <th class="tg-2h92" rowspan="2">ICAREdata&reg; reason value</th>
-        <th class="tg-2h92" colspan="2">mCODE&trade; CancerDiseaseStatusEvidenceTypeVS value set</th>
-        </tr>
-        <tr>
-        <td class="tg-1yj1">Code</td>
-        <td class="tg-xpl8">Code Description</td>
-        </tr>
-        <tr>
-        <td class="tg-ncrr">Imaging</td>
-        <td class="tg-i82w">363679005</td>
-        <td class="tg-p1nr">Imaging (procedure)</td>
-        </tr>
-        <tr>
-        <td class="tg-ncrr">Pathology</td>
-        <td class="tg-i82w">252416005</td>
-        <td class="tg-p1nr">Histopathology test (procedure)</td>
-        </tr>
-        <tr>
-        <td class="tg-ncrr">Symptoms</td>
-        <td class="tg-i82w">711015009</td>
-        <td class="tg-p1nr">Assessment of symptom control (procedure)</td>
-        </tr>
-        <tr>
-            <td class="tg-ncrr">Physical exam</td>
-            <td class="tg-i82w">5880005</td>
-            <td class="tg-p1nr">Physical examination procedure (procedure)</td>
-        </tr>
-        <tr>
-            <td class="tg-ncrr">Tumor marker</td>
-            <td class="tg-i82w">250724005</td>
-            <td class="tg-p1nr">Tumor marker measurement (procedure)</td>
-            </tr>
-    </table>
-<br />
-</ul>
+  <p>The Cancer Disease Status structured phrase maps to the mCODE CancerDiseaseStatus profile. Mapping details are provided in Table 1 below. </p>
+  <p>For more information on the CancerDiseaseStatus profile, please consult the <a href="http://standardhealthrecord.org/guides/mcode/" target="_blank">mCODE 0.9.1 DSTU2 specification</a>.</p>
 
-<h2>Treatment Change</h2>
-<p><mark>To be added</mark></p>
+<table class="tg">
+  <caption>Table 1. Mapping of ICAREdata Cancer Disease Status structured phrase to the mCODE CancerDiseaseStatus profile</caption>
+  <tr>
+    <th class="tg-bold" colspan="2">ICAREdata Cancer Disease Status Phrase</th>
+    <th class="tg-bold" colspan="5">mCODE DSTU2 CancerDiseaseStatus Profile Mapping</th>
+  </tr>
+  <tr>
+    <th class="tg-bold" rowspan="2">Phrase Component</td>
+    <th class="tg-bold" rowspan="2">Phrase Component Value</td>
+    <th class="tg-bold" rowspan="2">FHIR Profile Element</td>
+    <th class="tg-bold" colspan="3">Terminology Binding</td>
+    <th class="tg-bold" rowspan="2">Notes</td>
+  </tr>
+  <tr>
+    <th class="tg-bold">Value Set</td>
+    <th class="tg-bold">Code</td>
+    <th class="tg-bold">Description</td>
+  </tr>
+  <tr>
+    <td class="tg-bold" rowspan="3">Lesion evaluated</td>
+    <td class="tg-bold">Primary tumor</td>
+    <td class="tg-altbck" rowspan="2"><p>modifierExtension.relatedCancerCondition.ValueReference</p><p></p></td>
+    <td colspan ="3">n/a</td>
+    <td class="tg-altbck"><p>This element should reference an <Condition> resource compliant with the </Condition>the <code>PrimaryCancerCondition</code> mCODE profile.</p></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Metastatic tumor</td>
+      <td colspan="3">n/a</td>
+      <td class="tg-altbck"><p><p>This element should reference an <Condition> resource compliant with the </Condition>the <code>SecondaryCancerCondition</code> mCODE profile.</p></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Not evaluated</td>
+      <td class="tg-altbck">dataAbsentReason.valueCodeableconcept</td>
+      <td>Observation Value Absent Reason</td>
+      <td><code>not-asked</code></td>
+      <td>Not Asked</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="4">Status</td>
+      <td class="tg-bold">No evidence of disease</td>
+      <td class="tg-altbck" rowspan="4">valueCodeableConcept</td>
+      <td rowspan="4">ConditionStatusTrendVS</td>
+      <td><code>260415000</code></td>
+      <td>In full remission (qualifier value). Use this term for expressing NED (no evidence of<br>disease), condition resolved, or full remission.</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Responding</td>
+      <td><code>385633008</code></td>
+      <td>Improving (qualifier value)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Stable</td>
+      <td><code>58158008</code></td>
+      <td>Stable (qualifier value)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Progressing</td>
+      <td><code>230993007</code></td>
+      <td>Worsening (qualifier value)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="5">Reason</td>
+      <td class="tg-bold">Imaging</td>
+      <td class="tg-altbck" rowspan="5">extension.obf-evidenceType-extension.valueCodeableConcept</td>
+      <td rowspan="5">CancerDiseaseStatusEvidenceTypeVS</td>
+      <td><code>363679005</code></td>
+      <td>Imaging (procedure)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Pathology</td>
+      <td><code>252416005</code></td>
+      <td>Histopathology test (procedure)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Symptoms</td>
+      <td><code>711015009</code></td>
+      <td>Assessment of symptom control (procedure)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Physical exam</td>
+      <td><code>5880005</code></td>
+      <td>Physical examination procedure (procedure)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+  <tr>
+      <td class="tg-bold">Tumor marker</td>
+      <td><code>250724005</code></td>
+      <td>Tumor marker measurement (procedure)</td>
+      <td class="tg-altbck"></td>
+  </tr>
+</table>
+
+<h2>Cancer Treatment Plan Change</h2>
+
+<p>The ICAREdata Cancer Treatment Plan Change structured phrase maps to the ICAREdata FHIR profile CarePlanWithReview defined in this implementation guide.</p>
+
+<p>The allowable values for the structured phrase include information about whether a treatment change was made, as well as a reason, when a change did take place. In the ICAREdata FHIR profile, this translates into two separate elements: one that captures whether a change took place, and another that holds the reason for the change. Mapping details for this structured phrase are provided in Table 2 below.</p>
+
+<table class="tg">
+    <caption>Table 2. Mapping of ICAREdata Cancer Treatment Plan Change structured phrase to the ICAREdata CarePlanWithReview profile</caption>
+  <tr>
+    <th class="tg-bold">ICAREdata Cancer Treatment Plan Change Phrase</th>
+    <th class="tg-bold" colspan="5">mCODE DSTU2 CancerDiseaseStatus Profile Mapping</th>
+  </tr>
+  <tr>
+    <th class="tg-bold" rowspan="2">Phrase Value</td>
+    <th class="tg-bold" rowspan="2">FHIR Profile Element</td>
+    <th class="tg-bold" colspan="3">Terminology Binding</td>
+  </tr>
+  <tr>
+    <th class="tg-bold">Value Set</td>
+    <th class="tg-bold">Code</td>
+    <th class="tg-bold">Description</td>
+  </tr>
+  <tr>
+    <td class="tg-bold">No change in treatment plan</td>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = false</td>
+    <td colspan ="3">n/a</td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="2">yes-disease not responding</td>
+      <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = true</td>
+      <td colspan ="3">n/a</td>
+    </tr>
+  <tr>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-ReasonCode-extension.valueCodeableConcept</td>
+    <td>CarePlanChangeReasonVS</td>
+    <td><code>266721009</code></td>
+    <td>Absent response to treatment (situation)</td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="2">yes-due to AE/toxicity</td>
+      <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = true</td>
+      <td colspan ="3">n/a</td>
+    </tr>
+  <tr>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-ReasonCode-extension.valueCodeableConcept</td>
+    <td>CarePlanChangeReasonVS</td>
+    <td><code>281647001</code></td>
+    <td>Adverse reaction (disorder)</td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="2">yes-planned change</td>
+      <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = true</td>
+      <td colspan ="3">n/a</td>
+    </tr>
+  <tr>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-ReasonCode-extension.valueCodeableConcept</td>
+    <td>CarePlanChangeReasonVS</td>
+    <td><code>405613005</code></td>
+    <td>Planned Procedure (situation)</td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="2">yes-due to patient request</td>
+      <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = true</td>
+      <td colspan ="3">n/a</td>
+    </tr>
+  <tr>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-ReasonCode-extension.valueCodeableConcept</td>
+    <td>CarePlanChangeReasonVS</td>
+    <td><code>182890002</code></td>
+    <td>Patient requests alternative treatment (finding)</td>
+  </tr>
+  <tr>
+      <td class="tg-bold" rowspan="2">yes-due to other</td>
+      <td class="tg-altbck">extension.obf-Review-extension.extension.obf-Changed-extension.valueBoolean = true</td>
+      <td colspan ="3">n/a</td>
+    </tr>
+  <tr>
+    <td class="tg-altbck">extension.obf-Review-extension.extension.obf-ReasonCode-extension.valueCodeableConcept</td>
+    <td>CarePlanChangeReasonVS</td>
+    <td><code>74964007</code></td>
+    <td>Other (qualifier value)</td>
+  </tr>
+</table>
+
 <p>&nbsp;</p>
 <footer>
     <hr/>
