@@ -118,13 +118,14 @@ Description:       "The total time spent on an activity, inclusive of all time i
 Entry:             PastOrPresentJob
 Parent:            CodedSocialHistoryObservation
 Description:       "Related data elements for a current or previous job, as reported by the person, i.e., a work situation or position held for a specified time period. A person can have more than one job at the same time and multiple jobs over time, so the data related to each job must remain in the record in perpetuity. Each job should be recorded in a separate instance of PastOrPresentJob. A person’s job can be a social determinant of their health and information about a person’s job can support patient care, population health, and public health. In patient care, knowledge of a person’s past or present job(s) can impact recognition, diagnosis, management, and treatment of injuries and illnesses. These data also can be used for clinical decision support and to prompt discussion of preventive care measures. For example, a record of jobs that require prolonged time in the sun might prompt a health care provider to inquire if the person wears protective clothing or sunscreen while working. At a minimum, it is important to have a record of a person’s current job(s); i.e., the job(s) in which a person is engaged at the time that he or she presents to a health care provider, regardless of duration, and to retain that information over time. In the event a person recently stopped working (e.g. retired without another job, became unemployed or disabled and unable to work), the most recent job(s) is used instead of the current job(s)."
-                   // must be extension; cannot be a result value or an evaluation component because the value is a reference to Person or Organization
+                   // Employer must be extension; it cannot be a result value or an evaluation component because the value is a reference to Person or Organization
 Property:          Employer 0..1
                    Code = LNC#11341-5 "History of Occupation"
                    FocalSubject only RelatedPerson
                    RelevantTime 1..1
                    RelevantTime only TimePeriod
-                   DataValue 0..0
+//                   DataValue 0..0 MK cut 1/1/2020 not sure why this was 0..0 (see emails)
+                   DataValue from https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7186 (required)
                    Components.ObservationComponent
                    includes PastOrPresentIndustry 0..1
                    includes WorkClassification 0..1
@@ -157,8 +158,7 @@ Group:             WorkClassification
 Parent:            CodedObservationComponent
 Description:       "Type of compensation and sector for a person's job, such as 'paid work, self-employed' or 'voluntary work', as reported by the person."
                    Code = LNC#85104-8 "Compensation and sector employment type"
-                   //https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7597 
-                   DataValue from http://terminology.hl7.org/CodeSystem/v3-WorkClassificationODH (required)
+                   DataValue from http://terminology.hl7.org/ValueSet/v3-WorkClassificationODH(required)
 
 Group:             Occupation
 Parent:            CodedObservationComponent
